@@ -1,0 +1,58 @@
+{
+  "manifest_version": 3,
+  "name": "PauseShop",
+  "version": "1.0.0",
+  "description": "Discover products from paused videos and find them on Amazon",
+  "permissions": [
+    "activeTab",
+    "storage",
+    "scripting"
+  ],
+  "host_permissions": [
+    "https://*.netflix.com/*",
+    "https://*.hulu.com/*",
+    "https://*.youtube.com/*",
+    "https://*.amazon.com/*",
+    "https://*.primevideo.com/*",
+    "https://*.disneyplus.com/*",
+    "https://*.hbomax.com/*"
+  ],
+  "background": {
+    "service_worker": "background/service-worker.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*.netflix.com/*",
+        "https://*.hulu.com/*",
+        "https://*.youtube.com/*",
+        "https://*.primevideo.com/*",
+        "https://*.disneyplus.com/*",
+        "https://*.hbomax.com/*"
+      ],
+      "js": ["content/main-content.js"],
+      "css": ["ui/styles.css"],
+      "run_at": "document_end"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "ui/*",
+        "assets/*"
+      ],
+      "matches": [
+        "https://*.netflix.com/*",
+        "https://*.hulu.com/*",
+        "https://*.youtube.com/*",
+        "https://*.primevideo.com/*",
+        "https://*.disneyplus.com/*",
+        "https://*.hbomax.com/*"
+      ]
+    }
+  ],
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_title": "PauseShop"
+  }
+}

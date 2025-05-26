@@ -134,3 +134,9 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# PauseShop specific
+extension/dist/
+server/dist/
+extension/web-ext-artifacts/
+extension/*.zip
