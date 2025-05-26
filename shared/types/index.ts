@@ -1,1 +1,0 @@
-// Shared types between extension and server

@@ -32,9 +32,6 @@ pauseshop/
 │   ├── package.json
 │   ├── tsconfig.json
 │   └── tests/               # Server tests
-├── shared/                   # Shared types and utilities
-│   ├── types/               # Common TypeScript interfaces
-│   └── constants/           # Shared constants
 ├── docs/                     # Documentation
 ├── .gitignore
 ├── README.md
@@ -47,7 +44,6 @@ pauseshop/
 graph TB
     A[PauseShop Project Root] --> B[Chrome Extension]
     A --> C[Backend Server]
-    A --> D[Shared Types]
     
     B --> E[Content Scripts]
     B --> F[Service Worker]
