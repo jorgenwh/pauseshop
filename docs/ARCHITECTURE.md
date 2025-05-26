@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-PauseShop is a Chrome extension that detects when videos are paused on streaming platforms (Netflix, Hulu, YouTube, etc.), captures screenshots, analyzes them for products using OpenAI API, and displays Amazon shopping suggestions through an injected overlay UI.
+PauseShop is a Chrome extension that detects when videos are paused on streaming platforms (Netflix, Hulu, etc.), captures screenshots, analyzes them for products using OpenAI API, and displays Amazon shopping suggestions through an injected overlay UI.
 
 ## Project Structure
 
