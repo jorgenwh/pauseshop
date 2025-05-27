@@ -2,7 +2,7 @@
 1) Set up project structure and build tools - [x]
 2) Implement basic video detection and pause events - [x]
 3) Make it so that seeking in videos doesn't get flagged as pausing and resuming the video once it loads - [x]
-4) Create simple screenshot capture functionality - [ ]
+4) Create simple screenshot capture functionality - [x]
 5) Set up Express.js server with health endpoint - [ ]
 
 ### Phase 2: AI Integration

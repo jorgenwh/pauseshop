@@ -6,16 +6,18 @@
   "permissions": [
     "activeTab",
     "storage",
-    "scripting"
+    "scripting",
+    "tabs",
+    "tabCapture"
   ],
   "host_permissions": [
     "https://*.netflix.com/*",
     "https://*.hulu.com/*",
-    "https://*.youtube.com/*",
     "https://*.amazon.com/*",
     "https://*.primevideo.com/*",
     "https://*.disneyplus.com/*",
-    "https://*.hbomax.com/*"
+    "https://*.hbomax.com/*",
+    "<all_urls>"
   ],
   "background": {
     "service_worker": "background/service-worker.js"

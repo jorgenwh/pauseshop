@@ -1,4 +1,5 @@
 import { VideoDetectorConfig, SeekingState, SeekingDetectionConfig } from '../types/video';
+import { captureScreenshot } from './screenshot-capturer';
 
 interface VideoDetectorState {
   video: HTMLVideoElement | null;
@@ -50,6 +51,10 @@ const handlePause = (config: VideoDetectorConfig, seekingState: SeekingState) =>
   seekingState.pauseDebounceTimeoutId = window.setTimeout(() => {
     if (!seekingState.isSeeking) {
       log(config, 'Video paused (intentional user pause detected)');
+      // Trigger screenshot capture for intentional pause
+      captureScreenshot().catch(error => {
+        log(config, `Screenshot capture failed: ${error}`);
+      });
     } else {
       log(config, 'Video paused but seeking detected - ignoring as non-intentional pause');
     }

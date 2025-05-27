@@ -1,6 +1,10 @@
 import { initializeVideoDetector } from './video-detector';
+import { initializeScreenshotCapturer } from './screenshot-capturer';
 
 console.log('PauseShop content script loaded');
+
+// Initialize screenshot capturer
+initializeScreenshotCapturer();
 
 // Initialize video detection
 const cleanupVideoDetector = initializeVideoDetector();
