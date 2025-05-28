@@ -64,7 +64,7 @@ export const captureScreenshot = async (config: Partial<ScreenshotConfig> = {}):
         
         // Log individual product confidence scores
         products.forEach((product: any, index: number) => {
-          log(fullConfig, `Product ${index + 1}: confidence ${(product.confidence * 100).toFixed(1)}%`);
+          log(fullConfig, `Product ${index + 1}: ${product.name}`);
         });
       }
     } else {

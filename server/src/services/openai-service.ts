@@ -6,7 +6,14 @@
 import OpenAI from 'openai';
 import { promises as fs } from 'fs';
 import { resolve } from 'path';
-import { OpenAIConfig, OpenAIResponse, Product } from '../types/analyze';
+import {
+  OpenAIConfig,
+  OpenAIResponse,
+  Product,
+  ProductCategory,
+  TargetGender,
+  OpenAIProductResponse
+} from '../types/analyze';
 
 export class OpenAIService {
   private client: OpenAI;
@@ -49,6 +56,7 @@ export class OpenAIService {
       console.log('[OPENAI_SERVICE] Sending image to OpenAI API...');
       const startTime = Date.now();
 
+      console.log("[OPENAI_SERVICE] Using prompt:", prompt);
       const response = await this.client.chat.completions.create({
         model: this.config.model,
         max_tokens: this.config.maxTokens,
@@ -96,19 +104,116 @@ export class OpenAIService {
    * Parse OpenAI response into products array
    */
   parseResponseToProducts(response: string): Product[] {
-    if (!response) {
+    try {
+      console.log('[OPENAI_SERVICE] Raw OpenAI response:', response);
+      
+      // Clean the response - remove any non-JSON content
+      const cleanedResponse = this.extractJSONFromResponse(response);
+      console.log('[OPENAI_SERVICE] Cleaned JSON:', cleanedResponse);
+      
+      // Parse JSON
+      const parsedResponse: OpenAIProductResponse = JSON.parse(cleanedResponse);
+      
+      // Validate and sanitize products
+      const validatedProducts = this.validateAndSanitizeProducts(parsedResponse.products || []);
+      console.log(`[OPENAI_SERVICE] Validated ${validatedProducts.length} products`);
+      
+      return validatedProducts;
+      
+    } catch (error) {
+      console.error('[OPENAI_SERVICE] Error parsing response:', error);
+      console.log('[OPENAI_SERVICE] Response that failed to parse:', response.substring(0, 200));
       return [];
     }
+  }
 
-    const products: Product[] = [];
+  /**
+   * Extract JSON from response, handling potential extra text
+   */
+  private extractJSONFromResponse(response: string): string {
+    // Remove any text before the first {
+    const jsonStart = response.indexOf('{');
+    if (jsonStart === -1) throw new Error('No JSON found in response');
+    
+    // Find the last } to handle any trailing text
+    const jsonEnd = response.lastIndexOf('}');
+    if (jsonEnd === -1) throw new Error('Incomplete JSON in response');
+    
+    return response.substring(jsonStart, jsonEnd + 1);
+  }
 
-    console.log("response", response);
+  /**
+   * Validate and sanitize products array
+   */
+  private validateAndSanitizeProducts(products: any[]): Product[] {
+    return products
+      .filter(product => this.isValidProduct(product))
+      .map(product => this.sanitizeProduct(product));
+  }
 
-    products.push({
-      confidence: 0.9,
-    });
+  /**
+   * Check if product has all required fields
+   */
+  private isValidProduct(product: any): boolean {
+    return (
+      typeof product === 'object' &&
+      typeof product.name === 'string' &&
+      typeof product.category === 'string' &&
+      typeof product.brand === 'string' &&
+      typeof product.primaryColor === 'string' &&
+      Array.isArray(product.secondaryColors) &&
+      Array.isArray(product.features) &&
+      typeof product.targetGender === 'string' &&
+      typeof product.searchTerms === 'string'
+    );
+  }
 
-    return products;
+  /**
+   * Sanitize and normalize product data
+   */
+  private sanitizeProduct(product: any): Product {
+    return {
+      name: String(product.name).substring(0, 100).trim(),
+      category: this.validateCategory(product.category),
+      brand: String(product.brand).substring(0, 50).trim(),
+      primaryColor: String(product.primaryColor).substring(0, 30).trim(),
+      secondaryColors: this.sanitizeStringArray(product.secondaryColors, 30, 3),
+      features: this.sanitizeStringArray(product.features, 50, 5),
+      targetGender: this.validateTargetGender(product.targetGender),
+      searchTerms: String(product.searchTerms).substring(0, 200).trim()
+    };
+  }
+
+  /**
+   * Validate product category, fallback to OTHER if invalid
+   */
+  private validateCategory(category: string): ProductCategory {
+    const validCategories = Object.values(ProductCategory);
+    return validCategories.includes(category as ProductCategory)
+      ? category as ProductCategory
+      : ProductCategory.OTHER;
+  }
+
+  /**
+   * Validate target gender, fallback to UNISEX if invalid
+   */
+  private validateTargetGender(targetGender: string): TargetGender {
+    const validGenders = Object.values(TargetGender);
+    return validGenders.includes(targetGender as TargetGender)
+      ? targetGender as TargetGender
+      : TargetGender.UNISEX;
+  }
+
+  /**
+   * Sanitize array of strings with length and count limits
+   */
+  private sanitizeStringArray(arr: any[], maxLength: number, maxCount: number): string[] {
+    if (!Array.isArray(arr)) return [];
+    
+    return arr
+      .slice(0, maxCount)
+      .map(item => String(item).substring(0, maxLength).trim())
+      .filter(item => item.length > 0);
   }
 
   /**

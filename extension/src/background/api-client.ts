@@ -17,11 +17,40 @@ interface AnalyzeRequest {
   };
 }
 
+enum ProductCategory {
+  CLOTHING = 'clothing',
+  ELECTRONICS = 'electronics',
+  FURNITURE = 'furniture',
+  ACCESSORIES = 'accessories',
+  FOOTWEAR = 'footwear',
+  HOME_DECOR = 'home_decor',
+  BOOKS_MEDIA = 'books_media',
+  SPORTS_FITNESS = 'sports_fitness',
+  BEAUTY_PERSONAL_CARE = 'beauty_personal_care',
+  KITCHEN_DINING = 'kitchen_dining',
+  OTHER = 'other'
+}
+
+enum TargetGender {
+  MEN = 'men',
+  WOMEN = 'women',
+  UNISEX = 'unisex',
+  BOY = 'boy',
+  GIRL = 'girl'
+}
+
 interface AnalyzeResponse {
   success: boolean;
   timestamp: string;
   products: Array<{
-    confidence: number;
+      name: string;
+      category: ProductCategory;
+      brand: string;
+      primaryColor: string;
+      secondaryColors: string[];
+      features: string[];
+      targetGender: TargetGender;
+      searchTerms: string;
   }>;
   metadata: {
     processingTime: number;
