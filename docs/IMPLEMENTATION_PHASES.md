@@ -6,10 +6,11 @@
 5) Set up Express.js server with health endpoint - [x]
 
 ### Phase 2: AI Integration
-1) Implement OpenAI service integration - [ ]
-2) Create image analysis endpoint - [ ]
-3) Develop communication between extension and server - [ ]
-4) Add basic error handling - [ ]
+1) Create image analysis endpoint for extension to send image to server for analysis - [x]
+2) Implement OpenAI service integration for analyzing received image using OpenAI's API on server - [ ]
+3) Create a solid prompt to get relevant product information from images in a solid JSON format from OpenAI model - [ ]
+4) Return JSON from server to extension and interpret - [ ]
+5) Add basic error handling - [ ]
 
 ### Phase 3: Amazon Integration
 1) Implement Amazon search functionality - [ ]

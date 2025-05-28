@@ -7,6 +7,8 @@ interface ScreenshotConfig {
   targetWidth: number;
   enableLogging: boolean;
   logPrefix: string;
+  debugMode: boolean;
+  serverUrl: string;
 }
 
 interface ScreenshotMessage {
@@ -17,12 +19,15 @@ interface ScreenshotMessage {
 interface ScreenshotResponse {
   success: boolean;
   error?: string;
+  analysisResult?: any;
 }
 
 const defaultConfig: ScreenshotConfig = {
   targetWidth: 640,
   enableLogging: true,
-  logPrefix: 'PauseShop Screenshot'
+  logPrefix: 'PauseShop Screenshot',
+  debugMode: false,
+  serverUrl: 'http://localhost:3000'
 };
 
 const log = (config: ScreenshotConfig, message: string): void => {
@@ -51,6 +56,17 @@ export const captureScreenshot = async (config: Partial<ScreenshotConfig> = {}):
 
     if (response.success) {
       log(fullConfig, 'Screenshot captured and processed successfully');
+      
+      // Log analysis results if available
+      if (response.analysisResult) {
+        const { products, metadata } = response.analysisResult;
+        log(fullConfig, `Analysis complete: ${products.length} products detected in ${metadata.processingTime}ms`);
+        
+        // Log individual product confidence scores
+        products.forEach((product: any, index: number) => {
+          log(fullConfig, `Product ${index + 1}: confidence ${(product.confidence * 100).toFixed(1)}%`);
+        });
+      }
     } else {
       log(fullConfig, `Screenshot capture failed: ${response.error || 'Unknown error'}`);
     }

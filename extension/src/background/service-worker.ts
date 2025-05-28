@@ -1,12 +1,16 @@
 /**
  * PauseShop Background Service Worker
- * Handles screenshot capture using chrome.tabs.captureVisibleTab API
+ * Handles screenshot capture and server communication
  */
+
+import { analyzeImage, testServerConnection } from './api-client';
 
 interface ScreenshotConfig {
   targetWidth: number;
   enableLogging: boolean;
   logPrefix: string;
+  debugMode: boolean;
+  serverUrl: string;
 }
 
 interface ScreenshotMessage {
@@ -17,6 +21,7 @@ interface ScreenshotMessage {
 interface ScreenshotResponse {
   success: boolean;
   error?: string;
+  analysisResult?: any;
 }
 
 const log = (config: ScreenshotConfig, message: string): void => {
@@ -72,23 +77,68 @@ const downscaleImage = async (dataUrl: string, targetWidth: number): Promise<str
   }
 };
 
-const captureScreenshot = async (config: ScreenshotConfig, windowId: number): Promise<ScreenshotResponse> => {
+/**
+ * Captures and downscales a screenshot, returning the image data
+ */
+const captureScreenshot = async (config: ScreenshotConfig, windowId: number): Promise<string> => {
+  log(config, 'Capturing screenshot');
+  const dataUrl: string = await chrome.tabs.captureVisibleTab(windowId, { format: 'png' });
+
+  log(config, `Downscaling image to ${config.targetWidth}px width`);
+  const downscaledDataUrl = await downscaleImage(dataUrl, config.targetWidth);
+
+  return downscaledDataUrl;
+};
+
+/**
+ * Handles the complete screenshot and analysis workflow
+ */
+const handleScreenshotAnalysis = async (config: ScreenshotConfig, windowId: number): Promise<ScreenshotResponse> => {
   try {
-    log(config, 'Capturing screenshot');
-    const dataUrl: string = await chrome.tabs.captureVisibleTab(windowId, { format: 'png' });
+    // Step 1: Capture and downscale screenshot
+    const imageData = await captureScreenshot(config, windowId);
 
-    log(config, `Downscaling image to ${config.targetWidth}px width`);
-    const downscaledDataUrl = await downscaleImage(dataUrl, config.targetWidth);
+    // Step 2: Debug mode logging
+    if (config.debugMode) {
+      log(config, `Debug mode: Image data URL (${imageData.length} characters)`);
+      // Uncomment next line for full URL logging in debug mode:
+      // console.log('[DEBUG] Full image data URL:', imageData);
+    }
 
-    log(config, 'Opening downscaled screenshot in new tab');
-    const tab = await chrome.tabs.create({ url: downscaledDataUrl });
+    // Step 3: Send to server for analysis
+    try {
+      log(config, 'Sending image to server for analysis');
+      const analysisResult = await analyzeImage(imageData, {
+        baseUrl: config.serverUrl
+      });
+      
+      log(config, `Server analysis complete: ${analysisResult.products.length} products detected`);
+      return {
+        success: true,
+        analysisResult
+      };
+    } catch (serverError) {
+      const serverErrorMessage = serverError instanceof Error ? serverError.message : 'Unknown server error';
+      log(config, `Server analysis failed: ${serverErrorMessage}`);
+      
+      return {
+        success: false,
+        error: `Server communication failed: ${serverErrorMessage}`
+      };
+    }
 
-    return { success: true };
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    log(config, `Screenshot capture failed: ${errorMessage}`);
+    log(config, `Screenshot workflow failed: ${errorMessage}`);
     return { success: false, error: errorMessage };
   }
+};
+
+/**
+ * Debug function: Opens screenshot in new tab (kept for debugging purposes)
+ */
+const openScreenshotInNewTab = async (imageData: string): Promise<void> => {
+  await chrome.tabs.create({ url: imageData });
 };
 
 // Listen for messages from content scripts
@@ -100,8 +150,8 @@ chrome.runtime.onMessage.addListener((
   if (message.action === 'captureScreenshot') {
     log(message.config, 'Received screenshot capture request');
     const windowId = sender.tab?.windowId || chrome.windows.WINDOW_ID_CURRENT;
-    captureScreenshot(message.config, windowId).then(sendResponse).catch(error => {
-      console.error('Screenshot capture error:', error);
+    const response = handleScreenshotAnalysis(message.config, windowId).then(sendResponse).catch(error => {
+      console.error('Screenshot analysis error:', error);
       sendResponse({ success: false, error: error.message || 'Unknown error' });
     });
     return true; // Keep message channel open for async response
