@@ -1,27 +1,38 @@
 /**
  * Image analysis endpoint
- * Accepts POST requests with image data and returns placeholder product analysis
+ * Accepts POST requests with image data and returns AI-powered product analysis
  */
 
 import { Request, Response } from 'express';
-import { AnalyzeRequest, AnalyzeResponse, AnalyzeErrorResponse, Product } from '../types/analyze';
+import { AnalyzeRequest, AnalyzeResponse, AnalyzeErrorResponse, Product, OpenAIConfig } from '../types/analyze';
 import { validateImageData } from '../utils/image-validator';
+import { OpenAIService } from '../services/openai-service';
 
 /**
- * Generates placeholder product analysis data
- * This will be replaced with actual OpenAI integration in Task 2.2
+ * OpenAI configuration from environment variables
  */
-const generatePlaceholderAnalysis = (): Product[] => {
-  // Placeholder products with varying confidence levels
-  const placeholderProducts: Product[] = [
-    { confidence: 0.85 },
-    { confidence: 0.72 },
-    { confidence: 0.91 }
-  ];
+const getOpenAIConfig = (): OpenAIConfig => {
+  const apiKey = process.env.OPENAI_API_KEY;
+  if (!apiKey) {
+    throw new Error('OPENAI_API_KEY environment variable is required');
+  }
 
-  // Return random subset (1-3 products)
-  const numProducts = Math.floor(Math.random() * 3) + 1;
-  return placeholderProducts.slice(0, numProducts);
+  return {
+    apiKey,
+    model: process.env.OPENAI_MODEL || 'gpt-4o-mini',
+    maxTokens: parseInt(process.env.OPENAI_MAX_TOKENS || '1000'),
+  };
+};
+
+/**
+ * Analyze image using OpenAI service
+ */
+const analyzeImageWithOpenAI = async (imageData: string): Promise<Product[]> => {
+  const config = getOpenAIConfig();
+  const openaiService = new OpenAIService(config);
+  
+  const response = await openaiService.analyzeImage(imageData);
+  return openaiService.parseResponseToProducts(response.content);
 };
 
 /**
@@ -63,8 +74,8 @@ export const analyzeImageHandler = async (req: Request, res: Response): Promise<
       return;
     }
 
-    // Generate placeholder analysis
-    const products = generatePlaceholderAnalysis();
+    // Analyze image with OpenAI
+    const products = await analyzeImageWithOpenAI(image);
     const processingTime = Date.now() - startTime;
 
     // Success response
@@ -85,15 +96,45 @@ export const analyzeImageHandler = async (req: Request, res: Response): Promise<
   } catch (error) {
     console.error('[ANALYZE] Error processing image analysis:', error);
 
+    let statusCode = 500;
+    let errorCode = 'INTERNAL_ERROR';
+    let errorMessage = 'Internal server error during image analysis';
+
+    // Handle OpenAI-specific errors
+    if (error instanceof Error) {
+      switch (error.message) {
+        case 'OPENAI_AUTH_ERROR':
+          statusCode = 500;
+          errorCode = 'OPENAI_AUTH_ERROR';
+          errorMessage = 'OpenAI authentication failed';
+          break;
+        case 'OPENAI_RATE_LIMIT':
+          statusCode = 429;
+          errorCode = 'OPENAI_RATE_LIMIT';
+          errorMessage = 'OpenAI rate limit exceeded';
+          break;
+        case 'OPENAI_TIMEOUT':
+          statusCode = 503;
+          errorCode = 'OPENAI_TIMEOUT';
+          errorMessage = 'OpenAI request timeout';
+          break;
+        case 'OPENAI_API_ERROR':
+          statusCode = 502;
+          errorCode = 'OPENAI_API_ERROR';
+          errorMessage = 'OpenAI API error';
+          break;
+      }
+    }
+
     const errorResponse: AnalyzeErrorResponse = {
       success: false,
       error: {
-        message: 'Internal server error during image analysis',
-        code: 'INTERNAL_ERROR',
+        message: errorMessage,
+        code: errorCode,
         timestamp: new Date().toISOString()
       }
     };
 
-    res.status(500).json(errorResponse);
+    res.status(statusCode).json(errorResponse);
   }
 };

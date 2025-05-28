@@ -8,8 +8,25 @@ import { getEnvironment } from './utils';
 const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 const ENVIRONMENT = getEnvironment();
 
+// Validate required environment variables
+const validateEnvironment = (): void => {
+  const requiredEnvVars = ['OPENAI_API_KEY'];
+  const missingVars = requiredEnvVars.filter(varName => !process.env[varName]);
+
+  if (missingVars.length > 0) {
+    console.error(`💥 Missing required environment variables: ${missingVars.join(', ')}`);
+    console.error('📋 Please check your .env file and ensure all required variables are set');
+    process.exit(1);
+  }
+
+  console.log('✅ Environment variables validated');
+};
+
 const startServer = async (): Promise<void> => {
   try {
+    // Validate environment variables first
+    validateEnvironment();
+    
     const app = createApp();
     
     const server = app.listen(PORT, () => {

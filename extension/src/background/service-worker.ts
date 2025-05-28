@@ -102,7 +102,7 @@ const handleScreenshotAnalysis = async (config: ScreenshotConfig, windowId: numb
     if (config.debugMode) {
       log(config, `Debug mode: Image data URL (${imageData.length} characters)`);
       // Uncomment next line for full URL logging in debug mode:
-      // console.log('[DEBUG] Full image data URL:', imageData);
+      console.log('[DEBUG] Full image data URL:', imageData);
     }
 
     // Step 3: Send to server for analysis

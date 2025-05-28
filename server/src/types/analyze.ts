@@ -22,6 +22,21 @@ export interface Product {
   confidence: number; // 0-1
 }
 
+export interface OpenAIConfig {
+  apiKey: string;
+  model: string;
+  maxTokens: number;
+}
+
+export interface OpenAIResponse {
+  content: string;
+  usage?: {
+    promptTokens: number;
+    completionTokens: number;
+    totalTokens: number;
+  };
+}
+
 export interface AnalyzeErrorResponse {
   success: false;
   error: {

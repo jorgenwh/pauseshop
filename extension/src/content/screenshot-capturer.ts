@@ -26,7 +26,7 @@ const defaultConfig: ScreenshotConfig = {
   targetWidth: 640,
   enableLogging: true,
   logPrefix: 'PauseShop Screenshot',
-  debugMode: false,
+  debugMode: true,
   serverUrl: 'http://localhost:3000'
 };
 
