@@ -11,10 +11,10 @@ const cleanupVideoDetector = initializeVideoDetector();
 
 // Cleanup when page unloads
 window.addEventListener('beforeunload', () => {
-  cleanupVideoDetector();
+    cleanupVideoDetector();
 });
 
 // Also cleanup when the content script is about to be destroyed
 window.addEventListener('pagehide', () => {
-  cleanupVideoDetector();
+    cleanupVideoDetector();
 });

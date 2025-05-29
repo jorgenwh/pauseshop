@@ -4,36 +4,36 @@
  */
 
 interface ScreenshotConfig {
-  targetWidth: number;
-  enableLogging: boolean;
-  logPrefix: string;
-  debugMode: boolean;
-  serverUrl: string;
+    targetWidth: number;
+    enableLogging: boolean;
+    logPrefix: string;
+    debugMode: boolean;
+    serverUrl: string;
 }
 
 interface ScreenshotMessage {
-  action: 'captureScreenshot';
-  config: ScreenshotConfig;
+    action: 'captureScreenshot';
+    config: ScreenshotConfig;
 }
 
 interface ScreenshotResponse {
-  success: boolean;
-  error?: string;
-  analysisResult?: any;
+    success: boolean;
+    error?: string;
+    analysisResult?: any;
 }
 
 const defaultConfig: ScreenshotConfig = {
-  targetWidth: 640,
-  enableLogging: true,
-  logPrefix: 'PauseShop Screenshot',
-  debugMode: true,
-  serverUrl: 'http://localhost:3000'
+    targetWidth: 640,
+    enableLogging: true,
+    logPrefix: 'PauseShop Screenshot',
+    debugMode: true,
+    serverUrl: 'http://localhost:3000'
 };
 
 const log = (config: ScreenshotConfig, message: string): void => {
-  if (config.enableLogging) {
-    console.log(`${config.logPrefix}: ${message}`);
-  }
+    if (config.enableLogging) {
+        console.log(`${config.logPrefix}: ${message}`);
+    }
 };
 
 /**
@@ -41,47 +41,47 @@ const log = (config: ScreenshotConfig, message: string): void => {
  * @param config Screenshot configuration options
  */
 export const captureScreenshot = async (config: Partial<ScreenshotConfig> = {}): Promise<void> => {
-  const fullConfig: ScreenshotConfig = { ...defaultConfig, ...config };
-  
-  try {
-    log(fullConfig, 'Requesting screenshot capture from background service worker...');
+    const fullConfig: ScreenshotConfig = { ...defaultConfig, ...config };
+    
+    try {
+        log(fullConfig, 'Requesting screenshot capture from background service worker...');
 
-    const message: ScreenshotMessage = {
-      action: 'captureScreenshot',
-      config: fullConfig
-    };
+        const message: ScreenshotMessage = {
+            action: 'captureScreenshot',
+            config: fullConfig
+        };
 
-    // Send message to background service worker
-    const response = await chrome.runtime.sendMessage(message) as ScreenshotResponse;
+        // Send message to background service worker
+        const response = await chrome.runtime.sendMessage(message) as ScreenshotResponse;
 
-    if (response.success) {
-      log(fullConfig, 'Screenshot captured and processed successfully');
-      
-      // Log analysis results if available
-      if (response.analysisResult) {
-        const { products, metadata } = response.analysisResult;
-        log(fullConfig, `Analysis complete: ${products.length} products detected in ${metadata.processingTime}ms`);
-        
-        // Log individual product confidence scores
-        products.forEach((product: any, index: number) => {
-          log(fullConfig, `Product ${index + 1}: ${product.name}`);
-        });
-      }
-    } else {
-      log(fullConfig, `Screenshot capture failed: ${response.error || 'Unknown error'}`);
+        if (response.success) {
+            log(fullConfig, 'Screenshot captured and processed successfully');
+            
+            // Log analysis results if available
+            if (response.analysisResult) {
+                const { products, metadata } = response.analysisResult;
+                log(fullConfig, `Analysis complete: ${products.length} products detected in ${metadata.processingTime}ms`);
+                
+                // Log individual product confidence scores
+                products.forEach((product: any, index: number) => {
+                    log(fullConfig, `Product ${index + 1}: ${product.name}`);
+                });
+            }
+        } else {
+            log(fullConfig, `Screenshot capture failed: ${response.error || 'Unknown error'}`);
+        }
+    } catch (error) {
+        if (error instanceof Error) {
+            log(fullConfig, `Failed to communicate with background service worker: ${error.message}`);
+        } else {
+            log(fullConfig, 'Unknown error during screenshot capture');
+        }
     }
-  } catch (error) {
-    if (error instanceof Error) {
-      log(fullConfig, `Failed to communicate with background service worker: ${error.message}`);
-    } else {
-      log(fullConfig, 'Unknown error during screenshot capture');
-    }
-  }
 };
 
 /**
  * Initialize screenshot capture functionality
  */
 export const initializeScreenshotCapturer = (): void => {
-  console.log('PauseShop: Screenshot capturer initialized');
+    console.log('PauseShop: Screenshot capturer initialized');
 };

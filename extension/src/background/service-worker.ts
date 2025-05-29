@@ -6,28 +6,28 @@
 import { analyzeImage, testServerConnection } from './api-client';
 
 interface ScreenshotConfig {
-  targetWidth: number;
-  enableLogging: boolean;
-  logPrefix: string;
-  debugMode: boolean;
-  serverUrl: string;
+    targetWidth: number;
+    enableLogging: boolean;
+    logPrefix: string;
+    debugMode: boolean;
+    serverUrl: string;
 }
 
 interface ScreenshotMessage {
-  action: 'captureScreenshot';
-  config: ScreenshotConfig;
+    action: 'captureScreenshot';
+    config: ScreenshotConfig;
 }
 
 interface ScreenshotResponse {
-  success: boolean;
-  error?: string;
-  analysisResult?: any;
+    success: boolean;
+    error?: string;
+    analysisResult?: any;
 }
 
 const log = (config: ScreenshotConfig, message: string): void => {
-  if (config.enableLogging) {
-    console.log(`${config.logPrefix}: ${message}`);
-  }
+    if (config.enableLogging) {
+        console.log(`${config.logPrefix}: ${message}`);
+    }
 };
 
 /**
@@ -37,125 +37,125 @@ const log = (config: ScreenshotConfig, message: string): void => {
  * @returns Promise<string> The downscaled image data URL
  */
 const downscaleImage = async (dataUrl: string, targetWidth: number): Promise<string> => {
-  try {
-    // Convert data URL to blob
-    const response = await fetch(dataUrl);
-    const blob = await response.blob();
-    
-    // Create ImageBitmap from blob (available in service workers)
-    const imageBitmap = await createImageBitmap(blob);
-    
-    // Calculate new dimensions maintaining aspect ratio
-    const originalWidth = imageBitmap.width;
-    const originalHeight = imageBitmap.height;
-    const aspectRatio = originalHeight / originalWidth;
-    const newHeight = Math.round(targetWidth * aspectRatio);
+    try {
+        // Convert data URL to blob
+        const response = await fetch(dataUrl);
+        const blob = await response.blob();
+        
+        // Create ImageBitmap from blob (available in service workers)
+        const imageBitmap = await createImageBitmap(blob);
+        
+        // Calculate new dimensions maintaining aspect ratio
+        const originalWidth = imageBitmap.width;
+        const originalHeight = imageBitmap.height;
+        const aspectRatio = originalHeight / originalWidth;
+        const newHeight = Math.round(targetWidth * aspectRatio);
 
-    // Create OffscreenCanvas for downscaling (available in service workers)
-    const canvas = new OffscreenCanvas(targetWidth, newHeight);
-    const ctx = canvas.getContext('2d');
-    
-    if (!ctx) {
-      throw new Error('Failed to get canvas context');
+        // Create OffscreenCanvas for downscaling (available in service workers)
+        const canvas = new OffscreenCanvas(targetWidth, newHeight);
+        const ctx = canvas.getContext('2d');
+        
+        if (!ctx) {
+            throw new Error('Failed to get canvas context');
+        }
+
+        // Draw downscaled image
+        ctx.drawImage(imageBitmap, 0, 0, targetWidth, newHeight);
+        
+        // Convert to blob and then to data URL
+        const downscaledBlob = await canvas.convertToBlob({ type: 'image/png' });
+        
+        // Convert blob to data URL
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result as string);
+            reader.onerror = () => reject(new Error('Failed to convert blob to data URL'));
+            reader.readAsDataURL(downscaledBlob);
+        });
+    } catch (error) {
+        throw new Error(`Image downscaling failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
-
-    // Draw downscaled image
-    ctx.drawImage(imageBitmap, 0, 0, targetWidth, newHeight);
-    
-    // Convert to blob and then to data URL
-    const downscaledBlob = await canvas.convertToBlob({ type: 'image/png' });
-    
-    // Convert blob to data URL
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result as string);
-      reader.onerror = () => reject(new Error('Failed to convert blob to data URL'));
-      reader.readAsDataURL(downscaledBlob);
-    });
-  } catch (error) {
-    throw new Error(`Image downscaling failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
-  }
 };
 
 /**
  * Captures and downscales a screenshot, returning the image data
  */
 const captureScreenshot = async (config: ScreenshotConfig, windowId: number): Promise<string> => {
-  log(config, 'Capturing screenshot');
-  const dataUrl: string = await chrome.tabs.captureVisibleTab(windowId, { format: 'png' });
+    log(config, 'Capturing screenshot');
+    const dataUrl: string = await chrome.tabs.captureVisibleTab(windowId, { format: 'png' });
 
-  log(config, `Downscaling image to ${config.targetWidth}px width`);
-  const downscaledDataUrl = await downscaleImage(dataUrl, config.targetWidth);
+    log(config, `Downscaling image to ${config.targetWidth}px width`);
+    const downscaledDataUrl = await downscaleImage(dataUrl, config.targetWidth);
 
-  return downscaledDataUrl;
+    return downscaledDataUrl;
 };
 
 /**
  * Handles the complete screenshot and analysis workflow
  */
 const handleScreenshotAnalysis = async (config: ScreenshotConfig, windowId: number): Promise<ScreenshotResponse> => {
-  try {
-    // Step 1: Capture and downscale screenshot
-    const imageData = await captureScreenshot(config, windowId);
-
-    // Step 2: Debug mode logging
-    if (config.debugMode) {
-      log(config, `Debug mode: Image data URL (${imageData.length} characters)`);
-      // Uncomment next line for full URL logging in debug mode:
-      console.log('[DEBUG] Full image data URL:', imageData);
-    }
-
-    // Step 3: Send to server for analysis
     try {
-      log(config, 'Sending image to server for analysis');
-      const analysisResult = await analyzeImage(imageData, {
-        baseUrl: config.serverUrl
-      });
-      
-      log(config, `Server analysis complete: ${analysisResult.products.length} products detected`);
-      return {
-        success: true,
-        analysisResult
-      };
-    } catch (serverError) {
-      const serverErrorMessage = serverError instanceof Error ? serverError.message : 'Unknown server error';
-      log(config, `Server analysis failed: ${serverErrorMessage}`);
-      
-      return {
-        success: false,
-        error: `Server communication failed: ${serverErrorMessage}`
-      };
-    }
+        // Step 1: Capture and downscale screenshot
+        const imageData = await captureScreenshot(config, windowId);
 
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    log(config, `Screenshot workflow failed: ${errorMessage}`);
-    return { success: false, error: errorMessage };
-  }
+        // Step 2: Debug mode logging
+        if (config.debugMode) {
+            log(config, `Debug mode: Image data URL (${imageData.length} characters)`);
+            // Uncomment next line for full URL logging in debug mode:
+            console.log('[DEBUG] Full image data URL:', imageData);
+        }
+
+        // Step 3: Send to server for analysis
+        try {
+            log(config, 'Sending image to server for analysis');
+            const analysisResult = await analyzeImage(imageData, {
+                baseUrl: config.serverUrl
+            });
+            
+            log(config, `Server analysis complete: ${analysisResult.products.length} products detected`);
+            return {
+                success: true,
+                analysisResult
+            };
+        } catch (serverError) {
+            const serverErrorMessage = serverError instanceof Error ? serverError.message : 'Unknown server error';
+            log(config, `Server analysis failed: ${serverErrorMessage}`);
+            
+            return {
+                success: false,
+                error: `Server communication failed: ${serverErrorMessage}`
+            };
+        }
+
+    } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        log(config, `Screenshot workflow failed: ${errorMessage}`);
+        return { success: false, error: errorMessage };
+    }
 };
 
 /**
  * Debug function: Opens screenshot in new tab (kept for debugging purposes)
  */
 const openScreenshotInNewTab = async (imageData: string): Promise<void> => {
-  await chrome.tabs.create({ url: imageData });
+    await chrome.tabs.create({ url: imageData });
 };
 
 // Listen for messages from content scripts
 chrome.runtime.onMessage.addListener((
-  message: ScreenshotMessage,
-  sender: chrome.runtime.MessageSender,
-  sendResponse: (response: ScreenshotResponse) => void
+    message: ScreenshotMessage,
+    sender: chrome.runtime.MessageSender,
+    sendResponse: (response: ScreenshotResponse) => void
 ) => {
-  if (message.action === 'captureScreenshot') {
-    log(message.config, 'Received screenshot capture request');
-    const windowId = sender.tab?.windowId || chrome.windows.WINDOW_ID_CURRENT;
-    const response = handleScreenshotAnalysis(message.config, windowId).then(sendResponse).catch(error => {
-      console.error('Screenshot analysis error:', error);
-      sendResponse({ success: false, error: error.message || 'Unknown error' });
-    });
-    return true; // Keep message channel open for async response
-  }
+    if (message.action === 'captureScreenshot') {
+        log(message.config, 'Received screenshot capture request');
+        const windowId = sender.tab?.windowId || chrome.windows.WINDOW_ID_CURRENT;
+        const response = handleScreenshotAnalysis(message.config, windowId).then(sendResponse).catch(error => {
+            console.error('Screenshot analysis error:', error);
+            sendResponse({ success: false, error: error.message || 'Unknown error' });
+        });
+        return true; // Keep message channel open for async response
+    }
 });
 
 console.log('PauseShop service worker loaded');
