@@ -152,7 +152,7 @@ export const analyzeImage = async (
         }
 
         const data: AnalyzeResponse = await response.json();
-        console.log(`[API Client] Analysis successful: ${data.products.length} products detected in ${data.metadata.processingTime}ms`);
+        console.log(`[API Client] Analysis successful`);
         
         return data;
     } catch (error) {

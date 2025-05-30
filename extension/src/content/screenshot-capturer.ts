@@ -20,6 +20,7 @@ interface ScreenshotResponse {
     success: boolean;
     error?: string;
     analysisResult?: any;
+    amazonSearchResults?: any;
 }
 
 const defaultConfig: ScreenshotConfig = {
@@ -62,9 +63,25 @@ export const captureScreenshot = async (config: Partial<ScreenshotConfig> = {}):
                 const { products, metadata } = response.analysisResult;
                 log(fullConfig, `Analysis complete: ${products.length} products detected in ${metadata.processingTime}ms`);
                 
-                // Log individual product confidence scores
+                // Log individual products
                 products.forEach((product: any, index: number) => {
                     log(fullConfig, `Product ${index + 1}: ${product.name}`);
+                });
+            }
+            
+            // Log Amazon search results if available
+            if (response.amazonSearchResults) {
+                const { searchResults, metadata } = response.amazonSearchResults;
+                log(fullConfig, `Amazon search URLs: ${metadata.successfulSearches}/${metadata.totalProducts} generated in ${metadata.processingTime}ms`);
+                
+                // Log individual search URLs for debugging
+                searchResults.forEach((result: any, index: number) => {
+                    if (result.searchUrl) {
+                        log(fullConfig, `Search ${index + 1}: ${result.searchTerms} (confidence: ${result.confidence.toFixed(2)})`);
+                        if (fullConfig.debugMode) {
+                            log(fullConfig, `URL: ${result.searchUrl}`);
+                        }
+                    }
                 });
             }
         } else {
