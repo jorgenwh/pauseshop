@@ -5,6 +5,7 @@
 import { analyzeImage } from './api-client';
 import { constructAmazonSearchBatch } from '../scraper/amazon-search';
 import { executeAmazonSearchBatch } from '../scraper/amazon-http-client';
+import { scrapeAmazonSearchBatch } from '../scraper/amazon-parser';
 import { captureScreenshot } from './screenshot-capturer';
 import { log } from './logger';
 import type { Product } from '../types/amazon';
@@ -72,12 +73,38 @@ export const handleScreenshotAnalysis = async (config: ScreenshotConfig, windowI
                     
                     log(config, `Amazon searches executed: ${amazonExecutionResults.metadata.successfulRequests}/${amazonExecutionResults.metadata.totalRequests} successful`);
                     
-                    return {
-                        success: true,
-                        analysisResult,
-                        amazonSearchResults,
-                        amazonExecutionResults
-                    };
+                    // Step 6: Scrape Amazon search results HTML
+                    try {
+                        log(config, 'Scraping Amazon search results...');
+                        const amazonScrapedResults = scrapeAmazonSearchBatch(amazonExecutionResults, {
+                            maxProductsPerSearch: 5,
+                            requireThumbnail: true,
+                            validateUrls: true,
+                            timeoutMs: 5000
+                        });
+                        
+                        log(config, `Amazon scraping complete: ${amazonScrapedResults.metadata.totalProductsFound} products found from ${amazonScrapedResults.metadata.successfulScrapes}/${amazonScrapedResults.metadata.totalSearches} searches`);
+                        
+                        return {
+                            success: true,
+                            analysisResult,
+                            amazonSearchResults,
+                            amazonExecutionResults,
+                            amazonScrapedResults
+                        };
+                    } catch (scrapingError) {
+                        const scrapingErrorMessage = scrapingError instanceof Error ? scrapingError.message : 'Unknown scraping error';
+                        log(config, `Amazon search scraping failed: ${scrapingErrorMessage}`);
+                        
+                        // Still return execution results even if scraping fails
+                        return {
+                            success: true,
+                            analysisResult,
+                            amazonSearchResults,
+                            amazonExecutionResults,
+                            amazonScrapedResults: null
+                        };
+                    }
                 } catch (executionError) {
                     const executionErrorMessage = executionError instanceof Error ? executionError.message : 'Unknown execution error';
                     log(config, `Amazon search execution failed: ${executionErrorMessage}`);
@@ -87,7 +114,8 @@ export const handleScreenshotAnalysis = async (config: ScreenshotConfig, windowI
                         success: true,
                         analysisResult,
                         amazonSearchResults,
-                        amazonExecutionResults: null
+                        amazonExecutionResults: null,
+                        amazonScrapedResults: null
                     };
                 }
             } catch (searchError) {
@@ -99,7 +127,8 @@ export const handleScreenshotAnalysis = async (config: ScreenshotConfig, windowI
                     success: true,
                     analysisResult,
                     amazonSearchResults: null,
-                    amazonExecutionResults: null
+                    amazonExecutionResults: null,
+                    amazonScrapedResults: null
                 };
             }
         } catch (serverError) {

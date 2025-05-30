@@ -15,16 +15,10 @@
 ### Phase 3: Amazon Integration
 1) Functionality to construct a search string used to search Amazon.com for products based on the JSON response from server - [x]
 2) Perform Amazon.com search using constructed search string - [x]
-3) Scrape the search result for the top 5 (or less if less than 5 products are returned) product results. Get their product pages and thumbnail images. Keep them ordered - [ ]
+3) Scrape the search result for the top 5 (or less if less than 5 products are returned) product results. Get their product pages and thumbnail images. Keep them ordered - [x]
 
 ### Phase 4: UI Development
-1) Create overlay injection system - [ ]
+1) Create placeholder product overlay - [ ]
 2) Implement product display components - [ ]
 3) Add user interaction handling - [ ]
 4) Implement expand/collapse functionality - [ ]
-
-### Phase 5: Polish & Testing
-1) Comprehensive testing suite - [ ]
-2) Performance optimization - [ ]
-3) Error handling refinement - [ ]
-4) Documentation completion - [ ]

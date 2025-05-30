@@ -2,7 +2,7 @@
  * Types and interfaces for the PauseShop background service worker
  */
 
-import { AmazonSearchBatch, AmazonSearchExecutionBatch } from '../types/amazon';
+import { AmazonSearchBatch, AmazonSearchExecutionBatch, AmazonScrapedBatch } from '../types/amazon';
 
 export interface ScreenshotConfig {
     targetWidth: number;
@@ -23,4 +23,5 @@ export interface ScreenshotResponse {
     analysisResult?: any;
     amazonSearchResults?: AmazonSearchBatch | null;
     amazonExecutionResults?: AmazonSearchExecutionBatch | null;
+    amazonScrapedResults?: AmazonScrapedBatch | null;
 }

@@ -143,3 +143,76 @@ export interface AmazonSearchExecutionBatch {
         averageResponseTime: number;
     };
 }
+
+/**
+ * Configuration for Amazon HTML parsing
+ */
+export interface AmazonParserConfig {
+    /** Maximum number of products to extract per search result */
+    maxProductsPerSearch: number;
+    /** Whether to require a thumbnail image for each product */
+    requireThumbnail: boolean;
+    /** Whether to validate extracted URLs */
+    validateUrls: boolean;
+    /** Timeout for parsing operations in milliseconds */
+    timeoutMs: number;
+}
+
+/**
+ * Individual scraped product from Amazon search results
+ */
+export interface AmazonScrapedProduct {
+    /** Unique identifier for tracking this product */
+    productId: string;
+    /** Amazon product identifier (ASIN) if available */
+    amazonAsin?: string;
+    /** Product thumbnail image URL */
+    thumbnailUrl: string;
+    /** Full Amazon product page URL */
+    productUrl: string;
+    /** Position in search results (1-5) */
+    position: number;
+    /** Confidence score in scraped data quality (0-1) */
+    confidence: number;
+}
+
+/**
+ * Result of scraping a single Amazon search execution
+ */
+export interface AmazonScrapedResult {
+    /** Original product ID from OpenAI analysis */
+    productId: string;
+    /** Amazon search URL that was scraped */
+    searchUrl: string;
+    /** Whether the scraping was successful */
+    success: boolean;
+    /** Array of scraped products (up to 5) */
+    products: AmazonScrapedProduct[];
+    /** Error message if scraping failed */
+    error?: string;
+    /** Time taken to scrape in milliseconds */
+    scrapingTime: number;
+    /** Original search result data for reference */
+    originalSearchResult: AmazonSearchResult;
+    /** Original execution result data for reference */
+    originalExecutionResult: AmazonSearchExecutionResult;
+}
+
+/**
+ * Batch scraping results for multiple Amazon searches
+ */
+export interface AmazonScrapedBatch {
+    /** Array of scraping results for all searches */
+    scrapedResults: AmazonScrapedResult[];
+    /** Configuration used for this batch */
+    config: AmazonParserConfig;
+    /** Processing metadata */
+    metadata: {
+        totalSearches: number;
+        successfulScrapes: number;
+        failedScrapes: number;
+        totalProductsFound: number;
+        averageProductsPerSearch: number;
+        totalScrapingTime: number;
+    };
+}
