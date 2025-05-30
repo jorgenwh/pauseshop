@@ -13,8 +13,8 @@
 5) Add basic error handling - [x]
 
 ### Phase 3: Amazon Integration
-1) Functionality to construct a search string used to search Amazon.com for products based on the JSON response from server - [ ]
-2) Perform Amazon.com search using constructed search string - [ ]
+1) Functionality to construct a search string used to search Amazon.com for products based on the JSON response from server - [x]
+2) Perform Amazon.com search using constructed search string - [x]
 3) Scrape the search result for the top 5 (or less if less than 5 products are returned) product results. Get their product pages and thumbnail images. Keep them ordered - [ ]
 
 ### Phase 4: UI Development

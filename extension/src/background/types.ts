@@ -2,6 +2,8 @@
  * Types and interfaces for the PauseShop background service worker
  */
 
+import { AmazonSearchBatch, AmazonSearchExecutionBatch } from '../types/amazon';
+
 export interface ScreenshotConfig {
     targetWidth: number;
     enableLogging: boolean;
@@ -19,5 +21,6 @@ export interface ScreenshotResponse {
     success: boolean;
     error?: string;
     analysisResult?: any;
-    amazonSearchResults?: any;
+    amazonSearchResults?: AmazonSearchBatch | null;
+    amazonExecutionResults?: AmazonSearchExecutionBatch | null;
 }

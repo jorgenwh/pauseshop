@@ -4,6 +4,7 @@
 
 import { analyzeImage } from './api-client';
 import { constructAmazonSearchBatch } from '../scraper/amazon-search';
+import { executeAmazonSearchBatch } from '../scraper/amazon-http-client';
 import { captureScreenshot } from './screenshot-capturer';
 import { log } from './logger';
 import type { Product } from '../types/amazon';
@@ -58,11 +59,37 @@ export const handleScreenshotAnalysis = async (config: ScreenshotConfig, windowI
                 
                 log(config, `Amazon search URLs constructed: ${amazonSearchResults.metadata.successfulSearches}/${amazonSearchResults.metadata.totalProducts} successful`);
                 
-                return {
-                    success: true,
-                    analysisResult,
-                    amazonSearchResults
-                };
+                // Step 5: Execute Amazon search requests to fetch HTML content
+                try {
+                    log(config, 'Executing Amazon search requests...');
+                    const amazonExecutionResults = await executeAmazonSearchBatch(amazonSearchResults, {
+                        maxConcurrentRequests: 3,
+                        requestDelayMs: 1500,
+                        timeoutMs: 10000,
+                        maxRetries: 2,
+                        userAgentRotation: true
+                    });
+                    
+                    log(config, `Amazon searches executed: ${amazonExecutionResults.metadata.successfulRequests}/${amazonExecutionResults.metadata.totalRequests} successful`);
+                    
+                    return {
+                        success: true,
+                        analysisResult,
+                        amazonSearchResults,
+                        amazonExecutionResults
+                    };
+                } catch (executionError) {
+                    const executionErrorMessage = executionError instanceof Error ? executionError.message : 'Unknown execution error';
+                    log(config, `Amazon search execution failed: ${executionErrorMessage}`);
+                    
+                    // Still return search URLs even if execution fails
+                    return {
+                        success: true,
+                        analysisResult,
+                        amazonSearchResults,
+                        amazonExecutionResults: null
+                    };
+                }
             } catch (searchError) {
                 const searchErrorMessage = searchError instanceof Error ? searchError.message : 'Unknown search error';
                 log(config, `Amazon search URL construction failed: ${searchErrorMessage}`);
@@ -71,7 +98,8 @@ export const handleScreenshotAnalysis = async (config: ScreenshotConfig, windowI
                 return {
                     success: true,
                     analysisResult,
-                    amazonSearchResults: null
+                    amazonSearchResults: null,
+                    amazonExecutionResults: null
                 };
             }
         } catch (serverError) {

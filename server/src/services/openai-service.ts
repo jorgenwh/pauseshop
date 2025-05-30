@@ -36,7 +36,7 @@ export class OpenAIService {
         }
 
         try {
-            const promptPath = resolve(__dirname, '../prompts/test_prompt.txt');
+            const promptPath = resolve(__dirname, '../prompts/product-analysis.txt');
             const promptContent = await fs.readFile(promptPath, 'utf-8');
             OpenAIService.promptCache = promptContent.trim();
             return OpenAIService.promptCache;

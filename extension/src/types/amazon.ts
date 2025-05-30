@@ -85,3 +85,61 @@ export interface SearchTermValidationResult {
     processedTerms: string;
     warnings: string[];
 }
+
+/**
+ * Configuration for Amazon HTTP requests
+ */
+export interface AmazonHttpConfig {
+    /** Maximum number of concurrent requests */
+    maxConcurrentRequests: number;
+    /** Delay between requests in milliseconds */
+    requestDelayMs: number;
+    /** Request timeout in milliseconds */
+    timeoutMs: number;
+    /** Maximum number of retry attempts */
+    maxRetries: number;
+    /** Whether to rotate user agents */
+    userAgentRotation: boolean;
+}
+
+/**
+ * Result of executing a single Amazon search request
+ */
+export interface AmazonSearchExecutionResult {
+    /** Unique identifier for tracking this search result */
+    productId: string;
+    /** Amazon search URL that was requested */
+    searchUrl: string;
+    /** Whether the request was successful */
+    success: boolean;
+    /** Raw HTML content from Amazon (if successful) */
+    htmlContent?: string;
+    /** Error message (if failed) */
+    error?: string;
+    /** HTTP status code */
+    statusCode?: number;
+    /** Response time in milliseconds */
+    responseTime: number;
+    /** Number of retry attempts made */
+    retryCount: number;
+    /** Original search result data */
+    originalSearchResult: AmazonSearchResult;
+}
+
+/**
+ * Batch execution results for multiple Amazon searches
+ */
+export interface AmazonSearchExecutionBatch {
+    /** Array of execution results for all searches */
+    executionResults: AmazonSearchExecutionResult[];
+    /** Configuration used for this batch */
+    config: AmazonHttpConfig;
+    /** Processing metadata */
+    metadata: {
+        totalRequests: number;
+        successfulRequests: number;
+        failedRequests: number;
+        totalExecutionTime: number;
+        averageResponseTime: number;
+    };
+}
