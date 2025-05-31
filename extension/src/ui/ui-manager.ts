@@ -4,20 +4,24 @@
  */
 
 import { LoadingSquare } from './components/loading-square';
-import { LoadingState, UIConfig, LoadingSquareConfig, UIManagerEvents } from './types';
+import { ProductGrid } from './components/product-grid';
+import { LoadingState, UIConfig, LoadingSquareConfig, UIManagerEvents, ProductDisplayData, ProductGridConfig, ProductDisplayState } from './types';
 
 export class UIManager {
     private container: HTMLElement | null = null;
     private loadingSquare: LoadingSquare | null = null;
+    private productGrid: ProductGrid | null = null;
     private config: UIConfig;
     private loadingSquareConfig: LoadingSquareConfig;
+    private productGridConfig: ProductGridConfig;
     private events: UIManagerEvents;
     private isInitialized: boolean = false;
 
     constructor(
         config: Partial<UIConfig> = {},
         loadingSquareConfig: Partial<LoadingSquareConfig> = {},
-        events: UIManagerEvents = {}
+        events: UIManagerEvents = {},
+        productGridConfig: Partial<ProductGridConfig> = {}
     ) {
         this.config = {
             enableLogging: true,
@@ -41,6 +45,20 @@ export class UIManager {
                 pulseDuration: 1500
             },
             ...loadingSquareConfig
+        };
+
+        this.productGridConfig = {
+            squareSize: 126,
+            spacing: 14,
+            startPosition: {
+                top: 120,
+                right: 30
+            },
+            animationDelayMs: 100,
+            maxProducts: 5,
+            backgroundColor: 'linear-gradient(135deg, rgba(99, 102, 241, 0.95), rgba(168, 85, 247, 0.9), rgba(236, 72, 153, 0.85))',
+            borderRadius: 14,
+            ...productGridConfig
         };
 
         this.events = events;
@@ -143,17 +161,98 @@ export class UIManager {
     }
 
     /**
+     * Show product grid (transforms from loading square)
+     */
+    public async showProductGrid(productData: ProductDisplayData[]): Promise<boolean> {
+        if (!this.ensureInitialized()) {
+            return false;
+        }
+
+        try {
+            // Hide loading square first
+            await this.hideLoadingSquare();
+
+            // Create and show product grid
+            this.productGrid = new ProductGrid(this.productGridConfig);
+            const gridElement = await this.productGrid.create(productData);
+            this.container!.appendChild(gridElement);
+
+            // Show with staggered animations
+            await this.productGrid.show();
+            
+            this.log(`Product grid displayed with ${productData.length} products`);
+            this.events.onProductGridShow?.();
+            
+            return true;
+
+        } catch (error) {
+            this.log(`Failed to show product grid: ${error}`);
+            return false;
+        }
+    }
+
+    /**
+     * Hide the product grid
+     */
+    public async hideProductGrid(): Promise<boolean> {
+        if (!this.productGrid || !this.productGrid.isVisible()) {
+            return true;
+        }
+
+        try {
+            await this.productGrid.hide();
+            
+            // Remove from DOM after animation
+            const container = this.productGrid.getContainer();
+            if (container && container.parentNode) {
+                container.parentNode.removeChild(container);
+            }
+            
+            // Cleanup product grid
+            this.productGrid.cleanup();
+            this.productGrid = null;
+            
+            this.log('Product grid hidden');
+            this.events.onProductGridHide?.();
+            
+            return true;
+
+        } catch (error) {
+            this.log(`Failed to hide product grid: ${error}`);
+            return false;
+        }
+    }
+
+    /**
+     * Check if product grid is currently visible
+     */
+    public isProductGridVisible(): boolean {
+        return this.productGrid?.isVisible() ?? false;
+    }
+
+    /**
+     * Get number of products in grid
+     */
+    public getProductCount(): number {
+        return this.productGrid?.getProductCount() ?? 0;
+    }
+
+    /**
      * Hide all UI components
      */
     public async hideUI(): Promise<void> {
-        await this.hideLoadingSquare();
+        await Promise.all([
+            this.hideLoadingSquare(),
+            this.hideProductGrid()
+        ]);
     }
 
     /**
      * Check if UI is currently visible
      */
     public isUIVisible(): boolean {
-        return this.loadingSquare?.isVisible() ?? false;
+        return (this.loadingSquare?.isVisible() ?? false) ||
+               (this.productGrid?.isVisible() ?? false);
     }
 
     /**
@@ -164,10 +263,18 @@ export class UIManager {
     }
 
     /**
+     * Get current product grid state
+     */
+    public getProductGridState(): ProductDisplayState {
+        return this.productGrid?.getCurrentState() ?? ProductDisplayState.HIDDEN;
+    }
+
+    /**
      * Check if any animations are running
      */
     public isAnimating(): boolean {
-        return this.loadingSquare?.isAnimating() ?? false;
+        return (this.loadingSquare?.isAnimating() ?? false) ||
+               (this.productGrid?.isAnimating() ?? false);
     }
 
     /**
@@ -180,6 +287,12 @@ export class UIManager {
         if (this.loadingSquare) {
             this.loadingSquare.cleanup();
             this.loadingSquare = null;
+        }
+
+        // Cleanup product grid
+        if (this.productGrid) {
+            this.productGrid.cleanup();
+            this.productGrid = null;
         }
 
         // Remove container from DOM
@@ -251,10 +364,11 @@ export class UIManager {
     public static create(
         config?: Partial<UIConfig>,
         loadingSquareConfig?: Partial<LoadingSquareConfig>,
-        events?: UIManagerEvents
+        events?: UIManagerEvents,
+        productGridConfig?: Partial<ProductGridConfig>
     ): UIManager | null {
         try {
-            const manager = new UIManager(config, loadingSquareConfig, events);
+            const manager = new UIManager(config, loadingSquareConfig, events, productGridConfig);
             if (manager.initialize()) {
                 return manager;
             }

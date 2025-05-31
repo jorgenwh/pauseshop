@@ -96,6 +96,78 @@ export class AnimationController {
     }
 
     /**
+     * Slide down animation for product squares
+     */
+    public slideDown(config: AnimationConfig): Promise<void> {
+        return new Promise((resolve, reject) => {
+            try {
+                const keyframes = [
+                    { transform: 'translateY(-140px)', opacity: '0' },
+                    { transform: 'translateY(0)', opacity: '1' }
+                ];
+
+                const animationOptions: KeyframeAnimationOptions = {
+                    duration: config.duration,
+                    easing: config.easing,
+                    fill: 'forwards'
+                };
+
+                const slideDownAnimation = this.element.animate(keyframes, animationOptions);
+                this.activeAnimations.push(slideDownAnimation);
+
+                slideDownAnimation.addEventListener('finish', () => {
+                    this.removeFromActiveAnimations(slideDownAnimation);
+                    resolve();
+                });
+
+                slideDownAnimation.addEventListener('cancel', () => {
+                    this.removeFromActiveAnimations(slideDownAnimation);
+                    reject(new Error('Slide-down animation was cancelled'));
+                });
+
+            } catch (error) {
+                reject(error);
+            }
+        });
+    }
+
+    /**
+     * Slide up animation for hiding product squares
+     */
+    public slideUp(config: AnimationConfig): Promise<void> {
+        return new Promise((resolve, reject) => {
+            try {
+                const keyframes = [
+                    { transform: 'translateY(0)', opacity: '1' },
+                    { transform: 'translateY(-140px)', opacity: '0' }
+                ];
+
+                const animationOptions: KeyframeAnimationOptions = {
+                    duration: config.duration,
+                    easing: config.easing,
+                    fill: 'forwards'
+                };
+
+                const slideUpAnimation = this.element.animate(keyframes, animationOptions);
+                this.activeAnimations.push(slideUpAnimation);
+
+                slideUpAnimation.addEventListener('finish', () => {
+                    this.removeFromActiveAnimations(slideUpAnimation);
+                    resolve();
+                });
+
+                slideUpAnimation.addEventListener('cancel', () => {
+                    this.removeFromActiveAnimations(slideUpAnimation);
+                    reject(new Error('Slide-up animation was cancelled'));
+                });
+
+            } catch (error) {
+                reject(error);
+            }
+        });
+    }
+
+    /**
      * Start pulsing opacity animation for loading state
      */
     public startPulseAnimation(config: AnimationConfig): void {

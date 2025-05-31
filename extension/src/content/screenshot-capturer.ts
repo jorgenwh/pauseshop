@@ -4,7 +4,8 @@
  */
 
 import { UIManager } from '../ui/ui-manager';
-import { LoadingState } from '../ui/types';
+import { LoadingState, ProductDisplayData } from '../ui/types';
+import { AmazonScrapedBatch } from '../types/amazon';
 
 interface ScreenshotConfig {
     targetWidth: number;
@@ -24,6 +25,8 @@ interface ScreenshotResponse {
     error?: string;
     analysisResult?: any;
     amazonSearchResults?: any;
+    amazonExecutionResults?: any;
+    amazonScrapedResults?: AmazonScrapedBatch;
 }
 
 const defaultConfig: ScreenshotConfig = {
@@ -41,6 +44,38 @@ const log = (config: ScreenshotConfig, message: string): void => {
     if (config.enableLogging) {
         console.log(`${config.logPrefix}: ${message}`);
     }
+};
+
+/**
+ * Extract product display data from Amazon scraping results
+ */
+const extractProductDisplayData = (amazonResults: AmazonScrapedBatch): ProductDisplayData[] => {
+    const displayData: ProductDisplayData[] = [];
+    
+    amazonResults.scrapedResults.forEach(result => {
+        // Only include results that have at least one product with a thumbnail
+        if (result.success && result.products.length > 0) {
+            const firstProduct = result.products[0];
+            if (firstProduct && firstProduct.thumbnailUrl) {
+                displayData.push({
+                    thumbnailUrl: firstProduct.thumbnailUrl,
+                    productData: firstProduct,
+                    category: result.originalSearchResult.category,
+                    fallbackText: result.originalSearchResult.originalProduct.name
+                });
+            } else {
+                // Include without thumbnail for fallback display
+                displayData.push({
+                    thumbnailUrl: null,
+                    productData: null,
+                    category: result.originalSearchResult.category,
+                    fallbackText: result.originalSearchResult.originalProduct.name
+                });
+            }
+        }
+    });
+    
+    return displayData;
 };
 
 /**
@@ -103,24 +138,41 @@ export const captureScreenshot = async (config: Partial<ScreenshotConfig> = {}):
                 });
             }
             
-            // Log Amazon search results if available
-            if (response.amazonSearchResults) {
-                const { searchResults, metadata } = response.amazonSearchResults;
-                log(fullConfig, `Amazon search URLs: ${metadata.successfulSearches}/${metadata.totalProducts} generated in ${metadata.processingTime}ms`);
+            // Check if we have Amazon scraping results to show product grid
+            if (response.amazonScrapedResults && ui) {
+                const amazonResults = response.amazonScrapedResults;
+                const productDisplayData = extractProductDisplayData(amazonResults);
                 
-                // Log individual search URLs for debugging
-                searchResults.forEach((result: any, index: number) => {
-                    if (result.searchUrl) {
-                        log(fullConfig, `Search ${index + 1}: ${result.searchTerms} (confidence: ${result.confidence.toFixed(2)})`);
-                        if (fullConfig.debugMode) {
-                            log(fullConfig, `URL: ${result.searchUrl}`);
+                if (productDisplayData.length > 0) {
+                    log(fullConfig, `Showing product grid with ${productDisplayData.length} products`);
+                    await ui.showProductGrid(productDisplayData);
+                } else {
+                    log(fullConfig, 'No valid product thumbnails found, keeping loading square visible');
+                }
+            } else {
+                // Log Amazon results if available
+                if (response.amazonSearchResults) {
+                    const { searchResults, metadata } = response.amazonSearchResults;
+                    log(fullConfig, `Amazon search URLs: ${metadata.successfulSearches}/${metadata.totalProducts} generated in ${metadata.processingTime}ms`);
+                }
+                
+                if (response.amazonScrapedResults) {
+                    const { scrapedResults, metadata } = response.amazonScrapedResults;
+                    log(fullConfig, `Amazon scraping: ${metadata.successfulScrapes}/${metadata.totalSearches} successful, ${metadata.totalProductsFound} products found in ${metadata.totalScrapingTime}ms`);
+                    
+                    // Log individual scraping results for debugging
+                    scrapedResults.forEach((result, index) => {
+                        if (result.success) {
+                            log(fullConfig, `Scrape ${index + 1}: ${result.products.length} products found for ${result.originalSearchResult.searchTerms}`);
+                            if (fullConfig.debugMode) {
+                                log(fullConfig, `URL: ${result.searchUrl}`);
+                            }
                         }
-                    }
-                });
+                    });
+                }
+                
+                log(fullConfig, 'Processing complete - loading square will remain visible until video resumes');
             }
-
-            // Keep UI visible for now - will be hidden when video resumes
-            log(fullConfig, 'Processing complete - loading square will remain visible until video resumes');
             
         } else {
             log(fullConfig, `Screenshot capture failed: ${response.error || 'Unknown error'}`);
