@@ -161,13 +161,13 @@ export class LoadingSquare {
         const styles = {
             width: `${this.config.size}px`,
             height: `${this.config.size}px`,
-            backgroundColor: this.config.backgroundColor,
+            background: this.config.backgroundColor,
             borderRadius: `${this.config.borderRadius}px`,
             position: 'fixed' as const,
             top: `${this.config.position.top}px`,
             right: `${this.config.position.right}px`,
             zIndex: '999999',
-            transform: 'translateX(160px)', // Start off-screen
+            transform: 'translateX(240px)', // Start off-screen
             opacity: '0',
             pointerEvents: 'none' as const,
             userSelect: 'none' as const,

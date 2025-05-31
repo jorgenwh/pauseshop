@@ -27,7 +27,7 @@ export class AnimationController {
                 }
 
                 const keyframes = [
-                    { transform: 'translateX(160px)', opacity: '0' },
+                    { transform: 'translateX(240px)', opacity: '0' },
                     { transform: 'translateX(0)', opacity: '1' }
                 ];
 
@@ -67,7 +67,7 @@ export class AnimationController {
 
                 const keyframes = [
                     { transform: 'translateX(0)', opacity: '1' },
-                    { transform: 'translateX(160px)', opacity: '0' }
+                    { transform: 'translateX(240px)', opacity: '0' }
                 ];
 
                 const animationOptions: KeyframeAnimationOptions = {

@@ -28,12 +28,12 @@ export class UIManager {
         };
 
         this.loadingSquareConfig = {
-            size: 120,
-            borderRadius: 12,
-            backgroundColor: 'rgba(0, 0, 0, 0.7)',
+            size: 180,
+            borderRadius: 20,
+            backgroundColor: 'linear-gradient(135deg, rgba(99, 102, 241, 0.95), rgba(168, 85, 247, 0.9), rgba(236, 72, 153, 0.85))',
             position: {
-                top: 20,
-                right: 20
+                top: 120,
+                right: 30
             },
             animations: {
                 slideInDuration: 300,
