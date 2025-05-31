@@ -1,5 +1,5 @@
 import { initializeVideoDetector } from './video-detector';
-import { initializeScreenshotCapturer } from './screenshot-capturer';
+import { initializeScreenshotCapturer, cleanupUI } from './screenshot-capturer';
 
 console.log('PauseShop content script loaded');
 
@@ -12,9 +12,18 @@ const cleanupVideoDetector = initializeVideoDetector();
 // Cleanup when page unloads
 window.addEventListener('beforeunload', () => {
     cleanupVideoDetector();
+    cleanupUI();
 });
 
 // Also cleanup when the content script is about to be destroyed
 window.addEventListener('pagehide', () => {
     cleanupVideoDetector();
+    cleanupUI();
+});
+
+// Cleanup on visibility change (when tab becomes hidden)
+document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+        cleanupUI();
+    }
 });

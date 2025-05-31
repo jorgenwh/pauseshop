@@ -1,5 +1,5 @@
 import { VideoDetectorConfig, SeekingState, SeekingDetectionConfig } from '../types/video';
-import { captureScreenshot } from './screenshot-capturer';
+import { captureScreenshot, hideUI } from './screenshot-capturer';
 
 interface VideoDetectorState {
     video: HTMLVideoElement | null;
@@ -64,6 +64,10 @@ const handlePause = (config: VideoDetectorConfig, seekingState: SeekingState) =>
 
 const handlePlay = (config: VideoDetectorConfig) => (event: Event): void => {
     log(config, 'Video resumed');
+    // Hide UI when video resumes
+    hideUI().catch(error => {
+        log(config, `Failed to hide UI: ${error}`);
+    });
 };
 
 const handleSeeking = (config: VideoDetectorConfig, seekingState: SeekingState) => (event: Event): void => {

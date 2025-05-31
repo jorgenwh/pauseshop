@@ -3,6 +3,9 @@
  * Uses Chrome's captureVisibleTab API through background service worker
  */
 
+import { UIManager } from '../ui/ui-manager';
+import { LoadingState } from '../ui/types';
+
 interface ScreenshotConfig {
     targetWidth: number;
     enableLogging: boolean;
@@ -31,10 +34,30 @@ const defaultConfig: ScreenshotConfig = {
     serverUrl: 'http://localhost:3000'
 };
 
+// Global UI manager instance
+let uiManager: UIManager | null = null;
+
 const log = (config: ScreenshotConfig, message: string): void => {
     if (config.enableLogging) {
         console.log(`${config.logPrefix}: ${message}`);
     }
+};
+
+/**
+ * Initialize UI manager if not already created
+ */
+const ensureUIManager = (): UIManager | null => {
+    if (!uiManager) {
+        uiManager = UIManager.create({
+            enableLogging: true,
+            logPrefix: 'PauseShop UI'
+        }, {}, {
+            onShow: () => log(defaultConfig, 'Loading square displayed'),
+            onHide: () => log(defaultConfig, 'Loading square hidden'),
+            onStateChange: (state: LoadingState) => log(defaultConfig, `UI state changed to: ${state}`)
+        });
+    }
+    return uiManager;
 };
 
 /**
@@ -44,8 +67,19 @@ const log = (config: ScreenshotConfig, message: string): void => {
 export const captureScreenshot = async (config: Partial<ScreenshotConfig> = {}): Promise<void> => {
     const fullConfig: ScreenshotConfig = { ...defaultConfig, ...config };
     
+    // Initialize and show UI immediately
+    const ui = ensureUIManager();
+    if (ui) {
+        await ui.showLoadingSquare();
+    }
+    
     try {
         log(fullConfig, 'Requesting screenshot capture from background service worker...');
+
+        // Update UI state to processing
+        if (ui) {
+            ui.updateLoadingState(LoadingState.PROCESSING);
+        }
 
         const message: ScreenshotMessage = {
             action: 'captureScreenshot',
@@ -84,8 +118,17 @@ export const captureScreenshot = async (config: Partial<ScreenshotConfig> = {}):
                     }
                 });
             }
+
+            // Keep UI visible for now - will be hidden when video resumes
+            log(fullConfig, 'Processing complete - loading square will remain visible until video resumes');
+            
         } else {
             log(fullConfig, `Screenshot capture failed: ${response.error || 'Unknown error'}`);
+            
+            // Hide UI on error
+            if (ui) {
+                await ui.hideLoadingSquare();
+            }
         }
     } catch (error) {
         if (error instanceof Error) {
@@ -93,6 +136,30 @@ export const captureScreenshot = async (config: Partial<ScreenshotConfig> = {}):
         } else {
             log(fullConfig, 'Unknown error during screenshot capture');
         }
+        
+        // Hide UI on error
+        if (ui) {
+            await ui.hideLoadingSquare();
+        }
+    }
+};
+
+/**
+ * Hide the UI (called when video resumes)
+ */
+export const hideUI = async (): Promise<void> => {
+    if (uiManager) {
+        await uiManager.hideUI();
+    }
+};
+
+/**
+ * Cleanup UI resources
+ */
+export const cleanupUI = (): void => {
+    if (uiManager) {
+        uiManager.cleanup();
+        uiManager = null;
     }
 };
 
