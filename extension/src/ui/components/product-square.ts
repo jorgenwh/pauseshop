@@ -1,10 +1,12 @@
 /**
  * Product square component for PauseShop extension
  * Displays individual product thumbnails in a square format
+ * Enhanced for Task 4.4: Horizontal expansion functionality
  */
 
 import { AnimationController } from './animation-controller';
-import { ProductDisplayState, ProductSquareConfig } from '../types';
+import { ProductExpansion } from './product-expansion';
+import { ProductDisplayState, ProductSquareConfig, ProductExpansionConfig } from '../types';
 
 export class ProductSquare {
     private element: HTMLElement | null = null;
@@ -12,6 +14,10 @@ export class ProductSquare {
     private animationController: AnimationController | null = null;
     private currentState: ProductDisplayState = ProductDisplayState.HIDDEN;
     private config: ProductSquareConfig;
+    
+    // Task 4.4: Expansion functionality
+    private expansion: ProductExpansion | null = null;
+    private isExpanded: boolean = false;
 
     constructor(config: ProductSquareConfig) {
         this.config = config;
@@ -19,6 +25,7 @@ export class ProductSquare {
 
     /**
      * Create the product square element
+     * Enhanced for Task 4.4: Add click handling for expansion
      */
     public create(): HTMLElement {
         if (this.element) {
@@ -46,6 +53,11 @@ export class ProductSquare {
         
         // Initialize animation controller
         this.animationController = new AnimationController(this.element);
+        
+        // Task 4.4: Add click handling if multiple products available
+        if (this.config.allProducts.length > 1) {
+            this.bindClickHandler();
+        }
 
         return this.element;
     }
@@ -167,6 +179,118 @@ export class ProductSquare {
      */
     public getCategory() {
         return this.config.category;
+    }
+
+    /**
+     * Check if the square is currently expanded (Task 4.4)
+     */
+    public getIsExpanded(): boolean {
+        return this.isExpanded;
+    }
+
+    /**
+     * Bind click handler for expansion functionality (Task 4.4)
+     */
+    private bindClickHandler(): void {
+        if (!this.element) return;
+
+        this.element.addEventListener('click', this.handleClick.bind(this));
+        
+        // Add hover effect for interactive squares
+        this.element.addEventListener('mouseenter', () => {
+            if (this.element && !this.isExpanded) {
+                this.element.style.transform += ' scale(1.02)';
+                this.element.style.transition = 'transform 0.1s ease';
+            }
+        });
+
+        this.element.addEventListener('mouseleave', () => {
+            if (this.element && !this.isExpanded) {
+                this.element.style.transform = this.element.style.transform.replace(' scale(1.02)', '');
+            }
+        });
+    }
+
+    /**
+     * Handle click event for expansion toggle (Task 4.4)
+     */
+    private async handleClick(event: Event): Promise<void> {
+        event.preventDefault();
+        event.stopPropagation();
+        
+        if (this.isExpanded) {
+            await this.collapseExpansion();
+        } else {
+            await this.expandHorizontally();
+        }
+    }
+
+    /**
+     * Expand horizontally showing all products (Task 4.4)
+     */
+    private async expandHorizontally(): Promise<void> {
+        if (this.config.allProducts.length <= 1) {
+            return; // No additional products to show
+        }
+
+        try {
+            // Notify parent grid to collapse other expansions
+            if (this.config.onExpansionRequest) {
+                await this.config.onExpansionRequest();
+            }
+
+            // Create expansion component
+            const expansionConfig: ProductExpansionConfig = {
+                parentSquare: this.element!,
+                products: this.config.allProducts, // All products including first one
+                category: this.config.category,
+                startPosition: this.config.position,
+                expansionDirection: 'left',
+                squareSize: 85, // Smaller than main square (126px)
+                spacing: 12,
+                animations: {
+                    slideLeftDuration: 200,
+                    fadeInDuration: 300
+                }
+            };
+
+            this.expansion = new ProductExpansion(expansionConfig);
+            const expansionElement = await this.expansion.create();
+            
+            // Add to document body (same level as UI container)
+            document.body.appendChild(expansionElement);
+            
+            await this.expansion.show();
+            this.isExpanded = true;
+
+        } catch (error) {
+            console.warn('PauseShop: Failed to expand product square:', error);
+        }
+    }
+
+    /**
+     * Collapse the horizontal expansion (Task 4.4)
+     */
+    public async collapseExpansion(): Promise<void> {
+        if (!this.expansion || !this.isExpanded) {
+            return;
+        }
+
+        try {
+            await this.expansion.hide();
+            this.expansion.cleanup();
+            this.expansion = null;
+            this.isExpanded = false;
+
+        } catch (error) {
+            console.warn('PauseShop: Failed to collapse expansion:', error);
+            // Force cleanup on error
+            if (this.expansion) {
+                this.expansion.cleanup();
+                this.expansion = null;
+            }
+            this.isExpanded = false;
+        }
     }
 
     /**
@@ -312,8 +436,16 @@ export class ProductSquare {
 
     /**
      * Cleanup resources
+     * Enhanced for Task 4.4: Clean up expansion components
      */
     public cleanup(): void {
+        // Task 4.4: Cleanup expansion if it exists
+        if (this.expansion) {
+            this.expansion.cleanup();
+            this.expansion = null;
+        }
+        this.isExpanded = false;
+
         if (this.animationController) {
             this.animationController.cleanup();
             this.animationController = null;

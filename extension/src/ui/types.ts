@@ -56,7 +56,7 @@ export interface UIManagerEvents {
 
 export interface ProductDisplayData {
     thumbnailUrl: string | null;
-    productData: AmazonScrapedProduct | null;
+    allProducts: AmazonScrapedProduct[]; // Enhanced: All 1-5 products for category
     category: ProductCategory;
     fallbackText?: string;
 }
@@ -70,12 +70,14 @@ export interface ProductSquareConfig {
         right: number;
     };
     thumbnailUrl: string | null;
-    productData: AmazonScrapedProduct | null;
+    productData: AmazonScrapedProduct | null; // First product for thumbnail
+    allProducts: AmazonScrapedProduct[]; // All products for expansion
     category: ProductCategory;
     animations: {
         slideDownDuration: number;
         thumbnailFadeDuration: number;
     };
+    onExpansionRequest?: () => Promise<void>; // Callback for grid coordination
 }
 
 export interface ProductGridConfig {
@@ -89,4 +91,39 @@ export interface ProductGridConfig {
     maxProducts: number;
     backgroundColor: string;
     borderRadius: number;
+}
+
+// New expansion-related types for Task 4.4
+export enum ExpansionState {
+    HIDDEN = 'hidden',
+    EXPANDING = 'expanding',
+    EXPANDED = 'expanded',
+    COLLAPSING = 'collapsing'
+}
+
+export interface ProductExpansionConfig {
+    parentSquare: HTMLElement;
+    products: AmazonScrapedProduct[];
+    category: ProductCategory;
+    startPosition: { top: number; right: number };
+    expansionDirection: 'left';
+    squareSize: number;
+    spacing: number;
+    animations: {
+        slideLeftDuration: number;
+        fadeInDuration: number;
+    };
+}
+
+export interface ExpansionSquareConfig {
+    product: AmazonScrapedProduct;
+    position: { top: number; right: number };
+    size: number;
+    borderRadius: number;
+    backgroundColor: string;
+    index: number;
+    animations: {
+        slideLeftDuration: number;
+        thumbnailFadeDuration: number;
+    };
 }

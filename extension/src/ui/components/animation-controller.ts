@@ -168,6 +168,78 @@ export class AnimationController {
     }
 
     /**
+     * Slide left animation for expansion squares (Task 4.4)
+     */
+    public slideLeft(config: AnimationConfig & { distance: number }): Promise<void> {
+        return new Promise((resolve, reject) => {
+            try {
+                const keyframes = [
+                    { transform: 'translateX(0) scale(0.8)', opacity: '0' },
+                    { transform: `translateX(-${config.distance}px) scale(1)`, opacity: '1' }
+                ];
+
+                const animationOptions: KeyframeAnimationOptions = {
+                    duration: config.duration,
+                    easing: config.easing,
+                    fill: 'forwards'
+                };
+
+                const slideLeftAnimation = this.element.animate(keyframes, animationOptions);
+                this.activeAnimations.push(slideLeftAnimation);
+
+                slideLeftAnimation.addEventListener('finish', () => {
+                    this.removeFromActiveAnimations(slideLeftAnimation);
+                    resolve();
+                });
+
+                slideLeftAnimation.addEventListener('cancel', () => {
+                    this.removeFromActiveAnimations(slideLeftAnimation);
+                    reject(new Error('Slide-left animation was cancelled'));
+                });
+
+            } catch (error) {
+                reject(error);
+            }
+        });
+    }
+
+    /**
+     * Slide right animation for collapsing expansion squares (Task 4.4)
+     */
+    public slideRight(config: AnimationConfig & { distance: number }): Promise<void> {
+        return new Promise((resolve, reject) => {
+            try {
+                const keyframes = [
+                    { transform: `translateX(-${config.distance}px) scale(1)`, opacity: '1' },
+                    { transform: 'translateX(0) scale(0.8)', opacity: '0' }
+                ];
+
+                const animationOptions: KeyframeAnimationOptions = {
+                    duration: config.duration,
+                    easing: config.easing,
+                    fill: 'forwards'
+                };
+
+                const slideRightAnimation = this.element.animate(keyframes, animationOptions);
+                this.activeAnimations.push(slideRightAnimation);
+
+                slideRightAnimation.addEventListener('finish', () => {
+                    this.removeFromActiveAnimations(slideRightAnimation);
+                    resolve();
+                });
+
+                slideRightAnimation.addEventListener('cancel', () => {
+                    this.removeFromActiveAnimations(slideRightAnimation);
+                    reject(new Error('Slide-right animation was cancelled'));
+                });
+
+            } catch (error) {
+                reject(error);
+            }
+        });
+    }
+
+    /**
      * Start pulsing opacity animation for loading state
      */
     public startPulseAnimation(config: AnimationConfig): void {

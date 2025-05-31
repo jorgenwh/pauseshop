@@ -11,6 +11,7 @@ export class ProductGrid {
     private productSquares: ProductSquare[] = [];
     private config: ProductGridConfig;
     private currentState: ProductDisplayState = ProductDisplayState.HIDDEN;
+    private expandedSquareIndex: number | null = null; // Track expanded square for Task 4.4
 
     constructor(config: ProductGridConfig) {
         this.config = config;
@@ -93,6 +94,9 @@ export class ProductGrid {
         }
 
         try {
+            // Collapse all expansions before hiding (Task 4.4)
+            await this.collapseAllExpansions();
+
             // Hide all squares simultaneously
             const hidePromises = this.productSquares.map(square => square.hide());
             await Promise.all(hidePromises);
@@ -169,6 +173,7 @@ export class ProductGrid {
 
     /**
      * Create product squares for each product data item
+     * Enhanced for Task 4.4: Pass all products and expansion coordination
      */
     private createProductSquares(productData: ProductDisplayData[]): void {
         productData.forEach((data, index) => {
@@ -178,12 +183,14 @@ export class ProductGrid {
                 backgroundColor: this.config.backgroundColor,
                 position: this.calculateSquarePosition(index),
                 thumbnailUrl: data.thumbnailUrl,
-                productData: data.productData,
+                productData: data.allProducts.length > 0 ? data.allProducts[0] : null, // First product for thumbnail
+                allProducts: data.allProducts, // All products for expansion
                 category: data.category,
                 animations: {
                     slideDownDuration: 200,
                     thumbnailFadeDuration: 300
-                }
+                },
+                onExpansionRequest: () => this.handleExpansionRequest(index) // Expansion coordination
             };
 
             const square = new ProductSquare(squareConfig);
@@ -232,6 +239,34 @@ export class ProductGrid {
     }
 
     /**
+     * Handle expansion request from a product square (Task 4.4)
+     */
+    private async handleExpansionRequest(requestingIndex: number): Promise<void> {
+        // Collapse any currently expanded square
+        if (this.expandedSquareIndex !== null && this.expandedSquareIndex !== requestingIndex) {
+            const currentlyExpanded = this.productSquares[this.expandedSquareIndex];
+            if (currentlyExpanded && (currentlyExpanded as any).collapseExpansion) {
+                await (currentlyExpanded as any).collapseExpansion();
+            }
+        }
+        
+        this.expandedSquareIndex = requestingIndex;
+    }
+
+    /**
+     * Collapse all expansions (Task 4.4)
+     */
+    public async collapseAllExpansions(): Promise<void> {
+        if (this.expandedSquareIndex !== null) {
+            const square = this.productSquares[this.expandedSquareIndex];
+            if (square && (square as any).collapseExpansion) {
+                await (square as any).collapseExpansion();
+            }
+            this.expandedSquareIndex = null;
+        }
+    }
+
+    /**
      * Cleanup resources
      */
     public cleanup(): void {
@@ -248,5 +283,6 @@ export class ProductGrid {
         this.container = null;
 
         this.currentState = ProductDisplayState.HIDDEN;
+        this.expandedSquareIndex = null; // Reset expansion tracking
     }
 }

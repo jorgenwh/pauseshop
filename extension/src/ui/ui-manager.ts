@@ -241,6 +241,11 @@ export class UIManager {
      * Hide all UI components
      */
     public async hideUI(): Promise<void> {
+        // Ensure all expansions are collapsed before hiding (Task 4.4)
+        if (this.productGrid) {
+            await this.productGrid.collapseAllExpansions();
+        }
+        
         await Promise.all([
             this.hideLoadingSquare(),
             this.hideProductGrid()

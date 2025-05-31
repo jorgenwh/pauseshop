@@ -48,30 +48,30 @@ const log = (config: ScreenshotConfig, message: string): void => {
 
 /**
  * Extract product display data from Amazon scraping results
+ * Enhanced for Task 4.4: Include all products for horizontal expansion
  */
 const extractProductDisplayData = (amazonResults: AmazonScrapedBatch): ProductDisplayData[] => {
     const displayData: ProductDisplayData[] = [];
     
     amazonResults.scrapedResults.forEach(result => {
-        // Only include results that have at least one product with a thumbnail
         if (result.success && result.products.length > 0) {
             const firstProduct = result.products[0];
-            if (firstProduct && firstProduct.thumbnailUrl) {
-                displayData.push({
-                    thumbnailUrl: firstProduct.thumbnailUrl,
-                    productData: firstProduct,
-                    category: result.originalSearchResult.category,
-                    fallbackText: result.originalSearchResult.originalProduct.name
-                });
-            } else {
-                // Include without thumbnail for fallback display
-                displayData.push({
-                    thumbnailUrl: null,
-                    productData: null,
-                    category: result.originalSearchResult.category,
-                    fallbackText: result.originalSearchResult.originalProduct.name
-                });
-            }
+            
+            // Include all products for expansion functionality
+            displayData.push({
+                thumbnailUrl: firstProduct?.thumbnailUrl || null,
+                allProducts: result.products, // NEW: All products for expansion
+                category: result.originalSearchResult.category,
+                fallbackText: result.originalSearchResult.originalProduct.name
+            });
+        } else if (result.success && result.products.length === 0) {
+            // Handle case where search succeeded but no products found
+            displayData.push({
+                thumbnailUrl: null,
+                allProducts: [], // Empty array for consistency
+                category: result.originalSearchResult.category,
+                fallbackText: result.originalSearchResult.originalProduct.name
+            });
         }
     });
     
