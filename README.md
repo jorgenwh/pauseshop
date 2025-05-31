@@ -23,3 +23,5 @@ PauseShop is a Chrome extension that turns your streaming addiction into a shopp
 Basically everywhere you procrastinate.
 
 *Disclaimer: We are not responsible for your impulse purchases or explaining to your partner why you bought a $200 throw pillow because you saw it in Bridgerton.*
+
+[TODO](https://docs.google.com/document/d/13E-U2oVqnjeSU_3pPpTghamywg6A7VEEkNR8VK12q8Y/edit?tab=t.0)
