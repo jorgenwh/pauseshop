@@ -50,7 +50,7 @@ class AmazonHttpClient {
     /**
      * Generates realistic headers for Amazon requests
      */
-    private generateRealisticHeaders(url: string): HeadersInit {
+    private generateRealisticHeaders(_url: string): HeadersInit {
         const userAgent = this.config.userAgentRotation 
             ? USER_AGENTS[this.userAgentIndex % USER_AGENTS.length]
             : USER_AGENTS[0];

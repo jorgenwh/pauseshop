@@ -145,6 +145,7 @@ export class OpenAIService {
     /**
      * Validate and sanitize products array
      */
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     private validateAndSanitizeProducts(products: any[]): Product[] {
         return products
             .filter(product => this.isValidProduct(product))
@@ -154,6 +155,7 @@ export class OpenAIService {
   /**
    * Check if product has all required fields
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private isValidProduct(product: any): boolean {
         return (
             typeof product === 'object' &&
@@ -171,6 +173,7 @@ export class OpenAIService {
     /**
      * Sanitize and normalize product data
      */
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     private sanitizeProduct(product: any): Product {
         return {
             name: String(product.name).substring(0, 100).trim(),
@@ -207,6 +210,7 @@ export class OpenAIService {
     /**
      * Sanitize array of strings with length and count limits
      */
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     private sanitizeStringArray(arr: any[], maxLength: number, maxCount: number): string[] {
         if (!Array.isArray(arr)) return [];
         
@@ -219,6 +223,7 @@ export class OpenAIService {
     /**
      * Handle OpenAI API errors
      */
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     private handleAPIError(error: any): never {
         if (error?.status === 401) {
             throw new Error('OPENAI_AUTH_ERROR');

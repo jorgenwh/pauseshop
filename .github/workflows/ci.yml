@@ -1,0 +1,44 @@
+name: CI
+
+on:
+  push:
+    branches-ignore: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  quality-check:
+    name: Code Quality & Build
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Lint Extension
+        run: npx eslint extension/src --ext .ts,.tsx
+
+      - name: Lint Server
+        run: npx eslint server/src --ext .ts
+
+      - name: TypeScript Check Extension
+        run: cd extension && npx tsc --noEmit
+
+      - name: TypeScript Check Server
+        run: cd server && npx tsc --noEmit
+
+      - name: Build Extension
+        run: npm run build --workspace=extension
+
+      - name: Build Server
+        run: npm run build --workspace=server

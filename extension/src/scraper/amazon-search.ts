@@ -104,7 +104,7 @@ const optimizeSearchTerms = (product: Product): string => {
     }
 
     // Add product name (without color if already included)
-    let productName = product.name;
+    const productName = product.name;
     if (product.primaryColor && productName.toLowerCase().includes(product.primaryColor.toLowerCase())) {
         // Color already in name, use as-is
         parts.push(productName);
@@ -136,8 +136,6 @@ const getCategoryNode = (category: ProductCategory): string | null => {
  * Constructs an Amazon search URL for a single product
  */
 const constructSearchUrl = (product: Product, config: AmazonSearchConfig = DEFAULT_CONFIG): AmazonSearchResult => {
-    const startTime = Date.now();
-    
     // Generate unique product ID
     const productId = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     

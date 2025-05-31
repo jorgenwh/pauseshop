@@ -20,7 +20,8 @@ export interface ErrorResponse {
         status: number;
         timestamp: string;
         path: string;
-        details?: any; // Only in development
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        details?: any; // Only in development - contains request details
     };
 }
 

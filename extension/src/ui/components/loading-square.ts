@@ -115,7 +115,7 @@ export class LoadingSquare {
      * Update the loading state
      */
     public updateState(newState: LoadingState): void {
-        const previousState = this.currentState;
+        const _previousState = this.currentState;
         this.currentState = newState;
 
         // Update element class for CSS state styling

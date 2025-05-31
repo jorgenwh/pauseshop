@@ -16,7 +16,7 @@ chrome.runtime.onMessage.addListener((
     if (message.action === 'captureScreenshot') {
         log(message.config, 'Received screenshot capture request');
         const windowId = sender.tab?.windowId || chrome.windows.WINDOW_ID_CURRENT;
-        const response = handleScreenshotAnalysis(message.config, windowId).then(sendResponse).catch(error => {
+        handleScreenshotAnalysis(message.config, windowId).then(sendResponse).catch(error => {
             console.error('Screenshot analysis error:', error);
             sendResponse({ success: false, error: error.message || 'Unknown error' });
         });

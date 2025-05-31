@@ -1,13 +1,6 @@
 import { VideoDetectorConfig, SeekingState, SeekingDetectionConfig } from '../types/video';
 import { captureScreenshot, hideUI } from './screenshot-capturer';
 
-interface VideoDetectorState {
-    video: HTMLVideoElement | null;
-    observer: MutationObserver | null;
-    config: VideoDetectorConfig;
-    seekingState: SeekingState;
-}
-
 type CleanupFunction = () => void;
 
 const defaultSeekingDetectionConfig: SeekingDetectionConfig = {
@@ -36,7 +29,7 @@ const log = (config: VideoDetectorConfig, message: string): void => {
     }
 };
 
-const handlePause = (config: VideoDetectorConfig, seekingState: SeekingState) => (event: Event): void => {
+const handlePause = (config: VideoDetectorConfig, seekingState: SeekingState) => (_event: Event): void => {
     if (seekingState.isSeeking) {
         log(config, 'Video paused during seeking - ignoring as non-intentional pause');
         return;
@@ -62,7 +55,7 @@ const handlePause = (config: VideoDetectorConfig, seekingState: SeekingState) =>
     }, 150); // 150ms debounce to detect seeking
 };
 
-const handlePlay = (config: VideoDetectorConfig) => (event: Event): void => {
+const handlePlay = (config: VideoDetectorConfig) => (_event: Event): void => {
     log(config, 'Video resumed');
     // Hide UI when video resumes
     hideUI().catch(error => {
@@ -70,7 +63,7 @@ const handlePlay = (config: VideoDetectorConfig) => (event: Event): void => {
     });
 };
 
-const handleSeeking = (config: VideoDetectorConfig, seekingState: SeekingState) => (event: Event): void => {
+const handleSeeking = (config: VideoDetectorConfig, seekingState: SeekingState) => (_event: Event): void => {
     seekingState.isSeeking = true;
     seekingState.lastSeekTime = Date.now();
     
@@ -88,7 +81,7 @@ const handleSeeking = (config: VideoDetectorConfig, seekingState: SeekingState) 
     log(config, 'Seeking started - suppressing pause detection');
 };
 
-const handleSeeked = (config: VideoDetectorConfig, seekingState: SeekingState) => (event: Event): void => {
+const handleSeeked = (config: VideoDetectorConfig, seekingState: SeekingState) => (_event: Event): void => {
     const seekingConfig = { ...defaultSeekingDetectionConfig, ...config.seekingDetection };
     
     log(config, 'Seeking completed - starting debounce timer');

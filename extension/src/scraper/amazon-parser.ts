@@ -100,29 +100,6 @@ const extractProductUrlFromHtml = (htmlContent: string, baseUrl: string): string
 
 
 /**
- * Extracts Amazon ASIN from HTML content using regex
- */
-const extractAmazonAsinFromHtml = (htmlContent: string): string | null => {
-    // Try data-asin attribute
-    const asinPattern = /data-asin="([A-Z0-9]{10})"/i;
-    const asinMatch = htmlContent.match(asinPattern);
-    
-    if (asinMatch && asinMatch[1]) {
-        return asinMatch[1];
-    }
-
-    // Try to extract from product URL
-    const urlPattern = /\/dp\/([A-Z0-9]{10})/i;
-    const urlMatch = htmlContent.match(urlPattern);
-    
-    if (urlMatch && urlMatch[1]) {
-        return urlMatch[1];
-    }
-
-    return null;
-};
-
-/**
  * Validates if a URL is a valid image URL
  */
 const isValidImageUrl = (url: string): boolean => {

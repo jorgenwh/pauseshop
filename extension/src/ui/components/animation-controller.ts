@@ -3,7 +3,7 @@
  * Handles slide-in, pulse, and other animations with proper cleanup
  */
 
-import { AnimationConfig, LoadingState } from '../types';
+import { AnimationConfig } from '../types';
 
 export class AnimationController {
     private element: HTMLElement;

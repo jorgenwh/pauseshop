@@ -23,9 +23,15 @@ interface ScreenshotMessage {
 interface ScreenshotResponse {
     success: boolean;
     error?: string;
-    analysisResult?: any;
-    amazonSearchResults?: any;
-    amazonExecutionResults?: any;
+    analysisResult?: {
+        products: Array<{ name: string; }>;
+        metadata: { processingTime: number; };
+    };
+    amazonSearchResults?: {
+        searchResults?: unknown;
+        metadata: { successfulSearches: number; totalProducts: number; processingTime: number; };
+    };
+    amazonExecutionResults?: unknown;
     amazonScrapedResults?: AmazonScrapedBatch;
 }
 
@@ -133,7 +139,7 @@ export const captureScreenshot = async (config: Partial<ScreenshotConfig> = {}):
                 log(fullConfig, `Analysis complete: ${products.length} products detected in ${metadata.processingTime}ms`);
                 
                 // Log individual products
-                products.forEach((product: any, index: number) => {
+                products.forEach((product: { name: string; }, index: number) => {
                     log(fullConfig, `Product ${index + 1}: ${product.name}`);
                 });
             }
@@ -152,7 +158,7 @@ export const captureScreenshot = async (config: Partial<ScreenshotConfig> = {}):
             } else {
                 // Log Amazon results if available
                 if (response.amazonSearchResults) {
-                    const { searchResults, metadata } = response.amazonSearchResults;
+                    const { metadata } = response.amazonSearchResults;
                     log(fullConfig, `Amazon search URLs: ${metadata.successfulSearches}/${metadata.totalProducts} generated in ${metadata.processingTime}ms`);
                 }
                 

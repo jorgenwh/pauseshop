@@ -14,12 +14,16 @@
     "dev": "npm run dev --workspace=extension",
     "dev:server": "npm run dev --workspace=server",
     "test": "npm run test --workspace=extension && npm run test --workspace=server",
-    "lint": "npm run lint --workspace=extension && npm run lint --workspace=server",
+    "lint": "eslint extension/src --ext .ts,.tsx && eslint server/src --ext .ts",
+    "lint:fix": "eslint extension/src --ext .ts,.tsx --fix && eslint server/src --ext .ts --fix",
     "clean": "npm run clean --workspace=extension && npm run clean --workspace=server"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
-    "typescript": "^5.0.0"
+    "typescript": "^5.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.0.0"
   },
   "engines": {
     "node": ">=18.0.0",
