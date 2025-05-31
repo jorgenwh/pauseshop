@@ -28,8 +28,8 @@ export class UIManager {
         };
 
         this.loadingSquareConfig = {
-            size: 180,
-            borderRadius: 20,
+            size: 126,
+            borderRadius: 14,
             backgroundColor: 'linear-gradient(135deg, rgba(99, 102, 241, 0.95), rgba(168, 85, 247, 0.9), rgba(236, 72, 153, 0.85))',
             position: {
                 top: 120,

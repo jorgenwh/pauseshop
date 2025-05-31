@@ -14,10 +14,10 @@
 
 /* Loading Square Component */
 .pauseshop-loading-square {
-    width: 180px;
-    height: 180px;
+    width: 126px;
+    height: 126px;
     background: linear-gradient(135deg, rgba(99, 102, 241, 0.95), rgba(168, 85, 247, 0.9), rgba(236, 72, 153, 0.85));
-    border-radius: 20px;
+    border-radius: 14px;
     position: fixed;
     top: 120px;
     right: 30px;
@@ -35,7 +35,7 @@
     -webkit-backdrop-filter: blur(8px);
     
     /* Initial state - hidden off-screen */
-    transform: translateX(240px);
+    transform: translateX(170px);
     opacity: 0;
     
     /* Modern glass effect */
@@ -57,9 +57,62 @@
     -webkit-backface-visibility: hidden;
 }
 
+/* Loading Spinner Component */
+.pauseshop-loading-spinner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 42px;
+    height: 42px;
+    margin: -21px 0 0 -21px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-top: 2px solid rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+    animation: pauseshop-spin 1.5s linear infinite;
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+    opacity: 1 !important;
+}
+
+/* Responsive spinner sizes */
+@media (max-width: 768px) {
+    .pauseshop-loading-spinner {
+        width: 50px;
+        height: 50px;
+        margin: -25px 0 0 -25px;
+        border-width: 2.5px;
+    }
+}
+
+@media (max-width: 480px) {
+    .pauseshop-loading-spinner {
+        width: 40px;
+        height: 40px;
+        margin: -20px 0 0 -20px;
+        border-width: 2px;
+    }
+}
+
+/* Spinning animation */
+@keyframes pauseshop-spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Enhanced spinner for processing state */
+.pauseshop-loading-square[data-state="processing"] .pauseshop-loading-spinner {
+    border-top-color: rgba(255, 255, 255, 1);
+    animation-duration: 1.2s;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
 /* Loading Square States */
 .pauseshop-loading-square[data-state="hidden"] {
-    transform: translateX(240px);
+    transform: translateX(170px);
     opacity: 0;
 }
 
@@ -84,23 +137,37 @@
 /* Responsive adjustments for smaller screens */
 @media (max-width: 768px) {
     .pauseshop-loading-square {
-        width: 150px;
-        height: 150px;
+        width: 105px;
+        height: 105px;
         top: 100px;
         right: 25px;
-        border-radius: 18px;
-        transform: translateX(200px);
+        border-radius: 12px;
+        transform: translateX(140px);
+    }
+    
+    .pauseshop-loading-spinner {
+        width: 35px;
+        height: 35px;
+        margin: -17px 0 0 -17px;
+        border-width: 2px;
     }
 }
 
 @media (max-width: 480px) {
     .pauseshop-loading-square {
-        width: 120px;
-        height: 120px;
+        width: 84px;
+        height: 84px;
         top: 80px;
         right: 20px;
-        border-radius: 15px;
-        transform: translateX(170px);
+        border-radius: 10px;
+        transform: translateX(115px);
+    }
+    
+    .pauseshop-loading-spinner {
+        width: 28px;
+        height: 28px;
+        margin: -14px 0 0 -14px;
+        border-width: 1.5px;
     }
 }
 
@@ -120,6 +187,24 @@
         animation-duration: 0.01ms !important;
         animation-iteration-count: 1 !important;
         transition-duration: 0.01ms !important;
+    }
+    
+    .pauseshop-loading-spinner {
+        animation: none !important;
+        border-top-color: rgba(255, 255, 255, 0.8);
+        /* Show static loading indicator instead */
+        opacity: 1.0;
+    }
+    
+    .pauseshop-loading-spinner::after {
+        content: '⟳';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 20px;
+        font-weight: bold;
     }
 }
 
@@ -147,6 +232,6 @@
 }
 
 .pauseshop-loading-square.fallback.hide {
-    transform: translateX(240px);
+    transform: translateX(170px);
     opacity: 0;
 }

@@ -27,6 +27,11 @@ export class LoadingSquare {
         this.element = document.createElement('div');
         this.element.className = 'pauseshop-loading-square';
         
+        // Create loading spinner element
+        const spinner = document.createElement('div');
+        spinner.className = 'pauseshop-loading-spinner';
+        this.element.appendChild(spinner);
+        
         // Apply styling
         this.applyStyles();
         
@@ -167,7 +172,7 @@ export class LoadingSquare {
             top: `${this.config.position.top}px`,
             right: `${this.config.position.right}px`,
             zIndex: '999999',
-            transform: 'translateX(240px)', // Start off-screen
+            transform: 'translateX(170px)', // Start off-screen
             opacity: '0',
             pointerEvents: 'none' as const,
             userSelect: 'none' as const,
