@@ -17,10 +17,26 @@ export interface ScreenshotMessage {
     config: ScreenshotConfig;
 }
 
+export interface AnalysisResult {
+    products: Array<{
+        name: string;
+        category: string;
+        brand: string;
+        primaryColor: string;
+        secondaryColors: string[];
+        features: string[];
+        targetGender: string;
+        searchTerms: string;
+    }>;
+    metadata: {
+        processingTime: number;
+    };
+}
+
 export interface ScreenshotResponse {
     success: boolean;
     error?: string;
-    analysisResult?: any;
+    analysisResult?: AnalysisResult;
     amazonSearchResults?: AmazonSearchBatch | null;
     amazonExecutionResults?: AmazonSearchExecutionBatch | null;
     amazonScrapedResults?: AmazonScrapedBatch | null;

@@ -43,7 +43,7 @@ export const analyzeImageHandler = async (req: Request, res: Response): Promise<
 
     try {
         // Validate request body
-        const { image, metadata }: AnalyzeRequest = req.body;
+        const { image, metadata: _metadata }: AnalyzeRequest = req.body;
 
         if (!image) {
             const errorResponse: AnalyzeErrorResponse = {

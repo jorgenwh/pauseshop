@@ -5,7 +5,7 @@
 
 import { AnimationController } from './animation-controller';
 import { ExpansionSquareConfig, ExpansionState } from '../types';
-import { AmazonScrapedProduct, ProductCategory } from '../../types/amazon';
+import { AmazonScrapedProduct } from '../../types/amazon';
 
 export class ExpansionSquare {
     private element: HTMLElement | null = null;

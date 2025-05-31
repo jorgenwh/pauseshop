@@ -245,8 +245,8 @@ export class ProductGrid {
         // Collapse any currently expanded square
         if (this.expandedSquareIndex !== null && this.expandedSquareIndex !== requestingIndex) {
             const currentlyExpanded = this.productSquares[this.expandedSquareIndex];
-            if (currentlyExpanded && (currentlyExpanded as any).collapseExpansion) {
-                await (currentlyExpanded as any).collapseExpansion();
+            if (currentlyExpanded && typeof (currentlyExpanded as unknown as { collapseExpansion?: () => Promise<void> }).collapseExpansion === 'function') {
+                await (currentlyExpanded as unknown as { collapseExpansion: () => Promise<void> }).collapseExpansion();
             }
         }
         
@@ -259,8 +259,8 @@ export class ProductGrid {
     public async collapseAllExpansions(): Promise<void> {
         if (this.expandedSquareIndex !== null) {
             const square = this.productSquares[this.expandedSquareIndex];
-            if (square && (square as any).collapseExpansion) {
-                await (square as any).collapseExpansion();
+            if (square && typeof (square as unknown as { collapseExpansion?: () => Promise<void> }).collapseExpansion === 'function') {
+                await (square as unknown as { collapseExpansion: () => Promise<void> }).collapseExpansion();
             }
             this.expandedSquareIndex = null;
         }

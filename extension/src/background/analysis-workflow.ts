@@ -41,16 +41,28 @@ export const handleScreenshotAnalysis = async (config: ScreenshotConfig, windowI
             // Step 4: Construct Amazon search URLs from analysis results
             try {
                 log(config, 'Constructing Amazon search URLs...');
-                const products: Product[] = analysisResult.products.map((p: any) => ({
-                    name: p.name,
-                    category: p.category,
-                    brand: p.brand,
-                    primaryColor: p.primaryColor,
-                    secondaryColors: p.secondaryColors,
-                    features: p.features,
-                    targetGender: p.targetGender,
-                    searchTerms: p.searchTerms
-                }));
+                const products: Product[] = analysisResult.products.map((p: unknown) => {
+                    const product = p as {
+                        name: string;
+                        category: string;
+                        brand: string;
+                        primaryColor: string;
+                        secondaryColors: string[];
+                        features: string[];
+                        targetGender: string;
+                        searchTerms: string;
+                    };
+                    return {
+                        name: product.name,
+                        category: product.category as Product['category'],
+                        brand: product.brand,
+                        primaryColor: product.primaryColor,
+                        secondaryColors: product.secondaryColors,
+                        features: product.features,
+                        targetGender: product.targetGender as Product['targetGender'],
+                        searchTerms: product.searchTerms
+                    };
+                });
                 
                 const amazonSearchResults = constructAmazonSearchBatch(products, {
                     domain: 'amazon.com',
