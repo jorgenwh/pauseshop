@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches-ignore: [main, develop]
+    branches-ignore: [main]
   pull_request:
-    branches: [main, develop]
+    branches: [main]
   workflow_dispatch:
 
 jobs:
