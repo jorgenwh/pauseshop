@@ -29,7 +29,7 @@ export class ProductExpansion {
         this.container.className = 'pauseshop-product-expansion';
         this.applyContainerStyles();
 
-        // Create expansion squares for products (skip first one as it's already shown)
+        // Create expansion squares for all products (including first one for complete Amazon access)
         this.createExpansionSquares();
 
         return this.container;
@@ -162,11 +162,11 @@ export class ProductExpansion {
     }
 
     /**
-     * Create expansion squares for each product (excluding the first one)
+     * Create expansion squares for each product (including all products)
      */
     private createExpansionSquares(): void {
-        // Skip first product as it's already displayed in the main square
-        const productsToExpand = this.config.products.slice(1);
+        // Include all products in expansion squares for complete Amazon access
+        const productsToExpand = this.config.products;
         
         productsToExpand.forEach((product, index) => {
             const squareConfig: ExpansionSquareConfig = {
