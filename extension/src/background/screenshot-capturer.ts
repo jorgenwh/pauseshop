@@ -16,8 +16,10 @@ export const captureScreenshot = async (config: ScreenshotConfig, windowId: numb
     log(config, 'Capturing screenshot');
     const dataUrl: string = await chrome.tabs.captureVisibleTab(windowId, { format: 'png' });
 
-    log(config, `Downscaling image to ${config.targetWidth}px width`);
-    const downscaledDataUrl = await downscaleImage(dataUrl, config.targetWidth);
+    // log(config, `Downscaling image to ${config.targetWidth}px width`);
+    // const downscaledDataUrl = await downscaleImage(dataUrl, config.targetWidth);
 
-    return downscaledDataUrl;
+    // return downscaledDataUrl;
+
+    return dataUrl; // Skip downscaling for now while gemini 2.0 flash is free
 };
