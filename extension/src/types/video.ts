@@ -28,4 +28,6 @@ export interface SeekingState {
     debounceTimeoutId: number | null;
     pauseDebounceTimeoutId: number | null;
     previousCurrentTime: number;
+    userInteractionDetected: boolean;
+    lastInteractionTime: number;
 }
