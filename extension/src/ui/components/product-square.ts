@@ -246,8 +246,8 @@ export class ProductSquare {
                 category: this.config.category,
                 startPosition: this.config.position,
                 expansionDirection: 'left',
-                squareSize: 85, // Smaller than main square (126px)
-                spacing: 12,
+                squareSize: 126, // Same size as main square for consistency
+                spacing: 14, // Match vertical spacing between main squares
                 animations: {
                     slideLeftDuration: 200,
                     fadeInDuration: 300
