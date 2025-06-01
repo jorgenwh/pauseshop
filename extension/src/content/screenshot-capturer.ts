@@ -139,9 +139,16 @@ export const captureScreenshot = async (config: Partial<ScreenshotConfig> = {}):
                 if (productDisplayData.length > 0) {
                     await ui.showProductGrid(productDisplayData);
                 } else {
-                    log(fullConfig, 'No valid product thumbnails found, keeping loading square visible');
+                    log(fullConfig, 'No products found, showing temporary message');
+                    await ui.showNoProductsFound(); // Will auto-hide after 3 seconds
                 }
             } else {
+                // No scraping results available
+                log(fullConfig, 'No scraping results available, showing no products message');
+                if (ui) {
+                    await ui.showNoProductsFound();
+                }
+                
                 if (response.amazonScrapedResults) {
                     const { metadata } = response.amazonScrapedResults;
                     log(fullConfig, `Amazon scraping: ${metadata.successfulScrapes}/${metadata.totalSearches} successful, ${metadata.totalProductsFound} products found in ${metadata.totalScrapingTime}ms`);

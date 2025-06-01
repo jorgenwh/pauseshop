@@ -74,6 +74,62 @@
     opacity: 1 !important;
 }
 
+/* No Products Found Text Component */
+.pauseshop-no-products-text {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255, 255, 255, 0.9);
+    text-align: center;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    padding: 8px;
+    box-sizing: border-box;
+    gap: 2px;
+}
+
+/* Individual text lines */
+.pauseshop-no-products-line1,
+.pauseshop-no-products-line2 {
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.1;
+    white-space: nowrap;
+}
+
+/* Responsive font sizes for no products text */
+@media (max-width: 768px) {
+    .pauseshop-no-products-line1,
+    .pauseshop-no-products-line2 {
+        font-size: 14px;
+    }
+    
+    .pauseshop-no-products-text {
+        padding: 6px;
+        gap: 1px;
+    }
+}
+
+@media (max-width: 480px) {
+    .pauseshop-no-products-line1,
+    .pauseshop-no-products-line2 {
+        font-size: 12px;
+    }
+    
+    .pauseshop-no-products-text {
+        padding: 4px;
+        gap: 1px;
+    }
+}
+
 /* Responsive spinner sizes */
 @media (max-width: 768px) {
     .pauseshop-loading-spinner {
@@ -127,6 +183,16 @@
 
 .pauseshop-loading-square[data-state="processing"] {
     transform: translateX(0);
+    opacity: 1;
+}
+
+.pauseshop-loading-square[data-state="no-products-found"] {
+    transform: translateX(0);
+    opacity: 1;
+    background: linear-gradient(135deg, rgba(156, 163, 175, 0.95), rgba(107, 114, 128, 0.9), rgba(75, 85, 99, 0.85));
+}
+
+.pauseshop-loading-square[data-state="no-products-found"] .pauseshop-no-products-text {
     opacity: 1;
 }
 
