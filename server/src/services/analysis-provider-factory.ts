@@ -83,9 +83,11 @@ export class AnalysisProviderFactory {
                 }
                 
             default:
-                const errorMessage = `Unknown analysis provider: ${provider}. Supported providers: ${Object.values(AnalysisProvider).join(', ')}`;
-                console.error(`[PROVIDER_FACTORY] ${errorMessage}`);
-                throw new Error(errorMessage);
+                {
+                    const errorMessage = `Unknown analysis provider: ${provider}. Supported providers: ${Object.values(AnalysisProvider).join(', ')}`;
+                    console.error(`[PROVIDER_FACTORY] ${errorMessage}`);
+                    throw new Error(errorMessage);
+                }
         }
     }
 

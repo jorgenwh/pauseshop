@@ -13,8 +13,7 @@ import {
   ProductCategory,
   TargetGender,
   OpenAIProductResponse,
-  AnalysisService,
-  OpenAIResponse
+  AnalysisService
 } from '../types/analyze';
 
 export class RequestyService implements AnalysisService {
