@@ -1,14 +1,14 @@
 /**
- * OpenAI Service
- * Handles image analysis using OpenAI's GPT-4o-mini
+ * Requesty Service
+ * Handles image analysis using Requesty's API router with support for multiple models
  */
 
 import OpenAI from 'openai';
 import { promises as fs } from 'fs';
 import { resolve } from 'path';
 import {
-  OpenAIConfig,
-  OpenAIResponse,
+  RequestyConfig,
+  RequestyResponse,
   Product,
   ProductCategory,
   TargetGender,
@@ -16,15 +16,20 @@ import {
   AnalysisService
 } from '../types/analyze';
 
-export class OpenAIService implements AnalysisService {
+export class RequestyService implements AnalysisService {
     private client: OpenAI;
-    private config: OpenAIConfig;
+    private config: RequestyConfig;
     private static promptCache: string | null = null;
 
-    constructor(config: OpenAIConfig) {
+    constructor(config: RequestyConfig) {
         this.config = config;
         this.client = new OpenAI({
+            baseURL: 'https://router.requesty.ai/v1',
             apiKey: config.apiKey,
+            defaultHeaders: {
+                'HTTP-Referer': config.siteUrl || '',
+                'X-Title': config.siteName || '',
+            },
         });
     }
 
@@ -32,32 +37,33 @@ export class OpenAIService implements AnalysisService {
      * Load the prompt from file (cached)
      */
     private async loadPrompt(): Promise<string> {
-        if (OpenAIService.promptCache) {
-            return OpenAIService.promptCache;
+        if (RequestyService.promptCache) {
+            return RequestyService.promptCache;
         }
 
         try {
             const promptPath = resolve(__dirname, '../prompts/product-analysis.txt');
             const promptContent = await fs.readFile(promptPath, 'utf-8');
-            OpenAIService.promptCache = promptContent.trim();
-            return OpenAIService.promptCache;
+            RequestyService.promptCache = promptContent.trim();
+            return RequestyService.promptCache;
         } catch (error) {
-            console.error('[OPENAI_SERVICE] Error loading prompt:', error);
+            console.error('[REQUESTY_SERVICE] Error loading prompt:', error);
             throw new Error('Failed to load image analysis prompt');
         }
     }
 
-  /**
-   * Analyze image using OpenAI API
-   */
-  async analyzeImage(imageData: string): Promise<OpenAIResponse> {
+    /**
+     * Analyze image using Requesty API
+     */
+    async analyzeImage(imageData: string): Promise<RequestyResponse> {
         try {
             const prompt = await this.loadPrompt();
             
-            console.log('[OPENAI_SERVICE] Sending image to OpenAI API...');
+            console.log('[REQUESTY_SERVICE] Sending image to Requesty API...');
+            console.log(`[REQUESTY_SERVICE] Using model: ${this.config.model}`);
+            console.log(`[REQUESTY_SERVICE] Max tokens: ${this.config.maxTokens}`);
             const startTime = Date.now();
 
-            console.log("[OPENAI_SERVICE] Using prompt:", prompt);
             const response = await this.client.chat.completions.create({
                 model: this.config.model,
                 max_tokens: this.config.maxTokens,
@@ -83,8 +89,10 @@ export class OpenAIService implements AnalysisService {
             const processingTime = Date.now() - startTime;
             const content = response.choices[0]?.message?.content || '';
 
-            console.log(`[OPENAI_SERVICE] Analysis completed in ${processingTime}ms`);
-            console.log(`[OPENAI_SERVICE] Token usage: ${response.usage?.total_tokens || 0} tokens`);
+            console.log(`[REQUESTY_SERVICE] Analysis completed in ${processingTime}ms`);
+            console.log(`[REQUESTY_SERVICE] Token usage: ${response.usage?.total_tokens || 0} tokens`);
+            console.log(`[REQUESTY_SERVICE] Finish reason: ${response.choices[0]?.finish_reason}`);
+            console.log(`[REQUESTY_SERVICE] Content length: ${content.length} characters`);
 
             return {
                 content,
@@ -96,34 +104,34 @@ export class OpenAIService implements AnalysisService {
             };
 
         } catch (error) {
-            console.error('[OPENAI_SERVICE] Error during image analysis:', error);
+            console.error('[REQUESTY_SERVICE] Error during image analysis:', error);
             this.handleAPIError(error);
         }
     }
 
-  /**
-   * Parse OpenAI response into products array
-   */
-  parseResponseToProducts(response: string): Product[] {
+    /**
+     * Parse Requesty response into products array
+     */
+    parseResponseToProducts(response: string): Product[] {
         try {
-            console.log('[OPENAI_SERVICE] Raw OpenAI response:', response);
+            console.log('[REQUESTY_SERVICE] Raw Requesty response:', response);
             
             // Clean the response - remove any non-JSON content
             const cleanedResponse = this.extractJSONFromResponse(response);
-            console.log('[OPENAI_SERVICE] Cleaned JSON:', cleanedResponse);
+            console.log('[REQUESTY_SERVICE] Cleaned JSON:', cleanedResponse);
             
             // Parse JSON
             const parsedResponse: OpenAIProductResponse = JSON.parse(cleanedResponse);
             
             // Validate and sanitize products
             const validatedProducts = this.validateAndSanitizeProducts(parsedResponse.products || []);
-            console.log(`[OPENAI_SERVICE] Validated ${validatedProducts.length} products`);
+            console.log(`[REQUESTY_SERVICE] Validated ${validatedProducts.length} products`);
             
             return validatedProducts;
             
         } catch (error) {
-            console.error('[OPENAI_SERVICE] Error parsing response:', error);
-            console.log('[OPENAI_SERVICE] Response that failed to parse:', response.substring(0, 200));
+            console.error('[REQUESTY_SERVICE] Error parsing response:', error);
+            console.log('[REQUESTY_SERVICE] Response that failed to parse:', response.substring(0, 200));
             return [];
         }
     }
@@ -153,11 +161,11 @@ export class OpenAIService implements AnalysisService {
             .map(product => this.sanitizeProduct(product));
     }
 
-  /**
-   * Check if product has all required fields
-   */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private isValidProduct(product: any): boolean {
+    /**
+     * Check if product has all required fields
+     */
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    private isValidProduct(product: any): boolean {
         return (
             typeof product === 'object' &&
             typeof product.name === 'string' &&
@@ -222,20 +230,20 @@ export class OpenAIService implements AnalysisService {
     }
 
     /**
-     * Handle OpenAI API errors
+     * Handle Requesty API errors
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     private handleAPIError(error: any): never {
         if (error?.status === 401) {
-            throw new Error('OPENAI_AUTH_ERROR');
+            throw new Error('REQUESTY_AUTH_ERROR');
         }
         if (error?.status === 429) {
-            throw new Error('OPENAI_RATE_LIMIT');
+            throw new Error('REQUESTY_RATE_LIMIT');
         }
         if (error?.code === 'ECONNRESET' || error?.code === 'ETIMEDOUT') {
-            throw new Error('OPENAI_TIMEOUT');
+            throw new Error('REQUESTY_TIMEOUT');
         }
         
-        throw new Error('OPENAI_API_ERROR');
+        throw new Error('REQUESTY_API_ERROR');
     }
 }

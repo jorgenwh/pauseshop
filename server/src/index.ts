@@ -2,6 +2,10 @@
  * PauseShop Server Entry Point
  */
 
+// Load environment variables from .env file
+import dotenv from 'dotenv';
+dotenv.config();
+
 import createApp from './app';
 import { getEnvironment } from './utils';
 
@@ -10,16 +14,27 @@ const ENVIRONMENT = getEnvironment();
 
 // Validate required environment variables
 const validateEnvironment = (): void => {
-    const requiredEnvVars = ['OPENAI_API_KEY'];
+    const provider = (process.env.ANALYSIS_PROVIDER || 'openai').toLowerCase();
+    let requiredEnvVars: string[] = [];
+    
+    if (provider === 'openai') {
+        requiredEnvVars = ['OPENAI_API_KEY'];
+    } else if (provider === 'requesty') {
+        requiredEnvVars = ['REQUESTY_API_KEY'];
+    } else {
+        console.error(`💥 Invalid ANALYSIS_PROVIDER: ${provider}. Must be 'openai' or 'requesty'`);
+        process.exit(1);
+    }
+    
     const missingVars = requiredEnvVars.filter(varName => !process.env[varName]);
 
     if (missingVars.length > 0) {
-        console.error(`💥 Missing required environment variables: ${missingVars.join(', ')}`);
+        console.error(`💥 Missing required environment variables for ${provider} provider: ${missingVars.join(', ')}`);
         console.error('📋 Please check your .env file and ensure all required variables are set');
         process.exit(1);
     }
 
-    console.log('✅ Environment variables validated');
+    console.log(`✅ Environment variables validated for ${provider} provider`);
 };
 
 const startServer = async (): Promise<void> => {

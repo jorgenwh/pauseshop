@@ -1,5 +1,16 @@
 # Changelog
 
+## Version 1.0.2
+
+### Added
+- **Requesty Service**: Created to access the Requesty API.
+- **Provider Factory**: Created to handle the passing of active API configuration to Requesty, OpenAI and other future services.
+- **Documentation**: Added documentation for the new services and configuration changes.
+
+### Changed
+- **server/.env.example**: Updated to include Requesty API details. Ensure local server/.env is updated accordingly.
+- **Server Logging**: Enhanced to show more information about which API is handling image analysis and its status.
+
 ## Version 1.0.1
 
 ### Added

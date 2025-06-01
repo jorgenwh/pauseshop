@@ -1,6 +1,6 @@
 {
   "name": "pauseshop-server",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "PauseShop Backend Server",
   "private": true,
   "scripts": {
