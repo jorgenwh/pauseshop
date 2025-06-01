@@ -124,6 +124,7 @@ export interface ExpansionSquareConfig {
     borderRadius: number;
     backgroundColor: string;
     index: number;
+    spacing: number; // Spacing between expansion squares
     animations: {
         slideLeftDuration: number;
         thumbnailFadeDuration: number;

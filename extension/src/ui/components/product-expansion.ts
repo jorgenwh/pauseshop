@@ -172,10 +172,11 @@ export class ProductExpansion {
             const squareConfig: ExpansionSquareConfig = {
                 product: product,
                 position: this.calculateSquarePosition(index),
-                size: this.config.squareSize, // 85px for expansion squares
+                size: this.config.squareSize, // Now 126px to match main squares
                 borderRadius: Math.round(this.config.squareSize * 0.16), // Proportional border radius
                 backgroundColor: 'linear-gradient(135deg, rgba(99, 102, 241, 0.95), rgba(168, 85, 247, 0.9), rgba(236, 72, 153, 0.85))',
                 index: index,
+                spacing: this.config.spacing, // Pass spacing from config
                 animations: {
                     slideLeftDuration: this.config.animations.slideLeftDuration,
                     thumbnailFadeDuration: this.config.animations.fadeInDuration
@@ -195,8 +196,8 @@ export class ProductExpansion {
      */
     private calculateSquarePosition(index: number): { top: number; right: number } {
         // Position squares to the left of the parent square
-        const leftOffset = (index + 1) * (this.config.squareSize + this.config.spacing);
-        
+        const leftOffset = (index + 1) * this.config.spacing;
+
         return {
             top: this.config.startPosition.top,
             right: this.config.startPosition.right + leftOffset

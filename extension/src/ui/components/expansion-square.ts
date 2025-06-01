@@ -75,7 +75,7 @@ export class ExpansionSquare {
             this.updateState(ExpansionState.EXPANDING);
             
             // Calculate slide distance based on position
-            const slideDistance = (this.config.index + 1) * (this.config.size + 12); // 12px spacing
+            const slideDistance = (this.config.index + 1) * (this.config.size + this.config.spacing);
             
             // Start slide-left animation
             await this.animationController.slideLeft({
@@ -94,7 +94,7 @@ export class ExpansionSquare {
         } catch (error) {
             console.warn('PauseShop: Failed to show expansion square:', error);
             // Fallback to instant show
-            const slideDistance = (this.config.index + 1) * (this.config.size + 12);
+            const slideDistance = (this.config.index + 1) * (this.config.size + this.config.spacing);
             this.element.style.transform = `translateX(-${slideDistance}px)`;
             this.element.style.opacity = '1';
             this.updateState(ExpansionState.EXPANDED);
@@ -117,7 +117,7 @@ export class ExpansionSquare {
             this.updateState(ExpansionState.COLLAPSING);
 
             // Calculate slide distance to return to original position
-            const slideDistance = (this.config.index + 1) * (this.config.size + 12);
+            const slideDistance = (this.config.index + 1) * (this.config.size + this.config.spacing);
             
             // Slide back to right (reverse animation)
             await this.animationController.slideRight({
@@ -251,18 +251,18 @@ export class ExpansionSquare {
         fallback.className = 'pauseshop-expansion-thumbnail-fallback';
         fallback.textContent = this.getCategoryIcon();
         
-        // Apply fallback styles (smaller than main square fallbacks)
-        const thumbnailSize = Math.round(this.config.size * 0.79); // ~67px for 85px square
+        // Apply fallback styles (same proportions as main square fallbacks)
+        const thumbnailSize = Math.round(this.config.size * 0.79); // ~100px for 126px square
         const fallbackStyles = {
             width: `${thumbnailSize}px`,
             height: `${thumbnailSize}px`,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            fontSize: '24px', // Smaller than main square (32px)
+            fontSize: '32px', // Same as main square for consistency
             color: 'rgba(255, 255, 255, 0.8)',
             background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.3), rgba(168, 85, 247, 0.2))',
-            borderRadius: '6px', // Smaller radius for expansion squares
+            borderRadius: '8px', // Same radius as main square fallbacks
             margin: `${Math.round((this.config.size - thumbnailSize) / 2)}px`
         };
         
@@ -304,7 +304,7 @@ export class ExpansionSquare {
             top: `${this.config.position.top}px`,
             right: `${this.config.position.right}px`,
             zIndex: '999998', // Below main squares
-            transform: 'translateX(0) scale(0.8)', // Start smaller and at original position
+            transform: 'translateX(0)', // Start at original position with normal scale
             opacity: '0',
             pointerEvents: 'auto' as const, // Enable clicks
             userSelect: 'none' as const,
@@ -326,12 +326,12 @@ export class ExpansionSquare {
     private applyThumbnailStyles(): void {
         if (!this.thumbnailElement) return;
 
-        const thumbnailSize = Math.round(this.config.size * 0.79); // ~67px for 85px square
+        const thumbnailSize = Math.round(this.config.size * 0.79); // ~100px for 126px square
         const thumbnailStyles = {
             width: `${thumbnailSize}px`,
             height: `${thumbnailSize}px`,
             objectFit: 'cover' as const,
-            borderRadius: '6px', // Smaller radius for expansion squares
+            borderRadius: '8px', // Same radius as main square thumbnails
             opacity: '0',
             transition: `opacity ${this.config.animations.thumbnailFadeDuration}ms ease-in`
         };
