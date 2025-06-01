@@ -31,6 +31,18 @@ export const analyzeImageHandler = async (req: Request, res: Response): Promise<
 
   // Validate provider configuration
   const validation = AnalysisProviderFactory.validateProviderConfig();
+  if (!validation.isValid) {
+    console.error(`[ANALYZE] Provider configuration error: ${validation.error}`);
+    res.status(500).json({
+    success: false,
+    error: {
+      message: validation.error || 'Invalid provider configuration',
+      code: 'PROVIDER_CONFIG_ERROR',
+      timestamp: new Date().toISOString()
+    }
+    });
+    return;
+  }
 
   // Log provider-specific configuration
   const currentProvider = AnalysisProviderFactory.getCurrentProvider();

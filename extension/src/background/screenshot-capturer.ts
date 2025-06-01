@@ -2,9 +2,8 @@
  * Screenshot capture functionality for the PauseShop background service worker
  */
 
-import { openScreenshotInNewTab } from './debug-utils';
-import { downscaleImage } from './image-processor';
-import { log } from './logger';
+// import { downscaleImage } from './image-processor';
+// import { log } from './logger';
 import type { ScreenshotConfig } from './types';
 
 /**

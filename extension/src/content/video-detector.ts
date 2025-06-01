@@ -213,7 +213,7 @@ const attachVideoListeners = (
     };
 };
 
-const scanForVideos = (config: VideoDetectorConfig): HTMLVideoElement | null => {
+const scanForVideos = (): HTMLVideoElement | null => {
     const videoElements = document.querySelectorAll('video');
 
     let targetVideo: HTMLVideoElement | null = null;
@@ -300,7 +300,7 @@ export const initializeVideoDetector = (
     };
 
     // Scan for existing videos
-    const initialVideo = scanForVideos(config);
+    const initialVideo = scanForVideos();
     if (initialVideo) {
         setVideo(initialVideo);
     }

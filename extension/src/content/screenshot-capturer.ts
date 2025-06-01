@@ -142,13 +142,8 @@ export const captureScreenshot = async (config: Partial<ScreenshotConfig> = {}):
                     log(fullConfig, 'No valid product thumbnails found, keeping loading square visible');
                 }
             } else {
-                // Log Amazon results if available
-                if (response.amazonSearchResults) {
-                    const { metadata } = response.amazonSearchResults;
-                }
-
                 if (response.amazonScrapedResults) {
-                    const { scrapedResults, metadata } = response.amazonScrapedResults;
+                    const { metadata } = response.amazonScrapedResults;
                     log(fullConfig, `Amazon scraping: ${metadata.successfulScrapes}/${metadata.totalSearches} successful, ${metadata.totalProductsFound} products found in ${metadata.totalScrapingTime}ms`);
                 }
             }
