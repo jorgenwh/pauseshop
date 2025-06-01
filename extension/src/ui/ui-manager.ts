@@ -69,7 +69,6 @@ export class UIManager {
      */
     public initialize(): boolean {
         if (this.isInitialized) {
-            this.log('UI Manager already initialized');
             return true;
         }
 
@@ -81,7 +80,6 @@ export class UIManager {
             this.loadingSquare = new LoadingSquare(this.loadingSquareConfig);
             
             this.isInitialized = true;
-            this.log('UI Manager initialized successfully');
             return true;
 
         } catch (error) {
@@ -106,7 +104,6 @@ export class UIManager {
             // Show with animation
             await this.loadingSquare!.show();
             
-            this.log('Loading square displayed');
             this.events.onShow?.();
             this.events.onStateChange?.(LoadingState.LOADING);
             
@@ -135,7 +132,6 @@ export class UIManager {
                 element.parentNode.removeChild(element);
             }
             
-            this.log('Loading square hidden');
             this.events.onHide?.();
             this.events.onStateChange?.(LoadingState.HIDDEN);
             
@@ -157,7 +153,6 @@ export class UIManager {
 
         this.loadingSquare.updateState(state);
         this.events.onStateChange?.(state);
-        this.log(`Loading state updated to: ${state}`);
     }
 
     /**
@@ -180,7 +175,6 @@ export class UIManager {
             // Show with staggered animations
             await this.productGrid.show();
             
-            this.log(`Product grid displayed with ${productData.length} products`);
             this.events.onProductGridShow?.();
             
             return true;
@@ -212,7 +206,6 @@ export class UIManager {
             this.productGrid.cleanup();
             this.productGrid = null;
             
-            this.log('Product grid hidden');
             this.events.onProductGridHide?.();
             
             return true;
@@ -286,8 +279,6 @@ export class UIManager {
      * Complete cleanup of all UI components
      */
     public cleanup(): void {
-        this.log('Cleaning up UI Manager');
-
         // Cleanup loading square
         if (this.loadingSquare) {
             this.loadingSquare.cleanup();
@@ -307,7 +298,6 @@ export class UIManager {
         this.container = null;
 
         this.isInitialized = false;
-        this.log('UI Manager cleanup complete');
     }
 
     /**
@@ -339,8 +329,6 @@ export class UIManager {
 
         // Append to document body
         document.body.appendChild(this.container);
-        
-        this.log('UI container created and attached to DOM');
     }
 
     /**
@@ -348,7 +336,6 @@ export class UIManager {
      */
     private ensureInitialized(): boolean {
         if (!this.isInitialized) {
-            this.log('UI Manager not initialized, attempting to initialize');
             return this.initialize();
         }
         return true;

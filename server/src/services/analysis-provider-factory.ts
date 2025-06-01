@@ -56,32 +56,26 @@ export class AnalysisProviderFactory {
      */
     static createProvider(): AnalysisService {
         const provider = (process.env.ANALYSIS_PROVIDER || 'openai').toLowerCase() as AnalysisProvider;
-        
-        console.log(`[PROVIDER_FACTORY] Creating analysis provider: ${provider}`);
-        
+
         switch (provider) {
             case AnalysisProvider.OPENAI:
                 try {
                     const config = getOpenAIConfig();
-                    console.log(`[PROVIDER_FACTORY] OpenAI provider configured with model: ${config.model}`);
                     return new OpenAIService(config);
                 } catch (error) {
                     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
                     console.error(`[PROVIDER_FACTORY] Failed to create OpenAI provider: ${errorMessage}`);
                     throw new Error(`OpenAI provider configuration error: ${errorMessage}`);
                 }
-                
             case AnalysisProvider.REQUESTY:
                 try {
                     const config = getRequestyConfig();
-                    console.log(`[PROVIDER_FACTORY] Requesty provider configured with model: ${config.model}`);
                     return new RequestyService(config);
                 } catch (error) {
                     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
                     console.error(`[PROVIDER_FACTORY] Failed to create Requesty provider: ${errorMessage}`);
                     throw new Error(`Requesty provider configuration error: ${errorMessage}`);
                 }
-                
             default:
                 {
                     const errorMessage = `Unknown analysis provider: ${provider}. Supported providers: ${Object.values(AnalysisProvider).join(', ')}`;
@@ -104,16 +98,16 @@ export class AnalysisProviderFactory {
     static validateProviderConfig(): { isValid: boolean; error?: string } {
         try {
             const provider = AnalysisProviderFactory.getCurrentProvider();
-            
+
             switch (provider) {
                 case AnalysisProvider.OPENAI:
                     getOpenAIConfig();
                     return { isValid: true };
-                    
+
                 case AnalysisProvider.REQUESTY:
                     getRequestyConfig();
                     return { isValid: true };
-                    
+
                 default:
                     return {
                         isValid: false,

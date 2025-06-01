@@ -212,7 +212,6 @@ export interface AmazonScrapedBatch {
         successfulScrapes: number;
         failedScrapes: number;
         totalProductsFound: number;
-        averageProductsPerSearch: number;
         totalScrapingTime: number;
     };
 }

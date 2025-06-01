@@ -37,21 +37,21 @@ const handlePause = (config: VideoDetectorConfig, seekingState: SeekingState, si
         log(config, 'Video paused during seeking - ignoring as non-intentional pause');
         return;
     }
-    
+
     // Site-specific: Check for recent user interactions that might indicate seeking
     if (siteHandlerRegistry.shouldIgnorePause(seekingState)) {
         log(config, 'Video paused but recent seeking interaction detected - likely seeking, ignoring pause');
         return;
     }
-    
+
     // Clear any existing pause debounce
     if (seekingState.pauseDebounceTimeoutId !== null) {
         clearTimeout(seekingState.pauseDebounceTimeoutId);
     }
-    
+
     // Get site-specific debounce time
     const debounceTime = siteHandlerRegistry.getDebounceTime(seekingState);
-    
+
     // Debounce pause detection to check if seeking follows
     seekingState.pauseDebounceTimeoutId = window.setTimeout(() => {
         if (!seekingState.isSeeking) {
@@ -78,20 +78,20 @@ const handlePlay = (config: VideoDetectorConfig) => (_event: Event): void => {
 const handleSeeking = (config: VideoDetectorConfig, seekingState: SeekingState) => (_event: Event): void => {
     seekingState.isSeeking = true;
     seekingState.lastSeekTime = Date.now();
-    
+
     // Clear user interaction flag since seeking has now started
     if (seekingState.userInteractionDetected) {
         seekingState.userInteractionDetected = false;
     }
-    
+
     log(config, 'Seeking started - suppressing pause detection');
-    
+
     // Clear any existing debounce timeouts
     if (seekingState.debounceTimeoutId !== null) {
         clearTimeout(seekingState.debounceTimeoutId);
         seekingState.debounceTimeoutId = null;
     }
-    
+
     if (seekingState.pauseDebounceTimeoutId !== null) {
         clearTimeout(seekingState.pauseDebounceTimeoutId);
         seekingState.pauseDebounceTimeoutId = null;
@@ -101,28 +101,25 @@ const handleSeeking = (config: VideoDetectorConfig, seekingState: SeekingState) 
 const handleSeeked = (config: VideoDetectorConfig, seekingState: SeekingState, siteHandlerRegistry: SiteHandlerRegistry) => (event: Event): void => {
     const seekingConfig = { ...defaultSeekingDetectionConfig, ...config.seekingDetection };
     const video = event.target as HTMLVideoElement;
-    
+
     log(config, 'Seeking completed - starting debounce timer');
-    
+
     // Clear any existing timeout
     if (seekingState.debounceTimeoutId !== null) {
         clearTimeout(seekingState.debounceTimeoutId);
     }
-    
+
     // Set debounce timeout to resume normal pause detection
     seekingState.debounceTimeoutId = window.setTimeout(() => {
         seekingState.isSeeking = false;
         seekingState.debounceTimeoutId = null;
-        log(config, 'Seeking debounce completed - resuming normal pause detection');
-        
+
         // DIAGNOSTIC: Check if video is paused after seeking completes
         if (video && video.paused) {
-            log(config, 'DIAGNOSTIC: Video is paused after seeking completed - checking if pause detection should trigger');
-            
             // Check if we should ignore this pause (due to recent interactions)
             if (!siteHandlerRegistry.shouldIgnorePause(seekingState)) {
                 log(config, 'DIAGNOSTIC: Video paused after seeking - adding additional delay for multi-key seeking');
-                
+
                 // Add extra delay when video was paused to allow for multiple arrow key presses
                 setTimeout(() => {
                     // Double-check that video is still paused and no new seeking has started
@@ -157,7 +154,7 @@ const handleTimeUpdate = (config: VideoDetectorConfig, seekingState: SeekingStat
         if (!seekingState.isSeeking) {
             log(config, `Large time jump detected (${timeDifference.toFixed(2)}s) - treating as seeking`);
             handleSeeking(config, seekingState)(event);
-            
+
             // Auto-clear seeking state after debounce period
             setTimeout(() => {
                 if (seekingState.isSeeking) {
@@ -218,7 +215,6 @@ const attachVideoListeners = (
 
 const scanForVideos = (config: VideoDetectorConfig): HTMLVideoElement | null => {
     const videoElements = document.querySelectorAll('video');
-    log(config, `Found ${videoElements.length} video element(s)`);
 
     let targetVideo: HTMLVideoElement | null = null;
     let maxArea = 0;
@@ -248,7 +244,7 @@ const createDOMObserver = (
                     if (node.tagName === 'VIDEO' && node instanceof HTMLVideoElement) {
                         onVideoFound(node);
                     }
-                    
+
                     // Check for video elements within the added node
                     const nestedVideos = node.querySelectorAll('video');
                     if (nestedVideos.length > 0) {
@@ -267,8 +263,6 @@ const createDOMObserver = (
         subtree: true
     });
 
-    log(config, 'DOM observer started');
-
     return () => {
         observer.disconnect();
     };
@@ -282,8 +276,6 @@ export const initializeVideoDetector = (
         ...userConfig,
         seekingDetection: { ...defaultSeekingDetectionConfig, ...userConfig.seekingDetection }
     };
-    
-    log(config, 'Video detector initializing...');
 
     // Initialize site handler registry
     const siteHandlerRegistry = new SiteHandlerRegistry();
@@ -316,18 +308,11 @@ export const initializeVideoDetector = (
     // Start observing for new videos
     const observerCleanup = createDOMObserver(config, setVideo);
 
-    log(config, 'Video detector initialized');
-
     // Return cleanup function
     return () => {
-        log(config, 'Cleaning up video detector...');
-        
         if (videoCleanup) {
             videoCleanup();
         }
-        
         observerCleanup();
-        
-        log(config, 'Video detector cleaned up');
     };
 };

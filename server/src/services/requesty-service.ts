@@ -58,10 +58,7 @@ export class RequestyService implements AnalysisService {
     async analyzeImage(imageData: string): Promise<RequestyResponse> {
         try {
             const prompt = await this.loadPrompt();
-            
-            console.log('[REQUESTY_SERVICE] Sending image to Requesty API...');
-            console.log(`[REQUESTY_SERVICE] Using model: ${this.config.model}`);
-            console.log(`[REQUESTY_SERVICE] Max tokens: ${this.config.maxTokens}`);
+
             const startTime = Date.now();
 
             const response = await this.client.chat.completions.create({
@@ -89,10 +86,7 @@ export class RequestyService implements AnalysisService {
             const processingTime = Date.now() - startTime;
             const content = response.choices[0]?.message?.content || '';
 
-            console.log(`[REQUESTY_SERVICE] Analysis completed in ${processingTime}ms`);
-            console.log(`[REQUESTY_SERVICE] Token usage: ${response.usage?.total_tokens || 0} tokens`);
-            console.log(`[REQUESTY_SERVICE] Finish reason: ${response.choices[0]?.finish_reason}`);
-            console.log(`[REQUESTY_SERVICE] Content length: ${content.length} characters`);
+            console.log(`[REQUESTY_SERVICE] LLM Analysis completed in ${processingTime}ms`);
 
             return {
                 content,
@@ -115,20 +109,18 @@ export class RequestyService implements AnalysisService {
     parseResponseToProducts(response: string): Product[] {
         try {
             console.log('[REQUESTY_SERVICE] Raw Requesty response:', response);
-            
+
             // Clean the response - remove any non-JSON content
             const cleanedResponse = this.extractJSONFromResponse(response);
-            console.log('[REQUESTY_SERVICE] Cleaned JSON:', cleanedResponse);
-            
+
             // Parse JSON
             const parsedResponse: OpenAIProductResponse = JSON.parse(cleanedResponse);
-            
+
             // Validate and sanitize products
             const validatedProducts = this.validateAndSanitizeProducts(parsedResponse.products || []);
-            console.log(`[REQUESTY_SERVICE] Validated ${validatedProducts.length} products`);
-            
+
             return validatedProducts;
-            
+
         } catch (error) {
             console.error('[REQUESTY_SERVICE] Error parsing response:', error);
             console.log('[REQUESTY_SERVICE] Response that failed to parse:', response.substring(0, 200));

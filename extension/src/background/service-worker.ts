@@ -23,5 +23,3 @@ chrome.runtime.onMessage.addListener((
         return true; // Keep message channel open for async response
     }
 });
-
-console.log('PauseShop service worker loaded');

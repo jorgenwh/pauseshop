@@ -92,11 +92,7 @@ const ensureUIManager = (): UIManager | null => {
         uiManager = UIManager.create({
             enableLogging: true,
             logPrefix: 'PauseShop UI'
-        }, {}, {
-            onShow: () => log(defaultConfig, 'Loading square displayed'),
-            onHide: () => log(defaultConfig, 'Loading square hidden'),
-            onStateChange: (state: LoadingState) => log(defaultConfig, `UI state changed to: ${state}`)
-        });
+        }, {}, {});
     }
     return uiManager;
 };
@@ -115,8 +111,6 @@ export const captureScreenshot = async (config: Partial<ScreenshotConfig> = {}):
     }
     
     try {
-        log(fullConfig, 'Requesting screenshot capture from background service worker...');
-
         // Update UI state to processing
         if (ui) {
             ui.updateLoadingState(LoadingState.PROCESSING);
@@ -131,26 +125,18 @@ export const captureScreenshot = async (config: Partial<ScreenshotConfig> = {}):
         const response = await chrome.runtime.sendMessage(message) as ScreenshotResponse;
 
         if (response.success) {
-            log(fullConfig, 'Screenshot captured and processed successfully');
-            
             // Log analysis results if available
             if (response.analysisResult) {
                 const { products, metadata } = response.analysisResult;
                 log(fullConfig, `Analysis complete: ${products.length} products detected in ${metadata.processingTime}ms`);
-                
-                // Log individual products
-                products.forEach((product: { name: string; }, index: number) => {
-                    log(fullConfig, `Product ${index + 1}: ${product.name}`);
-                });
             }
-            
+
             // Check if we have Amazon scraping results to show product grid
             if (response.amazonScrapedResults && ui) {
                 const amazonResults = response.amazonScrapedResults;
                 const productDisplayData = extractProductDisplayData(amazonResults);
-                
+
                 if (productDisplayData.length > 0) {
-                    log(fullConfig, `Showing product grid with ${productDisplayData.length} products`);
                     await ui.showProductGrid(productDisplayData);
                 } else {
                     log(fullConfig, 'No valid product thumbnails found, keeping loading square visible');
@@ -159,30 +145,16 @@ export const captureScreenshot = async (config: Partial<ScreenshotConfig> = {}):
                 // Log Amazon results if available
                 if (response.amazonSearchResults) {
                     const { metadata } = response.amazonSearchResults;
-                    log(fullConfig, `Amazon search URLs: ${metadata.successfulSearches}/${metadata.totalProducts} generated in ${metadata.processingTime}ms`);
                 }
-                
+
                 if (response.amazonScrapedResults) {
                     const { scrapedResults, metadata } = response.amazonScrapedResults;
                     log(fullConfig, `Amazon scraping: ${metadata.successfulScrapes}/${metadata.totalSearches} successful, ${metadata.totalProductsFound} products found in ${metadata.totalScrapingTime}ms`);
-                    
-                    // Log individual scraping results for debugging
-                    scrapedResults.forEach((result, index) => {
-                        if (result.success) {
-                            log(fullConfig, `Scrape ${index + 1}: ${result.products.length} products found for ${result.originalSearchResult.searchTerms}`);
-                            if (fullConfig.debugMode) {
-                                log(fullConfig, `URL: ${result.searchUrl}`);
-                            }
-                        }
-                    });
                 }
-                
-                log(fullConfig, 'Processing complete - loading square will remain visible until video resumes');
             }
-            
         } else {
             log(fullConfig, `Screenshot capture failed: ${response.error || 'Unknown error'}`);
-            
+
             // Hide UI on error
             if (ui) {
                 await ui.hideLoadingSquare();
@@ -194,7 +166,7 @@ export const captureScreenshot = async (config: Partial<ScreenshotConfig> = {}):
         } else {
             log(fullConfig, 'Unknown error during screenshot capture');
         }
-        
+
         // Hide UI on error
         if (ui) {
             await ui.hideLoadingSquare();
@@ -224,6 +196,4 @@ export const cleanupUI = (): void => {
 /**
  * Initialize screenshot capture functionality
  */
-export const initializeScreenshotCapturer = (): void => {
-    console.log('PauseShop: Screenshot capturer initialized');
-};
+export const initializeScreenshotCapturer = (): void => {};

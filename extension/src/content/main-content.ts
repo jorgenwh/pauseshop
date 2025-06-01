@@ -1,8 +1,6 @@
 import { initializeVideoDetector } from './video-detector';
 import { initializeScreenshotCapturer, cleanupUI } from './screenshot-capturer';
 
-console.log('PauseShop content script loaded');
-
 // Initialize screenshot capturer
 initializeScreenshotCapturer();
 
