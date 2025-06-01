@@ -99,9 +99,9 @@
 /* Individual text lines */
 .pauseshop-no-products-line1,
 .pauseshop-no-products-line2 {
-    font-size: 16px;
+    font-size: 22px;
     font-weight: 600;
-    line-height: 1.1;
+    line-height: 1.0;
     white-space: nowrap;
 }
 
@@ -109,7 +109,7 @@
 @media (max-width: 768px) {
     .pauseshop-no-products-line1,
     .pauseshop-no-products-line2 {
-        font-size: 14px;
+        font-size: 18px;
     }
     
     .pauseshop-no-products-text {
@@ -121,7 +121,7 @@
 @media (max-width: 480px) {
     .pauseshop-no-products-line1,
     .pauseshop-no-products-line2 {
-        font-size: 12px;
+        font-size: 15px;
     }
     
     .pauseshop-no-products-text {
@@ -190,6 +190,7 @@
     transform: translateX(0);
     opacity: 1;
     background: linear-gradient(135deg, rgba(156, 163, 175, 0.95), rgba(107, 114, 128, 0.9), rgba(75, 85, 99, 0.85));
+    /* Width will be dynamically set to 200px by JavaScript */
 }
 
 .pauseshop-loading-square[data-state="no-products-found"] .pauseshop-no-products-text {

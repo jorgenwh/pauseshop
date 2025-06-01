@@ -225,15 +225,34 @@ export class LoadingSquare {
             // Hide spinner
             spinner.style.display = 'none';
             
+            // Expand to rectangle and add red glow
+            this.element.style.transition = 'width 0.4s ease-out, box-shadow 0.4s ease-out';
+            this.element.style.width = '200px'; // Expand horizontally
+            
+            // Add red glow effect
+            this.element.style.boxShadow = `
+                0 4px 12px rgba(0, 0, 0, 0.3),
+                0 0 20px rgba(239, 68, 68, 0.6),
+                0 0 40px rgba(239, 68, 68, 0.3)
+            `;
+            
             // Show and animate in the no products text
             noProductsText.style.display = 'flex';
             noProductsText.style.opacity = '0';
             
-            // Trigger fade-in animation
+            // Trigger fade-in animation for text
             requestAnimationFrame(() => {
                 noProductsText.style.transition = 'opacity 0.3s ease-in-out';
                 noProductsText.style.opacity = '1';
             });
+            
+            // Remove red glow after 1 second with smooth fade out
+            setTimeout(() => {
+                if (this.element) {
+                    this.element.style.transition = 'width 0.4s ease-out, box-shadow 0.8s ease-out';
+                    this.element.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.3)';
+                }
+            }, 1000);
         }
     }
 
@@ -242,6 +261,11 @@ export class LoadingSquare {
      */
     private resetToLoadingState(): void {
         if (!this.element) return;
+
+        // Reset size back to square and remove glow
+        this.element.style.transition = 'none'; // Remove transition to avoid flicker during reset
+        this.element.style.width = `${this.config.size}px`;
+        this.element.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.3)';
 
         // Get spinner and text elements
         const spinner = this.element.querySelector('.pauseshop-loading-spinner') as HTMLElement;
