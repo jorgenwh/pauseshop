@@ -98,8 +98,9 @@ const handleSeeking = (config: VideoDetectorConfig, seekingState: SeekingState) 
     }
 };
 
-const handleSeeked = (config: VideoDetectorConfig, seekingState: SeekingState) => (_event: Event): void => {
+const handleSeeked = (config: VideoDetectorConfig, seekingState: SeekingState, siteHandlerRegistry: SiteHandlerRegistry) => (event: Event): void => {
     const seekingConfig = { ...defaultSeekingDetectionConfig, ...config.seekingDetection };
+    const video = event.target as HTMLVideoElement;
     
     log(config, 'Seeking completed - starting debounce timer');
     
@@ -113,10 +114,35 @@ const handleSeeked = (config: VideoDetectorConfig, seekingState: SeekingState) =
         seekingState.isSeeking = false;
         seekingState.debounceTimeoutId = null;
         log(config, 'Seeking debounce completed - resuming normal pause detection');
+        
+        // DIAGNOSTIC: Check if video is paused after seeking completes
+        if (video && video.paused) {
+            log(config, 'DIAGNOSTIC: Video is paused after seeking completed - checking if pause detection should trigger');
+            
+            // Check if we should ignore this pause (due to recent interactions)
+            if (!siteHandlerRegistry.shouldIgnorePause(seekingState)) {
+                log(config, 'DIAGNOSTIC: Video paused after seeking - adding additional delay for multi-key seeking');
+                
+                // Add extra delay when video was paused to allow for multiple arrow key presses
+                setTimeout(() => {
+                    // Double-check that video is still paused and no new seeking has started
+                    if (video.paused && !seekingState.isSeeking) {
+                        log(config, 'DIAGNOSTIC: Video still paused after extended delay - triggering pause detection');
+                        handlePause(config, seekingState, siteHandlerRegistry)(event);
+                    } else {
+                        log(config, 'DIAGNOSTIC: Video state changed during extended delay - not triggering pause detection');
+                    }
+                }, 1500); // Additional 1.5 second delay for arrow key seeking
+            } else {
+                log(config, 'DIAGNOSTIC: Video paused after seeking but ignoring due to recent interaction');
+            }
+        } else {
+            log(config, 'DIAGNOSTIC: Video is playing after seeking completed');
+        }
     }, seekingConfig.seekingDebounceMs);
 };
 
-const handleTimeUpdate = (config: VideoDetectorConfig, seekingState: SeekingState, video: HTMLVideoElement) => (event: Event): void => {
+const handleTimeUpdate = (config: VideoDetectorConfig, seekingState: SeekingState, video: HTMLVideoElement, siteHandlerRegistry: SiteHandlerRegistry) => (event: Event): void => {
     const seekingConfig = { ...defaultSeekingDetectionConfig, ...config.seekingDetection };
     
     if (!seekingConfig.enableTimeBasedDetection) {
@@ -135,7 +161,7 @@ const handleTimeUpdate = (config: VideoDetectorConfig, seekingState: SeekingStat
             // Auto-clear seeking state after debounce period
             setTimeout(() => {
                 if (seekingState.isSeeking) {
-                    handleSeeked(config, seekingState)(event);
+                    handleSeeked(config, seekingState, siteHandlerRegistry)(event);
                 }
             }, seekingConfig.seekingDebounceMs);
         }
@@ -153,8 +179,8 @@ const attachVideoListeners = (
     const pauseHandler = handlePause(config, seekingState, siteHandlerRegistry);
     const playHandler = handlePlay(config);
     const seekingHandler = handleSeeking(config, seekingState);
-    const seekedHandler = handleSeeked(config, seekingState);
-    const timeUpdateHandler = handleTimeUpdate(config, seekingState, video);
+    const seekedHandler = handleSeeked(config, seekingState, siteHandlerRegistry);
+    const timeUpdateHandler = handleTimeUpdate(config, seekingState, video, siteHandlerRegistry);
 
     video.addEventListener('pause', pauseHandler);
     video.addEventListener('play', playHandler);
