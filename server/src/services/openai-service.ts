@@ -7,13 +7,13 @@ import OpenAI from 'openai';
 import { promises as fs } from 'fs';
 import { resolve } from 'path';
 import {
-  OpenAIConfig,
-  OpenAIResponse,
-  Product,
-  ProductCategory,
-  TargetGender,
-  OpenAIProductResponse,
-  AnalysisService
+    OpenAIConfig,
+    OpenAIResponse,
+    Product,
+    ProductCategory,
+    TargetGender,
+    OpenAIProductResponse,
+    AnalysisService
 } from '../types/analyze';
 
 export class OpenAIService implements AnalysisService {
@@ -47,10 +47,10 @@ export class OpenAIService implements AnalysisService {
         }
     }
 
-  /**
-   * Analyze image using OpenAI API
-   */
-  async analyzeImage(imageData: string): Promise<OpenAIResponse> {
+    /**
+     * Analyze image using OpenAI API
+     */
+    async analyzeImage(imageData: string): Promise<OpenAIResponse> {
         try {
             const prompt = await this.loadPrompt();
             
@@ -100,10 +100,10 @@ export class OpenAIService implements AnalysisService {
         }
     }
 
-  /**
-   * Parse OpenAI response into products array
-   */
-  parseResponseToProducts(response: string): Product[] {
+    /**
+     * Parse OpenAI response into products array
+     */
+    parseResponseToProducts(response: string): Product[] {
         try {
             console.log('[OPENAI_SERVICE] Raw OpenAI response:', response);
 
@@ -150,11 +150,11 @@ export class OpenAIService implements AnalysisService {
             .map(product => this.sanitizeProduct(product));
     }
 
-  /**
-   * Check if product has all required fields
-   */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private isValidProduct(product: any): boolean {
+    /**
+     * Check if product has all required fields
+     */
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    private isValidProduct(product: any): boolean {
         return (
             typeof product === 'object' &&
             typeof product.name === 'string' &&

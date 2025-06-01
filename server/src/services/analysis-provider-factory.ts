@@ -6,10 +6,10 @@
 import { OpenAIService } from './openai-service';
 import { RequestyService } from './requesty-service';
 import {
-  AnalysisService,
-  AnalysisProvider,
-  OpenAIConfig,
-  RequestyConfig
+    AnalysisService,
+    AnalysisProvider,
+    OpenAIConfig,
+    RequestyConfig
 } from '../types/analyze';
 
 /**

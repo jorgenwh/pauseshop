@@ -9,6 +9,7 @@ export enum LoadingState {
     SLIDING_IN = 'sliding-in',
     LOADING = 'loading',
     PROCESSING = 'processing',
+    NO_PRODUCTS_FOUND = 'no-products-found',
     SLIDING_OUT = 'sliding-out'
 }
 
@@ -38,6 +39,7 @@ export interface LoadingSquareConfig {
         slideOutDuration: number;
         pulseDuration: number;
     };
+    noProductsFoundTimeout?: number; // milliseconds to show before auto-hide (default: 3000)
 }
 
 export interface AnimationConfig {

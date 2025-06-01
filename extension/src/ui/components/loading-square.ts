@@ -32,6 +32,16 @@ export class LoadingSquare {
         spinner.className = 'pauseshop-loading-spinner';
         this.element.appendChild(spinner);
         
+        // Create no products found text element
+        const noProductsText = document.createElement('div');
+        noProductsText.className = 'pauseshop-no-products-text';
+        noProductsText.innerHTML = `
+            <div class="pauseshop-no-products-line1">No products</div>
+            <div class="pauseshop-no-products-line2">found 🛒❌</div>
+        `;
+        noProductsText.style.display = 'none'; // Initially hidden
+        this.element.appendChild(noProductsText);
+        
         // Apply styling
         this.applyStyles();
         
@@ -54,6 +64,9 @@ export class LoadingSquare {
         }
 
         try {
+            // Reset visual state before any animation to ensure clean slide-in
+            this.resetToLoadingState();
+            
             this.updateState(LoadingState.SLIDING_IN);
             
             // Start slide-in animation
@@ -125,8 +138,15 @@ export class LoadingSquare {
 
         // Handle state-specific logic
         switch (newState) {
+            case LoadingState.LOADING:
+                // Reset visual state when returning to loading
+                this.resetToLoadingState();
+                break;
             case LoadingState.PROCESSING:
                 // Could add different animation or styling for processing state
+                break;
+            case LoadingState.NO_PRODUCTS_FOUND:
+                this.handleNoProductsFoundState();
                 break;
             case LoadingState.HIDDEN:
                 if (this.animationController) {
@@ -184,6 +204,80 @@ export class LoadingSquare {
         };
 
         Object.assign(this.element.style, styles);
+    }
+
+    /**
+     * Handle transition to no products found state
+     */
+    private handleNoProductsFoundState(): void {
+        if (!this.element) return;
+
+        // Stop any running animations
+        if (this.animationController) {
+            this.animationController.stopAllAnimations();
+        }
+
+        // Get spinner and text elements
+        const spinner = this.element.querySelector('.pauseshop-loading-spinner') as HTMLElement;
+        const noProductsText = this.element.querySelector('.pauseshop-no-products-text') as HTMLElement;
+
+        if (spinner && noProductsText) {
+            // Hide spinner
+            spinner.style.display = 'none';
+            
+            // Expand to rectangle and add red glow
+            this.element.style.transition = 'width 0.4s ease-out, box-shadow 0.4s ease-out';
+            this.element.style.width = '200px'; // Expand horizontally
+            
+            // Add red glow effect
+            this.element.style.boxShadow = `
+                0 4px 12px rgba(0, 0, 0, 0.3),
+                0 0 20px rgba(239, 68, 68, 0.6),
+                0 0 40px rgba(239, 68, 68, 0.3)
+            `;
+            
+            // Show and animate in the no products text
+            noProductsText.style.display = 'flex';
+            noProductsText.style.opacity = '0';
+            
+            // Trigger fade-in animation for text
+            requestAnimationFrame(() => {
+                noProductsText.style.transition = 'opacity 0.3s ease-in-out';
+                noProductsText.style.opacity = '1';
+            });
+            
+            // Remove red glow after 1 second with smooth fade out
+            setTimeout(() => {
+                if (this.element) {
+                    this.element.style.transition = 'width 0.4s ease-out, box-shadow 0.8s ease-out';
+                    this.element.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.3)';
+                }
+            }, 1000);
+        }
+    }
+
+    /**
+     * Reset visual state back to loading (spinner visible, text hidden)
+     */
+    private resetToLoadingState(): void {
+        if (!this.element) return;
+
+        // Reset size back to square and remove glow
+        this.element.style.transition = 'none'; // Remove transition to avoid flicker during reset
+        this.element.style.width = `${this.config.size}px`;
+        this.element.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.3)';
+
+        // Get spinner and text elements
+        const spinner = this.element.querySelector('.pauseshop-loading-spinner') as HTMLElement;
+        const noProductsText = this.element.querySelector('.pauseshop-no-products-text') as HTMLElement;
+
+        if (spinner && noProductsText) {
+            // Show spinner, hide text
+            spinner.style.display = 'block';
+            noProductsText.style.display = 'none';
+            noProductsText.style.opacity = '0';
+            noProductsText.style.transition = 'none'; // Remove transition to avoid flicker
+        }
     }
 
     /**

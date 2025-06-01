@@ -16,6 +16,7 @@ export class UIManager {
     private productGridConfig: ProductGridConfig;
     private events: UIManagerEvents;
     private isInitialized: boolean = false;
+    private noProductsFoundTimeoutId: NodeJS.Timeout | null = null;
 
     constructor(
         config: Partial<UIConfig> = {},
@@ -44,6 +45,7 @@ export class UIManager {
                 slideOutDuration: 250,
                 pulseDuration: 1500
             },
+            noProductsFoundTimeout: 8000, // 8 seconds default
             ...loadingSquareConfig
         };
 
@@ -153,6 +155,41 @@ export class UIManager {
 
         this.loadingSquare.updateState(state);
         this.events.onStateChange?.(state);
+    }
+
+    /**
+     * Show "no products found" state and auto-hide after timeout
+     */
+    public async showNoProductsFound(timeoutMs?: number): Promise<boolean> {
+        if (!this.loadingSquare?.isVisible()) {
+            return false;
+        }
+
+        try {
+            // Clear any existing timeout to restart the countdown
+            if (this.noProductsFoundTimeoutId) {
+                clearTimeout(this.noProductsFoundTimeoutId);
+                this.noProductsFoundTimeoutId = null;
+            }
+
+            // Use configured timeout or default
+            const timeout = timeoutMs ?? this.loadingSquareConfig.noProductsFoundTimeout ?? 8000;
+            
+            // Update to no products found state
+            this.updateLoadingState(LoadingState.NO_PRODUCTS_FOUND);
+            
+            // Auto-hide after timeout with proper cleanup
+            this.noProductsFoundTimeoutId = setTimeout(async () => {
+                this.noProductsFoundTimeoutId = null;
+                await this.hideLoadingSquare();
+            }, timeout);
+            
+            return true;
+
+        } catch (error) {
+            this.log(`Failed to show no products found state: ${error}`);
+            return false;
+        }
     }
 
     /**
@@ -279,6 +316,12 @@ export class UIManager {
      * Complete cleanup of all UI components
      */
     public cleanup(): void {
+        // Clear any pending no products found timeout
+        if (this.noProductsFoundTimeoutId) {
+            clearTimeout(this.noProductsFoundTimeoutId);
+            this.noProductsFoundTimeoutId = null;
+        }
+
         // Cleanup loading square
         if (this.loadingSquare) {
             this.loadingSquare.cleanup();

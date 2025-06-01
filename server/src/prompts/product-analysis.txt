@@ -21,18 +21,18 @@ For each product, provide:
 
 Format your response as a JSON array of objects with this structure:
 {
-  "products": [
-    {
-      "name": "product name with color",
-      "category": "category",
-      "brand": "brand name or unknown",
-      "primaryColor": "main color",
-      "secondaryColors": ["color1", "color2"],
-      "features": ["style", "material", "pattern"],
-      "targetGender": "men" | "women" | "unisex" | "boy" | "girl",
-      "searchTerms": "optimized search terms for finding this product"
-    }
-  ]
+    "products": [
+        {
+            "name": "product name with color",
+            "category": "category",
+            "brand": "brand name or unknown",
+            "primaryColor": "main color",
+            "secondaryColors": ["color1", "color2"],
+            "features": ["style", "material", "pattern"],
+            "targetGender": "men" | "women" | "unisex" | "boy" | "girl",
+            "searchTerms": "optimized search terms for finding this product"
+        }
+    ]
 }
 
 Important guidelines:
