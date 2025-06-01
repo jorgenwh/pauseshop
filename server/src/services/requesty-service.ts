@@ -7,13 +7,13 @@ import OpenAI from 'openai';
 import { promises as fs } from 'fs';
 import { resolve } from 'path';
 import {
-  RequestyConfig,
-  RequestyResponse,
-  Product,
-  ProductCategory,
-  TargetGender,
-  OpenAIProductResponse,
-  AnalysisService
+    RequestyConfig,
+    RequestyResponse,
+    Product,
+    ProductCategory,
+    TargetGender,
+    OpenAIProductResponse,
+    AnalysisService
 } from '../types/analyze';
 
 export class RequestyService implements AnalysisService {
