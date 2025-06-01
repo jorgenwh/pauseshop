@@ -87,3 +87,30 @@ export interface ImageValidationResult {
     sizeBytes?: number;
     error?: string;
 }
+
+export interface RequestyConfig {
+    apiKey: string;
+    model: string;
+    maxTokens: number;
+    siteUrl?: string;
+    siteName?: string;
+}
+
+export interface RequestyResponse {
+    content: string;
+    usage?: {
+        promptTokens: number;
+        completionTokens: number;
+        totalTokens: number;
+    };
+}
+
+export enum AnalysisProvider {
+    OPENAI = 'openai',
+    REQUESTY = 'requesty'
+}
+
+export interface AnalysisService {
+    analyzeImage(imageData: string): Promise<OpenAIResponse | RequestyResponse>;
+    parseResponseToProducts(response: string): Product[];
+}
