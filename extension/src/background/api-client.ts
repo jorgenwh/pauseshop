@@ -102,13 +102,13 @@ const makeRequest = async (
         return response;
     } catch (error) {
         clearTimeout(timeoutId);
-        
+
         if (attempt < config.retryAttempts) {
             console.log(`[API Client] Request failed (attempt ${attempt}/${config.retryAttempts}), retrying in ${config.retryDelay}ms...`);
             await sleep(config.retryDelay);
             return makeRequest(url, options, config, attempt + 1);
         }
-        
+
         throw error;
     }
 };
@@ -130,8 +130,6 @@ export const analyzeImage = async (
         }
     };
 
-    console.log('[API Client] Sending image analysis request to server...');
-
     try {
         const response = await makeRequest(url, {
             method: 'POST',
@@ -152,9 +150,8 @@ export const analyzeImage = async (
         }
 
         const data: AnalyzeResponse = await response.json();
-        console.log(`[API Client] Analysis successful`);
-        
         return data;
+
     } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error';
         console.error('[API Client] Failed to analyze image:', errorMessage);

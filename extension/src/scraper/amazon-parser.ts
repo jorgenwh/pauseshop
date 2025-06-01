@@ -104,7 +104,7 @@ const extractProductUrlFromHtml = (htmlContent: string, baseUrl: string): string
  */
 const isValidImageUrl = (url: string): boolean => {
     if (!url || url.length === 0) return false;
-    
+
     // Check if it's a valid URL format
     try {
         new URL(url);
@@ -148,7 +148,7 @@ const extractProductDataFromHtml = (
 ): AmazonScrapedProduct | null => {
     try {
         const productId = `scraped-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-        
+
         // Extract core data using regex patterns
         const thumbnailUrl = extractThumbnailUrlFromHtml(htmlContent);
         const productUrl = extractProductUrlFromHtml(htmlContent, baseUrl);
@@ -167,7 +167,7 @@ const extractProductDataFromHtml = (
             if (thumbnailUrl && !isValidImageUrl(thumbnailUrl)) {
                 return null;
             }
-            
+
             if (!isValidProductUrl(productUrl)) {
                 return null;
             }
@@ -188,14 +188,6 @@ const extractProductDataFromHtml = (
             position,
             confidence: Math.min(confidence, 1.0)
         };
-
-        // Console log extracted product data for debugging
-        console.log(`[PauseShop] Scraped Product ${position}:`, {
-            imageUrl: productData.thumbnailUrl,
-            productPageUrl: productData.productUrl,
-            asin: productData.amazonAsin,
-            confidence: productData.confidence
-        });
 
         return productData;
 
@@ -227,30 +219,30 @@ const parseAmazonSearchHtml = (
         while ((match = searchResultPattern.exec(htmlContent)) !== null && position <= config.maxProductsPerSearch) {
             const asin = match[1];
             const containerHtml = match[2];
-            
+
             if (!asin || !containerHtml || processedAsins.has(asin)) continue;
 
             const productData = extractProductDataFromHtml(containerHtml, asin, position, baseUrl, config);
-            
+
             if (productData) {
                 scrapedProducts.push(productData);
                 processedAsins.add(asin);
                 position++;
             }
         }
-        
+
         // If we haven't found enough products, try the more general pattern
         if (position <= config.maxProductsPerSearch) {
             const generalPattern = /<div[^>]*data-asin="([^"]+)"[^>]*>([\s\S]*?)<\/div>/gi;
-            
+
             while ((match = generalPattern.exec(htmlContent)) !== null && position <= config.maxProductsPerSearch) {
                 const asin = match[1];
                 const containerHtml = match[2];
-                
+
                 if (!asin || !containerHtml || processedAsins.has(asin)) continue;
 
                 const productData = extractProductDataFromHtml(containerHtml, asin, position, baseUrl, config);
-                
+
                 if (productData) {
                     scrapedProducts.push(productData);
                     processedAsins.add(asin);
@@ -313,7 +305,7 @@ const scrapeAmazonSearchResult = (
     try {
         // Extract base URL for relative link resolution
         const baseUrl = new URL(executionResult.searchUrl).origin;
-        
+
         // Parse HTML and extract products
         const scrapedProducts = parseAmazonSearchHtml(
             executionResult.htmlContent, 
@@ -339,7 +331,7 @@ const scrapeAmazonSearchResult = (
 
     } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Unknown scraping error';
-        
+
         return {
             productId: executionResult.productId,
             searchUrl: executionResult.searchUrl,
@@ -376,15 +368,8 @@ export const scrapeAmazonSearchBatch = (
             if (scrapedResult.success) {
                 successfulScrapes++;
                 totalProductsFound += scrapedResult.products.length;
-                
-                // Log summary for this search result
-                console.log(`[PauseShop] Search result for product ${executionResult.productId}: ${scrapedResult.products.length} products found`);
-                scrapedResult.products.forEach((product, index) => {
-                    console.log(`  ${index + 1}. ${product.productUrl}`);
-                });
             } else {
                 failedScrapes++;
-                console.log(`[PauseShop] Search result for product ${executionResult.productId}: FAILED - ${scrapedResult.error}`);
             }
 
         } catch (error) {
@@ -406,7 +391,6 @@ export const scrapeAmazonSearchBatch = (
     }
 
     const totalScrapingTime = Date.now() - startTime;
-    const averageProductsPerSearch = successfulScrapes > 0 ? totalProductsFound / successfulScrapes : 0;
 
     // Log final batch summary
     console.log(`[PauseShop] Amazon Scraping Complete:`, {
@@ -414,7 +398,6 @@ export const scrapeAmazonSearchBatch = (
         successfulScrapes,
         failedScrapes,
         totalProductsFound,
-        averageProductsPerSearch: Math.round(averageProductsPerSearch * 100) / 100,
         totalScrapingTime: `${totalScrapingTime}ms`
     });
 
@@ -426,7 +409,6 @@ export const scrapeAmazonSearchBatch = (
             successfulScrapes,
             failedScrapes,
             totalProductsFound,
-            averageProductsPerSearch,
             totalScrapingTime
         }
     };

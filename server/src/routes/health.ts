@@ -9,7 +9,7 @@ import { asyncWrapper } from '../middleware';
 
 const healthCheck = async (req: Request, res: Response): Promise<void> => {
     const startTime = req.app.locals.startTime;
-    
+
     const healthResponse: HealthResponse = {
         status: 'healthy',
         timestamp: new Date().toISOString(),

@@ -13,10 +13,10 @@ export const downscaleImage = async (dataUrl: string, targetWidth: number): Prom
         // Convert data URL to blob
         const response = await fetch(dataUrl);
         const blob = await response.blob();
-        
+
         // Create ImageBitmap from blob (available in service workers)
         const imageBitmap = await createImageBitmap(blob);
-        
+
         // Calculate new dimensions maintaining aspect ratio
         const originalWidth = imageBitmap.width;
         const originalHeight = imageBitmap.height;
@@ -26,17 +26,17 @@ export const downscaleImage = async (dataUrl: string, targetWidth: number): Prom
         // Create OffscreenCanvas for downscaling (available in service workers)
         const canvas = new OffscreenCanvas(targetWidth, newHeight);
         const ctx = canvas.getContext('2d');
-        
+
         if (!ctx) {
             throw new Error('Failed to get canvas context');
         }
 
         // Draw downscaled image
         ctx.drawImage(imageBitmap, 0, 0, targetWidth, newHeight);
-        
+
         // Convert to blob and then to data URL
         const downscaledBlob = await canvas.convertToBlob({ type: 'image/png' });
-        
+
         // Convert blob to data URL
         return new Promise((resolve, reject) => {
             const reader = new FileReader();

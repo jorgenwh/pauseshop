@@ -12,17 +12,9 @@ import { AnalysisProviderFactory } from '../services/analysis-provider-factory';
  * Analyze image using the configured provider
  */
 const analyzeImageWithProvider = async (imageData: string): Promise<Product[]> => {
-  console.log('[ANALYZE] Creating analysis provider...');
   const analysisService = AnalysisProviderFactory.createProvider();
-  console.log(`[ANALYZE] Provider created successfully: ${analysisService.constructor.name}`);
-
-  console.log('[ANALYZE] Sending image to analysis service...');
   const response = await analysisService.analyzeImage(imageData);
-  console.log('[ANALYZE] Analysis response received, parsing products...');
-
   const products = analysisService.parseResponseToProducts(response.content);
-  console.log(`[ANALYZE] Parsed ${products.length} products from response`);
-
   return products;
 };
 
@@ -35,23 +27,29 @@ export const analyzeImageHandler = async (req: Request, res: Response): Promise<
   // Log provider configuration at the start of each request
   console.log('[ANALYZE] =================================');
   console.log('[ANALYZE] Starting image analysis request');
-  console.log(`[ANALYZE] Environment ANALYSIS_PROVIDER: "${process.env.ANALYSIS_PROVIDER}"`);
-  console.log(`[ANALYZE] Current provider: ${AnalysisProviderFactory.getCurrentProvider()}`);
+  console.log(`[ANALYZE] Provider: ${AnalysisProviderFactory.getCurrentProvider()}`);
 
   // Validate provider configuration
   const validation = AnalysisProviderFactory.validateProviderConfig();
-  console.log(`[ANALYZE] Provider config validation: ${validation.isValid ? 'Valid' : 'Invalid - ' + validation.error}`);
+  if (!validation.isValid) {
+    console.error(`[ANALYZE] Provider configuration error: ${validation.error}`);
+    res.status(500).json({
+    success: false,
+    error: {
+      message: validation.error || 'Invalid provider configuration',
+      code: 'PROVIDER_CONFIG_ERROR',
+      timestamp: new Date().toISOString()
+    }
+    });
+    return;
+  }
 
   // Log provider-specific configuration
   const currentProvider = AnalysisProviderFactory.getCurrentProvider();
   if (currentProvider === 'openai') {
     console.log(`[ANALYZE] OpenAI Model: ${process.env.OPENAI_MODEL || 'gpt-4o-mini'}`);
-    console.log(`[ANALYZE] OpenAI Max Tokens: ${process.env.OPENAI_MAX_TOKENS || '1000'}`);
   } else if (currentProvider === 'requesty') {
     console.log(`[ANALYZE] Requesty Model: ${process.env.REQUESTY_MODEL || 'openai/gpt-4o-mini'}`);
-    console.log(`[ANALYZE] Requesty Max Tokens: ${process.env.REQUESTY_MAX_TOKENS || '10000'}`);
-    console.log(`[ANALYZE] Requesty Site URL: ${process.env.REQUESTY_SITE_URL || 'not set'}`);
-    console.log(`[ANALYZE] Requesty Site Name: ${process.env.REQUESTY_SITE_NAME || 'not set'}`);
   }
   console.log('[ANALYZE] =================================');
 

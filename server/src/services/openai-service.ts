@@ -83,8 +83,7 @@ export class OpenAIService implements AnalysisService {
             const processingTime = Date.now() - startTime;
             const content = response.choices[0]?.message?.content || '';
 
-            console.log(`[OPENAI_SERVICE] Analysis completed in ${processingTime}ms`);
-            console.log(`[OPENAI_SERVICE] Token usage: ${response.usage?.total_tokens || 0} tokens`);
+            console.log(`[OPENAI_SERVICE] LLM Analysis completed in ${processingTime}ms`);
 
             return {
                 content,
@@ -107,20 +106,18 @@ export class OpenAIService implements AnalysisService {
   parseResponseToProducts(response: string): Product[] {
         try {
             console.log('[OPENAI_SERVICE] Raw OpenAI response:', response);
-            
+
             // Clean the response - remove any non-JSON content
             const cleanedResponse = this.extractJSONFromResponse(response);
-            console.log('[OPENAI_SERVICE] Cleaned JSON:', cleanedResponse);
-            
+
             // Parse JSON
             const parsedResponse: OpenAIProductResponse = JSON.parse(cleanedResponse);
-            
+
             // Validate and sanitize products
             const validatedProducts = this.validateAndSanitizeProducts(parsedResponse.products || []);
-            console.log(`[OPENAI_SERVICE] Validated ${validatedProducts.length} products`);
-            
+
             return validatedProducts;
-            
+
         } catch (error) {
             console.error('[OPENAI_SERVICE] Error parsing response:', error);
             console.log('[OPENAI_SERVICE] Response that failed to parse:', response.substring(0, 200));
