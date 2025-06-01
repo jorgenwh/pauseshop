@@ -32,7 +32,7 @@ const log = (config: VideoDetectorConfig, message: string): void => {
     }
 };
 
-const handlePause = (config: VideoDetectorConfig, seekingState: SeekingState, siteHandlerRegistry: SiteHandlerRegistry) => (event: Event): void => {
+const handlePause = (config: VideoDetectorConfig, seekingState: SeekingState, siteHandlerRegistry: SiteHandlerRegistry) => (_event: Event): void => {
     if (seekingState.isSeeking) {
         log(config, 'Video paused during seeking - ignoring as non-intentional pause');
         return;
@@ -75,7 +75,7 @@ const handlePlay = (config: VideoDetectorConfig) => (_event: Event): void => {
     });
 };
 
-const handleSeeking = (config: VideoDetectorConfig, seekingState: SeekingState) => (event: Event): void => {
+const handleSeeking = (config: VideoDetectorConfig, seekingState: SeekingState) => (_event: Event): void => {
     seekingState.isSeeking = true;
     seekingState.lastSeekTime = Date.now();
     

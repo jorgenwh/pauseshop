@@ -7,24 +7,24 @@ export class DefaultHandler implements SiteHandler {
         return true;
     }
 
-    handleUserInteraction(config: VideoDetectorConfig, seekingState: SeekingState) {
-        return (event: Event): void => {
+    handleUserInteraction(_config: VideoDetectorConfig, _seekingState: SeekingState) {
+        return (_event: Event): void => {
             // Default handler doesn't need special interaction detection
             // Most sites work fine with the standard pause/seeking event handling
         };
     }
 
-    shouldIgnorePause(seekingState: SeekingState): boolean {
+    shouldIgnorePause(_seekingState: SeekingState): boolean {
         // Default behavior: don't ignore pauses based on interactions
         return false;
     }
 
-    getDebounceTime(seekingState: SeekingState): number {
+    getDebounceTime(_seekingState: SeekingState): number {
         // Default debounce time for all sites
         return 300;
     }
 
-    attachSiteSpecificListeners(config: VideoDetectorConfig, seekingState: SeekingState): (() => void) | null {
+    attachSiteSpecificListeners(_config: VideoDetectorConfig, _seekingState: SeekingState): (() => void) | null {
         // Default handler doesn't need additional listeners
         return null;
     }
