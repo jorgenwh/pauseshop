@@ -9,6 +9,7 @@ export enum LoadingState {
     SLIDING_IN = 'sliding-in',
     LOADING = 'loading',
     PROCESSING = 'processing',
+    TRANSFORMING = 'transforming',
     NO_PRODUCTS_FOUND = 'no-products-found',
     SLIDING_OUT = 'sliding-out'
 }

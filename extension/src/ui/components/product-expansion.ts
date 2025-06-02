@@ -174,7 +174,7 @@ export class ProductExpansion {
                 position: this.calculateSquarePosition(index),
                 size: this.config.squareSize, // Now 126px to match main squares
                 borderRadius: Math.round(this.config.squareSize * 0.16), // Proportional border radius
-                backgroundColor: 'linear-gradient(135deg, rgba(99, 102, 241, 0.95), rgba(168, 85, 247, 0.9), rgba(236, 72, 153, 0.85))',
+                backgroundColor: 'rgba(40, 40, 40, 0.9)', // Neutral dark background to match main squares
                 index: index,
                 spacing: this.config.spacing, // Pass spacing from config
                 animations: {

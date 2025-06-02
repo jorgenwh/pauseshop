@@ -40,6 +40,30 @@ export class ProductGrid {
     }
 
     /**
+     * Create the product grid starting from the second product
+     * Used when the first product is handled by the transformed loading square
+     */
+    public async createFromSecondProduct(productData: ProductDisplayData[]): Promise<HTMLElement> {
+        if (this.container) {
+            this.cleanup(); // Clean up existing grid
+        }
+
+        // Use the data as-is since UI Manager already sliced it correctly (products 1-4)
+        // Just limit to remaining slots (maxProducts - 1 since first slot is taken by loading square)
+        const limitedData = productData.slice(0, this.config.maxProducts - 1);
+
+        // Create container element
+        this.container = document.createElement('div');
+        this.container.className = 'pauseshop-product-grid';
+        this.applyContainerStyles();
+
+        // Create product squares
+        this.createProductSquares(limitedData, 1); // Start index for positioning
+
+        return this.container;
+    }
+
+    /**
      * Show the product grid with staggered animations
      */
     public async show(): Promise<void> {
@@ -70,6 +94,44 @@ export class ProductGrid {
         } catch (error) {
             console.warn('PauseShop: Failed to show product grid:', error);
             // Ensure all squares are visible even if animation fails
+            this.productSquares.forEach(square => {
+                const element = square.getElement();
+                if (element) {
+                    element.style.transform = 'translateY(0)';
+                    element.style.opacity = '1';
+                }
+            });
+            this.updateState(ProductDisplayState.DISPLAYED);
+        }
+    }
+
+    /**
+     * Show only the remaining product squares with staggered animations
+     * Used when the first product is already displayed by the transformed loading square
+     */
+    public async showRemainingProducts(): Promise<void> {
+        if (!this.container || this.productSquares.length === 0) {
+            // No remaining products to show, or grid not created
+            return;
+        }
+
+        try {
+            this.updateState(ProductDisplayState.SLIDING_OUT);
+
+            const animationPromises: Promise<void>[] = [];
+            
+            this.productSquares.forEach((square, index) => {
+                // Delay based on their position in the grid (index 0 is the second product overall)
+                const delay = index * this.config.animationDelayMs;
+                animationPromises.push(square.show(delay));
+            });
+
+            await Promise.all(animationPromises);
+            
+            this.updateState(ProductDisplayState.DISPLAYED);
+
+        } catch (error) {
+            console.warn('PauseShop: Failed to show remaining product grid:', error);
             this.productSquares.forEach(square => {
                 const element = square.getElement();
                 if (element) {
@@ -175,13 +237,14 @@ export class ProductGrid {
      * Create product squares for each product data item
      * Enhanced for Task 4.4: Pass all products and expansion coordination
      */
-    private createProductSquares(productData: ProductDisplayData[]): void {
+    private createProductSquares(productData: ProductDisplayData[], startIndex: number = 0): void {
         productData.forEach((data, index) => {
+            const actualIndex = startIndex + index; // Adjust index for positioning
             const squareConfig: ProductSquareConfig = {
                 size: this.config.squareSize,
                 borderRadius: this.config.borderRadius,
                 backgroundColor: this.config.backgroundColor,
-                position: this.calculateSquarePosition(index),
+                position: this.calculateSquarePosition(actualIndex),
                 thumbnailUrl: data.thumbnailUrl,
                 productData: data.allProducts.length > 0 ? data.allProducts[0] : null, // First product for thumbnail
                 allProducts: data.allProducts, // All products for expansion
@@ -190,7 +253,7 @@ export class ProductGrid {
                     slideDownDuration: 200,
                     thumbnailFadeDuration: 300
                 },
-                onExpansionRequest: () => this.handleExpansionRequest(index) // Expansion coordination
+                onExpansionRequest: () => this.handleExpansionRequest(actualIndex) // Expansion coordination
             };
 
             const square = new ProductSquare(squareConfig);

@@ -333,8 +333,8 @@ export class ProductSquare {
         
         // Apply fallback styles
         const fallbackStyles = {
-            width: '100px',
-            height: '100px',
+            width: '118px',
+            height: '118px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -342,7 +342,8 @@ export class ProductSquare {
             color: 'rgba(255, 255, 255, 0.8)',
             background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.3), rgba(168, 85, 247, 0.2))',
             borderRadius: '8px',
-            margin: '13px'
+            border: '1px solid rgba(255, 255, 255, 0.2)', // Added border
+            boxSizing: 'border-box' as const // Ensure border is inside
         };
         
         Object.assign(fallback.style, fallbackStyles);
@@ -387,7 +388,7 @@ export class ProductSquare {
         const styles = {
             width: `${this.config.size}px`,
             height: `${this.config.size}px`,
-            background: this.config.backgroundColor,
+            background: 'rgba(40, 40, 40, 0.9)', // Neutral dark background
             borderRadius: `${this.config.borderRadius}px`,
             position: 'fixed' as const,
             top: `${this.config.position.top}px`,
@@ -398,7 +399,7 @@ export class ProductSquare {
             pointerEvents: 'auto' as const, // Enable for future click handling
             userSelect: 'none' as const,
             boxSizing: 'border-box' as const,
-            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
+            boxShadow: '0 12px 36px rgba(0, 0, 0, 0.5), 0 6px 18px rgba(0, 0, 0, 0.3)', // Further enhanced box shadow
             transition: 'none',
             cursor: 'pointer',
             display: 'flex',
@@ -416,10 +417,12 @@ export class ProductSquare {
         if (!this.thumbnailElement) return;
 
         const thumbnailStyles = {
-            width: '100px',
-            height: '100px',
+            width: '118px',
+            height: '118px',
             objectFit: 'cover' as const,
             borderRadius: '8px',
+            border: '1px solid rgba(255, 255, 255, 0.2)', // Added border
+            boxSizing: 'border-box' as const, // Ensure border is inside
             opacity: '0',
             transition: 'opacity 300ms ease-in'
         };

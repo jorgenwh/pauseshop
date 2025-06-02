@@ -240,6 +240,99 @@ export class AnimationController {
     }
 
     /**
+     * Cross-fade between two elements for smooth content transitions
+     */
+    public crossFade(fromElement: HTMLElement, toElement: HTMLElement, config: AnimationConfig): Promise<void> {
+        return new Promise((resolve, reject) => {
+            try {
+                const fadeOutPromise = this.fadeElement(fromElement, 1, 0, config.duration / 2);
+                const fadeInPromise = new Promise<void>((resolveIn) => {
+                    setTimeout(() => {
+                        this.fadeElement(toElement, 0, 1, config.duration / 2).then(resolveIn);
+                    }, config.duration / 2);
+                });
+
+                Promise.all([fadeOutPromise, fadeInPromise]).then(() => resolve()).catch(reject);
+
+            } catch (error) {
+                reject(error);
+            }
+        });
+    }
+
+    /**
+     * Fade an element from one opacity to another
+     */
+    public fadeElement(element: HTMLElement, fromOpacity: number, toOpacity: number, duration: number): Promise<void> {
+        return new Promise((resolve, reject) => {
+            try {
+                const keyframes = [
+                    { opacity: fromOpacity.toString() },
+                    { opacity: toOpacity.toString() }
+                ];
+
+                const animationOptions: KeyframeAnimationOptions = {
+                    duration: duration,
+                    easing: 'ease-in-out',
+                    fill: 'forwards'
+                };
+
+                const fadeAnimation = element.animate(keyframes, animationOptions);
+                this.activeAnimations.push(fadeAnimation);
+
+                fadeAnimation.addEventListener('finish', () => {
+                    this.removeFromActiveAnimations(fadeAnimation);
+                    resolve();
+                });
+
+                fadeAnimation.addEventListener('cancel', () => {
+                    this.removeFromActiveAnimations(fadeAnimation);
+                    reject(new Error('Fade animation was cancelled'));
+                });
+
+            } catch (error) {
+                reject(error);
+            }
+        });
+    }
+
+    /**
+     * Transform content with opacity transition
+     */
+    public transformContent(config: AnimationConfig & { fromOpacity: number, toOpacity: number }): Promise<void> {
+        return new Promise((resolve, reject) => {
+            try {
+                const keyframes = [
+                    { opacity: config.fromOpacity.toString() },
+                    { opacity: config.toOpacity.toString() }
+                ];
+
+                const animationOptions: KeyframeAnimationOptions = {
+                    duration: config.duration,
+                    easing: config.easing,
+                    fill: 'forwards'
+                };
+
+                const transformAnimation = this.element.animate(keyframes, animationOptions);
+                this.activeAnimations.push(transformAnimation);
+
+                transformAnimation.addEventListener('finish', () => {
+                    this.removeFromActiveAnimations(transformAnimation);
+                    resolve();
+                });
+
+                transformAnimation.addEventListener('cancel', () => {
+                    this.removeFromActiveAnimations(transformAnimation);
+                    reject(new Error('Transform animation was cancelled'));
+                });
+
+            } catch (error) {
+                reject(error);
+            }
+        });
+    }
+
+    /**
      * Start pulsing opacity animation for loading state
      */
     public startPulseAnimation(config: AnimationConfig): void {

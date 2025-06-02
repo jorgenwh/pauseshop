@@ -128,10 +128,12 @@ export class UIManager {
         try {
             await this.loadingSquare.hide();
             
-            // Remove from DOM after animation
-            const element = this.loadingSquare.getElement();
-            if (element && element.parentNode) {
-                element.parentNode.removeChild(element);
+            // Only remove from DOM if it hasn't been transformed into a product card
+            if (!this.loadingSquare.isTransformed) {
+                const element = this.loadingSquare.getElement();
+                if (element && element.parentNode) {
+                    element.parentNode.removeChild(element);
+                }
             }
             
             this.events.onHide?.();
@@ -196,24 +198,25 @@ export class UIManager {
      * Show product grid (transforms from loading square)
      */
     public async showProductGrid(productData: ProductDisplayData[]): Promise<boolean> {
-        if (!this.ensureInitialized()) {
+        if (!this.ensureInitialized() || !productData.length) {
             return false;
         }
 
         try {
-            // Hide loading square first
-            await this.hideLoadingSquare();
-
-            // Create and show product grid
-            this.productGrid = new ProductGrid(this.productGridConfig);
-            const gridElement = await this.productGrid.create(productData);
-            this.container!.appendChild(gridElement);
-
-            // Show with staggered animations
-            await this.productGrid.show();
+            // Phase 1: Transform loading square to first product
+            await this.loadingSquare!.transformToProductCard(productData[0]);
+            
+            // Phase 2: Create grid with remaining products if any exist
+            if (productData.length > 1) {
+                this.productGrid = new ProductGrid(this.productGridConfig);
+                const gridElement = await this.productGrid.createFromSecondProduct(productData.slice(1));
+                this.container!.appendChild(gridElement);
+                
+                // Phase 3: Show remaining products with staggered animation
+                await this.productGrid.showRemainingProducts();
+            }
             
             this.events.onProductGridShow?.();
-            
             return true;
 
         } catch (error) {

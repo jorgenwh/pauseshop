@@ -4,13 +4,16 @@
  */
 
 import { AnimationController } from './animation-controller';
-import { LoadingState, LoadingSquareConfig } from '../types';
+import { LoadingState, LoadingSquareConfig, ProductDisplayData } from '../types';
 
 export class LoadingSquare {
     private element: HTMLElement | null = null;
     private animationController: AnimationController | null = null;
     private currentState: LoadingState = LoadingState.HIDDEN;
     private config: LoadingSquareConfig;
+
+    private thumbnailElement: HTMLImageElement | null = null;
+    private _isTransformed: boolean = false;
 
     constructor(config: LoadingSquareConfig) {
         this.config = config;
@@ -32,6 +35,13 @@ export class LoadingSquare {
         spinner.className = 'pauseshop-loading-spinner';
         this.element.appendChild(spinner);
         
+        // Create thumbnail container (initially hidden)
+        const thumbnailContainer = document.createElement('div');
+        thumbnailContainer.className = 'pauseshop-thumbnail-container';
+        thumbnailContainer.style.display = 'none'; // Initially hidden
+        thumbnailContainer.style.opacity = '0'; // Initially transparent
+        this.element.appendChild(thumbnailContainer);
+
         // Create no products found text element
         const noProductsText = document.createElement('div');
         noProductsText.className = 'pauseshop-no-products-text';
@@ -42,7 +52,7 @@ export class LoadingSquare {
         noProductsText.style.display = 'none'; // Initially hidden
         this.element.appendChild(noProductsText);
         
-        // Apply styling
+        // Apply initial styling
         this.applyStyles();
         
         // Initialize animation controller
@@ -125,6 +135,249 @@ export class LoadingSquare {
     }
 
     /**
+     * Transform the loading square to become the first product card
+     */
+    public async transformToProductCard(productData: ProductDisplayData): Promise<void> {
+        if (!this.element || !this.animationController) {
+            throw new Error('Loading square not created yet');
+        }
+
+        if (this.currentState !== LoadingState.LOADING && this.currentState !== LoadingState.PROCESSING) {
+            return;
+        }
+
+        try {
+            this.updateState(LoadingState.TRANSFORMING);
+
+            // Phase 1: Fade out spinner (150ms)
+            await this.fadeOutSpinner();
+
+            // Phase 2: Update styling and fade in product thumbnail (150ms)
+            await Promise.all([
+                this.updateToProductStyling(),
+                this.fadeInProductThumbnail(productData.thumbnailUrl, productData.category)
+            ]);
+
+            // Phase 3: Enable product interactions
+            this.enableProductInteractions(productData);
+
+            this._isTransformed = true;
+            this.updateState(LoadingState.LOADING); // Keep as loading state but transformed
+
+        } catch (error) {
+            console.warn('PauseShop: Failed to transform loading square:', error);
+            // Fallback to showing first product immediately
+            this.element.style.opacity = '1';
+            this.updateState(LoadingState.LOADING);
+        }
+    }
+
+    /**
+     * Fade out the spinner element
+     */
+    private async fadeOutSpinner(): Promise<void> {
+        if (!this.animationController) return;
+
+        const spinner = this.element?.querySelector('.pauseshop-loading-spinner') as HTMLElement;
+        if (spinner) {
+            await this.animationController.fadeElement(spinner, 1, 0, 150);
+            spinner.style.display = 'none';
+        }
+    }
+
+    /**
+     * Fade in the product thumbnail
+     */
+    private async fadeInProductThumbnail(thumbnailUrl: string | null, category: string): Promise<void> {
+        if (!this.element || !this.animationController) return;
+
+        // Create thumbnail container if it doesn't exist
+        let thumbnailContainer = this.element.querySelector('.pauseshop-thumbnail-container') as HTMLElement;
+        if (!thumbnailContainer) {
+            thumbnailContainer = document.createElement('div');
+            thumbnailContainer.className = 'pauseshop-thumbnail-container';
+            this.element.appendChild(thumbnailContainer);
+        }
+
+        // Create thumbnail or fallback
+        if (thumbnailUrl) {
+            await this.createThumbnailImage(thumbnailContainer, thumbnailUrl);
+        } else {
+            this.createFallbackDisplay(thumbnailContainer, category);
+        }
+
+        // Fade in the thumbnail container
+        thumbnailContainer.style.opacity = '0';
+        thumbnailContainer.style.display = 'flex';
+        await this.animationController.fadeElement(thumbnailContainer, 0, 1, 150);
+    }
+
+    /**
+     * Update styling to match product squares
+     */
+    private async updateToProductStyling(): Promise<void> {
+        if (!this.element) return;
+
+        // Make the element visible and properly positioned
+        this.element.style.opacity = '1';
+        this.element.style.transform = 'translateX(0)';
+        
+        // Update background to match product squares
+        this.element.style.background = 'rgba(40, 40, 40, 0.9)';
+        
+        // Update box shadow to match product squares
+        this.element.style.boxShadow = '0 12px 36px rgba(0, 0, 0, 0.5), 0 6px 18px rgba(0, 0, 0, 0.3)';
+        
+        // Enable pointer events for interactions
+        this.element.style.pointerEvents = 'auto';
+        this.element.style.cursor = 'pointer';
+        
+        // Add flex layout for centering content
+        this.element.style.display = 'flex';
+        this.element.style.alignItems = 'center';
+        this.element.style.justifyContent = 'center';
+    }
+
+    /**
+     * Enable product interactions (click/hover)
+     */
+    private enableProductInteractions(productData: ProductDisplayData): void {
+        if (!this.element || productData.allProducts.length <= 1) return;
+
+        // Add click handler for expansion if multiple products
+        this.element.addEventListener('click', this.handleProductClick.bind(this, productData));
+        
+        // Add hover effects
+        this.element.addEventListener('mouseenter', () => {
+            if (this.element && this._isTransformed) {
+                this.element.style.transform += ' scale(1.02)';
+                this.element.style.transition = 'transform 0.1s ease';
+            }
+        });
+
+        this.element.addEventListener('mouseleave', () => {
+            if (this.element && this._isTransformed) {
+                this.element.style.transform = this.element.style.transform.replace(' scale(1.02)', '');
+            }
+        });
+    }
+
+    /**
+     * Handle click event for product expansion
+     */
+    private handleProductClick(productData: ProductDisplayData, event: Event): void {
+        event.preventDefault();
+        event.stopPropagation();
+        
+        // This would integrate with the expansion system
+        // For now, just log the interaction
+        console.log('PauseShop: Transformed loading card clicked', productData);
+    }
+
+    /**
+     * Create thumbnail image element for transformation
+     */
+    private async createThumbnailImage(container: HTMLElement, thumbnailUrl: string): Promise<void> {
+        return new Promise((resolve, reject) => {
+            // Clear existing content
+            container.innerHTML = '';
+
+            this.thumbnailElement = document.createElement('img');
+            this.thumbnailElement.className = 'pauseshop-thumbnail-image';
+            this.thumbnailElement.src = thumbnailUrl;
+            this.thumbnailElement.alt = 'Product thumbnail';
+            
+            // Handle image load/error
+            this.thumbnailElement.onload = () => {
+                if (this.thumbnailElement) {
+                    this.applyThumbnailStyles();
+                    resolve();
+                }
+            };
+            
+            this.thumbnailElement.onerror = () => {
+                // Fallback to category icon on error
+                if (container && this.thumbnailElement) {
+                    container.removeChild(this.thumbnailElement);
+                    this.createFallbackDisplay(container, 'default');
+                    resolve();
+                }
+            };
+            
+            container.appendChild(this.thumbnailElement);
+        });
+    }
+
+    /**
+     * Create fallback display for transformation
+     */
+    private createFallbackDisplay(container: HTMLElement, category: string): void {
+        // Clear existing content
+        container.innerHTML = '';
+
+        const fallback = document.createElement('div');
+        fallback.className = 'pauseshop-thumbnail-fallback';
+        fallback.textContent = this.getCategoryIcon(category);
+        
+        // Apply fallback styles
+        const fallbackStyles = {
+            width: '118px',
+            height: '118px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: '32px',
+            color: 'rgba(255, 255, 255, 0.8)',
+            background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.3), rgba(168, 85, 247, 0.2))',
+            borderRadius: '8px',
+            border: '1px solid rgba(255, 255, 255, 0.2)',
+            boxSizing: 'border-box' as const
+        };
+        
+        Object.assign(fallback.style, fallbackStyles);
+        container.appendChild(fallback);
+    }
+
+    /**
+     * Get category icon for fallback display
+     */
+    private getCategoryIcon(category: string): string {
+        switch (category) {
+            case 'clothing': return '👕';
+            case 'electronics': return '📱';
+            case 'furniture': return '🛋️';
+            case 'accessories': return '👜';
+            case 'footwear': return '👟';
+            case 'home_decor': return '🏠';
+            case 'books_media': return '📚';
+            case 'sports_fitness': return '⚽';
+            case 'beauty_personal_care': return '💄';
+            case 'kitchen_dining': return '🍽️';
+            default: return '📦';
+        }
+    }
+
+    /**
+     * Apply styles to thumbnail image
+     */
+    private applyThumbnailStyles(): void {
+        if (!this.thumbnailElement) return;
+
+        const thumbnailStyles = {
+            width: '118px',
+            height: '118px',
+            objectFit: 'cover' as const,
+            borderRadius: '8px',
+            border: '1px solid rgba(255, 255, 255, 0.2)',
+            boxSizing: 'border-box' as const,
+            opacity: '1', // Set to 1 as it's faded in by animation controller
+            transition: 'none' // Handled by animation controller
+        };
+
+        Object.assign(this.thumbnailElement.style, thumbnailStyles);
+    }
+
+    /**
      * Update the loading state
      */
     public updateState(newState: LoadingState): void {
@@ -139,8 +392,10 @@ export class LoadingSquare {
         // Handle state-specific logic
         switch (newState) {
             case LoadingState.LOADING:
-                // Reset visual state when returning to loading
-                this.resetToLoadingState();
+                // Only reset visual state when returning to loading if not transformed
+                if (!this._isTransformed) {
+                    this.resetToLoadingState();
+                }
                 break;
             case LoadingState.PROCESSING:
                 // Could add different animation or styling for processing state
@@ -166,6 +421,12 @@ export class LoadingSquare {
     /**
      * Check if the square is visible
      */
+/**
+     * Check if the loading square has been transformed into a product card
+     */
+    public get isTransformed(): boolean {
+        return this._isTransformed;
+    }
     public isVisible(): boolean {
         return this.currentState !== LoadingState.HIDDEN;
     }
@@ -266,18 +527,30 @@ export class LoadingSquare {
         this.element.style.transition = 'none'; // Remove transition to avoid flicker during reset
         this.element.style.width = `${this.config.size}px`;
         this.element.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.3)';
+        this.element.style.background = this.config.backgroundColor; // Reset background
+        this.element.style.pointerEvents = 'none'; // Disable pointer events
+        this.element.style.cursor = 'default'; // Reset cursor
 
-        // Get spinner and text elements
+        // Get spinner, thumbnail container, and text elements
         const spinner = this.element.querySelector('.pauseshop-loading-spinner') as HTMLElement;
+        const thumbnailContainer = this.element.querySelector('.pauseshop-thumbnail-container') as HTMLElement;
         const noProductsText = this.element.querySelector('.pauseshop-no-products-text') as HTMLElement;
 
-        if (spinner && noProductsText) {
-            // Show spinner, hide text
+        if (spinner) {
             spinner.style.display = 'block';
+            spinner.style.opacity = '1';
+        }
+        if (thumbnailContainer) {
+            thumbnailContainer.innerHTML = ''; // Clear any product content
+            thumbnailContainer.style.display = 'none';
+            thumbnailContainer.style.opacity = '0';
+        }
+        if (noProductsText) {
             noProductsText.style.display = 'none';
             noProductsText.style.opacity = '0';
-            noProductsText.style.transition = 'none'; // Remove transition to avoid flicker
+            noProductsText.style.transition = 'none';
         }
+        this._isTransformed = false;
     }
 
     /**
@@ -301,6 +574,8 @@ export class LoadingSquare {
         }
 
         this.element = null;
+        this.thumbnailElement = null;
         this.currentState = LoadingState.HIDDEN;
+        this._isTransformed = false;
     }
 }
