@@ -242,17 +242,22 @@ export class ProductGrid {
 
     /**
      * Handle expansion request from a product square (Task 4.4)
+     * Modified to start collapse immediately without waiting for completion
      */
     private async handleExpansionRequest(requestingIndex: number): Promise<void> {
-        // Collapse any currently expanded square
+        // Start collapse of any currently expanded square but don't wait for it
         if (this.expandedSquareIndex !== null && this.expandedSquareIndex !== requestingIndex) {
             const currentlyExpanded = this.productSquares[this.expandedSquareIndex];
             if (currentlyExpanded && typeof (currentlyExpanded as unknown as { collapseExpansion?: () => Promise<void> }).collapseExpansion === 'function') {
-                await (currentlyExpanded as unknown as { collapseExpansion: () => Promise<void> }).collapseExpansion();
+                // Start collapse but don't await - let it happen in parallel
+                (currentlyExpanded as unknown as { collapseExpansion: () => Promise<void> }).collapseExpansion().catch(error => {
+                    console.warn('PauseShop: Error during parallel collapse:', error);
+                });
             }
         }
         
         this.expandedSquareIndex = requestingIndex;
+        // Return immediately so the new expansion can start right away
     }
 
     /**
