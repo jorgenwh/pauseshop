@@ -17,9 +17,13 @@ import type { ScreenshotConfig, ScreenshotResponse } from './types';
  * @param windowId The window ID to capture from
  * @returns Promise<ScreenshotResponse> The analysis results
  */
-export const handleScreenshotAnalysis = async (config: ScreenshotConfig, windowId: number): Promise<ScreenshotResponse> => {
+export const handleScreenshotAnalysis = async (config: ScreenshotConfig, windowId: number, pauseId?: string): Promise<ScreenshotResponse> => {
     try {
         // Capture and downscale screenshot
+        // The captureScreenshot function in content script is not the same as this one.
+        // This captureScreenshot is from './screenshot-capturer' which is a background script utility.
+        // It's confusing, but the content script's captureScreenshot sends a message to this background script.
+        // So, we don't pass pauseId here. The pauseId is already in the config object.
         const imageData = await captureScreenshot(config, windowId);
 
         // Send to server for analysis
@@ -83,7 +87,8 @@ export const handleScreenshotAnalysis = async (config: ScreenshotConfig, windowI
                             analysisResult,
                             amazonSearchResults,
                             amazonExecutionResults,
-                            amazonScrapedResults
+                            amazonScrapedResults,
+                            pauseId // Include pauseId in the response
                         };
                     } catch (scrapingError) {
                         const scrapingErrorMessage = scrapingError instanceof Error ? scrapingError.message : 'Unknown scraping error';
@@ -95,7 +100,8 @@ export const handleScreenshotAnalysis = async (config: ScreenshotConfig, windowI
                             analysisResult,
                             amazonSearchResults,
                             amazonExecutionResults,
-                            amazonScrapedResults: null
+                            amazonScrapedResults: null,
+                            pauseId // Include pauseId in the response
                         };
                     }
                 } catch (executionError) {
@@ -108,7 +114,8 @@ export const handleScreenshotAnalysis = async (config: ScreenshotConfig, windowI
                         analysisResult,
                         amazonSearchResults,
                         amazonExecutionResults: null,
-                        amazonScrapedResults: null
+                        amazonScrapedResults: null,
+                        pauseId // Include pauseId in the response
                     };
                 }
             } catch (searchError) {
@@ -121,7 +128,8 @@ export const handleScreenshotAnalysis = async (config: ScreenshotConfig, windowI
                     analysisResult,
                     amazonSearchResults: null,
                     amazonExecutionResults: null,
-                    amazonScrapedResults: null
+                    amazonScrapedResults: null,
+                    pauseId // Include pauseId in the response
                 };
             }
         } catch (serverError) {
@@ -130,13 +138,14 @@ export const handleScreenshotAnalysis = async (config: ScreenshotConfig, windowI
 
             return {
                 success: false,
-                error: `Server communication failed: ${serverErrorMessage}`
+                error: `Server communication failed: ${serverErrorMessage}`,
+                pauseId // Include pauseId in the response
             };
         }
 
     } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error';
         log(config, `Screenshot workflow failed: ${errorMessage}`);
-        return { success: false, error: errorMessage };
+        return { success: false, error: errorMessage, pauseId };
     }
 };

@@ -10,11 +10,13 @@ export interface ScreenshotConfig {
     logPrefix: string;
     debugMode: boolean;
     serverUrl: string;
+    pauseId?: string; // Add pauseId
 }
 
 export interface ScreenshotMessage {
     action: 'captureScreenshot';
     config: ScreenshotConfig;
+    pauseId?: string; // Add pauseId
 }
 
 export interface AnalysisResult {
@@ -40,4 +42,5 @@ export interface ScreenshotResponse {
     amazonSearchResults?: AmazonSearchBatch | null;
     amazonExecutionResults?: AmazonSearchExecutionBatch | null;
     amazonScrapedResults?: AmazonScrapedBatch | null;
+    pauseId?: string; // Add pauseId to response
 }

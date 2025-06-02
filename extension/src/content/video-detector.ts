@@ -23,24 +23,22 @@ const createInitialSeekingState = (): SeekingState => ({
     pauseDebounceTimeoutId: null,
     previousCurrentTime: 0,
     userInteractionDetected: false,
-    lastInteractionTime: 0
+    lastInteractionTime: 0,
+    currentPauseId: null // Initialize currentPauseId
 });
 
-const log = (config: VideoDetectorConfig, message: string): void => {
-    if (config.enableLogging) {
-        console.log(`${config.logPrefix}: ${message}`);
-    }
-};
 
 const handlePause = (config: VideoDetectorConfig, seekingState: SeekingState, siteHandlerRegistry: SiteHandlerRegistry) => (_event: Event): void => {
     if (seekingState.isSeeking) {
-        log(config, 'Video paused during seeking - ignoring as non-intentional pause');
         return;
     }
 
+    // Generate a unique ID for this pause event
+    const newPauseId = Date.now().toString();
+    seekingState.currentPauseId = newPauseId;
+
     // Site-specific: Check for recent user interactions that might indicate seeking
     if (siteHandlerRegistry.shouldIgnorePause(seekingState)) {
-        log(config, 'Video paused but recent seeking interaction detected - likely seeking, ignoring pause');
         return;
     }
 
@@ -54,24 +52,41 @@ const handlePause = (config: VideoDetectorConfig, seekingState: SeekingState, si
 
     // Debounce pause detection to check if seeking follows
     seekingState.pauseDebounceTimeoutId = window.setTimeout(() => {
-        if (!seekingState.isSeeking) {
-            log(config, 'Video paused (intentional user pause detected)');
-            // Trigger screenshot capture for intentional pause
-            captureScreenshot().catch(error => {
-                log(config, `Screenshot capture failed: ${error}`);
-            });
-        } else {
-            log(config, 'Video paused but seeking detected during debounce - ignoring as non-intentional pause');
+        const videoElement = document.querySelector('video') as HTMLVideoElement;
+        if (videoElement && videoElement.paused) {
+            const videoElement = document.querySelector('video') as HTMLVideoElement;
+            // Only proceed if the video is still paused AND this is still the active pause event
+            if (videoElement && videoElement.paused && seekingState.currentPauseId === newPauseId) {
+                if (!seekingState.isSeeking) {
+                    // Trigger screenshot capture for intentional pause, passing the pauseId and a function to get the current pause ID
+                    captureScreenshot(
+                        { pauseId: newPauseId },
+                        newPauseId,
+                        () => seekingState.currentPauseId // Pass a function to get the current pause ID
+                    ).catch(_error => {
+                        // Error logging is handled within captureScreenshot
+                    });
+                }
+            }
         }
         seekingState.pauseDebounceTimeoutId = null;
     }, debounceTime);
 };
 
-const handlePlay = (config: VideoDetectorConfig) => (_event: Event): void => {
-    log(config, 'Video resumed');
+const handlePlay = (config: VideoDetectorConfig, seekingState: SeekingState) => (_event: Event): void => {
+    // Invalidate the current pause ID when video resumes
+    if (seekingState.currentPauseId !== null) {
+        seekingState.currentPauseId = null;
+    }
+
+    // Clear any pending pause debounce timeout when video resumes
+    if (seekingState.pauseDebounceTimeoutId !== null) {
+        clearTimeout(seekingState.pauseDebounceTimeoutId);
+        seekingState.pauseDebounceTimeoutId = null;
+    }
     // Hide UI when video resumes
-    hideUI().catch(error => {
-        log(config, `Failed to hide UI: ${error}`);
+    hideUI().catch(_error => {
+        // Error logging is handled within hideUI
     });
 };
 
@@ -84,7 +99,6 @@ const handleSeeking = (config: VideoDetectorConfig, seekingState: SeekingState) 
         seekingState.userInteractionDetected = false;
     }
 
-    log(config, 'Seeking started - suppressing pause detection');
 
     // Clear any existing debounce timeouts
     if (seekingState.debounceTimeoutId !== null) {
@@ -92,6 +106,8 @@ const handleSeeking = (config: VideoDetectorConfig, seekingState: SeekingState) 
         seekingState.debounceTimeoutId = null;
     }
 
+    // The pause debounce timeout is now conditionally executed, so explicit clearing here is not strictly necessary
+    // However, we can still clear it to prevent any potential race conditions or unnecessary executions.
     if (seekingState.pauseDebounceTimeoutId !== null) {
         clearTimeout(seekingState.pauseDebounceTimeoutId);
         seekingState.pauseDebounceTimeoutId = null;
@@ -102,7 +118,6 @@ const handleSeeked = (config: VideoDetectorConfig, seekingState: SeekingState, s
     const seekingConfig = { ...defaultSeekingDetectionConfig, ...config.seekingDetection };
     const video = event.target as HTMLVideoElement;
 
-    log(config, 'Seeking completed - starting debounce timer');
 
     // Clear any existing timeout
     if (seekingState.debounceTimeoutId !== null) {
@@ -114,27 +129,17 @@ const handleSeeked = (config: VideoDetectorConfig, seekingState: SeekingState, s
         seekingState.isSeeking = false;
         seekingState.debounceTimeoutId = null;
 
-        // DIAGNOSTIC: Check if video is paused after seeking completes
         if (video && video.paused) {
             // Check if we should ignore this pause (due to recent interactions)
             if (!siteHandlerRegistry.shouldIgnorePause(seekingState)) {
-                log(config, 'DIAGNOSTIC: Video paused after seeking - adding additional delay for multi-key seeking');
-
                 // Add extra delay when video was paused to allow for multiple arrow key presses
                 setTimeout(() => {
                     // Double-check that video is still paused and no new seeking has started
                     if (video.paused && !seekingState.isSeeking) {
-                        log(config, 'DIAGNOSTIC: Video still paused after extended delay - triggering pause detection');
                         handlePause(config, seekingState, siteHandlerRegistry)(event);
-                    } else {
-                        log(config, 'DIAGNOSTIC: Video state changed during extended delay - not triggering pause detection');
                     }
                 }, 1500); // Additional 1.5 second delay for arrow key seeking
-            } else {
-                log(config, 'DIAGNOSTIC: Video paused after seeking but ignoring due to recent interaction');
             }
-        } else {
-            log(config, 'DIAGNOSTIC: Video is playing after seeking completed');
         }
     }, seekingConfig.seekingDebounceMs);
 };
@@ -152,7 +157,6 @@ const handleTimeUpdate = (config: VideoDetectorConfig, seekingState: SeekingStat
     // Detect large time jumps that might indicate seeking (fallback detection)
     if (timeDifference > seekingConfig.timeJumpThreshold && seekingState.previousCurrentTime > 0) {
         if (!seekingState.isSeeking) {
-            log(config, `Large time jump detected (${timeDifference.toFixed(2)}s) - treating as seeking`);
             handleSeeking(config, seekingState)(event);
 
             // Auto-clear seeking state after debounce period
@@ -174,7 +178,7 @@ const attachVideoListeners = (
     siteHandlerRegistry: SiteHandlerRegistry
 ): CleanupFunction => {
     const pauseHandler = handlePause(config, seekingState, siteHandlerRegistry);
-    const playHandler = handlePlay(config);
+    const playHandler = handlePlay(config, seekingState); // Pass seekingState to handlePlay
     const seekingHandler = handleSeeking(config, seekingState);
     const seekedHandler = handleSeeked(config, seekingState, siteHandlerRegistry);
     const timeUpdateHandler = handleTimeUpdate(config, seekingState, video, siteHandlerRegistry);
@@ -296,7 +300,6 @@ export const initializeVideoDetector = (
 
         // Attach listeners to new video
         videoCleanup = attachVideoListeners(video, config, seekingState, siteHandlerRegistry);
-        log(config, 'Video detected and listeners attached');
     };
 
     // Scan for existing videos
