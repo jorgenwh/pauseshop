@@ -239,6 +239,11 @@ export class ProductSquare {
                 await this.config.onExpansionRequest();
             }
 
+            // Fade and blur main square to indicate focus should shift to secondary cards
+            if (this.element) {
+                await this.fadeAndBlurElement(this.element, 1.0, 0.3, 0, 3, 200);
+            }
+
             // Create expansion component
             const expansionConfig: ProductExpansionConfig = {
                 parentSquare: this.element!,
@@ -265,6 +270,14 @@ export class ProductSquare {
 
         } catch (error) {
             console.warn('PauseShop: Failed to expand product square:', error);
+            // Restore opacity and remove blur on error
+            if (this.element) {
+                this.fadeAndBlurElement(this.element, 0.3, 1.0, 3, 0, 200).catch(() => {
+                    // Fallback to direct style manipulation
+                    this.element!.style.opacity = '1';
+                    this.element!.style.filter = 'none';
+                });
+            }
         }
     }
 
@@ -282,6 +295,11 @@ export class ProductSquare {
             this.expansion = null;
             this.isExpanded = false;
 
+            // Restore main square opacity and remove blur after expansion collapses
+            if (this.element) {
+                await this.fadeAndBlurElement(this.element, 0.3, 1.0, 3, 0, 200);
+            }
+
         } catch (error) {
             console.warn('PauseShop: Failed to collapse expansion:', error);
             // Force cleanup on error
@@ -290,7 +308,62 @@ export class ProductSquare {
                 this.expansion = null;
             }
             this.isExpanded = false;
+            
+            // Ensure opacity and blur are restored even on error
+            if (this.element) {
+                this.fadeAndBlurElement(this.element, 0.3, 1.0, 3, 0, 200).catch(() => {
+                    // Fallback to direct style manipulation
+                    this.element!.style.opacity = '1';
+                    this.element!.style.filter = 'none';
+                });
+            }
         }
+    }
+
+    /**
+     * Fade and blur element with combined opacity and blur filter animation
+     */
+    private fadeAndBlurElement(
+        element: HTMLElement,
+        fromOpacity: number,
+        toOpacity: number,
+        fromBlur: number,
+        toBlur: number,
+        duration: number
+    ): Promise<void> {
+        return new Promise((resolve, reject) => {
+            try {
+                const keyframes = [
+                    {
+                        opacity: fromOpacity.toString(),
+                        filter: `blur(${fromBlur}px)`
+                    },
+                    {
+                        opacity: toOpacity.toString(),
+                        filter: `blur(${toBlur}px)`
+                    }
+                ];
+
+                const animationOptions: KeyframeAnimationOptions = {
+                    duration: duration,
+                    easing: 'ease-in-out',
+                    fill: 'forwards'
+                };
+
+                const fadeBlurAnimation = element.animate(keyframes, animationOptions);
+
+                fadeBlurAnimation.addEventListener('finish', () => {
+                    resolve();
+                });
+
+                fadeBlurAnimation.addEventListener('cancel', () => {
+                    reject(new Error('Fade and blur animation was cancelled'));
+                });
+
+            } catch (error) {
+                reject(error);
+            }
+        });
     }
 
     /**
