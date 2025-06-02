@@ -333,6 +333,42 @@ export class AnimationController {
     }
 
     /**
+     * Fade out animation for smooth transitions
+     */
+    public fadeOut(config: AnimationConfig): Promise<void> {
+        return new Promise((resolve, reject) => {
+            try {
+                const keyframes = [
+                    { opacity: '1' },
+                    { opacity: '0' }
+                ];
+
+                const animationOptions: KeyframeAnimationOptions = {
+                    duration: config.duration,
+                    easing: config.easing,
+                    fill: 'forwards'
+                };
+
+                const fadeOutAnimation = this.element.animate(keyframes, animationOptions);
+                this.activeAnimations.push(fadeOutAnimation);
+
+                fadeOutAnimation.addEventListener('finish', () => {
+                    this.removeFromActiveAnimations(fadeOutAnimation);
+                    resolve();
+                });
+
+                fadeOutAnimation.addEventListener('cancel', () => {
+                    this.removeFromActiveAnimations(fadeOutAnimation);
+                    reject(new Error('Fade-out animation was cancelled'));
+                });
+
+            } catch (error) {
+                reject(error);
+            }
+        });
+    }
+
+    /**
      * Start pulsing opacity animation for loading state
      */
     public startPulseAnimation(config: AnimationConfig): void {

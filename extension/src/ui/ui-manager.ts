@@ -128,12 +128,10 @@ export class UIManager {
         try {
             await this.loadingSquare.hide();
             
-            // Only remove from DOM if it hasn't been transformed into a product card
-            if (!this.loadingSquare.isTransformed) {
-                const element = this.loadingSquare.getElement();
-                if (element && element.parentNode) {
-                    element.parentNode.removeChild(element);
-                }
+            // Always remove from DOM after hiding
+            const element = this.loadingSquare.getElement();
+            if (element && element.parentNode) {
+                element.parentNode.removeChild(element);
             }
             
             this.events.onHide?.();
@@ -195,7 +193,7 @@ export class UIManager {
     }
 
     /**
-     * Show product grid (transforms from loading square)
+     * Show product grid (replaces loading square)
      */
     public async showProductGrid(productData: ProductDisplayData[]): Promise<boolean> {
         if (!this.ensureInitialized() || !productData.length) {
@@ -203,18 +201,18 @@ export class UIManager {
         }
 
         try {
-            // Phase 1: Transform loading square to first product
-            await this.loadingSquare!.transformToProductCard(productData[0]);
-            
-            // Phase 2: Create grid with remaining products if any exist
-            if (productData.length > 1) {
-                this.productGrid = new ProductGrid(this.productGridConfig);
-                const gridElement = await this.productGrid.createFromSecondProduct(productData.slice(1));
-                this.container!.appendChild(gridElement);
-                
-                // Phase 3: Show remaining products with staggered animation
-                await this.productGrid.showRemainingProducts();
+            // Phase 1: Fade out loading square without sliding
+            if (this.loadingSquare && this.loadingSquare.isVisible()) {
+                await this.fadeOutLoadingSquare();
             }
+            
+            // Phase 2: Create product grid with ALL products
+            this.productGrid = new ProductGrid(this.productGridConfig);
+            const gridElement = await this.productGrid.create(productData);
+            this.container!.appendChild(gridElement);
+            
+            // Phase 3: Show all products with staggered animation
+            await this.productGrid.show();
             
             this.events.onProductGridShow?.();
             return true;
@@ -222,6 +220,52 @@ export class UIManager {
         } catch (error) {
             this.log(`Failed to show product grid: ${error}`);
             return false;
+        }
+    }
+
+    /**
+     * Fade out the loading square without sliding animation
+     */
+    private async fadeOutLoadingSquare(): Promise<void> {
+        if (!this.loadingSquare || !this.loadingSquare.isVisible()) {
+            return;
+        }
+
+        try {
+            // Stop pulse animation first
+            const element = this.loadingSquare.getElement();
+            const animationController = this.loadingSquare.getAnimationController();
+            if (element && animationController) {
+                animationController.stopPulseAnimation();
+                
+                // Use fade-out animation instead of slide-out
+                await animationController.fadeOut({
+                    duration: 200,
+                    easing: 'ease-out'
+                });
+            }
+
+            this.loadingSquare.updateState(LoadingState.HIDDEN);
+            
+            // Remove from DOM
+            if (element && element.parentNode) {
+                element.parentNode.removeChild(element);
+            }
+            
+            this.events.onHide?.();
+            this.events.onStateChange?.(LoadingState.HIDDEN);
+
+        } catch (error) {
+            this.log(`Failed to fade out loading square: ${error}`);
+            // Fallback to instant hide
+            const element = this.loadingSquare.getElement();
+            if (element) {
+                element.style.opacity = '0';
+                if (element.parentNode) {
+                    element.parentNode.removeChild(element);
+                }
+            }
+            this.loadingSquare.updateState(LoadingState.HIDDEN);
         }
     }
 
