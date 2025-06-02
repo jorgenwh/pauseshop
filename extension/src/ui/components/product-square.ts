@@ -18,6 +18,7 @@ export class ProductSquare {
     // Task 4.4: Expansion functionality
     private expansion: ProductExpansion | null = null;
     private isExpanded: boolean = false;
+    private isProcessingClick: boolean = false; // Flag to prevent multiple simultaneous clicks
 
     constructor(config: ProductSquareConfig) {
         this.config = config;
@@ -218,10 +219,21 @@ export class ProductSquare {
         event.preventDefault();
         event.stopPropagation();
         
-        if (this.isExpanded) {
-            await this.collapseExpansion();
-        } else {
-            await this.expandHorizontally();
+        // Prevent multiple simultaneous click processing
+        if (this.isProcessingClick) {
+            return;
+        }
+        
+        this.isProcessingClick = true;
+        
+        try {
+            if (this.isExpanded) {
+                await this.collapseExpansion();
+            } else {
+                await this.expandHorizontally();
+            }
+        } finally {
+            this.isProcessingClick = false;
         }
     }
 
@@ -231,6 +243,11 @@ export class ProductSquare {
     private async expandHorizontally(): Promise<void> {
         if (this.config.allProducts.length <= 1) {
             return; // No additional products to show
+        }
+
+        // Additional safety check for race conditions
+        if (this.isExpanded || this.expansion) {
+            return;
         }
 
         try {
@@ -270,6 +287,14 @@ export class ProductSquare {
 
         } catch (error) {
             console.warn('PauseShop: Failed to expand product square:', error);
+            
+            // Clean up state on error
+            if (this.expansion) {
+                this.expansion.cleanup();
+                this.expansion = null;
+            }
+            this.isExpanded = false;
+            
             // Restore opacity and remove blur on error
             if (this.element) {
                 this.fadeAndBlurElement(this.element, 0.3, 1.0, 3, 0, 200).catch(() => {
@@ -521,6 +546,7 @@ export class ProductSquare {
             this.expansion = null;
         }
         this.isExpanded = false;
+        this.isProcessingClick = false; // Reset click processing flag
 
         if (this.animationController) {
             this.animationController.cleanup();
