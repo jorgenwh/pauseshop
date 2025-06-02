@@ -14,11 +14,11 @@ chrome.runtime.onMessage.addListener((
     sendResponse: (response: ScreenshotResponse) => void
 ) => {
     if (message.action === 'captureScreenshot') {
-        log(message.config, 'Received screenshot capture request');
+        log(message.config, `Received screenshot capture request for pauseId: ${message.pauseId || 'N/A'}`);
         const windowId = sender.tab?.windowId || chrome.windows.WINDOW_ID_CURRENT;
-        handleScreenshotAnalysis(message.config, windowId).then(sendResponse).catch(error => {
+        handleScreenshotAnalysis(message.config, windowId, message.pauseId).then(sendResponse).catch(error => {
             console.error('Screenshot analysis error:', error);
-            sendResponse({ success: false, error: error.message || 'Unknown error' });
+            sendResponse({ success: false, error: error.message || 'Unknown error', pauseId: message.pauseId });
         });
         return true; // Keep message channel open for async response
     }

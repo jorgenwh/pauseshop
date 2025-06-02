@@ -13,11 +13,13 @@ interface ScreenshotConfig {
     logPrefix: string;
     debugMode: boolean;
     serverUrl: string;
+    pauseId?: string; // Add pauseId to config
 }
 
 interface ScreenshotMessage {
     action: 'captureScreenshot';
     config: ScreenshotConfig;
+    pauseId?: string; // Add pauseId to message
 }
 
 interface ScreenshotResponse {
@@ -33,6 +35,7 @@ interface ScreenshotResponse {
     };
     amazonExecutionResults?: unknown;
     amazonScrapedResults?: AmazonScrapedBatch;
+    pauseId?: string; // Add pauseId to response
 }
 
 const defaultConfig: ScreenshotConfig = {
@@ -100,10 +103,20 @@ const ensureUIManager = (): UIManager | null => {
 /**
  * Captures a screenshot by communicating with the background service worker
  * @param config Screenshot configuration options
+ * @param pauseId Optional: A unique ID for the pause event that triggered this capture
  */
-export const captureScreenshot = async (config: Partial<ScreenshotConfig> = {}): Promise<void> => {
+export const captureScreenshot = async (
+    config: Partial<ScreenshotConfig> = {},
+    pauseId?: string,
+    getCurrentPauseId?: () => string | null // New parameter
+): Promise<void> => {
     const fullConfig: ScreenshotConfig = { ...defaultConfig, ...config };
     
+    // If a pauseId is provided, add it to the fullConfig
+    if (pauseId) {
+        fullConfig.pauseId = pauseId;
+    }
+
     // Initialize and show UI immediately
     const ui = ensureUIManager();
     if (ui) {
@@ -118,7 +131,8 @@ export const captureScreenshot = async (config: Partial<ScreenshotConfig> = {}):
 
         const message: ScreenshotMessage = {
             action: 'captureScreenshot',
-            config: fullConfig
+            config: fullConfig,
+            pauseId: fullConfig.pauseId // Pass pauseId in the message
         };
 
         // Send message to background service worker
@@ -133,18 +147,28 @@ export const captureScreenshot = async (config: Partial<ScreenshotConfig> = {}):
 
             // Check if we have Amazon scraping results to show product grid
             if (response.amazonScrapedResults && ui) {
-                const amazonResults = response.amazonScrapedResults;
-                const productDisplayData = extractProductDisplayData(amazonResults);
-
-                if (productDisplayData.length > 0) {
-                    await ui.showProductGrid(productDisplayData);
+                const currentActivePauseId = getCurrentPauseId ? getCurrentPauseId() : null;
+                
+                if (response.pauseId && currentActivePauseId && response.pauseId === currentActivePauseId) {
+                    const amazonResults = response.amazonScrapedResults;
+                    const productDisplayData = extractProductDisplayData(amazonResults);
+    
+                    if (productDisplayData.length > 0) {
+                        await ui.showProductGrid(productDisplayData);
+                    } else {
+                        log(fullConfig, 'No products found, showing temporary message');
+                        await ui.showNoProductsFound(); // Will auto-hide after 3 seconds
+                    }
                 } else {
-                    log(fullConfig, 'No products found, showing temporary message');
-                    await ui.showNoProductsFound(); // Will auto-hide after 3 seconds
+                    log(fullConfig, `Ignoring product display for pauseId ${response.pauseId || 'N/A'} as it's not the current active pauseId (${currentActivePauseId || 'N/A'})`);
+                    // Hide UI if this was the only pending action for this pauseId
+                    if (ui) {
+                        await ui.hideLoadingSquare();
+                    }
                 }
             } else {
-                // No scraping results available
-                log(fullConfig, 'No scraping results available, showing no products message');
+                // No scraping results available or no UI manager
+                log(fullConfig, 'No scraping results available or UI not initialized, showing no products message');
                 if (ui) {
                     await ui.showNoProductsFound();
                 }
