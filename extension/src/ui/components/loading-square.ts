@@ -149,7 +149,8 @@ export class LoadingSquare {
         try {
             this.updateState(LoadingState.TRANSFORMING);
 
-            // Phase 1: Fade out spinner (150ms)
+            // Phase 1: Stop pulse animation and fade out spinner (150ms)
+            this.animationController.stopPulseAnimation();
             await this.fadeOutSpinner();
 
             // Phase 2: Update styling and fade in product thumbnail (150ms)
