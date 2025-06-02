@@ -27,11 +27,6 @@ const createInitialSeekingState = (): SeekingState => ({
     currentPauseId: null // Initialize currentPauseId
 });
 
-const log = (config: VideoDetectorConfig, message: string): void => {
-    if (config.enableLogging) {
-        console.log(`${config.logPrefix}: ${message}`);
-    }
-};
 
 const handlePause = (config: VideoDetectorConfig, seekingState: SeekingState, siteHandlerRegistry: SiteHandlerRegistry) => (_event: Event): void => {
     if (seekingState.isSeeking) {
@@ -68,7 +63,7 @@ const handlePause = (config: VideoDetectorConfig, seekingState: SeekingState, si
                         { pauseId: newPauseId },
                         newPauseId,
                         () => seekingState.currentPauseId // Pass a function to get the current pause ID
-                    ).catch(error => {
+                    ).catch(_error => {
                         // Error logging is handled within captureScreenshot
                     });
                 }
@@ -90,7 +85,7 @@ const handlePlay = (config: VideoDetectorConfig, seekingState: SeekingState) => 
         seekingState.pauseDebounceTimeoutId = null;
     }
     // Hide UI when video resumes
-    hideUI().catch(error => {
+    hideUI().catch(_error => {
         // Error logging is handled within hideUI
     });
 };
