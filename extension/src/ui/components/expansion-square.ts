@@ -252,7 +252,7 @@ export class ExpansionSquare {
         fallback.textContent = this.getCategoryIcon();
         
         // Apply fallback styles (same proportions as main square fallbacks)
-        const thumbnailSize = Math.round(this.config.size * 0.79); // ~100px for 126px square
+        const thumbnailSize = 118; // Match main square thumbnail size
         const fallbackStyles = {
             width: `${thumbnailSize}px`,
             height: `${thumbnailSize}px`,
@@ -263,7 +263,8 @@ export class ExpansionSquare {
             color: 'rgba(255, 255, 255, 0.8)',
             background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.3), rgba(168, 85, 247, 0.2))',
             borderRadius: '8px', // Same radius as main square fallbacks
-            margin: `${Math.round((this.config.size - thumbnailSize) / 2)}px`
+            border: '1px solid rgba(255, 255, 255, 0.2)', // Added border to match main squares
+            boxSizing: 'border-box' as const // Ensure border is inside
         };
         
         Object.assign(fallback.style, fallbackStyles);
@@ -298,7 +299,7 @@ export class ExpansionSquare {
         const styles = {
             width: `${this.config.size}px`,
             height: `${this.config.size}px`,
-            background: this.config.backgroundColor,
+            background: 'rgba(40, 40, 40, 0.9)', // Neutral dark background to match main squares
             borderRadius: `${this.config.borderRadius}px`,
             position: 'fixed' as const,
             top: `${this.config.position.top}px`,
@@ -309,7 +310,7 @@ export class ExpansionSquare {
             pointerEvents: 'auto' as const, // Enable clicks
             userSelect: 'none' as const,
             boxSizing: 'border-box' as const,
-            boxShadow: '0 3px 8px rgba(0, 0, 0, 0.25)', // Slightly less shadow than main squares
+            boxShadow: '0 12px 36px rgba(0, 0, 0, 0.5), 0 6px 18px rgba(0, 0, 0, 0.3)', // Enhanced box shadow to match main squares
             transition: 'none',
             cursor: 'pointer',
             display: 'flex',
@@ -326,12 +327,14 @@ export class ExpansionSquare {
     private applyThumbnailStyles(): void {
         if (!this.thumbnailElement) return;
 
-        const thumbnailSize = Math.round(this.config.size * 0.79); // ~100px for 126px square
+        const thumbnailSize = 118; // Match main square thumbnail size
         const thumbnailStyles = {
             width: `${thumbnailSize}px`,
             height: `${thumbnailSize}px`,
             objectFit: 'cover' as const,
             borderRadius: '8px', // Same radius as main square thumbnails
+            border: '1px solid rgba(255, 255, 255, 0.2)', // Added border to match main squares
+            boxSizing: 'border-box' as const, // Ensure border is inside
             opacity: '0',
             transition: `opacity ${this.config.animations.thumbnailFadeDuration}ms ease-in`
         };

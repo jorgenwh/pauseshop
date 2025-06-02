@@ -18,6 +18,7 @@ export class ProductSquare {
     // Task 4.4: Expansion functionality
     private expansion: ProductExpansion | null = null;
     private isExpanded: boolean = false;
+    private isProcessingClick: boolean = false; // Flag to prevent multiple simultaneous clicks
 
     constructor(config: ProductSquareConfig) {
         this.config = config;
@@ -218,10 +219,21 @@ export class ProductSquare {
         event.preventDefault();
         event.stopPropagation();
         
-        if (this.isExpanded) {
-            await this.collapseExpansion();
-        } else {
-            await this.expandHorizontally();
+        // Prevent multiple simultaneous click processing
+        if (this.isProcessingClick) {
+            return;
+        }
+        
+        this.isProcessingClick = true;
+        
+        try {
+            if (this.isExpanded) {
+                await this.collapseExpansion();
+            } else {
+                await this.expandHorizontally();
+            }
+        } finally {
+            this.isProcessingClick = false;
         }
     }
 
@@ -233,10 +245,20 @@ export class ProductSquare {
             return; // No additional products to show
         }
 
+        // Additional safety check for race conditions
+        if (this.isExpanded || this.expansion) {
+            return;
+        }
+
         try {
             // Notify parent grid to collapse other expansions
             if (this.config.onExpansionRequest) {
                 await this.config.onExpansionRequest();
+            }
+
+            // Fade and blur main square to indicate focus should shift to secondary cards
+            if (this.element) {
+                await this.fadeAndBlurElement(this.element, 1.0, 0.3, 0, 3, 200);
             }
 
             // Create expansion component
@@ -265,6 +287,22 @@ export class ProductSquare {
 
         } catch (error) {
             console.warn('PauseShop: Failed to expand product square:', error);
+            
+            // Clean up state on error
+            if (this.expansion) {
+                this.expansion.cleanup();
+                this.expansion = null;
+            }
+            this.isExpanded = false;
+            
+            // Restore opacity and remove blur on error
+            if (this.element) {
+                this.fadeAndBlurElement(this.element, 0.3, 1.0, 3, 0, 200).catch(() => {
+                    // Fallback to direct style manipulation
+                    this.element!.style.opacity = '1';
+                    this.element!.style.filter = 'none';
+                });
+            }
         }
     }
 
@@ -282,6 +320,11 @@ export class ProductSquare {
             this.expansion = null;
             this.isExpanded = false;
 
+            // Restore main square opacity and remove blur after expansion collapses
+            if (this.element) {
+                await this.fadeAndBlurElement(this.element, 0.3, 1.0, 3, 0, 200);
+            }
+
         } catch (error) {
             console.warn('PauseShop: Failed to collapse expansion:', error);
             // Force cleanup on error
@@ -290,7 +333,62 @@ export class ProductSquare {
                 this.expansion = null;
             }
             this.isExpanded = false;
+            
+            // Ensure opacity and blur are restored even on error
+            if (this.element) {
+                this.fadeAndBlurElement(this.element, 0.3, 1.0, 3, 0, 200).catch(() => {
+                    // Fallback to direct style manipulation
+                    this.element!.style.opacity = '1';
+                    this.element!.style.filter = 'none';
+                });
+            }
         }
+    }
+
+    /**
+     * Fade and blur element with combined opacity and blur filter animation
+     */
+    private fadeAndBlurElement(
+        element: HTMLElement,
+        fromOpacity: number,
+        toOpacity: number,
+        fromBlur: number,
+        toBlur: number,
+        duration: number
+    ): Promise<void> {
+        return new Promise((resolve, reject) => {
+            try {
+                const keyframes = [
+                    {
+                        opacity: fromOpacity.toString(),
+                        filter: `blur(${fromBlur}px)`
+                    },
+                    {
+                        opacity: toOpacity.toString(),
+                        filter: `blur(${toBlur}px)`
+                    }
+                ];
+
+                const animationOptions: KeyframeAnimationOptions = {
+                    duration: duration,
+                    easing: 'ease-in-out',
+                    fill: 'forwards'
+                };
+
+                const fadeBlurAnimation = element.animate(keyframes, animationOptions);
+
+                fadeBlurAnimation.addEventListener('finish', () => {
+                    resolve();
+                });
+
+                fadeBlurAnimation.addEventListener('cancel', () => {
+                    reject(new Error('Fade and blur animation was cancelled'));
+                });
+
+            } catch (error) {
+                reject(error);
+            }
+        });
     }
 
     /**
@@ -333,8 +431,8 @@ export class ProductSquare {
         
         // Apply fallback styles
         const fallbackStyles = {
-            width: '100px',
-            height: '100px',
+            width: '118px',
+            height: '118px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -342,7 +440,8 @@ export class ProductSquare {
             color: 'rgba(255, 255, 255, 0.8)',
             background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.3), rgba(168, 85, 247, 0.2))',
             borderRadius: '8px',
-            margin: '13px'
+            border: '1px solid rgba(255, 255, 255, 0.2)', // Added border
+            boxSizing: 'border-box' as const // Ensure border is inside
         };
         
         Object.assign(fallback.style, fallbackStyles);
@@ -387,7 +486,7 @@ export class ProductSquare {
         const styles = {
             width: `${this.config.size}px`,
             height: `${this.config.size}px`,
-            background: this.config.backgroundColor,
+            background: 'rgba(40, 40, 40, 0.9)', // Neutral dark background
             borderRadius: `${this.config.borderRadius}px`,
             position: 'fixed' as const,
             top: `${this.config.position.top}px`,
@@ -398,7 +497,7 @@ export class ProductSquare {
             pointerEvents: 'auto' as const, // Enable for future click handling
             userSelect: 'none' as const,
             boxSizing: 'border-box' as const,
-            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
+            boxShadow: '0 12px 36px rgba(0, 0, 0, 0.5), 0 6px 18px rgba(0, 0, 0, 0.3)', // Further enhanced box shadow
             transition: 'none',
             cursor: 'pointer',
             display: 'flex',
@@ -416,10 +515,12 @@ export class ProductSquare {
         if (!this.thumbnailElement) return;
 
         const thumbnailStyles = {
-            width: '100px',
-            height: '100px',
+            width: '118px',
+            height: '118px',
             objectFit: 'cover' as const,
             borderRadius: '8px',
+            border: '1px solid rgba(255, 255, 255, 0.2)', // Added border
+            boxSizing: 'border-box' as const, // Ensure border is inside
             opacity: '0',
             transition: 'opacity 300ms ease-in'
         };
@@ -445,6 +546,7 @@ export class ProductSquare {
             this.expansion = null;
         }
         this.isExpanded = false;
+        this.isProcessingClick = false; // Reset click processing flag
 
         if (this.animationController) {
             this.animationController.cleanup();

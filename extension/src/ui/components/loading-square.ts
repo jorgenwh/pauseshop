@@ -12,6 +12,7 @@ export class LoadingSquare {
     private currentState: LoadingState = LoadingState.HIDDEN;
     private config: LoadingSquareConfig;
 
+
     constructor(config: LoadingSquareConfig) {
         this.config = config;
     }
@@ -32,6 +33,7 @@ export class LoadingSquare {
         spinner.className = 'pauseshop-loading-spinner';
         this.element.appendChild(spinner);
         
+
         // Create no products found text element
         const noProductsText = document.createElement('div');
         noProductsText.className = 'pauseshop-no-products-text';
@@ -42,7 +44,7 @@ export class LoadingSquare {
         noProductsText.style.display = 'none'; // Initially hidden
         this.element.appendChild(noProductsText);
         
-        // Apply styling
+        // Apply initial styling
         this.applyStyles();
         
         // Initialize animation controller
@@ -124,6 +126,7 @@ export class LoadingSquare {
         }
     }
 
+
     /**
      * Update the loading state
      */
@@ -139,7 +142,6 @@ export class LoadingSquare {
         // Handle state-specific logic
         switch (newState) {
             case LoadingState.LOADING:
-                // Reset visual state when returning to loading
                 this.resetToLoadingState();
                 break;
             case LoadingState.PROCESSING:
@@ -175,6 +177,13 @@ export class LoadingSquare {
      */
     public isAnimating(): boolean {
         return this.animationController?.isAnimating() ?? false;
+    }
+
+    /**
+     * Get the animation controller for external access
+     */
+    public getAnimationController(): AnimationController | null {
+        return this.animationController;
     }
 
     /**
@@ -266,17 +275,22 @@ export class LoadingSquare {
         this.element.style.transition = 'none'; // Remove transition to avoid flicker during reset
         this.element.style.width = `${this.config.size}px`;
         this.element.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.3)';
+        this.element.style.background = this.config.backgroundColor; // Reset background
+        this.element.style.pointerEvents = 'none'; // Disable pointer events
+        this.element.style.cursor = 'default'; // Reset cursor
 
         // Get spinner and text elements
         const spinner = this.element.querySelector('.pauseshop-loading-spinner') as HTMLElement;
         const noProductsText = this.element.querySelector('.pauseshop-no-products-text') as HTMLElement;
 
-        if (spinner && noProductsText) {
-            // Show spinner, hide text
+        if (spinner) {
             spinner.style.display = 'block';
+            spinner.style.opacity = '1';
+        }
+        if (noProductsText) {
             noProductsText.style.display = 'none';
             noProductsText.style.opacity = '0';
-            noProductsText.style.transition = 'none'; // Remove transition to avoid flicker
+            noProductsText.style.transition = 'none';
         }
     }
 
