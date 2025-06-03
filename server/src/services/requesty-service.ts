@@ -68,7 +68,10 @@ export class RequestyService implements AnalysisService {
             const processingTime = Date.now() - startTime;
             const content = response.choices[0]?.message?.content || '';
 
-            console.log(`[REQUESTY_SERVICE] LLM Analysis completed in ${processingTime}ms`);
+            const promptCost = (response.usage?.prompt_tokens || 0) * this.config.promptCostPerToken;
+            const completionCost = (response.usage?.completion_tokens || 0) * this.config.completionCostPerToken;
+            const totalCost = (promptCost + completionCost) * 1.05; // Add 5% extra charge
+            console.log(`[REQUESTY_SERVICE] LLM Analysis completed in ${processingTime}ms. Tokens: [${response.usage?.prompt_tokens}/${response.usage?.completion_tokens}/${response.usage?.total_tokens}]. Cost: $${totalCost.toFixed(6)}`);
 
             return {
                 content,

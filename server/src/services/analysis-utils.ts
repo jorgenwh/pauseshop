@@ -8,8 +8,7 @@ import { resolve } from 'path';
 import {
     Product,
     ProductCategory,
-    TargetGender,
-    OpenAIProductResponse
+    TargetGender
 } from '../types/analyze';
 
 // Shared prompt cache

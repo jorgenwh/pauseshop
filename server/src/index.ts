@@ -21,8 +21,13 @@ const validateEnvironment = (): void => {
         requiredEnvVars = ['OPENAI_API_KEY'];
     } else if (provider === 'requesty') {
         requiredEnvVars = ['REQUESTY_API_KEY'];
-    } else {
-        console.error(`💥 Invalid ANALYSIS_PROVIDER: ${provider}. Must be 'openai' or 'requesty'`);
+    } else if (provider === 'gemini') {
+        requiredEnvVars = ['GEMINI_API_KEY'];
+    } else if (provider === 'openrouter') {
+        requiredEnvVars = ['OPENROUTER_API_KEY'];
+    }
+    else {
+        console.error(`💥 Invalid ANALYSIS_PROVIDER: ${provider}. Must be 'openai', 'requesty', 'gemini', or 'openrouter'`);
         process.exit(1);
     }
     

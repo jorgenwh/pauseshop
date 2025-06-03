@@ -55,6 +55,8 @@ export interface OpenAIConfig {
     apiKey: string;
     model: string;
     maxTokens: number;
+    promptCostPerToken: number;
+    completionCostPerToken: number;
 }
 
 export interface OpenAIResponse {
@@ -67,6 +69,51 @@ export interface OpenAIResponse {
 }
 
 export interface OpenAIProductResponse {
+    products: Product[];
+}
+
+export interface OpenRouterConfig {
+    apiKey: string;
+    model: string;
+    maxTokens: number;
+    thinkingBudget?: number; // OpenRouter specific
+    siteUrl?: string;
+    siteName?: string;
+    promptCostPerToken: number;
+    completionCostPerToken: number;
+}
+
+export interface OpenRouterResponse {
+    content: string;
+    usage?: {
+        promptTokens: number;
+        completionTokens: number;
+        totalTokens: number;
+    };
+    reasoning?: string; // OpenRouter specific
+}
+
+export interface GeminiConfig {
+    apiKey: string;
+    model: string;
+    maxTokens: number;
+    thinkingBudget?: number;
+    promptCostPerToken: number;
+    completionCostPerToken: number;
+}
+
+export interface GeminiResponse {
+    content: string;
+    usage?: {
+        promptTokens: number;
+        completionTokens: number;
+        totalTokens: number;
+        thoughtsTokenCount?: number;
+        candidatesTokenCount?: number;
+    };
+}
+
+export interface GeminiProductResponse {
     products: Product[];
 }
 
@@ -94,6 +141,8 @@ export interface RequestyConfig {
     maxTokens: number;
     siteUrl?: string;
     siteName?: string;
+    promptCostPerToken: number;
+    completionCostPerToken: number;
 }
 
 export interface RequestyResponse {
@@ -102,15 +151,17 @@ export interface RequestyResponse {
         promptTokens: number;
         completionTokens: number;
         totalTokens: number;
-    };
+    } | undefined;
 }
 
 export enum AnalysisProvider {
     OPENAI = 'openai',
-    REQUESTY = 'requesty'
+    REQUESTY = 'requesty',
+    GEMINI = 'gemini',
+    OPENROUTER = 'openrouter'
 }
 
 export interface AnalysisService {
-    analyzeImage(imageData: string): Promise<OpenAIResponse | RequestyResponse>;
+    analyzeImage(imageData: string): Promise<OpenAIResponse | RequestyResponse | GeminiResponse | OpenRouterResponse>;
     parseResponseToProducts(response: string): Product[];
 }
