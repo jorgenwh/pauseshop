@@ -63,70 +63,113 @@ export interface ProductDisplayData {
     fallbackText?: string;
 }
 
-export interface ProductSquareConfig {
-    size: number;
-    borderRadius: number;
-    backgroundColor: string;
-    position: {
-        top: number;
-        right: number;
-    };
-    thumbnailUrl: string | null;
-    productData: AmazonScrapedProduct | null; // First product for thumbnail
-    allProducts: AmazonScrapedProduct[]; // All products for expansion
-    category: ProductCategory;
-    animations: {
-        slideDownDuration: number;
-        thumbnailFadeDuration: number;
-    };
-    onExpansionRequest?: () => Promise<void>; // Callback for grid coordination
-}
 
-export interface ProductGridConfig {
-    squareSize: number;
-    spacing: number;
-    startPosition: {
-        top: number;
-        right: number;
-    };
-    animationDelayMs: number;
-    maxProducts: number;
-    backgroundColor: string;
-    borderRadius: number;
-}
-
-// New expansion-related types for Task 4.4
-export enum ExpansionState {
+// New sidebar-related types for the glassmorphic redesign
+export enum SidebarState {
     HIDDEN = 'hidden',
-    EXPANDING = 'expanding',
-    EXPANDED = 'expanded',
-    COLLAPSING = 'collapsing'
+    SLIDING_IN = 'sliding-in',
+    VISIBLE = 'visible',
+    SLIDING_OUT = 'sliding-out'
 }
 
-export interface ProductExpansionConfig {
-    parentSquare: HTMLElement;
+export enum SidebarContentState {
+    LOADING = 'loading',
+    PRODUCTS = 'products',
+    NO_PRODUCTS = 'no-products',
+    ERROR = 'error'
+}
+
+export interface SidebarConfig {
+    width: number;
+    position: 'right' | 'left';
+    animations: {
+        slideInDuration: number;
+        slideOutDuration: number;
+    };
+    enableBackdropBlur: boolean;
+    enableGlassmorphism: boolean;
+}
+
+export interface SidebarHeaderConfig {
+    title: string;
+    showCloseButton: boolean;
+    onClose?: () => void;
+}
+
+export interface LoadingStateConfig {
+    message: string;
+    subMessage?: string;
+    spinnerSize: 'small' | 'medium' | 'large';
+}
+
+export interface ProductListConfig {
+    maxHeight: string;
+    enableVirtualScrolling: boolean;
+    itemSpacing: number;
+}
+
+export interface ProductCardConfig {
+    product: ProductDisplayData;
+    isExpanded: boolean;
+    onToggleExpansion: (card: ProductCard) => void;
+    onAmazonProductClick: (product: AmazonScrapedProduct) => void;
+    animations: {
+        expansionDuration: number;
+        hoverTransitionDuration: number;
+    };
+}
+
+export interface AmazonProductGridConfig {
     products: AmazonScrapedProduct[];
-    category: ProductCategory;
-    startPosition: { top: number; right: number };
-    expansionDirection: 'left';
-    squareSize: number;
-    spacing: number;
-    animations: {
-        slideLeftDuration: number;
-        fadeInDuration: number;
-    };
+    columns: number;
+    onProductClick: (product: AmazonScrapedProduct) => void;
+    showPrices: boolean;
+    showRatings: boolean;
 }
 
-export interface ExpansionSquareConfig {
-    product: AmazonScrapedProduct;
-    position: { top: number; right: number };
-    size: number;
-    borderRadius: number;
-    backgroundColor: string;
-    index: number;
-    spacing: number; // Spacing between expansion squares
-    animations: {
-        slideLeftDuration: number;
-        thumbnailFadeDuration: number;
-    };
+export interface NoProductsStateConfig {
+    title: string;
+    message: string;
+    iconType: 'search' | 'empty' | 'error';
+    showRetryButton: boolean;
+    onRetry?: () => void;
+}
+
+// Events for the new sidebar system
+export interface SidebarEvents {
+    onShow?: () => void;
+    onHide?: () => void;
+    onStateChange?: (state: SidebarState) => void;
+    onContentStateChange?: (state: SidebarContentState) => void;
+    onProductClick?: (product: AmazonScrapedProduct) => void;
+    onError?: (error: Error) => void;
+}
+
+// Forward declarations for new components
+export interface ProductCard {
+    getElement(): HTMLElement | null;
+    isExpanded(): boolean;
+    toggleExpansion(): Promise<void>;
+    cleanup(): void;
+}
+
+export interface Sidebar {
+    show(): Promise<void>;
+    hide(): Promise<void>;
+    isVisible(): boolean;
+    getCurrentState(): SidebarState;
+    setContentState(state: SidebarContentState): void;
+    showProducts(products: ProductDisplayData[]): Promise<void>;
+    showLoading(config?: LoadingStateConfig): void;
+    showNoProducts(config?: NoProductsStateConfig): void;
+    cleanup(): void;
+}
+
+// Enhanced UI Manager configuration for sidebar
+export interface SidebarUIConfig extends UIConfig {
+    sidebarConfig: SidebarConfig;
+    headerConfig: SidebarHeaderConfig;
+    loadingConfig: LoadingStateConfig;
+    productListConfig: ProductListConfig;
+    noProductsConfig: NoProductsStateConfig;
 }
