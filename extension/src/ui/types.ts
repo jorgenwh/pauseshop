@@ -100,7 +100,7 @@ export interface SidebarHeaderConfig {
 export interface LoadingStateConfig {
     message: string;
     subMessage?: string;
-    spinnerSize: 'small' | 'medium' | 'large';
+    spinnerSize: 'small' | 'medium' | 'large' | 'initial';
 }
 
 export interface ProductListConfig {

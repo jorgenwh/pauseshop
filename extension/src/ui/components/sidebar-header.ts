@@ -55,23 +55,28 @@ export class SidebarHeader {
     }
 
     /**
-     * Create close button
+     * Create the close button (white X)
      */
     private createCloseButton(): HTMLElement {
         const closeButton = document.createElement('button');
-        closeButton.className = 'p-1.5 rounded-full text-slate-300 hover:text-slate-100 hover:bg-slate-700/70 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50';
-        closeButton.title = 'Close PauseShop';
+        closeButton.className = 'w-14 h-14 flex items-center justify-center bg-transparent hover:bg-white/10 rounded-full transition-colors duration-200';
+        closeButton.setAttribute('aria-label', 'Close sidebar');
+        closeButton.style.border = 'none';
+        closeButton.style.outline = 'none';
+        
+        // Create the X using CSS-drawn lines for a thinner appearance
         closeButton.innerHTML = `
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-            </svg>
+            <div style="position: relative; width: 20px; height: 20px;">
+                <div style="position: absolute; top: 50%; left: 50%; width: 20px; height: 1.5px; background-color: white; transform: translate(-50%, -50%) rotate(45deg);"></div>
+                <div style="position: absolute; top: 50%; left: 50%; width: 20px; height: 1.5px; background-color: white; transform: translate(-50%, -50%) rotate(-45deg);"></div>
+            </div>
         `;
 
         // Add click handler
-        closeButton.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            this.config.onClose?.();
+        closeButton.addEventListener('click', () => {
+            if (this.config.onClose) {
+                this.config.onClose();
+            }
         });
 
         return closeButton;

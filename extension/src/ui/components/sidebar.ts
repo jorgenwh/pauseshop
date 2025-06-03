@@ -193,7 +193,7 @@ export class Sidebar {
             this.loadingComponent = new LoadingState(config || {
                 message: 'Processing...',
                 subMessage: 'Analyzing your paused scene.',
-                spinnerSize: 'medium'
+                spinnerSize: 'initial'
             });
         }
 

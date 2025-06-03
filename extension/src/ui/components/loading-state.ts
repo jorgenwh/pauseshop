@@ -13,7 +13,7 @@ export class LoadingState {
         this.config = {
             message: config.message || 'Finding products...',
             subMessage: config.subMessage || 'Analyzing your paused scene.',
-            spinnerSize: config.spinnerSize || 'medium'
+            spinnerSize: config.spinnerSize || 'initial'
         };
     }
 
@@ -34,14 +34,14 @@ export class LoadingState {
 
         // Create main message
         const mainMessage = document.createElement('p');
-        mainMessage.className = 'text-lg font-semibold text-slate-100 mb-2';
+        mainMessage.className = 'text-4xl font-semibold text-slate-100 mb-2';
         mainMessage.textContent = this.config.message;
         this.element.appendChild(mainMessage);
 
         // Create sub message if provided
         if (this.config.subMessage) {
             const subMessage = document.createElement('p');
-            subMessage.className = 'text-sm text-slate-300';
+            subMessage.className = 'text-2xl text-slate-300';
             subMessage.textContent = this.config.subMessage;
             this.element.appendChild(subMessage);
         }
@@ -67,6 +67,9 @@ export class LoadingState {
             case 'large':
                 sizeClasses = 'h-12 w-12';
                 break;
+            case 'initial':
+                sizeClasses = 'h-20 w-20'; // Double the size for initial load
+                break;
             case 'medium':
             default:
                 sizeClasses = 'h-10 w-10';
@@ -91,19 +94,19 @@ export class LoadingState {
     public updateMessage(message: string, subMessage?: string): void {
         if (!this.element) return;
 
-        const mainMessageEl = this.element.querySelector('p.text-lg');
+        const mainMessageEl = this.element.querySelector('p.text-4xl');
         if (mainMessageEl) {
             mainMessageEl.textContent = message;
         }
 
-        const subMessageEl = this.element.querySelector('p.text-sm');
+        const subMessageEl = this.element.querySelector('p.text-2xl');
         if (subMessage) {
             if (subMessageEl) {
                 subMessageEl.textContent = subMessage;
             } else {
                 // Create sub message if it doesn't exist
                 const newSubMessage = document.createElement('p');
-                newSubMessage.className = 'text-sm text-slate-300';
+                newSubMessage.className = 'text-2xl text-slate-300';
                 newSubMessage.textContent = subMessage;
                 this.element.appendChild(newSubMessage);
             }

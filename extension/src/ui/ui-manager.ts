@@ -219,7 +219,7 @@ export class UIManager {
           this.sidebar.showLoading({
             message: state === LoadingState.PROCESSING ? 'Processing...' : 'Finding products...',
             subMessage: 'Analyzing your paused scene.',
-            spinnerSize: 'medium'
+            spinnerSize: 'initial'
           });
           break;
         case LoadingState.NO_PRODUCTS_FOUND:
