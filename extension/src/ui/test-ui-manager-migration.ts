@@ -10,6 +10,7 @@ import { AmazonScrapedProduct, ProductCategory } from '../types/amazon';
 // Mock product data for testing
 const mockProducts: ProductDisplayData[] = [
     {
+        name: 'Mock Product 1', // Added name property
         thumbnailUrl: 'https://example.com/thumbnail1.jpg',
         allProducts: [
             {
@@ -24,6 +25,7 @@ const mockProducts: ProductDisplayData[] = [
         fallbackText: 'Test Product 1'
     },
     {
+        name: 'Mock Product 2', // Added name property
         thumbnailUrl: 'https://example.com/thumbnail2.jpg',
         allProducts: [
             {

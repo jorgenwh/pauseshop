@@ -68,6 +68,7 @@ const extractProductDisplayData = (amazonResults: AmazonScrapedBatch): ProductDi
             
             // Include all products for expansion functionality
             displayData.push({
+                name: result.originalSearchResult.originalProduct.name, // Assign the product name
                 thumbnailUrl: firstProduct?.thumbnailUrl || null,
                 allProducts: result.products, // NEW: All products for expansion
                 category: result.originalSearchResult.category,
@@ -76,6 +77,7 @@ const extractProductDisplayData = (amazonResults: AmazonScrapedBatch): ProductDi
         } else if (result.success && result.products.length === 0) {
             // Handle case where search succeeded but no products found
             displayData.push({
+                name: result.originalSearchResult.originalProduct.name, // Assign the product name
                 thumbnailUrl: null,
                 allProducts: [], // Empty array for consistency
                 category: result.originalSearchResult.category,

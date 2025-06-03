@@ -52,7 +52,7 @@ export class ProductCard {
 
         // Create product info section
         const productInfo = document.createElement('div');
-        productInfo.className = 'flex items-center space-x-3.5 min-w-0';
+        productInfo.className = 'flex items-center space-x-8 min-w-0'; /* Increased space-x from 6 to 8 */
 
         // Create thumbnail
         const thumbnail = this.createThumbnail();
@@ -63,12 +63,12 @@ export class ProductCard {
         textInfo.className = 'min-w-0';
 
         const title = document.createElement('h3');
-        title.className = 'font-semibold text-md text-slate-50 truncate';
+        title.className = 'font-semibold text-3xl text-slate-50 truncate'; /* Increased text-xl to text-2xl */
         title.textContent = this.getProductTitle();
         textInfo.appendChild(title);
 
         const category = document.createElement('p');
-        category.className = 'text-xs text-slate-300';
+        category.className = 'text-lg text-slate-300'; /* Increased text-base to text-lg */
         category.textContent = `Spotted: ${this.getCategoryDisplayName()}`;
         textInfo.appendChild(category);
 
@@ -78,7 +78,7 @@ export class ProductCard {
         // Create chevron
         this.chevronElement = document.createElement('div');
         this.chevronElement.innerHTML = `
-            <svg class="w-5 h-5 transform pauseshop-chevron text-slate-300 group-hover:text-indigo-400 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <svg class="w-10 h-10 transform pauseshop-chevron text-slate-300 group-hover:text-indigo-400 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"> /* Increased w-8 h-8 to w-10 h-10 */
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
             </svg>
         `;
@@ -99,7 +99,7 @@ export class ProductCard {
      */
     private createThumbnail(): HTMLElement {
         const thumbnail = document.createElement('img');
-        thumbnail.className = 'w-14 h-14 rounded-lg object-cover shadow-md group-hover:scale-105 transition-transform duration-200';
+        thumbnail.className = 'w-32 h-32 rounded-lg object-cover shadow-md group-hover:scale-105 transition-transform duration-200'; /* Increased w-24 h-24 to w-32 h-32 */
         
         if (this.config.product.thumbnailUrl) {
             thumbnail.src = this.config.product.thumbnailUrl;
@@ -107,7 +107,7 @@ export class ProductCard {
         } else {
             // Create fallback div instead of img
             const fallback = document.createElement('div');
-            fallback.className = 'w-14 h-14 rounded-lg shadow-md group-hover:scale-105 transition-transform duration-200 bg-gradient-to-br from-pauseshop-primary/30 to-pauseshop-accent/20 flex items-center justify-center text-2xl';
+            fallback.className = 'w-32 h-32 rounded-lg shadow-md group-hover:scale-105 transition-transform duration-200 bg-gradient-to-br from-pauseshop-primary/30 to-pauseshop-accent/20 flex items-center justify-center text-5xl'; /* Increased w-24 h-24 to w-32 h-32 and text-4xl to text-5xl */
             fallback.textContent = this.getCategoryIcon();
             return fallback;
         }
@@ -115,7 +115,7 @@ export class ProductCard {
         // Handle image load error
         thumbnail.onerror = () => {
             const fallback = document.createElement('div');
-            fallback.className = 'w-14 h-14 rounded-lg shadow-md group-hover:scale-105 transition-transform duration-200 bg-gradient-to-br from-pauseshop-primary/30 to-pauseshop-accent/20 flex items-center justify-center text-2xl';
+            fallback.className = 'w-32 h-32 rounded-lg shadow-md group-hover:scale-105 transition-transform duration-200 bg-gradient-to-br from-pauseshop-primary/30 to-pauseshop-accent/20 flex items-center justify-center text-5xl'; /* Increased w-24 h-24 to w-32 h-32 and text-4xl to text-5xl */
             fallback.textContent = this.getCategoryIcon();
             thumbnail.parentNode?.replaceChild(fallback, thumbnail);
         };
@@ -219,11 +219,7 @@ export class ProductCard {
      * Get product title
      */
     private getProductTitle(): string {
-        if (this.config.product.allProducts.length > 0) {
-            // AmazonScrapedProduct doesn't have title, so we'll use productId or fallback
-            return `Product ${this.config.product.allProducts[0].position || 1}`;
-        }
-        return this.config.product.fallbackText || 'Product';
+        return this.config.product.name || this.config.product.fallbackText || 'Product';
     }
 
     /**

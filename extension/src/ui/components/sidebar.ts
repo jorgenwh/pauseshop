@@ -28,7 +28,7 @@ export class Sidebar {
             width: config.width || 400,
             position: config.position || 'right',
             animations: {
-                slideInDuration: config.animations?.slideInDuration || 500,
+                slideInDuration: config.animations?.slideInDuration || 150,
                 slideOutDuration: config.animations?.slideOutDuration || 500
             },
             enableBackdropBlur: config.enableBackdropBlur !== undefined ? config.enableBackdropBlur : true,
@@ -49,6 +49,9 @@ export class Sidebar {
         this.element = document.createElement('div');
         this.element.className = 'pauseshop-sidebar pauseshop-z-index pauseshop-crisp';
         this.element.setAttribute('data-state', this.currentState);
+        // Set initial position off-screen and apply transition
+        this.element.classList.add('translate-x-full'); // Start off-screen
+        this.element.style.transition = `transform ${this.config.animations.slideInDuration / 1000}s ease-out`;
         
         // Apply custom width if different from default
         if (this.config.width !== 400) {
@@ -72,8 +75,6 @@ export class Sidebar {
         // Create footer
         this.createFooter();
 
-        // Initialize with loading state
-        this.showLoading();
 
         return this.element;
     }
@@ -101,6 +102,9 @@ export class Sidebar {
 
             // Prevent body scroll
             document.body.classList.add('pauseshop-no-scroll');
+
+            // Show loading state immediately after adding to DOM, before animation
+            this.showLoading();
 
             // Trigger slide-in animation
             await this.animateSlideIn();
@@ -132,6 +136,9 @@ export class Sidebar {
             // Trigger slide-out animation
             await this.animateSlideOut();
             
+            // Clear content before hiding to ensure a fresh state on next show
+            this.clearContent();
+
             // Remove from DOM and restore body scroll
             if (this.element.parentNode) {
                 this.element.parentNode.removeChild(this.element);
@@ -184,7 +191,7 @@ export class Sidebar {
 
         if (!this.loadingComponent) {
             this.loadingComponent = new LoadingState(config || {
-                message: 'Finding products...',
+                message: 'Processing...',
                 subMessage: 'Analyzing your paused scene.',
                 spinnerSize: 'medium'
             });
@@ -292,12 +299,18 @@ export class Sidebar {
         if (!this.element) return;
 
         return new Promise((resolve) => {
+            // Ensure the element is in its initial off-screen state before transitioning
+            // This forces a reflow/repaint, allowing the transition to apply correctly
+            this.element!.offsetWidth; // Trigger reflow
+
             this.element!.classList.remove('translate-x-full');
             this.element!.classList.add('translate-x-0');
             
-            setTimeout(() => {
+            const handler = () => {
+                this.element!.removeEventListener('transitionend', handler);
                 resolve();
-            }, this.config.animations.slideInDuration);
+            };
+            this.element!.addEventListener('transitionend', handler);
         });
     }
 
@@ -311,9 +324,11 @@ export class Sidebar {
             this.element!.classList.remove('translate-x-0');
             this.element!.classList.add('translate-x-full');
             
-            setTimeout(() => {
+            const handler = () => {
+                this.element!.removeEventListener('transitionend', handler);
                 resolve();
-            }, this.config.animations.slideOutDuration);
+            };
+            this.element!.addEventListener('transitionend', handler);
         });
     }
 

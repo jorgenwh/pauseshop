@@ -57,6 +57,7 @@ export interface UIManagerEvents {
 }
 
 export interface ProductDisplayData {
+    name: string; // Added product name
     thumbnailUrl: string | null;
     allProducts: AmazonScrapedProduct[]; // Enhanced: All 1-5 products for category
     category: ProductCategory;

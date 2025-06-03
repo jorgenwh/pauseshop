@@ -1,5 +1,81 @@
 /* PauseShop Extension UI Styles - Phase 4: Cleaned up for sidebar-only architecture */
 
+/* Product Card specific styles */
+.pauseshop-product-card {
+    min-height: 189px; /* Approximately 1.5x taller than previous 126px */
+    padding: 36px 27px; /* Increased vertical and horizontal padding */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* Separator */
+    margin-bottom: 16px; /* Increased margin between product cards */
+}
+
+.pauseshop-product-card:last-child {
+    border-bottom: none; /* No border for the last item */
+    margin-bottom: 0; /* No margin for the last item */
+}
+
+.pauseshop-expansion {
+    overflow: hidden;
+    transition: max-height 0.4s ease-in-out, opacity 0.4s ease-in-out;
+    max-height: 0;
+    opacity: 0;
+    transform: translateY(-10px); /* Initial state for collapse animation */
+}
+
+.pauseshop-expansion.open {
+    max-height: 600px; /* Adjust as needed based on content */
+    opacity: 1;
+    transform: translateY(0); /* Final state for expand animation */
+}
+
+.pauseshop-chevron.open {
+    transform: rotate(180deg);
+}
+
+/* Sidebar specific styles */
+.pauseshop-sidebar {
+    position: fixed;
+    top: 0;
+    right: 0; /* Position on the right */
+    height: 100%;
+    width: 415px; /* Adjusted width based on feedback */
+    background-color: rgba(255, 255, 255, 0.1); /* Example glassmorphic background */
+    backdrop-filter: blur(7px); /* Glassmorphic blur */
+    -webkit-backdrop-filter: blur(7px); /* Safari support */
+    border-left: 1px solid rgba(255, 255, 255, 0.2); /* Glassmorphic border */
+    box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    z-index: 9999999; /* Ensure it's on top */
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* Hide overflowing content */
+    transform: translateX(100%); /* Start off-screen to the right */
+    transition: transform 0.5s ease-out; /* Default transition for slide-in/out */
+}
+
+.pauseshop-sidebar[data-state="visible"],
+.pauseshop-sidebar[data-state="sliding_in"] {
+    transform: translateX(0); /* Slide into view */
+}
+
+.pauseshop-sidebar[data-state="hidden"],
+.pauseshop-sidebar[data-state="sliding_out"] {
+    transform: translateX(100%); /* Slide out of view */
+}
+
+/* Utility classes for positioning and crispness */
+.pauseshop-z-index {
+    z-index: 9999999;
+}
+
+.pauseshop-crisp {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+}
+
+/* Prevent body scroll when sidebar is open */
+.pauseshop-no-scroll {
+    overflow: hidden !important;
+}
+
 /* Main UI Container - Keep for backward compatibility */
 .pauseshop-ui-container {
     position: fixed;

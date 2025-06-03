@@ -21,7 +21,7 @@ module.exports = {
         }
       },
       backdropBlur: {
-        'pauseshop': '20px'
+        'pauseshop': '7px' // Changed from 5px to 7px for less transparency
       },
       boxShadow: {
         'pauseshop': '-10px 0 30px rgba(0, 0, 0, 0.5)',
@@ -64,6 +64,8 @@ module.exports = {
       },
       spacing: {
         '18': '4.5rem',   // 72px
+        '24': '6rem',    // 96px - New size for thumbnail
+        '32': '8rem',    // 128px - New size for thumbnail
         '88': '22rem',    // 352px
         '100': '25rem',   // 400px - sidebar width
         '112': '28rem',   // 448px
