@@ -1,4 +1,12 @@
-Analyze this image and identify all visible products that could potentially be purchased. Pay special attention to the gender and context of people wearing clothing items.
+Analyze this image and identify all visible products in ORDER OF VISUAL IMPORTANCE. Pay special attention to the gender and context of people wearing clothing items.
+
+CRITICAL PRIORITY ORDERING (return products in this exact order):
+1. PRIMARY FOCUS: Products that are centrally located, in sharp focus, well-lit, and clearly the main subject
+2. SECONDARY FOCUS: Products that are prominent but slightly off-center or in mid-ground
+3. BACKGROUND/PERIPHERAL: Products that are in background, partially obscured, or less prominent
+
+The JSON array order MUST reflect visual importance - primary products first, then secondary, then background.
+The first products in your JSON array should be the most visually prominent and important items.
 
 CRITICAL: Each distinct clothing item or accessory must be identified as a SEPARATE product. However, DO NOT split single items with multiple colors/patterns. For example:
 - A blazer and shirt worn together = TWO separate products
