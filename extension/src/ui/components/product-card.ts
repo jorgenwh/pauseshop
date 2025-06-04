@@ -176,13 +176,10 @@ export class ProductCard {
      * Expand the card
      */
     private async expand(): Promise<void> {
-        console.log('[ProductCard] expand() called');
         if (!this.expansionElement || !this.chevronElement) {
             console.error('[ProductCard] Expansion or chevron element not found in expand()');
             return;
         }
-        console.log('[ProductCard] Expansion element found:', this.expansionElement);
-        console.log('[ProductCard] Prefers reduced motion:', window.matchMedia('(prefers-reduced-motion: reduce)').matches);
 
         this.isCurrentlyExpanded = true;
         this.chevronElement.querySelector('.pauseshop-chevron')?.classList.add('open');
@@ -204,7 +201,6 @@ export class ProductCard {
         return new Promise(resolve => {
             animation.onfinish = () => {
                 this.expansionElement?.classList.add('open'); // Add class for final state
-                console.log('[ProductCard] expand animation finished.');
                 resolve();
             };
         });
@@ -214,12 +210,10 @@ export class ProductCard {
      * Collapse the card
      */
     private async collapse(): Promise<void> {
-        console.log('[ProductCard] collapse() called');
         if (!this.expansionElement || !this.chevronElement) {
             console.error('[ProductCard] Expansion or chevron element not found in collapse()');
             return;
         }
-        console.log('[ProductCard] Expansion element found:', this.expansionElement);
 
         this.isCurrentlyExpanded = false;
         this.chevronElement.querySelector('.pauseshop-chevron')?.classList.remove('open');
@@ -238,7 +232,6 @@ export class ProductCard {
 
         return new Promise(resolve => {
             animation.onfinish = () => {
-                console.log('[ProductCard] collapse animation finished.');
                 resolve();
             };
         });

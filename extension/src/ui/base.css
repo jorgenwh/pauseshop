@@ -48,7 +48,7 @@
 
   /* Product card styles */
   .pauseshop-product-card {
-    @apply p-7 rounded-xl shadow-pauseshop-card hover:shadow-pauseshop-hover pauseshop-glass-light;
+    @apply p-7 rounded-xl shadow-pauseshop-card hover:shadow-pauseshop-hover transition-all duration-200 ease-in-out pauseshop-glass-light;
   }
 
   .pauseshop-product-card:hover {
@@ -91,7 +91,7 @@
   }
 
   .pauseshop-expansion.open {
-    @apply opacity-100 max-h-[10000px]; /* Increased max-height to allow full expansion */
+    @apply opacity-100 max-h-200; /* Reverted to predefined max-height for testing */
     transform: translateY(0);
   }
 
