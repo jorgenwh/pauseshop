@@ -52,7 +52,7 @@ export class ProductCard {
 
         // Create product info section
         const productInfo = document.createElement('div');
-        productInfo.className = 'flex items-center space-x-8 min-w-0'; /* Increased space-x from 6 to 8 */
+        productInfo.className = 'flex items-center space-x-6 min-w-0';
 
         // Create thumbnail
         const thumbnail = this.createThumbnail();
@@ -63,12 +63,14 @@ export class ProductCard {
         textInfo.className = 'min-w-0';
 
         const title = document.createElement('h3');
-        title.className = 'font-semibold text-3xl text-slate-50 truncate'; /* Increased text-xl to text-2xl */
+        title.className = 'font-semibold text-3xl truncate';
+        title.style.color = 'var(--pauseshop-product-name-text)';
         title.textContent = this.getProductTitle();
         textInfo.appendChild(title);
 
         const category = document.createElement('p');
-        category.className = 'text-2xl text-slate-300'; /* Increased text-lg to text-2xl */
+        category.className = 'text-2xl';
+        category.style.color = 'var(--pauseshop-category-text)';
         category.textContent = `Spotted: ${this.getCategoryDisplayName()}`;
         textInfo.appendChild(category);
 
@@ -99,7 +101,7 @@ export class ProductCard {
      */
     private createThumbnail(): HTMLElement {
         const thumbnail = document.createElement('img');
-        thumbnail.className = 'w-32 h-32 rounded-lg object-cover shadow-md group-hover:scale-105 transition-transform duration-200'; /* Increased w-24 h-24 to w-32 h-32 */
+        thumbnail.className = 'w-28 h-28 rounded-2xl object-cover shadow-md group-hover:scale-105 transition-transform duration-200 p-2';
         
         if (this.config.product.thumbnailUrl) {
             thumbnail.src = this.config.product.thumbnailUrl;
@@ -107,7 +109,7 @@ export class ProductCard {
         } else {
             // Create fallback div instead of img
             const fallback = document.createElement('div');
-            fallback.className = 'w-32 h-32 rounded-lg shadow-md group-hover:scale-105 transition-transform duration-200 bg-gradient-to-br from-pauseshop-primary/30 to-pauseshop-accent/20 flex items-center justify-center text-5xl'; /* Increased w-24 h-24 to w-32 h-32 and text-4xl to text-5xl */
+            fallback.className = 'w-36 h-36 rounded-xl shadow-md group-hover:scale-105 transition-transform duration-200 bg-gradient-to-br from-pauseshop-primary/30 to-pauseshop-accent/20 flex items-center justify-center text-6xl';
             fallback.textContent = this.getCategoryIcon();
             return fallback;
         }
@@ -115,7 +117,7 @@ export class ProductCard {
         // Handle image load error
         thumbnail.onerror = () => {
             const fallback = document.createElement('div');
-            fallback.className = 'w-32 h-32 rounded-lg shadow-md group-hover:scale-105 transition-transform duration-200 bg-gradient-to-br from-pauseshop-primary/30 to-pauseshop-accent/20 flex items-center justify-center text-5xl'; /* Increased w-24 h-24 to w-32 h-32 and text-4xl to text-5xl */
+            fallback.className = 'w-36 h-36 rounded-xl shadow-md group-hover:scale-105 transition-transform duration-200 bg-gradient-to-br from-pauseshop-primary/30 to-pauseshop-accent/20 flex items-center justify-center text-6xl';
             fallback.textContent = this.getCategoryIcon();
             thumbnail.parentNode?.replaceChild(fallback, thumbnail);
         };

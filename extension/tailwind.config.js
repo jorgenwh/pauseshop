@@ -15,9 +15,11 @@ module.exports = {
           'primary': '#4F46E5',      // indigo-600
           'secondary': '#6366F1',    // indigo-500
           'accent': '#EC4899',       // pink-500
-          'glass': 'rgba(15, 23, 42, 0.8)',  // slate-900 with opacity
-          'glass-light': 'rgba(30, 41, 59, 0.85)', // slate-800 with opacity
-          'glass-lighter': 'rgba(51, 65, 85, 0.7)', // slate-700 with opacity
+          'glass': 'rgba(20, 30, 50, 0.9)',  // Custom dark blue
+          'glass-light': 'rgba(70, 90, 120, 0.9)', // Custom medium-dark blue
+          'glass-lighter': 'rgba(120, 140, 170, 0.85)', // Custom lighter blue
+          'product-name-text': 'rgb(255, 140, 0)', // Orange
+          'category-text': 'rgb(255, 193, 7)', // Amber/Yellow
         }
       },
       backdropBlur: {
@@ -91,6 +93,8 @@ module.exports = {
     'grid-cols-2',
     'animation-expand',
     'animation-collapse',
+    'text-product-name-text',
+    'text-category-text',
   ],
   // Ensure we don't conflict with existing styles
   corePlugins: {

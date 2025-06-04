@@ -22,7 +22,7 @@ export class ProductList {
         this.config = {
             maxHeight: config.maxHeight || 'none', // Allow content to dictate height
             enableVirtualScrolling: config.enableVirtualScrolling || false,
-            itemSpacing: config.itemSpacing || 14
+            itemSpacing: config.itemSpacing || 16
         };
         this.events = events;
     }
@@ -45,7 +45,7 @@ export class ProductList {
 
         // Create container for product cards
         const cardsContainer = document.createElement('div');
-        cardsContainer.className = 'space-y-3.5';
+        cardsContainer.className = 'space-y-4';
         this.element.appendChild(cardsContainer);
 
         // Create product cards

@@ -11,8 +11,7 @@ module.exports = {
     },
     output: {
         path: path.resolve(__dirname, 'dist'),
-        filename: '[name].js',
-        clean: true
+        filename: '[name].js'
     },
     module: {
         rules: [
@@ -41,17 +40,13 @@ module.exports = {
     },
     plugins: [
         new MiniCssExtractPlugin({
-            filename: '[name].css'
+            filename: 'ui/styles.css'
         }),
         new CopyWebpackPlugin({
             patterns: [
                 {
                     from: 'manifest.json',
                     to: 'manifest.json'
-                },
-                {
-                    from: 'src/ui/styles.css',
-                    to: 'ui/legacy-styles.css'
                 },
                 {
                     from: 'src/popup/popup.html',
