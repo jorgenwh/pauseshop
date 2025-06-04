@@ -57,7 +57,7 @@
 
   /* Amazon product item styles */
   .pauseshop-amazon-item {
-    @apply block p-2 rounded-lg transition-colors duration-200 pauseshop-glass-lighter w-64 h-64 flex items-center justify-center border border-[var(--pauseshop-glass-border)];
+    @apply block p-2 rounded-lg transition-colors duration-200 pauseshop-glass-lighter w-68 h-68 flex items-center justify-center border border-[var(--pauseshop-glass-border)];
   }
 
   /* Amazon product image styles */

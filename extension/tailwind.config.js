@@ -63,6 +63,7 @@ module.exports = {
         }
       },
       spacing: {
+        '17': '4.25rem',  // 68px
         '18': '4.5rem',   // 72px
         '24': '6rem',    // 96px - New size for thumbnail
         '32': '8rem',    // 128px - New size for thumbnail
@@ -71,6 +72,12 @@ module.exports = {
         '112': '28rem',   // 448px
         '128': '32rem',    // 512px
         '200': '50rem'     // 800px - Custom max-height for expansion
+      },
+      width: {
+        '68': '17rem', // 272px
+      },
+      height: {
+        '68': '17rem', // 272px
       },
       zIndex: {
         '999998': '999998',

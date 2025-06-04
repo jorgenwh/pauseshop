@@ -23,7 +23,7 @@
     display: grid;
     grid-template-columns: repeat(2, 1fr); /* 2x2 grid */
     gap: 10px; /* Spacing between items */
-    padding: 10px 0; /* Padding around the grid */
+    padding: 10px 16px; /* Padding around the grid */
 }
 
 .pauseshop-amazon-item {
@@ -53,7 +53,7 @@
     top: 0;
     right: 0; /* Position on the right */
     height: 100%;
-    width: 415px; /* Adjusted width based on feedback */
+    width: 584px; /* Adjusted width to accommodate smaller padding */
     background-color: rgba(255, 255, 255, 0.1); /* Example glassmorphic background */
     backdrop-filter: blur(7px); /* Glassmorphic blur */
     -webkit-backdrop-filter: blur(7px); /* Safari support */

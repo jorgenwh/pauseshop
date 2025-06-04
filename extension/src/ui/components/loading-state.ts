@@ -26,7 +26,7 @@ export class LoadingState {
         }
 
         this.element = document.createElement('div');
-        this.element.className = 'flex flex-col items-center justify-center flex-grow text-center py-10';
+        this.element.className = 'flex flex-col items-center justify-center flex-grow text-center py-10 px-0';
 
         // Create spinner
         const spinner = this.createSpinner();
