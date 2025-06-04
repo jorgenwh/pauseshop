@@ -1,34 +1,50 @@
 /* PauseShop Extension UI Styles - Phase 4: Cleaned up for sidebar-only architecture */
 
-/* Product Card specific styles */
-.pauseshop-product-card {
-    min-height: 189px; /* Approximately 1.5x taller than previous 126px */
-    padding: 36px 27px; /* Increased vertical and horizontal padding */
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* Separator */
-    margin-bottom: 16px; /* Increased margin between product cards */
-}
-
-.pauseshop-product-card:last-child {
-    border-bottom: none; /* No border for the last item */
-    margin-bottom: 0; /* No margin for the last item */
-}
-
 .pauseshop-expansion {
-    overflow: hidden;
-    transition: max-height 0.4s ease-in-out, opacity 0.4s ease-in-out;
-    max-height: 0;
-    opacity: 0;
-    transform: translateY(-10px); /* Initial state for collapse animation */
+    display: block; /* Explicitly set display for transition */
+    /* max-height, opacity, transform, and overflow are handled by base.css Tailwind classes */
+    transition: max-height 0.4s ease-in-out, opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
+    will-change: max-height, opacity, transform; /* Hint for browser optimization */
+    /* Ensure this transition is applied and not overridden by a default Tailwind transition */
 }
 
 .pauseshop-expansion.open {
-    max-height: 600px; /* Adjust as needed based on content */
-    opacity: 1;
-    transform: translateY(0); /* Final state for expand animation */
+    /* max-height and opacity are handled by base.css Tailwind classes for the .open state */
+    /* transform is also handled by base.css for the .open state */
+    /* This class selector is mostly for specificity if needed, but properties are in base.css */
 }
 
 .pauseshop-chevron.open {
     transform: rotate(180deg);
+}
+
+/* Amazon Product Grid specific styles */
+.pauseshop-amazon-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* 2x2 grid */
+    gap: 10px; /* Spacing between items */
+    padding: 10px 0; /* Padding around the grid */
+}
+
+.pauseshop-amazon-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    aspect-ratio: 1 / 1; /* Make items square */
+    padding: 8px; /* Padding inside the square card */
+    background-color: rgba(255, 255, 255, 0.05); /* Subtle background for the card */
+    border: 1px solid rgba(255, 255, 255, 0.1); /* Border for the card */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+}
+
+.pauseshop-amazon-item img,
+.pauseshop-amazon-item .fallback-thumbnail {
+    width: 100%; /* Fill the width of the square card */
+    height: auto; /* Maintain aspect ratio */
+    max-height: 100%; /* Ensure it fits within the card */
+    object-fit: contain; /* Ensure the entire image is visible */
+    margin-bottom: 5px; /* Space between image and text */
 }
 
 /* Sidebar specific styles */

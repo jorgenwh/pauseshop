@@ -68,7 +68,7 @@ export class ProductCard {
         textInfo.appendChild(title);
 
         const category = document.createElement('p');
-        category.className = 'text-lg text-slate-300'; /* Increased text-base to text-lg */
+        category.className = 'text-2xl text-slate-300'; /* Increased text-lg to text-2xl */
         category.textContent = `Spotted: ${this.getCategoryDisplayName()}`;
         textInfo.appendChild(category);
 
@@ -132,7 +132,7 @@ export class ProductCard {
 
         // Create header for Amazon products
         const amazonHeader = document.createElement('h4');
-        amazonHeader.className = 'text-xs font-semibold text-indigo-300 my-3 ml-1';
+        amazonHeader.className = 'text-lg font-semibold text-indigo-300 my-3 ml-1';
         amazonHeader.textContent = 'Shop similar on Amazon:';
         this.expansionElement.appendChild(amazonHeader);
 
@@ -176,17 +176,37 @@ export class ProductCard {
      * Expand the card
      */
     private async expand(): Promise<void> {
-        if (!this.expansionElement || !this.chevronElement) return;
+        console.log('[ProductCard] expand() called');
+        if (!this.expansionElement || !this.chevronElement) {
+            console.error('[ProductCard] Expansion or chevron element not found in expand()');
+            return;
+        }
+        console.log('[ProductCard] Expansion element found:', this.expansionElement);
+        console.log('[ProductCard] Prefers reduced motion:', window.matchMedia('(prefers-reduced-motion: reduce)').matches);
 
         this.isCurrentlyExpanded = true;
-        
-        // Add open class to trigger CSS animation
-        this.expansionElement.classList.add('open');
         this.chevronElement.querySelector('.pauseshop-chevron')?.classList.add('open');
 
-        // Wait for animation to complete
+        // Get the natural height of the content
+        this.expansionElement.style.maxHeight = 'none';
+        const height = this.expansionElement.scrollHeight;
+        this.expansionElement.style.maxHeight = '0px'; // Reset to 0 for animation start
+
+        const animation = this.expansionElement.animate([
+            { maxHeight: '0px', opacity: '0', transform: 'translateY(-10px)' },
+            { maxHeight: `${height}px`, opacity: '1', transform: 'translateY(0)' }
+        ], {
+            duration: this.config.animations.expansionDuration,
+            easing: 'ease-in-out',
+            fill: 'forwards'
+        });
+
         return new Promise(resolve => {
-            setTimeout(resolve, this.config.animations.expansionDuration);
+            animation.onfinish = () => {
+                this.expansionElement?.classList.add('open'); // Add class for final state
+                console.log('[ProductCard] expand animation finished.');
+                resolve();
+            };
         });
     }
 
@@ -194,17 +214,33 @@ export class ProductCard {
      * Collapse the card
      */
     private async collapse(): Promise<void> {
-        if (!this.expansionElement || !this.chevronElement) return;
+        console.log('[ProductCard] collapse() called');
+        if (!this.expansionElement || !this.chevronElement) {
+            console.error('[ProductCard] Expansion or chevron element not found in collapse()');
+            return;
+        }
+        console.log('[ProductCard] Expansion element found:', this.expansionElement);
 
         this.isCurrentlyExpanded = false;
-        
-        // Remove open class to trigger CSS animation
-        this.expansionElement.classList.remove('open');
         this.chevronElement.querySelector('.pauseshop-chevron')?.classList.remove('open');
+        this.expansionElement.classList.remove('open'); // Remove class for animation start
 
-        // Wait for animation to complete
+        const height = this.expansionElement.scrollHeight;
+
+        const animation = this.expansionElement.animate([
+            { maxHeight: `${height}px`, opacity: '1', transform: 'translateY(0)' },
+            { maxHeight: '0px', opacity: '0', transform: 'translateY(-10px)' }
+        ], {
+            duration: this.config.animations.expansionDuration,
+            easing: 'ease-in-out',
+            fill: 'forwards'
+        });
+
         return new Promise(resolve => {
-            setTimeout(resolve, this.config.animations.expansionDuration);
+            animation.onfinish = () => {
+                console.log('[ProductCard] collapse animation finished.');
+                resolve();
+            };
         });
     }
 

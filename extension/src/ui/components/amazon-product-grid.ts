@@ -23,10 +23,11 @@ export class AmazonProductGrid {
         }
 
         this.element = document.createElement('div');
-        this.element.className = `grid grid-cols-${this.config.columns} gap-2.5`;
+        this.element.className = `grid grid-cols-2 gap-4 pauseshop-amazon-grid`; // Use Tailwind grid classes directly
 
-        // Create product items
-        this.config.products.forEach((product, index) => {
+        // Create product items (limit to 4 for a 2x2 grid)
+        const productsToShow = this.config.products.slice(0, 4);
+        productsToShow.forEach((product, index) => {
             const productItem = this.createProductItem(product, index);
             this.element!.appendChild(productItem);
         });
@@ -41,7 +42,7 @@ export class AmazonProductGrid {
         const item = document.createElement('a');
         item.href = product.productUrl;
         item.target = '_blank';
-        item.className = 'pauseshop-amazon-item group block p-2 rounded-lg transition-colors duration-200';
+        item.className = 'pauseshop-amazon-item group block rounded-lg transition-colors duration-200'; // Use new CSS class for item
         
         // Add click handler
         item.addEventListener('click', (e) => {
@@ -50,14 +51,12 @@ export class AmazonProductGrid {
             this.config.onProductClick(product);
         });
 
-        // Create thumbnail
+        // Create thumbnail container
+        const thumbnailContainer = document.createElement('div');
+        thumbnailContainer.className = 'flex-shrink-0 w-full h-full flex items-center justify-center'; // Container for the image
         const thumbnail = this.createThumbnail(product);
-        item.appendChild(thumbnail);
-
-        // Create product info
-        const info = this.createProductInfo(product, index);
-        item.appendChild(info);
-
+        thumbnailContainer.appendChild(thumbnail);
+        item.appendChild(thumbnailContainer);
         return item;
     }
 
@@ -66,14 +65,14 @@ export class AmazonProductGrid {
      */
     private createThumbnail(product: AmazonScrapedProduct): HTMLElement {
         const thumbnail = document.createElement('img');
-        thumbnail.className = 'w-full h-auto rounded-md object-cover mb-1.5 shadow-sm group-hover:opacity-90 transition-opacity';
+        thumbnail.className = 'pauseshop-amazon-item-image rounded-md object-contain shadow-sm group-hover:opacity-90 transition-opacity';
         thumbnail.src = product.thumbnailUrl;
         thumbnail.alt = `Amazon Product ${product.position}`;
 
         // Handle image load error
         thumbnail.onerror = () => {
             const fallback = document.createElement('div');
-            fallback.className = 'w-full h-24 rounded-md mb-1.5 shadow-sm bg-gradient-to-br from-slate-600 to-slate-700 flex items-center justify-center text-slate-400 text-xs';
+            fallback.className = 'fallback-thumbnail rounded-md shadow-sm bg-gradient-to-br from-slate-600 to-slate-700 flex items-center justify-center text-slate-400 text-xs'; // Sizing handled by CSS
             fallback.textContent = 'Image not available';
             thumbnail.parentNode?.replaceChild(fallback, thumbnail);
         };
@@ -82,43 +81,11 @@ export class AmazonProductGrid {
     }
 
     /**
-     * Create product info section
+     * Create product info section (now empty as per user request)
      */
     private createProductInfo(product: AmazonScrapedProduct, index: number): HTMLElement {
-        const info = document.createElement('div');
-
-        // Create title
-        const title = document.createElement('p');
-        title.className = 'text-[11px] leading-tight text-slate-100 truncate';
-        title.textContent = `Amazon Product ${product.position || index + 1}`;
-        info.appendChild(title);
-
-        // Create price placeholder (since we don't have actual price data)
-        if (this.config.showPrices) {
-            const price = document.createElement('p');
-            price.className = 'text-[10px] text-indigo-400 font-semibold';
-            price.textContent = 'View on Amazon';
-            info.appendChild(price);
-        }
-
-        // Add confidence indicator if available
-        if (product.confidence && product.confidence > 0) {
-            const confidence = document.createElement('div');
-            confidence.className = 'flex items-center mt-1';
-            
-            const stars = Math.round(product.confidence * 5);
-            const starElements = Array.from({ length: 5 }, (_, i) => {
-                const star = document.createElement('span');
-                star.className = `text-[8px] ${i < stars ? 'text-yellow-400' : 'text-slate-600'}`;
-                star.textContent = '★';
-                return star;
-            });
-            
-            starElements.forEach(star => confidence.appendChild(star));
-            info.appendChild(confidence);
-        }
-
-        return info;
+        // Removed all text and star elements as per user request
+        return document.createElement('div'); // Return an empty div
     }
 
     /**
@@ -130,7 +97,8 @@ export class AmazonProductGrid {
         this.config.products = products;
         this.element.innerHTML = '';
 
-        products.forEach((product, index) => {
+        const productsToShow = products.slice(0, 4); // Limit to 4 for a 2x2 grid
+        productsToShow.forEach((product, index) => {
             const productItem = this.createProductItem(product, index);
             this.element!.appendChild(productItem);
         });

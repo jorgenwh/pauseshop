@@ -20,7 +20,7 @@ export class ProductList {
 
     constructor(config: Partial<ProductListConfig>, events: ProductListEvents = {}) {
         this.config = {
-            maxHeight: config.maxHeight || 'calc(100vh - 200px)',
+            maxHeight: config.maxHeight || 'none', // Allow content to dictate height
             enableVirtualScrolling: config.enableVirtualScrolling || false,
             itemSpacing: config.itemSpacing || 14
         };
@@ -37,7 +37,11 @@ export class ProductList {
 
         this.element = document.createElement('div');
         this.element.className = 'pauseshop-scrollbar overflow-y-auto flex-grow pr-1 pb-4';
-        this.element.style.maxHeight = this.config.maxHeight;
+        if (this.config.maxHeight !== 'none') {
+            this.element.style.maxHeight = this.config.maxHeight;
+        } else {
+            this.element.style.maxHeight = ''; // Remove max-height style if 'none'
+        }
 
         // Create container for product cards
         const cardsContainer = document.createElement('div');

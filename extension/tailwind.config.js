@@ -33,8 +33,8 @@ module.exports = {
         'slide-out-right': 'slideOutRight 0.5s ease-in-out',
         'fade-in': 'fadeIn 0.3s ease-in-out',
         'fade-out': 'fadeOut 0.3s ease-in-out',
-        'expand': 'expand 0.4s ease-in-out',
-        'collapse': 'collapse 0.4s ease-in-out'
+        'expand': 'expand 0.4s ease-in-out forwards',
+        'collapse': 'collapse 0.4s ease-in-out forwards'
       },
       keyframes: {
         slideInRight: {
@@ -55,10 +55,10 @@ module.exports = {
         },
         expand: {
           '0%': { maxHeight: '0', opacity: '0', transform: 'translateY(-10px)' },
-          '100%': { maxHeight: '600px', opacity: '1', transform: 'translateY(0)' }
+          '100%': { maxHeight: '50rem', opacity: '1', transform: 'translateY(0)' }
         },
         collapse: {
-          '0%': { maxHeight: '600px', opacity: '1', transform: 'translateY(0)' },
+          '0%': { maxHeight: '50rem', opacity: '1', transform: 'translateY(0)' },
           '100%': { maxHeight: '0', opacity: '0', transform: 'translateY(-10px)' }
         }
       },
@@ -69,15 +69,22 @@ module.exports = {
         '88': '22rem',    // 352px
         '100': '25rem',   // 400px - sidebar width
         '112': '28rem',   // 448px
-        '128': '32rem'    // 512px
+        '128': '32rem',    // 512px
+        '200': '50rem'     // 800px - Custom max-height for expansion
       },
       zIndex: {
         '999998': '999998',
         '999999': '999999'
-      }
+      },
     }
   },
   plugins: [],
+  // Safelist grid-cols-2 for dynamic class generation
+  safelist: [
+    'grid-cols-2',
+    'animation-expand',
+    'animation-collapse',
+  ],
   // Ensure we don't conflict with existing styles
   corePlugins: {
     preflight: false // Disable Tailwind's CSS reset to avoid conflicts
