@@ -161,7 +161,19 @@ export enum AnalysisProvider {
     OPENROUTER = 'openrouter'
 }
 
+export interface StreamingCallbacks {
+    onProduct: (product: Product) => void;
+    onComplete: (response: OpenAIResponse | RequestyResponse | GeminiResponse | OpenRouterResponse) => void;
+    onError: (error: Error) => void;
+}
+
+export interface PartialProductParser {
+    parse(partialResponse: string): Product[];
+}
+
 export interface AnalysisService {
     analyzeImage(imageData: string): Promise<OpenAIResponse | RequestyResponse | GeminiResponse | OpenRouterResponse>;
     parseResponseToProducts(response: string): Product[];
+    supportsStreaming(): boolean;
+    analyzeImageStreaming(imageData: string, callbacks: StreamingCallbacks): Promise<void>;
 }

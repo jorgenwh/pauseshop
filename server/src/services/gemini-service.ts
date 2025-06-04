@@ -9,7 +9,8 @@ import {
     GeminiResponse,
     AnalysisService,
     Product,
-    GeminiProductResponse
+    GeminiProductResponse,
+    StreamingCallbacks
 } from '../types/analyze';
 import {
     loadPrompt,
@@ -17,6 +18,7 @@ import {
     validateAndSanitizeProducts,
     handleAPIError
 } from './analysis-utils';
+import { DefaultPartialProductParser } from './partial-product-parser';
 
 export class GeminiService implements AnalysisService {
     private client: GoogleGenAI;
@@ -116,6 +118,71 @@ export class GeminiService implements AnalysisService {
             console.error('[GEMINI_SERVICE] Error parsing response:', error);
             console.log('[GEMINI_SERVICE] Response that failed to parse:', response.substring(0, 200));
             return [];
+        }
+    }
+
+    supportsStreaming(): boolean {
+        return true;
+    }
+
+    async analyzeImageStreaming(imageData: string, callbacks: StreamingCallbacks): Promise<void> {
+        try {
+            const prompt = await loadPrompt();
+            const parser = new DefaultPartialProductParser();
+
+            console.log('[GEMINI_SERVICE] Sending image to Gemini API for streaming...');
+            const startTime = Date.now();
+
+            const requestBody: any = {
+                model: this.config.model,
+                contents: [
+                    {
+                        role: 'user',
+                        parts: [
+                            { text: prompt },
+                            {
+                                inlineData: {
+                                    mimeType: "image/jpeg", // Assuming JPEG for now, can be made dynamic
+                                    data: imageData.split(',')[1] // Remove "data:image/jpeg;base64," prefix
+                                }
+                            }
+                        ]
+                    }
+                ],
+                config: {
+                    maxOutputTokens: this.config.maxTokens,
+                },
+            };
+
+            if (this.config.thinkingBudget !== undefined) {
+                requestBody.config.thinkingConfig = {
+                    thinkingBudget: this.config.thinkingBudget,
+                };
+            }
+
+            const streamResult = await this.client.models.generateContentStream(requestBody);
+
+            let fullContent = '';
+            for await (const chunk of streamResult) { // Iterate directly over streamResult
+                const chunkText = chunk.text;
+                if (chunkText) {
+                    fullContent += chunkText;
+                    const products = parser.parse(chunkText);
+                    products.forEach(product => callbacks.onProduct(product));
+                }
+            }
+
+            const processingTime = Date.now() - startTime;
+
+            console.log(`[GEMINI_SERVICE] LLM Streaming Analysis completed in ${processingTime}ms.`);
+
+            callbacks.onComplete({
+                content: fullContent,
+            });
+
+        } catch (error) {
+            console.error('[GEMINI_SERVICE] Error during streaming image analysis:', error);
+            callbacks.onError(handleAPIError(error, 'GEMINI'));
         }
     }
 }
