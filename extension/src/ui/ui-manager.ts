@@ -16,8 +16,6 @@ import {
   SidebarContentState,
   SidebarConfig,
   SidebarEvents,
-  LoadingStateConfig,
-  NoProductsStateConfig
 } from './types';
 
 export class UIManager {
@@ -139,7 +137,7 @@ export class UIManager {
 
       // Create sidebar component
       this.sidebar = new Sidebar(this.sidebarConfig, this.sidebarEvents);
-      const sidebarElement = this.sidebar.create();
+      this.sidebar.create();
       // Sidebar manages its own DOM insertion
 
       this.isInitialized = true;

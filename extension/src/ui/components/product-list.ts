@@ -66,7 +66,7 @@ export class ProductList {
             const productCard = new ProductCard({
                 product: product,
                 isExpanded: false,
-                onToggleExpansion: (card: any) => this.handleCardExpansion(card, i),
+                onToggleExpansion: (card: ProductCard) => this.handleCardExpansion(card, i),
                 onAmazonProductClick: (amazonProduct: AmazonScrapedProduct) => this.events.onProductClick?.(amazonProduct),
                 animations: {
                     expansionDuration: 400,

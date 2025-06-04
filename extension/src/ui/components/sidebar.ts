@@ -214,7 +214,7 @@ export class Sidebar {
                 enableVirtualScrolling: false,
                 itemSpacing: 14
             }, {
-                onProductClick: (product: any) => this.events.onProductClick?.(product)
+                onProductClick: (product) => this.events.onProductClick?.(product)
             });
         }
 

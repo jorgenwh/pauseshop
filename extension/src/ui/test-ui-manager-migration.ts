@@ -213,7 +213,20 @@ export async function runAllMigrationTests(): Promise<void> {
 }
 
 // Export for manual testing in browser console
-(window as any).testUIManagerMigration = {
+interface TestUIManagerMigration {
+    runAll: () => Promise<void>;
+    testSidebar: () => Promise<boolean>;
+    testLegacy: () => Promise<boolean>;
+    testBackward: () => Promise<boolean>;
+}
+
+declare global {
+    interface Window {
+        testUIManagerMigration?: TestUIManagerMigration;
+    }
+}
+
+window.testUIManagerMigration = {
     runAll: runAllMigrationTests,
     testSidebar: testSidebarSystem,
     testLegacy: testLegacyCompatibility,

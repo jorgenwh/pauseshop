@@ -3,7 +3,7 @@
  * Displays individual product with expandable Amazon search results
  */
 
-import { ProductCardConfig, ProductDisplayData } from '../types';
+import { ProductCardConfig } from '../types';
 import { AmazonScrapedProduct } from '../../types/amazon';
 import { AmazonProductGrid } from './amazon-product-grid';
 

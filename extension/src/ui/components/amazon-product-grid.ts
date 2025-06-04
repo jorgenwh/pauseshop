@@ -38,7 +38,7 @@ export class AmazonProductGrid {
     /**
      * Create individual product item
      */
-    private createProductItem(product: AmazonScrapedProduct, index: number): HTMLElement {
+    private createProductItem(product: AmazonScrapedProduct, _index: number): HTMLElement {
         const item = document.createElement('a');
         item.href = product.productUrl;
         item.target = '_blank';
@@ -83,7 +83,7 @@ export class AmazonProductGrid {
     /**
      * Create product info section (now empty as per user request)
      */
-    private createProductInfo(product: AmazonScrapedProduct, index: number): HTMLElement {
+    private createProductInfo(_product: AmazonScrapedProduct, _index: number): HTMLElement {
         // Removed all text and star elements as per user request
         return document.createElement('div'); // Return an empty div
     }

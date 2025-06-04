@@ -3,6 +3,7 @@
  */
 
 import { AmazonScrapedProduct, ProductCategory } from '../types/amazon';
+import { ProductCard } from './components/product-card';
 
 export enum LoadingState {
     HIDDEN = 'hidden',
@@ -112,7 +113,7 @@ export interface ProductListConfig {
 export interface ProductCardConfig {
     product: ProductDisplayData;
     isExpanded: boolean;
-    onToggleExpansion: (card: ProductCard) => void;
+    onToggleExpansion: (card: ProductCard) => void | Promise<void>;
     onAmazonProductClick: (product: AmazonScrapedProduct) => void;
     animations: {
         expansionDuration: number;
@@ -147,12 +148,6 @@ export interface SidebarEvents {
 }
 
 // Forward declarations for new components
-export interface ProductCard {
-    getElement(): HTMLElement | null;
-    isExpanded(): boolean;
-    toggleExpansion(): Promise<void>;
-    cleanup(): void;
-}
 
 export interface Sidebar {
     show(): Promise<void>;
