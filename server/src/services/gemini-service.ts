@@ -33,8 +33,9 @@ export class GeminiService implements AnalysisService {
             const prompt = await loadPrompt();
             const parser = new DefaultPartialProductParser();
 
-            console.log('[GEMINI_SERVICE] Sending image to Gemini API for streaming...');
             const startTime = Date.now();
+            let firstTokenTime: number | null = null;
+            let lastTokenTime: number | null = null;
 
             const requestBody: any = {
                 model: this.config.model,
@@ -71,6 +72,12 @@ export class GeminiService implements AnalysisService {
                 lastChunk = chunk;
                 const chunkText = chunk.text;
                 if (chunkText) {
+                    // Track first and last token times
+                    if (firstTokenTime === null) {
+                        firstTokenTime = Date.now();
+                    }
+                    lastTokenTime = Date.now();
+                    
                     fullContent += chunkText;
                     const products = parser.parse(chunkText);
                     products.forEach(product => callbacks.onProduct(product));
@@ -78,13 +85,14 @@ export class GeminiService implements AnalysisService {
             }
 
             const processingTime = Date.now() - startTime;
+            const streamingDuration = firstTokenTime && lastTokenTime ? lastTokenTime - firstTokenTime : 0;
 
             // Usage metadata is available on the last chunk
             const usageMetadata = lastChunk?.usageMetadata;
             const promptCost = (usageMetadata?.promptTokenCount || 0) * this.config.promptCostPerToken;
             const completionCost = (usageMetadata?.candidatesTokenCount || 0) * this.config.completionCostPerToken;
             const totalCost = promptCost + completionCost;
-            console.log(`[GEMINI_SERVICE] LLM Streaming Analysis completed in ${processingTime}ms. Tokens: [${usageMetadata?.promptTokenCount}/${usageMetadata?.candidatesTokenCount}/${usageMetadata?.totalTokenCount}]. Cost: $${totalCost.toFixed(6)}`);
+            console.log(`[GEMINI_SERVICE] LLM Streaming Analysis completed in ${processingTime}ms (streaming duration: ${streamingDuration}ms). Tokens: [${usageMetadata?.promptTokenCount}/${usageMetadata?.candidatesTokenCount}/${usageMetadata?.totalTokenCount}]. Cost: $${totalCost.toFixed(6)}`);
 
             callbacks.onComplete({
                 content: fullContent,

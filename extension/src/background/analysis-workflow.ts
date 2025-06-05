@@ -12,30 +12,12 @@ import type { ScreenshotConfig, ScreenshotResponse } from './types';
 import type { AmazonScrapedProduct } from '../types/amazon';
 
 // Define a merged product interface that combines server and scraped data
-interface MergedProduct {
-    // Core product info from server stream
-    name: string;
-    brand: string;
-    category: string;
-    primaryColor: string;
-    secondaryColors: string[];
-    features: string[];
-    targetGender: string;
-    searchTerms: string;
-    
-    // Amazon scraped data
-    productUrl: string;
-    thumbnailUrl: string;
-    amazonAsin?: string;
-    position: number;
-    confidence: number;
-    productId: string;
-}
 
 // Define message types for communication with the UI
-interface ProductMessage {
-    type: 'product_update';
-    product: MergedProduct; // Single merged product object
+interface ProductGroupMessage { // Changed from ProductMessage to ProductGroupMessage
+    type: 'product_group_update'; // New type to distinguish
+    originalProduct: Product; // The original product from server stream
+    scrapedProducts: AmazonScrapedProduct[]; // All scraped Amazon products for this original product
     pauseId?: string;
 }
 
@@ -45,27 +27,6 @@ interface ProductMessage {
  * @param scrapedProduct Scraped Amazon product data
  * @returns Single consolidated product object
  */
-const mergeProductDetails = (originalProduct: Product, scrapedProduct: AmazonScrapedProduct): MergedProduct => {
-    return {
-        // Core product info from server stream
-        name: originalProduct.name,
-        brand: originalProduct.brand,
-        category: originalProduct.category,
-        primaryColor: originalProduct.primaryColor,
-        secondaryColors: originalProduct.secondaryColors,
-        features: originalProduct.features,
-        targetGender: originalProduct.targetGender,
-        searchTerms: originalProduct.searchTerms,
-        
-        // Amazon scraped data
-        productUrl: scrapedProduct.productUrl,
-        thumbnailUrl: scrapedProduct.thumbnailUrl,
-        amazonAsin: scrapedProduct.amazonAsin,
-        position: scrapedProduct.position,
-        confidence: scrapedProduct.confidence,
-        productId: scrapedProduct.productId
-    };
-};
 
 interface AnalysisCompleteMessage {
     type: 'analysis_complete';
@@ -88,7 +49,7 @@ export const handleScreenshotAnalysis = async (config: ScreenshotConfig, windowI
     try {
         const imageData = await captureScreenshot(config, windowId);
 
-        return new Promise<ScreenshotResponse>(async (resolve) => {
+        return new Promise<ScreenshotResponse>(async (resolve) => { // eslint-disable-line no-async-promise-executor
             // Track all async operations from onProduct callbacks
             const pendingOperations: Promise<void>[] = [];
             
@@ -162,29 +123,17 @@ export const handleScreenshotAnalysis = async (config: ScreenshotConfig, windowI
                                             }))
                                         });
                                         
-                                        // Process and send all scraped products (up to 5)
-                                        for (let i = 0; i < scrapedProducts.length; i++) {
-                                            const scrapedProduct = scrapedProducts[i];
-                                            
-                                            // Log each individual product being sent to UI
-                                            logWithTimestamp(config, 'info', `Sending product ${i + 1}/${scrapedProducts.length} to UI`, {
-                                                originalProductName: product.name,
-                                                scrapedProductId: scrapedProduct.productId,
-                                                scrapedProductUrl: scrapedProduct.productUrl,
-                                                scrapedThumbnailUrl: scrapedProduct.thumbnailUrl,
-                                                scrapedProductPosition: scrapedProduct.position,
-                                                scrapedProductConfidence: scrapedProduct.confidence,
-                                                amazonAsin: scrapedProduct.amazonAsin
-                                            });
-                                            
-                                            // Merge the original product and scraped product into a single object
-                                            const mergedProduct = mergeProductDetails(product, scrapedProduct);
-                                            
-                                            chrome.runtime.sendMessage({
-                                                type: 'product_update',
-                                                product: mergedProduct, // Send single merged product object
+                                        // Send a single message with the original product and all scraped products
+                                        const tabId = (await chrome.tabs.query({ active: true, currentWindow: true }))[0]?.id;
+                                        if (tabId) {
+                                            chrome.tabs.sendMessage(tabId, {
+                                                type: 'product_group_update', // Use new type
+                                                originalProduct: product, // The original product
+                                                scrapedProducts: scrapedProducts, // All scraped products
                                                 pauseId: pauseId
-                                            } as ProductMessage);
+                                            } as ProductGroupMessage).catch(e => log(config, `Error sending product group update to tab ${tabId}: ${e.message}`));
+                                        } else {
+                                            log(config, 'Could not find active tab to send product group update.');
                                         }
                                     } else {
                                         // Log when no products were found
@@ -230,20 +179,26 @@ export const handleScreenshotAnalysis = async (config: ScreenshotConfig, windowI
                                 log(config, `Error waiting for product processing: ${error instanceof Error ? error.message : 'Unknown error'}`);
                             }
                             
-                            chrome.runtime.sendMessage({
-                                type: 'analysis_complete',
-                                pauseId: pauseId
-                            } as AnalysisCompleteMessage);
+                            const tabId = (await chrome.tabs.query({ active: true, currentWindow: true }))[0]?.id;
+                            if (tabId) {
+                                chrome.tabs.sendMessage(tabId, {
+                                    type: 'analysis_complete',
+                                    pauseId: pauseId
+                                } as AnalysisCompleteMessage).catch(e => log(config, `Error sending analysis complete to tab ${tabId}: ${e.message}`));
+                            }
                             resolve({ success: true, pauseId: pauseId });
                         },
-                        onError: (error: Event) => {
+                        onError: async (error: Event) => {
                             const errorMessage = `Streaming analysis failed: ${error.type || 'Unknown error'}`;
                             log(config, errorMessage);
-                            chrome.runtime.sendMessage({
-                                type: 'analysis_error',
-                                error: errorMessage,
-                                pauseId: pauseId
-                            } as AnalysisErrorMessage);
+                            const tabId = (await chrome.tabs.query({ active: true, currentWindow: true }))[0]?.id;
+                            if (tabId) {
+                                chrome.tabs.sendMessage(tabId, {
+                                    type: 'analysis_error',
+                                    error: errorMessage,
+                                    pauseId: pauseId
+                                } as AnalysisErrorMessage).catch(e => log(config, `Error sending analysis error to tab ${tabId}: ${e.message}`));
+                            }
                             resolve({ success: false, error: errorMessage, pauseId: pauseId });
                         }
                     },
@@ -254,11 +209,14 @@ export const handleScreenshotAnalysis = async (config: ScreenshotConfig, windowI
             } catch (error) {
                 const errorMessage = error instanceof Error ? error.message : 'Failed to start streaming analysis';
                 log(config, errorMessage);
-                chrome.runtime.sendMessage({
-                    type: 'analysis_error',
-                    error: errorMessage,
-                    pauseId: pauseId
-                } as AnalysisErrorMessage);
+                const tabId = (await chrome.tabs.query({ active: true, currentWindow: true }))[0]?.id;
+                if (tabId) {
+                    chrome.tabs.sendMessage(tabId, {
+                        type: 'analysis_error',
+                        error: errorMessage,
+                        pauseId: pauseId
+                    } as AnalysisErrorMessage).catch(e => log(config, `Error sending analysis error to tab ${tabId}: ${e.message}`));
+                }
                 resolve({ success: false, error: errorMessage, pauseId: pauseId });
             }
         });

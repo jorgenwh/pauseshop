@@ -7,7 +7,6 @@
 
 import { Sidebar } from './components/sidebar';
 import { AmazonScrapedProduct, ProductCategory } from '../types/amazon'; // Import AmazonScrapedProduct and ProductCategory
-import { Product } from '../background/api-client'; // Import Product from api-client
 import {
   LoadingState,
   UIConfig,
@@ -18,6 +17,7 @@ import {
   SidebarContentState,
   SidebarConfig,
   SidebarEvents,
+  BackgroundMessage, // Import the new type
 } from './types';
 
 export class UIManager {
@@ -114,9 +114,13 @@ export class UIManager {
         }
       },
       onProductClick: (product) => {
-        // Handle product clicks - open Amazon URL
-        if (product.productUrl) {
-          window.open(product.productUrl, '_blank');
+        // Handle product clicks - open Amazon URL using ASIN
+        if (product.amazonAsin) {
+          window.open(`https://www.amazon.com/dp/${product.amazonAsin}`, '_blank');
+        } else if (product.productUrl) {
+          // Fallback to productUrl if ASIN is missing
+          const decodedUrl = product.productUrl.replace(/&/g, '&');
+          window.open(decodedUrl, '_blank');
         }
       },
       onError: (error) => {
@@ -130,6 +134,7 @@ export class UIManager {
    */
   public initialize(): boolean {
     if (this.isInitialized) {
+      this.log('UIManager already initialized.');
       return true;
     }
 
@@ -142,6 +147,7 @@ export class UIManager {
       this.sidebar.create(); // Sidebar manages its own DOM insertion
 
       this.isInitialized = true;
+      this.log('UIManager initialized successfully.');
       return true;
 
     } catch (error) {
@@ -293,66 +299,53 @@ export class UIManager {
   }
 
   /**
-   * Add a single product to the UI (for streaming)
-   */
-  public async addProduct(mergedProduct: any): Promise<void> {
-    if (!this.ensureInitialized() || !this.sidebar) {
-      return;
-    }
-
-    // Construct ProductDisplayData from merged product object
-    const productDisplayData: ProductDisplayData = {
-      name: mergedProduct.name,
-      thumbnailUrl: mergedProduct.thumbnailUrl,
-      allProducts: [{
-        productId: mergedProduct.productId,
-        amazonAsin: mergedProduct.amazonAsin,
-        thumbnailUrl: mergedProduct.thumbnailUrl,
-        productUrl: mergedProduct.productUrl,
-        position: mergedProduct.position,
-        confidence: mergedProduct.confidence
-      }], // Convert merged product back to AmazonScrapedProduct format for compatibility
-      category: mergedProduct.category as ProductCategory,
-      fallbackText: mergedProduct.searchTerms // Use searchTerms as fallback
-    };
-
-    await this.sidebar.addProduct(productDisplayData);
-  }
-
-  /**
    * Handle messages from the background script
    */
-  private handleBackgroundMessages = (message: any, sender: chrome.runtime.MessageSender, sendResponse: (response?: any) => void) => {
+  private handleBackgroundMessages = (message: BackgroundMessage, sender: chrome.runtime.MessageSender, sendResponse: (response?: unknown) => void) => {
     if (message.type === 'analysis_started') {
       this.log(`Received analysis_started for pauseId: ${message.pauseId}`);
       this.sidebar?.setState('loading');
-    } else if (message.type === 'product_update') {
-      this.log(`Received product_update for pauseId: ${message.pauseId}`);
+    } else if (message.type === 'product_group_update') {
+      this.log(`Received product_group_update for pauseId: ${message.pauseId} with ${message.scrapedProducts.length} products`);
       
-      // Log detailed product information for visibility
-      console.log('[PauseShop UI] Product received:', {
-        productName: message.product.name,
-        productId: message.product.productId,
-        amazonAsin: message.product.amazonAsin,
-        productUrl: message.product.productUrl,
-        thumbnailUrl: message.product.thumbnailUrl,
-        position: message.product.position,
-        confidence: message.product.confidence,
-        category: message.product.category,
-        brand: message.product.brand,
-        searchTerms: message.product.searchTerms,
+      // Create a single product display group for all scraped products
+      const productDisplayData: ProductDisplayData = {
+        name: message.originalProduct.name,
+        thumbnailUrl: message.scrapedProducts[0]?.thumbnailUrl || '',
+        allProducts: message.scrapedProducts.map((p: AmazonScrapedProduct) => ({
+          productId: p.productId,
+          amazonAsin: p.amazonAsin,
+          thumbnailUrl: p.thumbnailUrl,
+          productUrl: p.productUrl,
+          position: p.position,
+          confidence: p.confidence
+        })),
+        category: message.originalProduct.category as ProductCategory,
+        fallbackText: message.originalProduct.searchTerms
+      };
+      
+      // Log the product group
+      console.log('[PauseShop UI] Adding product group:', {
+        productName: productDisplayData.name,
+        productCount: productDisplayData.allProducts.length,
+        category: productDisplayData.category,
         pauseId: message.pauseId
       });
       
-      this.addProduct(message.product); // Use the single merged product object (calls setState('productList') internally)
+      // Add the entire product group to the UI
+      if (this.sidebar) {
+        this.sidebar.addProduct(productDisplayData);
+      }
     } else if (message.type === 'analysis_complete') {
       this.log(`Received analysis_complete for pauseId: ${message.pauseId}`);
-      // Check if sidebar has any products by checking its internal product list
-      const hasProducts = this.sidebar?.hasProducts() ?? false;
-      if (!hasProducts) {
-        this.sidebar?.setState('noProducts');
+      // Ensure the sidebar is in productList state if products were added
+      // The sidebar's internal state should already be 'productList' if addProduct was called.
+      // This prevents the sidebar from incorrectly showing 'noProducts' or hiding.
+      if (this.sidebar?.hasProducts()) {
+        this.sidebar.setState('productList');
       } else {
-        this.sidebar?.setState('productList');
+        // If no products were added at all, then show no products state
+        this.sidebar?.setState('noProducts');
       }
     } else if (message.type === 'analysis_error') {
       this.log(`Received analysis_error for pauseId: ${message.pauseId} - ${message.error}`);
@@ -488,6 +481,7 @@ export class UIManager {
     this.isInitialized = false;
 
     // Remove message listener
+    this.log('Removing background message listener.');
     chrome.runtime.onMessage.removeListener(this.handleBackgroundMessages);
   }
 
@@ -522,6 +516,7 @@ export class UIManager {
     document.body.appendChild(this.container);
 
     // Add message listener for background script communication
+    this.log('Adding background message listener.');
     chrome.runtime.onMessage.addListener(this.handleBackgroundMessages);
   }
 

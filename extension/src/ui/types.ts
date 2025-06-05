@@ -3,6 +3,7 @@
  */
 
 import { AmazonScrapedProduct, ProductCategory } from '../types/amazon';
+import { Product } from '../background/api-client'; // Import Product
 import { ProductCard } from './components/product-card';
 
 export enum LoadingState {
@@ -147,8 +148,37 @@ export interface SidebarEvents {
     onError?: (error: Error) => void;
 }
 
-// Forward declarations for new components
+// Message types for communication with the background script
+export interface AnalysisStartedMessage {
+    type: 'analysis_started';
+    pauseId?: string;
+}
 
+export interface ProductGroupUpdateMessage {
+    type: 'product_group_update';
+    originalProduct: Product;
+    scrapedProducts: AmazonScrapedProduct[];
+    pauseId?: string;
+}
+
+export interface AnalysisCompleteMessage {
+    type: 'analysis_complete';
+    pauseId?: string;
+}
+
+export interface AnalysisErrorMessage {
+    type: 'analysis_error';
+    error: string;
+    pauseId?: string;
+}
+
+export type BackgroundMessage =
+    | AnalysisStartedMessage
+    | ProductGroupUpdateMessage
+    | AnalysisCompleteMessage
+    | AnalysisErrorMessage;
+
+// Forward declarations for new components
 export interface Sidebar {
     show(): Promise<void>;
     hide(): Promise<void>;
@@ -159,6 +189,8 @@ export interface Sidebar {
     showLoading(config?: LoadingStateConfig): void;
     showNoProducts(config?: MessageStateConfig): void;
     cleanup(): void;
+    addProduct(product: ProductDisplayData): Promise<void>; // Add addProduct method
+    hasProducts(): boolean; // Add hasProducts method
 }
 
 // Enhanced UI Manager configuration for sidebar
