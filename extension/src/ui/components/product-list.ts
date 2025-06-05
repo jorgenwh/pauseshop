@@ -30,7 +30,7 @@ export class ProductList {
     /**
      * Create the product list element
      */
-    public async create(products: ProductDisplayData[]): Promise<HTMLElement> {
+    public async create(): Promise<HTMLElement> {
         if (this.element) {
             this.cleanup();
         }
@@ -48,36 +48,41 @@ export class ProductList {
         cardsContainer.className = 'space-y-4';
         this.element.appendChild(cardsContainer);
 
-        // Create product cards
-        await this.createProductCards(products, cardsContainer);
-
         return this.element;
     }
 
     /**
-     * Create product cards for each product
+     * Add a single product to the list
      */
-    private async createProductCards(products: ProductDisplayData[], container: HTMLElement): Promise<void> {
-        this.productCards = [];
-
-        for (let i = 0; i < products.length; i++) {
-            const product = products[i];
-            
-            const productCard = new ProductCard({
-                product: product,
-                isExpanded: false,
-                onToggleExpansion: (card: ProductCard) => this.handleCardExpansion(card, i),
-                onAmazonProductClick: (amazonProduct: AmazonScrapedProduct) => this.events.onProductClick?.(amazonProduct),
-                animations: {
-                    expansionDuration: 400,
-                    hoverTransitionDuration: 200
-                }
-            });
-
-            const cardElement = await productCard.create();
-            container.appendChild(cardElement);
-            this.productCards.push(productCard);
+    public async addProduct(product: ProductDisplayData): Promise<void> {
+        if (!this.element) {
+            console.warn('ProductList element not created. Cannot add product.');
+            return;
         }
+
+        const cardsContainer = this.element.querySelector('.space-y-4') as HTMLElement;
+        if (!cardsContainer) {
+            console.error('Product cards container not found.');
+            return;
+        }
+
+        const productCard = new ProductCard({
+            product: product,
+            isExpanded: false,
+            onToggleExpansion: (card: ProductCard) => this.handleCardExpansion(card, this.productCards.length),
+            onAmazonProductClick: (amazonProduct: AmazonScrapedProduct) => this.events.onProductClick?.(amazonProduct),
+            animations: {
+                expansionDuration: 400,
+                hoverTransitionDuration: 200
+            }
+        });
+
+        const cardElement = await productCard.create();
+        cardsContainer.appendChild(cardElement);
+        this.productCards.push(productCard);
+
+        // Animate the new card in
+        await this.animateCardIn(productCard, 0); // Animate immediately
     }
 
     /**
@@ -108,28 +113,12 @@ export class ProductList {
      * Show the product list with staggered animation
      */
     public async show(): Promise<void> {
-        if (!this.element || this.productCards.length === 0) {
+        // The show method will now primarily be responsible for ensuring the container is visible.
+        // Individual product animations are handled by addProduct.
+        if (!this.element) {
             return;
         }
-
-        // Initial state - hide all cards
-        this.productCards.forEach(card => {
-            const element = card.getElement();
-            if (element) {
-                element.style.opacity = '0';
-                element.style.transform = 'translateY(20px)';
-            }
-        });
-
-        // Show cards with staggered animation
-        const animationPromises: Promise<void>[] = [];
-        
-        this.productCards.forEach((card, index) => {
-            const delay = index * 100; // 100ms stagger
-            animationPromises.push(this.animateCardIn(card, delay));
-        });
-
-        await Promise.all(animationPromises);
+        this.element.style.opacity = '1'; // Ensure the main container is visible
     }
 
     /**

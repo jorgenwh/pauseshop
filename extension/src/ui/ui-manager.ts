@@ -6,6 +6,9 @@
  */
 
 import { Sidebar } from './components/sidebar';
+import { ProductList } from './components/product-list'; // Import ProductList
+import { AmazonScrapedProduct, ProductCategory } from '../types/amazon'; // Import AmazonScrapedProduct and ProductCategory
+import { Product } from '../background/api-client'; // Import Product from api-client
 import {
   LoadingState,
   UIConfig,
@@ -23,6 +26,7 @@ export class UIManager {
 
   // Sidebar state management
   private sidebar: Sidebar | null = null;
+  private productList: ProductList | null = null; // Add ProductList instance
   private currentSidebarState: SidebarState = SidebarState.HIDDEN;
   private sidebarConfig: SidebarConfig;
   private sidebarEvents: SidebarEvents;
@@ -137,8 +141,11 @@ export class UIManager {
 
       // Create sidebar component
       this.sidebar = new Sidebar(this.sidebarConfig, this.sidebarEvents);
-      this.sidebar.create();
-      // Sidebar manages its own DOM insertion
+      this.sidebar.create(); // Sidebar manages its own DOM insertion
+
+      // Initialize ProductList
+      this.productList = new ProductList({}); // Pass any necessary config
+      // The productList element will be created and managed by the Sidebar
 
       this.isInitialized = true;
       return true;
@@ -272,7 +279,7 @@ export class UIManager {
    * Show products in sidebar
    */
   public async showProducts(productData: ProductDisplayData[]): Promise<boolean> {
-    if (!this.ensureInitialized() || !productData.length) {
+    if (!this.ensureInitialized()) {
       return false;
     }
 
@@ -281,13 +288,65 @@ export class UIManager {
     }
 
     try {
-      await this.sidebar.showProducts(productData);
+      // If products are provided, show them in the sidebar.
+      // This path is primarily for non-streaming or initial display.
+      if (productData && productData.length > 0) {
+        await this.sidebar.showProducts(productData);
+      } else {
+        // If no products are provided, ensure the sidebar is in a loading or empty state
+        this.sidebar.showLoading(); // Or showNoProducts() if appropriate
+      }
       return true;
     } catch (error) {
       this.log(`Failed to show products in sidebar: ${error}`);
       return false;
     }
   }
+
+  /**
+   * Add a single product to the UI (for streaming)
+   */
+  public async addProduct(originalProduct: Product, scrapedProduct: AmazonScrapedProduct): Promise<void> {
+    if (!this.ensureInitialized() || !this.sidebar) {
+      return;
+    }
+
+    // Construct ProductDisplayData from originalProduct and scrapedProduct
+    const productDisplayData: ProductDisplayData = {
+      name: originalProduct.name,
+      thumbnailUrl: scrapedProduct.thumbnailUrl,
+      allProducts: [scrapedProduct], // For now, only one scraped product per original product
+      category: originalProduct.category as ProductCategory,
+      fallbackText: originalProduct.searchTerms // Use searchTerms as fallback
+    };
+
+    await this.sidebar.addProduct(productDisplayData);
+  }
+
+  /**
+   * Handle messages from the background script
+   */
+  private handleBackgroundMessages = (message: any, sender: chrome.runtime.MessageSender, sendResponse: (response?: any) => void) => {
+    if (message.type === 'product_update') {
+      this.log(`Received product_update for pauseId: ${message.pauseId}`);
+      this.addProduct(message.originalProduct, message.scrapedProduct);
+    } else if (message.type === 'analysis_complete') {
+      this.log(`Received analysis_complete for pauseId: ${message.pauseId}`);
+      if (this.productList && this.productList.getProductCount() === 0) {
+        this.showNoProductsFound();
+      } else {
+        this.sidebar?.hideLoading();
+      }
+    } else if (message.type === 'analysis_error') {
+      this.log(`Received analysis_error for pauseId: ${message.pauseId} - ${message.error}`);
+      this.sidebar?.showError({
+        title: 'Analysis Error',
+        message: message.error || 'An unknown error occurred during analysis.',
+        showRetryButton: true
+      });
+    }
+    sendResponse(true);
+  };
 
   /**
    * DEPRECATED: Show product grid (maintained for backward compatibility)
@@ -410,6 +469,9 @@ export class UIManager {
 
     this.currentSidebarState = SidebarState.HIDDEN;
     this.isInitialized = false;
+
+    // Remove message listener
+    chrome.runtime.onMessage.removeListener(this.handleBackgroundMessages);
   }
 
   /**
@@ -441,6 +503,9 @@ export class UIManager {
 
     // Append to document body
     document.body.appendChild(this.container);
+
+    // Add message listener for background script communication
+    chrome.runtime.onMessage.addListener(this.handleBackgroundMessages);
   }
 
   /**

@@ -17,6 +17,23 @@ interface AnalyzeRequest {
     };
 }
 
+export interface Product {
+    name: string;
+    category: ProductCategory;
+    brand: string;
+    primaryColor: string;
+    secondaryColors: string[];
+    features: string[];
+    targetGender: TargetGender;
+    searchTerms: string;
+}
+
+export interface StreamingCallbacks {
+    onProduct: (product: Product) => void;
+    onComplete: () => void;
+    onError: (error: Event) => void;
+}
+
 enum ProductCategory {
     CLOTHING = 'clothing',
     ELECTRONICS = 'electronics',
@@ -157,6 +174,48 @@ export const analyzeImage = async (
         console.error('[API Client] Failed to analyze image:', errorMessage);
         throw new Error(`Image analysis failed: ${errorMessage}`);
     }
+};
+
+/**
+ * Sends image data to the server for streaming analysis
+ */
+export const analyzeImageStreaming = (
+    imageData: string,
+    callbacks: StreamingCallbacks,
+    config: Partial<ServerConfig> = {}
+) => {
+    const fullConfig: ServerConfig = { ...defaultConfig, ...config };
+    const url = `${fullConfig.baseUrl}/analyze-stream`;
+
+    const eventSource = new EventSource(`${url}?image=${encodeURIComponent(imageData)}`);
+
+    eventSource.onmessage = (event) => {
+        try {
+            const data = JSON.parse(event.data);
+            if (data.type === 'product') {
+                callbacks.onProduct(data.product);
+            } else if (data.type === 'complete') {
+                callbacks.onComplete();
+                eventSource.close();
+            }
+        } catch (error) {
+            console.error('[API Client] Error parsing streaming message:', error);
+            callbacks.onError(new Event('parsing_error'));
+            eventSource.close();
+        }
+    };
+
+    eventSource.onerror = (error) => {
+        console.error('[API Client] EventSource error:', error);
+        callbacks.onError(error);
+        eventSource.close();
+    };
+
+    eventSource.onopen = () => {
+        console.log('[API Client] EventSource connected.');
+    };
+
+    return eventSource; // Return the EventSource instance for potential manual closing
 };
 
 /**

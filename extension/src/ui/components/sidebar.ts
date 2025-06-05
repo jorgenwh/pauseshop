@@ -3,18 +3,18 @@
  * Replaces the floating squares with a modern glassmorphic sidebar
  */
 
-import { SidebarConfig, SidebarState, SidebarContentState, SidebarEvents, ProductDisplayData, LoadingStateConfig, NoProductsStateConfig } from '../types';
+import { SidebarConfig, SidebarState, SidebarContentState, SidebarEvents, ProductDisplayData, LoadingStateConfig, MessageStateConfig } from '../types';
 import { SidebarHeader } from './sidebar-header';
 import { LoadingState } from './loading-state';
 import { ProductList } from './product-list';
-import { NoProductsState } from './no-products-state';
+import { MessageState } from './message-state';
 
 export class Sidebar {
     private element: HTMLElement | null = null;
     private headerComponent: SidebarHeader | null = null;
     private loadingComponent: LoadingState | null = null;
     private productListComponent: ProductList | null = null;
-    private noProductsComponent: NoProductsState | null = null;
+    private messageComponent: MessageState | null = null; // Renamed from noProductsComponent
     private contentContainer: HTMLElement | null = null;
     
     private currentState: SidebarState = SidebarState.HIDDEN;
@@ -206,7 +206,7 @@ export class Sidebar {
      */
     public async showProducts(products: ProductDisplayData[]): Promise<void> {
         this.setContentState(SidebarContentState.PRODUCTS);
-        this.clearContent();
+        this.clearContent(); // Clear existing content before showing new products
 
         if (!this.productListComponent) {
             this.productListComponent = new ProductList({
@@ -216,24 +216,90 @@ export class Sidebar {
             }, {
                 onProductClick: (product) => this.events.onProductClick?.(product)
             });
+            const productListElement = await this.productListComponent.create(); // Create with no initial products
+            this.contentContainer?.appendChild(productListElement);
+            await this.productListComponent.show(); // Show the empty list container
         }
 
-        const productListElement = await this.productListComponent.create(products);
-        this.contentContainer?.appendChild(productListElement);
-        
-        // Animate products in
-        await this.productListComponent.show();
+        // Add products one by one if provided (for non-streaming initial load)
+        for (const product of products) {
+            await this.productListComponent.addProduct(product);
+        }
+    }
+
+    /**
+     * Add a single product to the sidebar's product list (for streaming)
+     */
+    public async addProduct(product: ProductDisplayData): Promise<void> {
+        this.setContentState(SidebarContentState.PRODUCTS);
+        if (!this.productListComponent) {
+            // If product list not initialized, create it first
+            this.productListComponent = new ProductList({
+                maxHeight: 'calc(100vh - 200px)',
+                enableVirtualScrolling: false,
+                itemSpacing: 14
+            }, {
+                onProductClick: (p) => this.events.onProductClick?.(p)
+            });
+            const productListElement = await this.productListComponent.create();
+            this.clearContent(); // Clear loading state if present
+            this.contentContainer?.appendChild(productListElement);
+            await this.productListComponent.show();
+        }
+        await this.productListComponent.addProduct(product);
+    }
+
+    /**
+     * Hide the loading state and show product list (or empty state if no products)
+     */
+    public hideLoading(): void {
+        this.clearContent();
+        // The content state will be set by showProducts or showNoProducts
+    }
+
+    /**
+     * Show an error message in the sidebar
+     */
+    public showError(config: { title: string; message: string; showRetryButton?: boolean }): void {
+        this.setContentState(SidebarContentState.ERROR); // Assuming a new ERROR state
+        this.clearContent();
+
+        // Use MessageState for error display
+        if (!this.messageComponent) {
+            this.messageComponent = new MessageState({
+                title: config.title,
+                message: config.message,
+                iconType: 'error',
+                showRetryButton: config.showRetryButton || false
+            });
+        } else {
+            this.messageComponent.updateConfig({
+                title: config.title,
+                message: config.message,
+                iconType: 'error',
+                showRetryButton: config.showRetryButton || false
+            });
+        }
+        const errorElement = this.messageComponent.create();
+        this.contentContainer?.appendChild(errorElement);
     }
 
     /**
      * Show no products found state
      */
-    public showNoProducts(config?: NoProductsStateConfig): void {
+    public showNoProducts(config?: MessageStateConfig): void {
         this.setContentState(SidebarContentState.NO_PRODUCTS);
         this.clearContent();
 
-        if (!this.noProductsComponent) {
-            this.noProductsComponent = new NoProductsState(config || {
+        if (!this.messageComponent) {
+            this.messageComponent = new MessageState(config || {
+                title: 'No products found.',
+                message: 'Try a different scene or ensure items are clearly visible.',
+                iconType: 'search',
+                showRetryButton: false
+            });
+        } else {
+            this.messageComponent.updateConfig(config || {
                 title: 'No products found.',
                 message: 'Try a different scene or ensure items are clearly visible.',
                 iconType: 'search',
@@ -241,7 +307,7 @@ export class Sidebar {
             });
         }
 
-        const noProductsElement = this.noProductsComponent.create();
+        const noProductsElement = this.messageComponent.create();
         this.contentContainer?.appendChild(noProductsElement);
     }
 
@@ -260,9 +326,9 @@ export class Sidebar {
             this.productListComponent.cleanup();
             this.productListComponent = null;
         }
-        if (this.noProductsComponent) {
-            this.noProductsComponent.cleanup();
-            this.noProductsComponent = null;
+        if (this.messageComponent) {
+            this.messageComponent.cleanup();
+            this.messageComponent = null;
         }
 
         // Clear DOM

@@ -9,7 +9,8 @@ import {
     OpenAIResponse,
     AnalysisService,
     Product,
-    OpenAIProductResponse
+    OpenAIProductResponse,
+    StreamingCallbacks
 } from '../types/analyze';
 import {
     loadPrompt,
@@ -108,5 +109,16 @@ export class OpenAIService implements AnalysisService {
             console.log('[OPENAI_SERVICE] Response that failed to parse:', response.substring(0, 200));
             return [];
         }
+    }    
+    
+    supportsStreaming(): boolean {
+        return false; // OpenAI streaming not yet implemented
+    }
+
+    async analyzeImageStreaming(imageData: string, callbacks: StreamingCallbacks): Promise<void> {
+        // This method is not yet implemented for OpenAI.
+        // The StreamingAnalysisService will fall back to batch analysis if this returns false.
+        callbacks.onError(new Error('OpenAI streaming analysis is not yet implemented.'));
+        return Promise.reject(new Error('OpenAI streaming analysis is not yet implemented.'));
     }
 }

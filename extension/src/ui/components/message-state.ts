@@ -3,13 +3,13 @@
  * Shows when no products are found in the analyzed content
  */
 
-import { NoProductsStateConfig } from '../types';
+import { MessageStateConfig } from '../types';
 
-export class NoProductsState {
+export class MessageState {
     private element: HTMLElement | null = null;
-    private config: NoProductsStateConfig;
+    private config: MessageStateConfig;
 
-    constructor(config: Partial<NoProductsStateConfig>) {
+    constructor(config: Partial<MessageStateConfig>) {
         this.config = {
             title: config.title || 'No products found.',
             message: config.message || 'Try a different scene or ensure items are clearly visible.',
@@ -17,6 +17,18 @@ export class NoProductsState {
             showRetryButton: config.showRetryButton || false,
             onRetry: config.onRetry
         };
+    }
+
+    /**
+     * Update the configuration of the message state
+     */
+    public updateConfig(newConfig: Partial<MessageStateConfig>): void {
+        this.config = { ...this.config, ...newConfig };
+        // Re-render the element if it exists to reflect new config
+        if (this.element) {
+            this.cleanup(); // Remove old element
+            this.create(); // Create new element with updated config
+        }
     }
 
     /**
@@ -116,19 +128,7 @@ export class NoProductsState {
     /**
      * Update the state content
      */
-    public updateContent(title: string, message: string): void {
-        if (!this.element) return;
-
-        const titleEl = this.element.querySelector('p.text-lg');
-        if (titleEl) {
-            titleEl.textContent = title;
-        }
-
-        const messageEl = this.element.querySelector('p.text-sm');
-        if (messageEl) {
-            messageEl.textContent = message;
-        }
-    }
+    // Removed updateContent as updateConfig will handle re-rendering
 
     /**
      * Show no products state with fade-in animation

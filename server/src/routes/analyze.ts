@@ -4,18 +4,18 @@
  */
 
 import { Request, Response } from 'express';
-import { AnalyzeRequest, AnalyzeResponse, AnalyzeErrorResponse, Product } from '../types/analyze';
+import { AnalyzeRequest, AnalyzeResponse, AnalyzeErrorResponse, Product, StreamingCallbacks } from '../types/analyze';
 import { validateImageData } from '../utils/image-validator';
 import { AnalysisProviderFactory } from '../services/analysis-provider-factory';
+import { StreamingAnalysisService } from '../services/streaming-analysis';
 
 /**
  * Analyze image using the configured provider
  */
 const analyzeImageWithProvider = async (imageData: string): Promise<Product[]> => {
-    const analysisService = AnalysisProviderFactory.createProvider();
-    const response = await analysisService.analyzeImage(imageData);
-    const products = analysisService.parseResponseToProducts(response.content);
-    return products;
+    const streamingService = new StreamingAnalysisService();
+    const result = await streamingService.analyzeImage(imageData, { preferStreaming: false }); // Explicitly use batch for this endpoint
+    return result.products;
 };
 
 /**
@@ -170,5 +170,63 @@ export const analyzeImageHandler = async (req: Request, res: Response): Promise<
         };
 
         res.status(statusCode).json(errorResponse);
+    }
+};
+
+/**
+ * Handles POST /analyze/stream requests for SSE
+ */
+export const analyzeImageStreamingHandler = async (req: Request, res: Response): Promise<void> => {
+    const startTime = Date.now();
+
+    // Set SSE headers
+    res.writeHead(200, {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+        'Access-Control-Allow-Origin': '*', // Allow all origins for development, restrict in production
+    });
+
+    // Send a "start" event immediately
+    res.write(`event: start\ndata: ${JSON.stringify({ timestamp: new Date().toISOString(), provider: AnalysisProviderFactory.getCurrentProvider() })}\n\n`);
+
+    const streamingService = new StreamingAnalysisService();
+
+    try {
+        const { image }: AnalyzeRequest = req.body;
+
+        if (!image) {
+            res.write(`event: error\ndata: ${JSON.stringify({ message: 'Missing required field: image', code: 'MISSING_IMAGE' })}\n\n`);
+            res.end();
+            return;
+        }
+
+        const validationResult = validateImageData(image);
+        if (!validationResult.isValid) {
+            res.write(`event: error\ndata: ${JSON.stringify({ message: validationResult.error || 'Invalid image data', code: 'INVALID_IMAGE' })}\n\n`);
+            res.end();
+            return;
+        }
+
+        await streamingService.analyzeImageStreaming(image, {
+            onProduct: (product: Product) => {
+                res.write(`event: product\ndata: ${JSON.stringify(product)}\n\n`);
+            },
+            onComplete: (response) => {
+                const processingTime = Date.now() - startTime;
+                res.write(`event: complete\ndata: ${JSON.stringify({ totalProducts: 0, processingTime, usage: response.usage })}\n\n`); // totalProducts will be calculated on frontend
+                res.end();
+            },
+            onError: (error: Error) => {
+                console.error('[ANALYZE_STREAM] Error during streaming analysis:', error);
+                res.write(`event: error\ndata: ${JSON.stringify({ message: error.message, code: 'STREAMING_ERROR' })}\n\n`);
+                res.end();
+            }
+        });
+
+    } catch (error) {
+        console.error('[ANALYZE_STREAM] Uncaught error in streaming handler:', error);
+        res.write(`event: error\ndata: ${JSON.stringify({ message: (error as Error).message || 'Internal server error during streaming analysis', code: 'INTERNAL_STREAMING_ERROR' })}\n\n`);
+        res.end();
     }
 };

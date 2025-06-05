@@ -11,6 +11,7 @@ export interface ScreenshotConfig {
     debugMode: boolean;
     serverUrl: string;
     pauseId?: string; // Add pauseId
+    useStreaming?: boolean; // Add useStreaming flag
 }
 
 export interface ScreenshotMessage {

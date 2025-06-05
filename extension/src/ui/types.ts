@@ -129,7 +129,7 @@ export interface AmazonProductGridConfig {
     showRatings: boolean;
 }
 
-export interface NoProductsStateConfig {
+export interface MessageStateConfig {
     title: string;
     message: string;
     iconType: 'search' | 'empty' | 'error';
@@ -167,5 +167,5 @@ export interface SidebarUIConfig extends UIConfig {
     headerConfig: SidebarHeaderConfig;
     loadingConfig: LoadingStateConfig;
     productListConfig: ProductListConfig;
-    noProductsConfig: NoProductsStateConfig;
+    messageStateConfig: MessageStateConfig;
 }
