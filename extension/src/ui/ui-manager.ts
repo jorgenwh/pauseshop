@@ -6,7 +6,6 @@
  */
 
 import { Sidebar } from './components/sidebar';
-import { ProductList } from './components/product-list'; // Import ProductList
 import { AmazonScrapedProduct, ProductCategory } from '../types/amazon'; // Import AmazonScrapedProduct and ProductCategory
 import { Product } from '../background/api-client'; // Import Product from api-client
 import {
@@ -26,7 +25,6 @@ export class UIManager {
 
   // Sidebar state management
   private sidebar: Sidebar | null = null;
-  private productList: ProductList | null = null; // Add ProductList instance
   private currentSidebarState: SidebarState = SidebarState.HIDDEN;
   private sidebarConfig: SidebarConfig;
   private sidebarEvents: SidebarEvents;
@@ -143,10 +141,6 @@ export class UIManager {
       this.sidebar = new Sidebar(this.sidebarConfig, this.sidebarEvents);
       this.sidebar.create(); // Sidebar manages its own DOM insertion
 
-      // Initialize ProductList
-      this.productList = new ProductList({}); // Pass any necessary config
-      // The productList element will be created and managed by the Sidebar
-
       this.isInitialized = true;
       return true;
 
@@ -171,7 +165,7 @@ export class UIManager {
 
     try {
       await this.sidebar.show();
-      this.sidebar.showLoading();
+      this.sidebar.setState('loading');
       return true;
     } catch (error) {
       this.log(`Failed to show sidebar: ${error}`);
@@ -217,18 +211,14 @@ export class UIManager {
    */
   public updateLoadingState(state: LoadingState): void {
     if (this.sidebar) {
-      // Map loading states to sidebar content states
+      // Map loading states to sidebar internal states
       switch (state) {
         case LoadingState.LOADING:
         case LoadingState.PROCESSING:
-          this.sidebar.showLoading({
-            message: state === LoadingState.PROCESSING ? 'Processing...' : 'Finding products...',
-            subMessage: 'Analyzing your paused scene.',
-            spinnerSize: 'initial'
-          });
+          this.sidebar.setState('loading');
           break;
         case LoadingState.NO_PRODUCTS_FOUND:
-          this.sidebar.showNoProducts();
+          this.sidebar.setState('noProducts');
           break;
       }
     }
@@ -251,13 +241,8 @@ export class UIManager {
         this.noProductsFoundTimeoutId = null;
       }
 
-      // Show no products state in sidebar
-      this.sidebar.showNoProducts({
-        title: 'No products found.',
-        message: 'Try a different scene or ensure items are clearly visible.',
-        iconType: 'search',
-        showRetryButton: false
-      });
+      // Show no products state in sidebar using new state management
+      this.sidebar.setState('noProducts');
 
       // Use configured timeout or default
       const timeout = timeoutMs ?? this.loadingSquareConfig.noProductsFoundTimeout ?? 8000;
@@ -291,10 +276,14 @@ export class UIManager {
       // If products are provided, show them in the sidebar.
       // This path is primarily for non-streaming or initial display.
       if (productData && productData.length > 0) {
-        await this.sidebar.showProducts(productData);
+        this.sidebar.setState('productList');
+        // Add products one by one using the new system
+        for (const product of productData) {
+          await this.sidebar.addProduct(product);
+        }
       } else {
-        // If no products are provided, ensure the sidebar is in a loading or empty state
-        this.sidebar.showLoading(); // Or showNoProducts() if appropriate
+        // If no products are provided, ensure the sidebar is in a loading state
+        this.sidebar.setState('loading');
       }
       return true;
     } catch (error) {
@@ -306,18 +295,25 @@ export class UIManager {
   /**
    * Add a single product to the UI (for streaming)
    */
-  public async addProduct(originalProduct: Product, scrapedProduct: AmazonScrapedProduct): Promise<void> {
+  public async addProduct(mergedProduct: any): Promise<void> {
     if (!this.ensureInitialized() || !this.sidebar) {
       return;
     }
 
-    // Construct ProductDisplayData from originalProduct and scrapedProduct
+    // Construct ProductDisplayData from merged product object
     const productDisplayData: ProductDisplayData = {
-      name: originalProduct.name,
-      thumbnailUrl: scrapedProduct.thumbnailUrl,
-      allProducts: [scrapedProduct], // For now, only one scraped product per original product
-      category: originalProduct.category as ProductCategory,
-      fallbackText: originalProduct.searchTerms // Use searchTerms as fallback
+      name: mergedProduct.name,
+      thumbnailUrl: mergedProduct.thumbnailUrl,
+      allProducts: [{
+        productId: mergedProduct.productId,
+        amazonAsin: mergedProduct.amazonAsin,
+        thumbnailUrl: mergedProduct.thumbnailUrl,
+        productUrl: mergedProduct.productUrl,
+        position: mergedProduct.position,
+        confidence: mergedProduct.confidence
+      }], // Convert merged product back to AmazonScrapedProduct format for compatibility
+      category: mergedProduct.category as ProductCategory,
+      fallbackText: mergedProduct.searchTerms // Use searchTerms as fallback
     };
 
     await this.sidebar.addProduct(productDisplayData);
@@ -327,15 +323,36 @@ export class UIManager {
    * Handle messages from the background script
    */
   private handleBackgroundMessages = (message: any, sender: chrome.runtime.MessageSender, sendResponse: (response?: any) => void) => {
-    if (message.type === 'product_update') {
+    if (message.type === 'analysis_started') {
+      this.log(`Received analysis_started for pauseId: ${message.pauseId}`);
+      this.sidebar?.setState('loading');
+    } else if (message.type === 'product_update') {
       this.log(`Received product_update for pauseId: ${message.pauseId}`);
-      this.addProduct(message.originalProduct, message.scrapedProduct);
+      
+      // Log detailed product information for visibility
+      console.log('[PauseShop UI] Product received:', {
+        productName: message.product.name,
+        productId: message.product.productId,
+        amazonAsin: message.product.amazonAsin,
+        productUrl: message.product.productUrl,
+        thumbnailUrl: message.product.thumbnailUrl,
+        position: message.product.position,
+        confidence: message.product.confidence,
+        category: message.product.category,
+        brand: message.product.brand,
+        searchTerms: message.product.searchTerms,
+        pauseId: message.pauseId
+      });
+      
+      this.addProduct(message.product); // Use the single merged product object (calls setState('productList') internally)
     } else if (message.type === 'analysis_complete') {
       this.log(`Received analysis_complete for pauseId: ${message.pauseId}`);
-      if (this.productList && this.productList.getProductCount() === 0) {
-        this.showNoProductsFound();
+      // Check if sidebar has any products by checking its internal product list
+      const hasProducts = this.sidebar?.hasProducts() ?? false;
+      if (!hasProducts) {
+        this.sidebar?.setState('noProducts');
       } else {
-        this.sidebar?.hideLoading();
+        this.sidebar?.setState('productList');
       }
     } else if (message.type === 'analysis_error') {
       this.log(`Received analysis_error for pauseId: ${message.pauseId} - ${message.error}`);
