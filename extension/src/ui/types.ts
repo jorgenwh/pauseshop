@@ -157,7 +157,7 @@ export interface Sidebar {
     setContentState(state: SidebarContentState): void;
     showProducts(products: ProductDisplayData[]): Promise<void>;
     showLoading(config?: LoadingStateConfig): void;
-    showNoProducts(config?: NoProductsStateConfig): void;
+    showNoProducts(config?: MessageStateConfig): void;
     cleanup(): void;
 }
 
