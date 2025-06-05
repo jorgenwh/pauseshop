@@ -1,13 +1,13 @@
 /**
- * Analysis workflow for processing screenshots and constructing Amazon search results
+ * Streaming analysis workflow for processing screenshots and constructing Amazon search results
  */
 
-import { analyzeImage, analyzeImageStreaming, Product } from './api-client';
+import { analyzeImageStreaming, Product } from './api-client';
 import { constructAmazonSearchBatch } from '../scraper/amazon-search';
 import { executeAmazonSearchBatch } from '../scraper/amazon-http-client';
 import { scrapeAmazonSearchBatch } from '../scraper/amazon-parser';
 import { captureScreenshot } from './screenshot-capturer';
-import { log } from './logger';
+import { log, logWithTimestamp } from './logger';
 import type { ScreenshotConfig, ScreenshotResponse } from './types';
 import type { AmazonScrapedProduct } from '../types/amazon';
 
@@ -31,7 +31,7 @@ interface AnalysisErrorMessage {
 }
 
 /**
- * Handles the complete screenshot and analysis workflow
+ * Handles the complete screenshot and streaming analysis workflow
  * @param config The screenshot configuration
  * @param windowId The window ID to capture from
  * @returns Promise<ScreenshotResponse> The analysis results
@@ -40,13 +40,23 @@ export const handleScreenshotAnalysis = async (config: ScreenshotConfig, windowI
     try {
         const imageData = await captureScreenshot(config, windowId);
 
-        if (config.useStreaming) {
-            return new Promise<ScreenshotResponse>((resolve) => {
-                analyzeImageStreaming(
+        return new Promise<ScreenshotResponse>(async (resolve) => {
+            try {
+                await analyzeImageStreaming(
                     imageData,
                     {
                         onProduct: async (product: Product) => {
                             log(config, `Received streamed product: ${product.name}`);
+                            
+                            // Log Amazon scraping start with timestamp and product details
+                            logWithTimestamp(config, 'info', 'Amazon scraping started', {
+                                productName: product.name,
+                                brand: product.brand,
+                                category: product.category,
+                                searchTerms: product.searchTerms,
+                                targetGender: product.targetGender
+                            });
+                            
                             try {
                                 const amazonSearchResults = constructAmazonSearchBatch([product], {
                                     domain: 'amazon.com',
@@ -71,16 +81,46 @@ export const handleScreenshotAnalysis = async (config: ScreenshotConfig, windowI
 
                                 if (amazonScrapedResults && amazonScrapedResults.scrapedResults.length > 0 && amazonScrapedResults.scrapedResults[0].products.length > 0) {
                                     const scrapedProduct = amazonScrapedResults.scrapedResults[0].products[0];
+                                    
+                                    // Log successful Amazon scraping completion with timestamp and product details
+                                    logWithTimestamp(config, 'info', 'Amazon scraping completed successfully', {
+                                        originalProductName: product.name,
+                                        scrapedProductId: scrapedProduct.productId,
+                                        scrapedProductUrl: scrapedProduct.productUrl,
+                                        scrapedThumbnailUrl: scrapedProduct.thumbnailUrl,
+                                        scrapedProductPosition: scrapedProduct.position,
+                                        scrapedProductConfidence: scrapedProduct.confidence,
+                                        amazonAsin: scrapedProduct.amazonAsin,
+                                        searchTermsUsed: product.searchTerms
+                                    });
+                                    
                                     chrome.runtime.sendMessage({
                                         type: 'product_update',
                                         originalProduct: product, // Pass the original product
                                         scrapedProduct: scrapedProduct, // Pass the scraped product
                                         pauseId: pauseId
                                     } as ProductMessage);
+                                } else {
+                                    // Log when no products were found
+                                    logWithTimestamp(config, 'warn', 'Amazon scraping completed but no products found', {
+                                        originalProductName: product.name,
+                                        searchTermsUsed: product.searchTerms,
+                                        scrapedResultsCount: amazonScrapedResults?.scrapedResults?.length || 0
+                                    });
                                 }
                             } catch (error) {
                                 const errorMessage = error instanceof Error ? error.message : 'Unknown Amazon search/scraping error';
                                 log(config, `Amazon search/scraping failed for streamed product: ${errorMessage}`);
+                                
+                                // Log Amazon scraping failure with timestamp and error details
+                                logWithTimestamp(config, 'error', 'Amazon scraping failed', {
+                                    originalProductName: product.name,
+                                    brand: product.brand,
+                                    category: product.category,
+                                    searchTermsUsed: product.searchTerms,
+                                    errorMessage: errorMessage,
+                                    errorType: error instanceof Error ? error.constructor.name : 'Unknown'
+                                });
                             }
                         },
                         onComplete: () => {
@@ -106,97 +146,17 @@ export const handleScreenshotAnalysis = async (config: ScreenshotConfig, windowI
                         baseUrl: config.serverUrl
                     }
                 );
-            });
-        } else {
-            // Existing batch processing logic
-            try {
-                const analysisResult = await analyzeImage(imageData, {
-                    baseUrl: config.serverUrl
-                });
-
-                try {
-                    const products: Product[] = analysisResult.products.map((p: unknown) => {
-                        const product = p as Product; // Cast directly to Product
-                        return product;
-                    });
-
-                    const amazonSearchResults = constructAmazonSearchBatch(products, {
-                        domain: 'amazon.com',
-                        enableCategoryFiltering: true,
-                        fallbackToGenericSearch: true
-                    });
-
-                    try {
-                        const amazonExecutionResults = await executeAmazonSearchBatch(amazonSearchResults, {
-                            maxConcurrentRequests: 3,
-                            requestDelayMs: 1500,
-                            timeoutMs: 10000,
-                            maxRetries: 2,
-                            userAgentRotation: true
-                        });
-
-                        try {
-                            const amazonScrapedResults = scrapeAmazonSearchBatch(amazonExecutionResults, {
-                                maxProductsPerSearch: 5,
-                                requireThumbnail: true,
-                                validateUrls: true,
-                                timeoutMs: 5000
-                            });
-
-                            return {
-                                success: true,
-                                analysisResult,
-                                amazonSearchResults,
-                                amazonExecutionResults,
-                                amazonScrapedResults,
-                                pauseId
-                            };
-                        } catch (scrapingError) {
-                            const scrapingErrorMessage = scrapingError instanceof Error ? scrapingError.message : 'Unknown scraping error';
-                            log(config, `Amazon search scraping failed: ${scrapingErrorMessage}`);
-                            return {
-                                success: true,
-                                analysisResult,
-                                amazonSearchResults,
-                                amazonExecutionResults,
-                                amazonScrapedResults: null,
-                                pauseId
-                            };
-                        }
-                    } catch (executionError) {
-                        const executionErrorMessage = executionError instanceof Error ? executionError.message : 'Unknown execution error';
-                        log(config, `Amazon search execution failed: ${executionErrorMessage}`);
-                        return {
-                            success: true,
-                            analysisResult,
-                            amazonSearchResults,
-                            amazonExecutionResults: null,
-                            amazonScrapedResults: null,
-                            pauseId
-                        };
-                    }
-                } catch (searchError) {
-                    const searchErrorMessage = searchError instanceof Error ? searchError.message : 'Unknown search error';
-                    log(config, `Amazon search URL construction failed: ${searchErrorMessage}`);
-                    return {
-                        success: true,
-                        analysisResult,
-                        amazonSearchResults: null,
-                        amazonExecutionResults: null,
-                        amazonScrapedResults: null,
-                        pauseId
-                    };
-                }
-            } catch (serverError) {
-                const serverErrorMessage = serverError instanceof Error ? serverError.message : 'Unknown server error';
-                log(config, `Server analysis failed: ${serverErrorMessage}`);
-                return {
-                    success: false,
-                    error: `Server communication failed: ${serverErrorMessage}`,
-                    pauseId
-                };
+            } catch (error) {
+                const errorMessage = error instanceof Error ? error.message : 'Failed to start streaming analysis';
+                log(config, errorMessage);
+                chrome.runtime.sendMessage({
+                    type: 'analysis_error',
+                    error: errorMessage,
+                    pauseId: pauseId
+                } as AnalysisErrorMessage);
+                resolve({ success: false, error: errorMessage, pauseId: pauseId });
             }
-        }
+        });
     } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error';
         log(config, `Screenshot workflow failed: ${errorMessage}`);

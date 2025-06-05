@@ -10,8 +10,7 @@ export interface ScreenshotConfig {
     logPrefix: string;
     debugMode: boolean;
     serverUrl: string;
-    pauseId?: string; // Add pauseId
-    useStreaming?: boolean; // Add useStreaming flag
+    pauseId?: string;
 }
 
 export interface ScreenshotMessage {
@@ -20,28 +19,9 @@ export interface ScreenshotMessage {
     pauseId?: string; // Add pauseId
 }
 
-export interface AnalysisResult {
-    products: Array<{
-        name: string;
-        category: string;
-        brand: string;
-        primaryColor: string;
-        secondaryColors: string[];
-        features: string[];
-        targetGender: string;
-        searchTerms: string;
-    }>;
-    metadata: {
-        processingTime: number;
-    };
-}
 
 export interface ScreenshotResponse {
     success: boolean;
     error?: string;
-    analysisResult?: AnalysisResult;
-    amazonSearchResults?: AmazonSearchBatch | null;
-    amazonExecutionResults?: AmazonSearchExecutionBatch | null;
-    amazonScrapedResults?: AmazonScrapedBatch | null;
-    pauseId?: string; // Add pauseId to response
+    pauseId?: string;
 }

@@ -9,14 +9,6 @@ export interface AnalyzeRequest {
     };
 }
 
-export interface AnalyzeResponse {
-    success: boolean;
-    timestamp: string;
-    products: Product[];
-    metadata: {
-        processingTime: number;
-    };
-}
 
 export interface Product {
     name: string;
@@ -68,9 +60,6 @@ export interface OpenAIResponse {
     };
 }
 
-export interface OpenAIProductResponse {
-    products: Product[];
-}
 
 export interface OpenRouterConfig {
     apiKey: string;
@@ -113,9 +102,6 @@ export interface GeminiResponse {
     };
 }
 
-export interface GeminiProductResponse {
-    products: Product[];
-}
 
 export interface AnalyzeErrorResponse {
     success: false;
@@ -172,8 +158,6 @@ export interface PartialProductParser {
 }
 
 export interface AnalysisService {
-    analyzeImage(imageData: string): Promise<OpenAIResponse | RequestyResponse | GeminiResponse | OpenRouterResponse>;
-    parseResponseToProducts(response: string): Product[];
     supportsStreaming(): boolean;
     analyzeImageStreaming(imageData: string, callbacks: StreamingCallbacks): Promise<void>;
 }

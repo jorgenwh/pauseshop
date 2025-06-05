@@ -56,32 +56,6 @@ enum TargetGender {
     GIRL = 'girl'
 }
 
-interface AnalyzeResponse {
-    success: boolean;
-    timestamp: string;
-    products: Array<{
-        name: string;
-        category: ProductCategory;
-        brand: string;
-        primaryColor: string;
-        secondaryColors: string[];
-        features: string[];
-        targetGender: TargetGender;
-        searchTerms: string;
-    }>;
-    metadata: {
-        processingTime: number;
-    };
-}
-
-interface AnalyzeErrorResponse {
-    success: false;
-    error: {
-        message: string;
-        code: string;
-        timestamp: string;
-    };
-}
 
 const defaultConfig: ServerConfig = {
     baseUrl: 'http://localhost:3000',
@@ -130,15 +104,18 @@ const makeRequest = async (
     }
 };
 
+
 /**
- * Sends image data to the server for analysis
+ * Sends image data to the server for streaming analysis
+ * Uses a workaround to send POST data with EventSource by first initiating the stream
  */
-export const analyzeImage = async (
+export const analyzeImageStreaming = async (
     imageData: string,
+    callbacks: StreamingCallbacks,
     config: Partial<ServerConfig> = {}
-): Promise<AnalyzeResponse> => {
+): Promise<EventSource | null> => {
     const fullConfig: ServerConfig = { ...defaultConfig, ...config };
-    const url = `${fullConfig.baseUrl}/analyze`;
+    const url = `${fullConfig.baseUrl}/analyze/stream`;
 
     const request: AnalyzeRequest = {
         image: imageData,
@@ -148,74 +125,98 @@ export const analyzeImage = async (
     };
 
     try {
-        const response = await makeRequest(url, {
+        // Since EventSource only supports GET, we need to use fetch with streaming response
+        const response = await fetch(url, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Accept': 'text/event-stream',
+                'Cache-Control': 'no-cache'
             },
             body: JSON.stringify(request)
-        }, fullConfig);
+        });
 
         if (!response.ok) {
-            // Try to parse error response
-            try {
-                const errorData: AnalyzeErrorResponse = await response.json();
-                throw new Error(`Server error: ${errorData.error.message} (${errorData.error.code})`);
-            } catch {
-                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-            }
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
 
-        const data: AnalyzeResponse = await response.json();
-        return data;
+        if (!response.body) {
+            throw new Error('Response body is null');
+        }
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+
+        const processStream = async () => {
+            try {
+                while (true) {
+                    const { done, value } = await reader.read();
+                    
+                    if (done) {
+                        callbacks.onComplete();
+                        break;
+                    }
+
+                    buffer += decoder.decode(value, { stream: true });
+                    const lines = buffer.split('\n');
+                    buffer = lines.pop() || ''; // Keep incomplete line in buffer
+
+                    for (const line of lines) {
+                        if (line.trim() === '') continue;
+                        
+                        if (line.startsWith('event: ')) {
+                            const eventType = line.substring(7).trim();
+                            continue;
+                        }
+                        
+                        if (line.startsWith('data: ')) {
+                            const data = line.substring(6).trim();
+                            
+                            try {
+                                const parsedData = JSON.parse(data);
+                                
+                                // Handle different event types based on the parsed data structure
+                                if (parsedData.name && parsedData.category) {
+                                    // This is a product event
+                                    callbacks.onProduct(parsedData);
+                                } else if (parsedData.totalProducts !== undefined || parsedData.processingTime !== undefined) {
+                                    // This is a complete event
+                                    callbacks.onComplete();
+                                    return;
+                                } else if (parsedData.message && parsedData.code) {
+                                    // This is an error event
+                                    callbacks.onError(new Event('server_error'));
+                                    return;
+                                }
+                            } catch (parseError) {
+                                console.error('[API Client] Error parsing streaming data:', parseError, 'Data:', data);
+                            }
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('[API Client] Error reading stream:', error);
+                callbacks.onError(new Event('stream_error'));
+            }
+        };
+
+        processStream();
+
+        // Return a mock EventSource-like object for compatibility
+        return {
+            close: () => {
+                reader.cancel();
+            },
+            readyState: 1, // OPEN
+            url: url
+        } as EventSource;
 
     } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-        console.error('[API Client] Failed to analyze image:', errorMessage);
-        throw new Error(`Image analysis failed: ${errorMessage}`);
+        console.error('[API Client] Failed to start streaming analysis:', error);
+        callbacks.onError(new Event('connection_error'));
+        return null;
     }
-};
-
-/**
- * Sends image data to the server for streaming analysis
- */
-export const analyzeImageStreaming = (
-    imageData: string,
-    callbacks: StreamingCallbacks,
-    config: Partial<ServerConfig> = {}
-) => {
-    const fullConfig: ServerConfig = { ...defaultConfig, ...config };
-    const url = `${fullConfig.baseUrl}/analyze-stream`;
-
-    const eventSource = new EventSource(`${url}?image=${encodeURIComponent(imageData)}`);
-
-    eventSource.onmessage = (event) => {
-        try {
-            const data = JSON.parse(event.data);
-            if (data.type === 'product') {
-                callbacks.onProduct(data.product);
-            } else if (data.type === 'complete') {
-                callbacks.onComplete();
-                eventSource.close();
-            }
-        } catch (error) {
-            console.error('[API Client] Error parsing streaming message:', error);
-            callbacks.onError(new Event('parsing_error'));
-            eventSource.close();
-        }
-    };
-
-    eventSource.onerror = (error) => {
-        console.error('[API Client] EventSource error:', error);
-        callbacks.onError(error);
-        eventSource.close();
-    };
-
-    eventSource.onopen = () => {
-        console.log('[API Client] EventSource connected.');
-    };
-
-    return eventSource; // Return the EventSource instance for potential manual closing
 };
 
 /**
