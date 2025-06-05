@@ -1,6 +1,98 @@
-/* PauseShop Extension UI Styles */
+/* PauseShop Extension UI Styles - Phase 4: Cleaned up for sidebar-only architecture */
 
-/* Main UI Container */
+.pauseshop-expansion {
+    display: block; /* Explicitly set display for transition */
+    /* max-height, opacity, transform, and overflow are handled by base.css Tailwind classes */
+    transition: max-height 0.4s ease-in-out, opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
+    will-change: max-height, opacity, transform; /* Hint for browser optimization */
+    /* Ensure this transition is applied and not overridden by a default Tailwind transition */
+}
+
+.pauseshop-expansion.open {
+    /* max-height and opacity are handled by base.css Tailwind classes for the .open state */
+    /* transform is also handled by base.css for the .open state */
+    /* This class selector is mostly for specificity if needed, but properties are in base.css */
+}
+
+.pauseshop-chevron.open {
+    transform: rotate(180deg);
+}
+
+/* Amazon Product Grid specific styles */
+.pauseshop-amazon-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* 2x2 grid */
+    gap: 10px; /* Spacing between items */
+    padding: 10px 16px; /* Padding around the grid */
+}
+
+.pauseshop-amazon-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    aspect-ratio: 1 / 1; /* Make items square */
+    padding: 8px; /* Padding inside the square card */
+    background-color: rgba(255, 255, 255, 0.05); /* Subtle background for the card */
+    border: 1px solid rgba(255, 255, 255, 0.1); /* Border for the card */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+}
+
+.pauseshop-amazon-item img,
+.pauseshop-amazon-item .fallback-thumbnail {
+    width: 100%; /* Fill the width of the square card */
+    height: auto; /* Maintain aspect ratio */
+    max-height: 100%; /* Ensure it fits within the card */
+    object-fit: contain; /* Ensure the entire image is visible */
+    margin-bottom: 5px; /* Space between image and text */
+}
+
+/* Sidebar specific styles */
+.pauseshop-sidebar {
+    position: fixed;
+    top: 0;
+    right: 0; /* Position on the right */
+    height: 100%;
+    width: 584px; /* Adjusted width to accommodate smaller padding */
+    background-color: rgba(255, 255, 255, 0.1); /* Example glassmorphic background */
+    backdrop-filter: blur(7px); /* Glassmorphic blur */
+    -webkit-backdrop-filter: blur(7px); /* Safari support */
+    border-left: 1px solid rgba(255, 255, 255, 0.2); /* Glassmorphic border */
+    box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    z-index: 9999999; /* Ensure it's on top */
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* Hide overflowing content */
+    transform: translateX(100%); /* Start off-screen to the right */
+    transition: transform 0.5s ease-out; /* Default transition for slide-in/out */
+}
+
+.pauseshop-sidebar[data-state="visible"],
+.pauseshop-sidebar[data-state="sliding_in"] {
+    transform: translateX(0); /* Slide into view */
+}
+
+.pauseshop-sidebar[data-state="hidden"],
+.pauseshop-sidebar[data-state="sliding_out"] {
+    transform: translateX(100%); /* Slide out of view */
+}
+
+/* Utility classes for positioning and crispness */
+.pauseshop-z-index {
+    z-index: 9999999;
+}
+
+.pauseshop-crisp {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+}
+
+/* Prevent body scroll when sidebar is open */
+.pauseshop-no-scroll {
+    overflow: hidden !important;
+}
+
+/* Main UI Container - Keep for backward compatibility */
 .pauseshop-ui-container {
     position: fixed;
     top: 0;
@@ -12,235 +104,31 @@
     user-select: none;
 }
 
-/* Loading Square Component */
-.pauseshop-loading-square {
-    width: 126px;
-    height: 126px;
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.95), rgba(168, 85, 247, 0.9), rgba(236, 72, 153, 0.85));
-    border-radius: 14px;
-    position: fixed;
-    top: 120px;
-    right: 30px;
-    z-index: 999999;
-    pointer-events: none;
-    user-select: none;
+/* Browser compatibility and reset styles */
+
+/* Ensure consistent box-sizing across all browsers */
+*,
+*::before,
+*::after {
     box-sizing: border-box;
-    box-shadow:
-        0 20px 40px rgba(0, 0, 0, 0.3),
-        0 10px 25px rgba(99, 102, 241, 0.2),
-        0 5px 15px rgba(168, 85, 247, 0.15),
-        inset 0 1px 0 rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    
-    /* Initial state - hidden off-screen */
-    transform: translateX(170px);
-    opacity: 0;
-    
-    /* Modern glass effect */
-    &::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), transparent);
-        border-radius: inherit;
-        pointer-events: none;
-    }
-    
-    /* Ensure smooth hardware acceleration */
-    will-change: transform, opacity;
+}
+
+/* Reset margins and padding for consistent rendering */
+.pauseshop-ui-container * {
+    margin: 0;
+    padding: 0;
+}
+
+/* Ensure smooth hardware acceleration for animations */
+.pauseshop-ui-container * {
+    will-change: auto;
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
 }
 
-/* Loading Spinner Component */
-.pauseshop-loading-spinner {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 42px;
-    height: 42px;
-    margin: -21px 0 0 -21px;
-    border: 2px solid rgba(255, 255, 255, 0.2);
-    border-top: 2px solid rgba(255, 255, 255, 0.9);
-    border-radius: 50%;
-    animation: pauseshop-spin 1.5s linear infinite;
-    backdrop-filter: blur(2px);
-    -webkit-backdrop-filter: blur(2px);
-    opacity: 1 !important;
-}
-
-/* No Products Found Text Component */
-.pauseshop-no-products-text {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    color: rgba(255, 255, 255, 0.9);
-    text-align: center;
-    opacity: 0;
-    transition: opacity 0.3s ease-in-out;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
-    padding: 8px;
-    box-sizing: border-box;
-    gap: 2px;
-}
-
-/* Individual text lines */
-.pauseshop-no-products-line1,
-.pauseshop-no-products-line2 {
-    font-size: 22px;
-    font-weight: 600;
-    line-height: 1.0;
-    white-space: nowrap;
-}
-
-/* Responsive font sizes for no products text */
-@media (max-width: 768px) {
-    .pauseshop-no-products-line1,
-    .pauseshop-no-products-line2 {
-        font-size: 18px;
-    }
-    
-    .pauseshop-no-products-text {
-        padding: 6px;
-        gap: 1px;
-    }
-}
-
-@media (max-width: 480px) {
-    .pauseshop-no-products-line1,
-    .pauseshop-no-products-line2 {
-        font-size: 15px;
-    }
-    
-    .pauseshop-no-products-text {
-        padding: 4px;
-        gap: 1px;
-    }
-}
-
-/* Responsive spinner sizes */
-@media (max-width: 768px) {
-    .pauseshop-loading-spinner {
-        width: 50px;
-        height: 50px;
-        margin: -25px 0 0 -25px;
-        border-width: 2.5px;
-    }
-}
-
-@media (max-width: 480px) {
-    .pauseshop-loading-spinner {
-        width: 40px;
-        height: 40px;
-        margin: -20px 0 0 -20px;
-        border-width: 2px;
-    }
-}
-
-/* Spinning animation */
-@keyframes pauseshop-spin {
-    0% {
-        transform: rotate(0deg);
-    }
-    100% {
-        transform: rotate(360deg);
-    }
-}
-
-/* Enhanced spinner for processing state */
-.pauseshop-loading-square[data-state="processing"] .pauseshop-loading-spinner {
-    border-top-color: rgba(255, 255, 255, 1);
-    animation-duration: 1.2s;
-    box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
-}
-
-/* Loading Square States */
-.pauseshop-loading-square[data-state="hidden"] {
-    transform: translateX(170px);
-    opacity: 0;
-}
-
-.pauseshop-loading-square[data-state="sliding-in"] {
-    /* Animation handled by JavaScript */
-}
-
-.pauseshop-loading-square[data-state="loading"] {
-    transform: translateX(0);
-    opacity: 1;
-}
-
-.pauseshop-loading-square[data-state="processing"] {
-    transform: translateX(0);
-    opacity: 1;
-}
-
-.pauseshop-loading-square[data-state="no-products-found"] {
-    transform: translateX(0);
-    opacity: 1;
-    background: linear-gradient(135deg, rgba(156, 163, 175, 0.95), rgba(107, 114, 128, 0.9), rgba(75, 85, 99, 0.85));
-    /* Width will be dynamically set to 200px by JavaScript */
-}
-
-.pauseshop-loading-square[data-state="no-products-found"] .pauseshop-no-products-text {
-    opacity: 1;
-}
-
-.pauseshop-loading-square[data-state="sliding-out"] {
-    /* Animation handled by JavaScript */
-}
-
-/* Responsive adjustments for smaller screens */
-@media (max-width: 768px) {
-    .pauseshop-loading-square {
-        width: 105px;
-        height: 105px;
-        top: 100px;
-        right: 25px;
-        border-radius: 12px;
-        transform: translateX(140px);
-    }
-    
-    .pauseshop-loading-spinner {
-        width: 35px;
-        height: 35px;
-        margin: -17px 0 0 -17px;
-        border-width: 2px;
-    }
-}
-
-@media (max-width: 480px) {
-    .pauseshop-loading-square {
-        width: 84px;
-        height: 84px;
-        top: 80px;
-        right: 20px;
-        border-radius: 10px;
-        transform: translateX(115px);
-    }
-    
-    .pauseshop-loading-spinner {
-        width: 28px;
-        height: 28px;
-        margin: -14px 0 0 -14px;
-        border-width: 1.5px;
-    }
-}
-
 /* High DPI display optimizations */
 @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-    .pauseshop-loading-square {
+    .pauseshop-ui-container {
         /* Ensure crisp rendering on high DPI displays */
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
@@ -249,56 +137,45 @@
 
 /* Accessibility - Respect user's motion preferences */
 @media (prefers-reduced-motion: reduce) {
-    .pauseshop-loading-square {
+    .pauseshop-ui-container * {
         /* Reduce or disable animations for users who prefer less motion */
         animation-duration: 0.01ms !important;
         animation-iteration-count: 1 !important;
         transition-duration: 0.01ms !important;
     }
-    
-    .pauseshop-loading-spinner {
-        animation: none !important;
-        border-top-color: rgba(255, 255, 255, 0.8);
-        /* Show static loading indicator instead */
-        opacity: 1.0;
-    }
-    
-    .pauseshop-loading-spinner::after {
-        content: '⟳';
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        color: rgba(255, 255, 255, 0.9);
-        font-size: 20px;
-        font-weight: bold;
-    }
-}
-
-/* Dark mode support - adjust for different background contexts */
-@media (prefers-color-scheme: dark) {
-    .pauseshop-loading-square {
-        background: linear-gradient(135deg, rgba(139, 92, 246, 0.95), rgba(196, 181, 253, 0.9), rgba(244, 114, 182, 0.85));
-        box-shadow:
-            0 20px 40px rgba(0, 0, 0, 0.4),
-            0 10px 25px rgba(139, 92, 246, 0.3),
-            0 5px 15px rgba(196, 181, 253, 0.2),
-            inset 0 1px 0 rgba(255, 255, 255, 0.15);
-        border: 1px solid rgba(255, 255, 255, 0.25);
-    }
 }
 
 /* Fallback styles for browsers with limited CSS support */
-.pauseshop-loading-square.fallback {
+.pauseshop-fallback {
     transition: transform 0.3s ease-out, opacity 0.3s ease-out;
 }
 
-.pauseshop-loading-square.fallback.show {
+.pauseshop-fallback.show {
     transform: translateX(0);
     opacity: 1;
 }
 
-.pauseshop-loading-square.fallback.hide {
-    transform: translateX(170px);
+.pauseshop-fallback.hide {
+    transform: translateX(100%);
     opacity: 0;
+}
+
+/* Ensure proper z-index stacking context */
+.pauseshop-ui-container {
+    isolation: isolate;
+}
+
+/* Prevent text selection in UI components */
+.pauseshop-ui-container {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+/* Ensure proper font rendering across browsers */
+.pauseshop-ui-container {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
 }

@@ -1,463 +1,502 @@
 /**
  * Main UI manager for PauseShop extension
  * Orchestrates all UI components and handles lifecycle management
+ *
+ * Phase 4: Simplified to use only the new Sidebar architecture
  */
 
-import { LoadingSquare } from './components/loading-square';
-import { ProductGrid } from './components/product-grid';
-import { LoadingState, UIConfig, LoadingSquareConfig, UIManagerEvents, ProductDisplayData, ProductGridConfig, ProductDisplayState } from './types';
+import { Sidebar } from './components/sidebar';
+import {
+  LoadingState,
+  UIConfig,
+  LoadingSquareConfig,
+  UIManagerEvents,
+  ProductDisplayData,
+  SidebarState,
+  SidebarContentState,
+  SidebarConfig,
+  SidebarEvents,
+} from './types';
 
 export class UIManager {
-    private container: HTMLElement | null = null;
-    private loadingSquare: LoadingSquare | null = null;
-    private productGrid: ProductGrid | null = null;
-    private config: UIConfig;
-    private loadingSquareConfig: LoadingSquareConfig;
-    private productGridConfig: ProductGridConfig;
-    private events: UIManagerEvents;
-    private isInitialized: boolean = false;
-    private noProductsFoundTimeoutId: NodeJS.Timeout | null = null;
+  private container: HTMLElement | null = null;
 
-    constructor(
-        config: Partial<UIConfig> = {},
-        loadingSquareConfig: Partial<LoadingSquareConfig> = {},
-        events: UIManagerEvents = {},
-        productGridConfig: Partial<ProductGridConfig> = {}
-    ) {
-        this.config = {
-            enableLogging: true,
-            logPrefix: 'PauseShop UI',
-            containerClassName: 'pauseshop-ui-container',
-            zIndex: 999999,
-            ...config
-        };
+  // Sidebar state management
+  private sidebar: Sidebar | null = null;
+  private currentSidebarState: SidebarState = SidebarState.HIDDEN;
+  private sidebarConfig: SidebarConfig;
+  private sidebarEvents: SidebarEvents;
 
-        this.loadingSquareConfig = {
-            size: 126,
-            borderRadius: 14,
-            backgroundColor: 'linear-gradient(135deg, rgba(99, 102, 241, 0.95), rgba(168, 85, 247, 0.9), rgba(236, 72, 153, 0.85))',
-            position: {
-                top: 120,
-                right: 30
-            },
-            animations: {
-                slideInDuration: 300,
-                slideOutDuration: 250,
-                pulseDuration: 1500
-            },
-            noProductsFoundTimeout: 8000, // 8 seconds default
-            ...loadingSquareConfig
-        };
+  private config: UIConfig;
+  private loadingSquareConfig: LoadingSquareConfig; // Keep for timeout config
+  private events: UIManagerEvents;
+  private isInitialized: boolean = false;
+  private noProductsFoundTimeoutId: NodeJS.Timeout | null = null;
 
-        this.productGridConfig = {
-            squareSize: 126,
-            spacing: 14,
-            startPosition: {
-                top: 120,
-                right: 30
-            },
-            animationDelayMs: 100,
-            maxProducts: 5,
-            backgroundColor: 'linear-gradient(135deg, rgba(99, 102, 241, 0.95), rgba(168, 85, 247, 0.9), rgba(236, 72, 153, 0.85))',
-            borderRadius: 14,
-            ...productGridConfig
-        };
+  constructor(
+    config: Partial<UIConfig> = {},
+    loadingSquareConfig: Partial<LoadingSquareConfig> = {},
+    events: UIManagerEvents = {},
+    sidebarConfig: Partial<SidebarConfig> = {}
+  ) {
+    this.config = {
+      enableLogging: true,
+      logPrefix: 'PauseShop UI',
+      containerClassName: 'pauseshop-ui-container',
+      zIndex: 999999,
+      ...config
+    };
 
-        this.events = events;
-    }
+    this.loadingSquareConfig = {
+      size: 126,
+      borderRadius: 14,
+      backgroundColor: 'linear-gradient(135deg, rgba(99, 102, 241, 0.95), rgba(168, 85, 247, 0.9), rgba(236, 72, 153, 0.85))',
+      position: {
+        top: 120,
+        right: 30
+      },
+      animations: {
+        slideInDuration: 300,
+        slideOutDuration: 250,
+        pulseDuration: 1500
+      },
+      noProductsFoundTimeout: 8000, // Keep for timeout config
+      ...loadingSquareConfig
+    };
 
-    /**
-     * Initialize the UI manager and create container
-     */
-    public initialize(): boolean {
-        if (this.isInitialized) {
-            return true;
+    this.events = events;
+
+    // Configure sidebar system
+    this.sidebarConfig = {
+      width: sidebarConfig.width || 415,
+      position: sidebarConfig.position || 'right',
+      animations: {
+        slideInDuration: sidebarConfig.animations?.slideInDuration || 500,
+        slideOutDuration: sidebarConfig.animations?.slideOutDuration || 500
+      },
+      enableBackdropBlur: sidebarConfig.enableBackdropBlur !== undefined ? sidebarConfig.enableBackdropBlur : true,
+      enableGlassmorphism: sidebarConfig.enableGlassmorphism !== undefined ? sidebarConfig.enableGlassmorphism : true
+    };
+
+    // Configure sidebar events
+    this.sidebarEvents = {
+      onShow: () => {
+        this.currentSidebarState = SidebarState.VISIBLE;
+        this.events.onShow?.();
+      },
+      onHide: () => {
+        this.currentSidebarState = SidebarState.HIDDEN;
+        this.events.onHide?.();
+      },
+      onStateChange: (state: SidebarState) => {
+        this.currentSidebarState = state;
+        // Map sidebar states to legacy loading states for backward compatibility
+        if (state === SidebarState.VISIBLE) {
+          this.events.onStateChange?.(LoadingState.LOADING);
+        } else if (state === SidebarState.HIDDEN) {
+          this.events.onStateChange?.(LoadingState.HIDDEN);
         }
-
-        try {
-            // Create main container
-            this.createContainer();
-            
-            // Create loading square component
-            this.loadingSquare = new LoadingSquare(this.loadingSquareConfig);
-            
-            this.isInitialized = true;
-            return true;
-
-        } catch (error) {
-            this.log(`Failed to initialize UI Manager: ${error}`);
-            return false;
-        }
-    }
-
-    /**
-     * Show the loading square
-     */
-    public async showLoadingSquare(): Promise<boolean> {
-        if (!this.ensureInitialized()) {
-            return false;
-        }
-
-        try {
-            // Create and append loading square to container
-            const squareElement = this.loadingSquare!.create();
-            this.container!.appendChild(squareElement);
-
-            // Show with animation
-            await this.loadingSquare!.show();
-            
-            this.events.onShow?.();
+      },
+      onContentStateChange: (state: SidebarContentState) => {
+        // Map content states to legacy states
+        switch (state) {
+          case SidebarContentState.LOADING:
             this.events.onStateChange?.(LoadingState.LOADING);
-            
-            return true;
-
-        } catch (error) {
-            this.log(`Failed to show loading square: ${error}`);
-            return false;
-        }
-    }
-
-    /**
-     * Hide the loading square
-     */
-    public async hideLoadingSquare(): Promise<boolean> {
-        if (!this.loadingSquare || !this.loadingSquare.isVisible()) {
-            return true;
-        }
-
-        try {
-            await this.loadingSquare.hide();
-            
-            // Always remove from DOM after hiding
-            const element = this.loadingSquare.getElement();
-            if (element && element.parentNode) {
-                element.parentNode.removeChild(element);
-            }
-            
-            this.events.onHide?.();
-            this.events.onStateChange?.(LoadingState.HIDDEN);
-            
-            return true;
-
-        } catch (error) {
-            this.log(`Failed to hide loading square: ${error}`);
-            return false;
-        }
-    }
-
-    /**
-     * Update loading square state
-     */
-    public updateLoadingState(state: LoadingState): void {
-        if (!this.loadingSquare) {
-            return;
-        }
-
-        this.loadingSquare.updateState(state);
-        this.events.onStateChange?.(state);
-    }
-
-    /**
-     * Show "no products found" state and auto-hide after timeout
-     */
-    public async showNoProductsFound(timeoutMs?: number): Promise<boolean> {
-        if (!this.loadingSquare?.isVisible()) {
-            return false;
-        }
-
-        try {
-            // Clear any existing timeout to restart the countdown
-            if (this.noProductsFoundTimeoutId) {
-                clearTimeout(this.noProductsFoundTimeoutId);
-                this.noProductsFoundTimeoutId = null;
-            }
-
-            // Use configured timeout or default
-            const timeout = timeoutMs ?? this.loadingSquareConfig.noProductsFoundTimeout ?? 8000;
-            
-            // Update to no products found state
-            this.updateLoadingState(LoadingState.NO_PRODUCTS_FOUND);
-            
-            // Auto-hide after timeout with proper cleanup
-            this.noProductsFoundTimeoutId = setTimeout(async () => {
-                this.noProductsFoundTimeoutId = null;
-                await this.hideLoadingSquare();
-            }, timeout);
-            
-            return true;
-
-        } catch (error) {
-            this.log(`Failed to show no products found state: ${error}`);
-            return false;
-        }
-    }
-
-    /**
-     * Show product grid (replaces loading square)
-     */
-    public async showProductGrid(productData: ProductDisplayData[]): Promise<boolean> {
-        if (!this.ensureInitialized() || !productData.length) {
-            return false;
-        }
-
-        try {
-            // Phase 1: Fade out loading square without sliding
-            if (this.loadingSquare && this.loadingSquare.isVisible()) {
-                await this.fadeOutLoadingSquare();
-            }
-            
-            // Phase 2: Create product grid with ALL products
-            this.productGrid = new ProductGrid(this.productGridConfig);
-            const gridElement = await this.productGrid.create(productData);
-            this.container!.appendChild(gridElement);
-            
-            // Phase 3: Show all products with staggered animation
-            await this.productGrid.show();
-            
+            break;
+          case SidebarContentState.PRODUCTS:
             this.events.onProductGridShow?.();
-            return true;
-
-        } catch (error) {
-            this.log(`Failed to show product grid: ${error}`);
-            return false;
+            break;
+          case SidebarContentState.NO_PRODUCTS:
+            this.events.onStateChange?.(LoadingState.NO_PRODUCTS_FOUND);
+            break;
         }
-    }
-
-    /**
-     * Fade out the loading square without sliding animation
-     */
-    private async fadeOutLoadingSquare(): Promise<void> {
-        if (!this.loadingSquare || !this.loadingSquare.isVisible()) {
-            return;
+      },
+      onProductClick: (product) => {
+        // Handle product clicks - open Amazon URL
+        if (product.productUrl) {
+          window.open(product.productUrl, '_blank');
         }
+      },
+      onError: (error) => {
+        this.log(`Sidebar error: ${error.message}`);
+      }
+    };
+  }
 
-        try {
-            // Stop pulse animation first
-            const element = this.loadingSquare.getElement();
-            const animationController = this.loadingSquare.getAnimationController();
-            if (element && animationController) {
-                animationController.stopPulseAnimation();
-                
-                // Use fade-out animation instead of slide-out
-                await animationController.fadeOut({
-                    duration: 200,
-                    easing: 'ease-out'
-                });
-            }
-
-            this.loadingSquare.updateState(LoadingState.HIDDEN);
-            
-            // Remove from DOM
-            if (element && element.parentNode) {
-                element.parentNode.removeChild(element);
-            }
-            
-            this.events.onHide?.();
-            this.events.onStateChange?.(LoadingState.HIDDEN);
-
-        } catch (error) {
-            this.log(`Failed to fade out loading square: ${error}`);
-            // Fallback to instant hide
-            const element = this.loadingSquare.getElement();
-            if (element) {
-                element.style.opacity = '0';
-                if (element.parentNode) {
-                    element.parentNode.removeChild(element);
-                }
-            }
-            this.loadingSquare.updateState(LoadingState.HIDDEN);
-        }
+  /**
+   * Initialize the UI manager and create container
+   */
+  public initialize(): boolean {
+    if (this.isInitialized) {
+      return true;
     }
 
-    /**
-     * Hide the product grid
-     */
-    public async hideProductGrid(): Promise<boolean> {
-        if (!this.productGrid || !this.productGrid.isVisible()) {
-            return true;
-        }
+    try {
+      // Create main container
+      this.createContainer();
 
-        try {
-            await this.productGrid.hide();
-            
-            // Remove from DOM after animation
-            const container = this.productGrid.getContainer();
-            if (container && container.parentNode) {
-                container.parentNode.removeChild(container);
-            }
-            
-            // Cleanup product grid
-            this.productGrid.cleanup();
-            this.productGrid = null;
-            
-            this.events.onProductGridHide?.();
-            
-            return true;
+      // Create sidebar component
+      this.sidebar = new Sidebar(this.sidebarConfig, this.sidebarEvents);
+      this.sidebar.create();
+      // Sidebar manages its own DOM insertion
 
-        } catch (error) {
-            this.log(`Failed to hide product grid: ${error}`);
-            return false;
-        }
+      this.isInitialized = true;
+      return true;
+
+    } catch (error) {
+      this.log(`Failed to initialize UI Manager: ${error}`);
+      return false;
+    }
+  }
+
+  /**
+   * Show the sidebar with loading state
+   */
+  public async showSidebar(): Promise<boolean> {
+    if (!this.ensureInitialized()) {
+      return false;
     }
 
-    /**
-     * Check if product grid is currently visible
-     */
-    public isProductGridVisible(): boolean {
-        return this.productGrid?.isVisible() ?? false;
+    if (!this.sidebar) {
+      this.log('Sidebar not initialized');
+      return false;
     }
 
-    /**
-     * Get number of products in grid
-     */
-    public getProductCount(): number {
-        return this.productGrid?.getProductCount() ?? 0;
+    try {
+      await this.sidebar.show();
+      this.sidebar.showLoading();
+      return true;
+    } catch (error) {
+      this.log(`Failed to show sidebar: ${error}`);
+      return false;
+    }
+  }
+
+  /**
+   * DEPRECATED: Show the loading square (maintained for backward compatibility)
+   * @deprecated Use showSidebar() instead
+   */
+  public async showLoadingSquare(): Promise<boolean> {
+    return this.showSidebar();
+  }
+
+  /**
+   * Hide the sidebar
+   */
+  public async hideSidebar(): Promise<boolean> {
+    if (!this.sidebar) {
+      return true;
     }
 
-    /**
-     * Hide all UI components
-     */
-    public async hideUI(): Promise<void> {
-        // Ensure all expansions are collapsed before hiding (Task 4.4)
-        if (this.productGrid) {
-            await this.productGrid.collapseAllExpansions();
-        }
-        
-        await Promise.all([
-            this.hideLoadingSquare(),
-            this.hideProductGrid()
-        ]);
+    try {
+      await this.sidebar.hide();
+      return true;
+    } catch (error) {
+      this.log(`Failed to hide sidebar: ${error}`);
+      return false;
+    }
+  }
+
+  /**
+   * DEPRECATED: Hide the loading square (maintained for backward compatibility)
+   * @deprecated Use hideSidebar() instead
+   */
+  public async hideLoadingSquare(): Promise<boolean> {
+    return this.hideSidebar();
+  }
+
+  /**
+   * Update loading state
+   */
+  public updateLoadingState(state: LoadingState): void {
+    if (this.sidebar) {
+      // Map loading states to sidebar content states
+      switch (state) {
+        case LoadingState.LOADING:
+        case LoadingState.PROCESSING:
+          this.sidebar.showLoading({
+            message: state === LoadingState.PROCESSING ? 'Processing...' : 'Finding products...',
+            subMessage: 'Analyzing your paused scene.',
+            spinnerSize: 'initial'
+          });
+          break;
+        case LoadingState.NO_PRODUCTS_FOUND:
+          this.sidebar.showNoProducts();
+          break;
+      }
     }
 
-    /**
-     * Check if UI is currently visible
-     */
-    public isUIVisible(): boolean {
-        return (this.loadingSquare?.isVisible() ?? false) ||
-               (this.productGrid?.isVisible() ?? false);
+    this.events.onStateChange?.(state);
+  }
+
+  /**
+   * Show "no products found" state and auto-hide after timeout
+   */
+  public async showNoProductsFound(timeoutMs?: number): Promise<boolean> {
+    if (!this.sidebar) {
+      return false;
     }
 
-    /**
-     * Get current loading state
-     */
-    public getCurrentState(): LoadingState {
-        return this.loadingSquare?.getCurrentState() ?? LoadingState.HIDDEN;
+    try {
+      // Clear any existing timeout
+      if (this.noProductsFoundTimeoutId) {
+        clearTimeout(this.noProductsFoundTimeoutId);
+        this.noProductsFoundTimeoutId = null;
+      }
+
+      // Show no products state in sidebar
+      this.sidebar.showNoProducts({
+        title: 'No products found.',
+        message: 'Try a different scene or ensure items are clearly visible.',
+        iconType: 'search',
+        showRetryButton: false
+      });
+
+      // Use configured timeout or default
+      const timeout = timeoutMs ?? this.loadingSquareConfig.noProductsFoundTimeout ?? 8000;
+
+      // Auto-hide after timeout
+      this.noProductsFoundTimeoutId = setTimeout(async () => {
+        this.noProductsFoundTimeoutId = null;
+        await this.hideSidebar();
+      }, timeout);
+
+      return true;
+    } catch (error) {
+      this.log(`Failed to show no products found state: ${error}`);
+      return false;
+    }
+  }
+
+  /**
+   * Show products in sidebar
+   */
+  public async showProducts(productData: ProductDisplayData[]): Promise<boolean> {
+    if (!this.ensureInitialized() || !productData.length) {
+      return false;
     }
 
-    /**
-     * Get current product grid state
-     */
-    public getProductGridState(): ProductDisplayState {
-        return this.productGrid?.getCurrentState() ?? ProductDisplayState.HIDDEN;
+    if (!this.sidebar) {
+      return false;
     }
 
-    /**
-     * Check if any animations are running
-     */
-    public isAnimating(): boolean {
-        return (this.loadingSquare?.isAnimating() ?? false) ||
-               (this.productGrid?.isAnimating() ?? false);
+    try {
+      await this.sidebar.showProducts(productData);
+      return true;
+    } catch (error) {
+      this.log(`Failed to show products in sidebar: ${error}`);
+      return false;
+    }
+  }
+
+  /**
+   * DEPRECATED: Show product grid (maintained for backward compatibility)
+   * @deprecated Use showProducts() instead
+   */
+  public async showProductGrid(productData: ProductDisplayData[]): Promise<boolean> {
+    return this.showProducts(productData);
+  }
+
+  /**
+   * DEPRECATED: Hide the product grid (maintained for backward compatibility)
+   * @deprecated Use hideSidebar() instead
+   */
+  public async hideProductGrid(): Promise<boolean> {
+    return this.hideSidebar();
+  }
+
+  /**
+   * DEPRECATED: Check if product grid is currently visible (maintained for backward compatibility)
+   * @deprecated Use isUIVisible() instead
+   */
+  public isProductGridVisible(): boolean {
+    return this.isUIVisible();
+  }
+
+  /**
+   * DEPRECATED: Get number of products in grid (maintained for backward compatibility)
+   * @deprecated Use sidebar methods instead
+   */
+  public getProductCount(): number {
+    // This information is not easily accessible from the sidebar
+    // Return 0 as a safe default
+    return 0;
+  }
+
+  /**
+   * Hide all UI components
+   */
+  public async hideUI(): Promise<void> {
+    await this.hideSidebar();
+  }
+
+  /**
+   * Check if UI is currently visible
+   */
+  public isUIVisible(): boolean {
+    return this.sidebar?.isVisible() ?? false;
+  }
+
+  /**
+   * Get current loading state
+   */
+  public getCurrentState(): LoadingState {
+    if (this.sidebar) {
+      // Map sidebar state to loading state
+      const sidebarState = this.sidebar.getCurrentState();
+      switch (sidebarState) {
+        case SidebarState.VISIBLE:
+          return LoadingState.LOADING; // Default to loading when visible
+        case SidebarState.SLIDING_IN:
+          return LoadingState.SLIDING_IN;
+        case SidebarState.SLIDING_OUT:
+          return LoadingState.SLIDING_OUT;
+        default:
+          return LoadingState.HIDDEN;
+      }
     }
 
-    /**
-     * Complete cleanup of all UI components
-     */
-    public cleanup(): void {
-        // Clear any pending no products found timeout
-        if (this.noProductsFoundTimeoutId) {
-            clearTimeout(this.noProductsFoundTimeoutId);
-            this.noProductsFoundTimeoutId = null;
-        }
+    return LoadingState.HIDDEN;
+  }
 
-        // Cleanup loading square
-        if (this.loadingSquare) {
-            this.loadingSquare.cleanup();
-            this.loadingSquare = null;
-        }
+  /**
+   * DEPRECATED: Get current product grid state (maintained for backward compatibility)
+   * @deprecated Use getCurrentState() instead
+   */
+  public getProductGridState(): LoadingState {
+    return this.getCurrentState();
+  }
 
-        // Cleanup product grid
-        if (this.productGrid) {
-            this.productGrid.cleanup();
-            this.productGrid = null;
-        }
+  /**
+   * Get current sidebar state
+   */
+  public getCurrentSidebarState(): SidebarState {
+    return this.currentSidebarState;
+  }
 
-        // Remove container from DOM
-        if (this.container && this.container.parentNode) {
-            this.container.parentNode.removeChild(this.container);
-        }
-        this.container = null;
-
-        this.isInitialized = false;
+  /**
+   * Check if any animations are running
+   */
+  public isAnimating(): boolean {
+    if (this.sidebar) {
+      const state = this.sidebar.getCurrentState();
+      return state === SidebarState.SLIDING_IN || state === SidebarState.SLIDING_OUT;
     }
 
-    /**
-     * Create the main UI container
-     */
-    private createContainer(): void {
-        // Remove existing container if it exists
-        const existingContainer = document.querySelector(`.${this.config.containerClassName}`);
-        if (existingContainer) {
-            existingContainer.remove();
-        }
+    return false;
+  }
 
-        this.container = document.createElement('div');
-        this.container.className = this.config.containerClassName;
-        
-        // Apply container styles
-        const containerStyles = {
-            position: 'fixed' as const,
-            top: '0',
-            left: '0',
-            width: '100%',
-            height: '100%',
-            pointerEvents: 'none' as const,
-            zIndex: this.config.zIndex.toString(),
-            userSelect: 'none' as const
-        };
-
-        Object.assign(this.container.style, containerStyles);
-
-        // Append to document body
-        document.body.appendChild(this.container);
+  /**
+   * Complete cleanup of all UI components
+   */
+  public cleanup(): void {
+    // Clear any pending no products found timeout
+    if (this.noProductsFoundTimeoutId) {
+      clearTimeout(this.noProductsFoundTimeoutId);
+      this.noProductsFoundTimeoutId = null;
     }
 
-    /**
-     * Ensure UI manager is initialized
-     */
-    private ensureInitialized(): boolean {
-        if (!this.isInitialized) {
-            return this.initialize();
-        }
-        return true;
+    // Cleanup sidebar
+    if (this.sidebar) {
+      this.sidebar.cleanup();
+      this.sidebar = null;
     }
 
-    /**
-     * Log message with prefix
-     */
-    private log(message: string): void {
-        if (this.config.enableLogging) {
-            console.log(`${this.config.logPrefix}: ${message}`);
-        }
+    // Remove container from DOM
+    if (this.container && this.container.parentNode) {
+      this.container.parentNode.removeChild(this.container);
+    }
+    this.container = null;
+
+    this.currentSidebarState = SidebarState.HIDDEN;
+    this.isInitialized = false;
+  }
+
+  /**
+   * Create the main UI container
+   */
+  private createContainer(): void {
+    // Remove existing container if it exists
+    const existingContainer = document.querySelector(`.${this.config.containerClassName}`);
+    if (existingContainer) {
+      existingContainer.remove();
     }
 
-    /**
-     * Static method to create and initialize a UI manager
-     */
-    public static create(
-        config?: Partial<UIConfig>,
-        loadingSquareConfig?: Partial<LoadingSquareConfig>,
-        events?: UIManagerEvents,
-        productGridConfig?: Partial<ProductGridConfig>
-    ): UIManager | null {
-        try {
-            const manager = new UIManager(config, loadingSquareConfig, events, productGridConfig);
-            if (manager.initialize()) {
-                return manager;
-            }
-            return null;
-        } catch (error) {
-            console.error('PauseShop: Failed to create UI Manager:', error);
-            return null;
-        }
+    this.container = document.createElement('div');
+    this.container.className = this.config.containerClassName;
+
+    // Apply container styles
+    const containerStyles = {
+      position: 'fixed' as const,
+      top: '0',
+      left: '0',
+      width: '100%',
+      height: '100%',
+      pointerEvents: 'none' as const,
+      zIndex: this.config.zIndex.toString(),
+      userSelect: 'none' as const
+    };
+
+    Object.assign(this.container.style, containerStyles);
+
+    // Append to document body
+    document.body.appendChild(this.container);
+  }
+
+  /**
+   * Ensure UI manager is initialized
+   */
+  private ensureInitialized(): boolean {
+    if (!this.isInitialized) {
+      return this.initialize();
     }
+    return true;
+  }
+
+  /**
+   * Log message with prefix
+   */
+  private log(message: string): void {
+    if (this.config.enableLogging) {
+      console.log(`${this.config.logPrefix}: ${message}`);
+    }
+  }
+
+  /**
+   * Static method to create and initialize a UI manager
+   */
+  public static create(
+    config?: Partial<UIConfig>,
+    loadingSquareConfig?: Partial<LoadingSquareConfig>,
+    events?: UIManagerEvents,
+    sidebarConfig?: Partial<SidebarConfig>
+  ): UIManager | null {
+    try {
+      const manager = new UIManager(
+        config,
+        loadingSquareConfig,
+        events,
+        sidebarConfig
+      );
+      if (manager.initialize()) {
+        return manager;
+      }
+      return null;
+    } catch (error) {
+      console.error('PauseShop: Failed to create UI Manager:', error);
+      return null;
+    }
+  }
+
+  /**
+   * DEPRECATED: Static method to create UI manager with legacy components (for backward compatibility)
+   * @deprecated Use create() instead
+   */
+  public static createLegacy(
+    config?: Partial<UIConfig>,
+    loadingSquareConfig?: Partial<LoadingSquareConfig>,
+    events?: UIManagerEvents
+  ): UIManager | null {
+    return UIManager.create(config, loadingSquareConfig, events, {});
+  }
 }

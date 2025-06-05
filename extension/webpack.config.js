@@ -1,16 +1,17 @@
 const path = require('path');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
     entry: {
         'background/service-worker': './src/background/service-worker.ts',
         'content/main-content': './src/content/main-content.ts',
-        'popup/popup': './src/popup/popup.ts'
+        'popup/popup': './src/popup/popup.ts',
+        'ui/styles': './src/ui/base.css'
     },
     output: {
         path: path.resolve(__dirname, 'dist'),
-        filename: '[name].js',
-        clean: true
+        filename: '[name].js'
     },
     module: {
         rules: [
@@ -18,6 +19,14 @@ module.exports = {
                 test: /\.ts$/,
                 use: 'ts-loader',
                 exclude: /node_modules/
+            },
+            {
+                test: /\.css$/,
+                use: [
+                    MiniCssExtractPlugin.loader,
+                    'css-loader',
+                    'postcss-loader'
+                ]
             }
         ]
     },
@@ -30,15 +39,14 @@ module.exports = {
         }
     },
     plugins: [
+        new MiniCssExtractPlugin({
+            filename: 'ui/styles.css'
+        }),
         new CopyWebpackPlugin({
             patterns: [
                 {
                     from: 'manifest.json',
                     to: 'manifest.json'
-                },
-                {
-                    from: 'src/ui/styles.css',
-                    to: 'ui/styles.css'
                 },
                 {
                     from: 'src/popup/popup.html',
