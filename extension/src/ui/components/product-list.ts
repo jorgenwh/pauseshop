@@ -66,14 +66,6 @@ export class ProductList {
             return;
         }
 
-        // Log product being added to the UI for visibility
-        console.log(`[PauseShop ProductList] Adding product ${this.productCards.length + 1}:`, {
-            productName: product.name,
-            category: product.category,
-            fallbackText: product.fallbackText,
-            allProductsCount: product.allProducts?.length || 0,
-            thumbnailUrl: product.thumbnailUrl
-        });
 
         const productCard = new ProductCard({
             product: product,
@@ -90,8 +82,6 @@ export class ProductList {
         cardsContainer.appendChild(cardElement);
         this.productCards.push(productCard);
 
-        // Log total product count after adding
-        console.log(`[PauseShop ProductList] Total products in UI: ${this.productCards.length}`);
 
         // Animate the new card in
         await this.animateCardIn(productCard, 0); // Animate immediately

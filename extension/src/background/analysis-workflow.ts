@@ -67,30 +67,10 @@ export const handleScreenshotAnalysis = async (config: ScreenshotConfig, windowI
                     imageData,
                     {
                         onProduct: async (product: Product) => {
-                            // Log product received from server stream with detailed information
-                            logWithTimestamp(config, 'info', 'Product received from server stream', {
-                                productName: product.name,
-                                brand: product.brand,
-                                category: product.category,
-                                primaryColor: product.primaryColor,
-                                secondaryColors: product.secondaryColors,
-                                features: product.features,
-                                targetGender: product.targetGender,
-                                searchTerms: product.searchTerms
-                            });
-                            
-                            log(config, `Received streamed product: ${product.name}`);
                             
                             // Create a promise for this product's async processing
                             const productProcessingPromise = (async () => {
-                                // Log Amazon scraping start with timestamp and product details
-                                logWithTimestamp(config, 'info', 'Amazon scraping started', {
-                                    productName: product.name,
-                                    brand: product.brand,
-                                    category: product.category,
-                                    searchTerms: product.searchTerms,
-                                    targetGender: product.targetGender
-                                });
+
                                 
                                 try {
                                     const amazonSearchResults = constructAmazonSearchBatch([product], {
@@ -117,20 +97,6 @@ export const handleScreenshotAnalysis = async (config: ScreenshotConfig, windowI
                                     if (amazonScrapedResults && amazonScrapedResults.scrapedResults.length > 0 && amazonScrapedResults.scrapedResults[0].products.length > 0) {
                                         const scrapedProducts = amazonScrapedResults.scrapedResults[0].products;
                                         
-                                        // Log successful Amazon scraping completion with all products found
-                                        logWithTimestamp(config, 'info', 'Amazon scraping completed successfully', {
-                                            originalProductName: product.name,
-                                            totalProductsFound: scrapedProducts.length,
-                                            searchTermsUsed: product.searchTerms,
-                                            scrapedProducts: scrapedProducts.map(p => ({
-                                                productId: p.productId,
-                                                productUrl: p.productUrl,
-                                                thumbnailUrl: p.thumbnailUrl,
-                                                position: p.position,
-                                                confidence: p.confidence,
-                                                amazonAsin: p.amazonAsin
-                                            }))
-                                        });
                                         
                                         // Send a single message with the original product and all scraped products
                                         const tabId = (await chrome.tabs.query({ active: true, currentWindow: true }))[0]?.id;
@@ -172,18 +138,10 @@ export const handleScreenshotAnalysis = async (config: ScreenshotConfig, windowI
                             pendingOperations.push(productProcessingPromise);
                         },
                         onComplete: async () => {
-                            log(config, 'Streaming analysis complete. Waiting for all product processing to finish...');
                             
                             // Wait for all pending operations to complete
                             try {
                                 await Promise.allSettled(pendingOperations);
-                                log(config, 'All product processing operations completed.');
-                                
-                                // Log summary of total products processed
-                                logWithTimestamp(config, 'info', 'Analysis workflow completed', {
-                                    totalProductsFromServer: pendingOperations.length,
-                                    message: `Processed ${pendingOperations.length} product(s) from server stream. Each may have generated up to 5 Amazon products for the UI.`
-                                });
                             } catch (error) {
                                 log(config, `Error waiting for product processing: ${error instanceof Error ? error.message : 'Unknown error'}`);
                             }

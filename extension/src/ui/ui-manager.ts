@@ -324,13 +324,6 @@ export class UIManager {
         fallbackText: message.originalProduct.searchTerms
       };
       
-      // Log the product group
-      console.log('[PauseShop UI] Adding product group:', {
-        productName: productDisplayData.name,
-        productCount: productDisplayData.allProducts.length,
-        category: productDisplayData.category,
-        pauseId: message.pauseId
-      });
       
       // Add the entire product group to the UI
       if (this.sidebar) {
