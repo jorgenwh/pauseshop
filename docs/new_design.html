@@ -133,21 +133,21 @@
     <body>
         <button
             id="togglePauseShopButton"
-            class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition-colors"
+            class="rounded-lg bg-indigo-600 px-4 py-2 font-semibold text-white shadow-md transition-colors hover:bg-indigo-700"
         >
             Toggle PauseShop (Simulate Pause/Resume)
         </button>
 
         <div
             id="pauseShopContainer"
-            class="fixed top-0 right-0 h-full w-96 md:w-[400px] text-slate-100 p-5 transform translate-x-full transition-transform duration-500 ease-in-out flex flex-col"
+            class="fixed right-0 top-0 flex h-full w-96 translate-x-full transform flex-col p-5 text-slate-100 transition-transform duration-500 ease-in-out md:w-[400px]"
         >
             <div
-                class="flex justify-between items-center mb-5 pb-4 border-b border-slate-600/80"
+                class="mb-5 flex items-center justify-between border-b border-slate-600/80 pb-4"
             >
                 <div class="flex items-center space-x-2.5">
                     <svg
-                        class="w-7 h-7 text-indigo-400"
+                        class="h-7 w-7 text-indigo-400"
                         viewBox="0 0 24 24"
                         fill="currentColor"
                         xmlns="http://www.w3.org/2000/svg"
@@ -166,10 +166,10 @@
                 <button
                     id="closePauseShop"
                     title="Close PauseShop"
-                    class="p-1.5 rounded-full text-slate-300 hover:text-slate-100 hover:bg-slate-700/70 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50"
+                    class="rounded-full p-1.5 text-slate-300 transition-colors hover:bg-slate-700/70 hover:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50"
                 >
                     <svg
-                        class="w-5 h-5"
+                        class="h-5 w-5"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -187,10 +187,10 @@
 
             <div
                 id="loadingState"
-                class="flex flex-col items-center justify-center flex-grow text-center py-10"
+                class="flex flex-grow flex-col items-center justify-center py-10 text-center"
             >
                 <svg
-                    class="animate-spin h-10 w-10 text-indigo-500 mb-5"
+                    class="mb-5 h-10 w-10 animate-spin text-indigo-500"
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
                     viewBox="0 0 24 24"
@@ -219,23 +219,23 @@
 
             <div
                 id="productList"
-                class="hidden space-y-3.5 overflow-y-auto flex-grow pr-1 pb-4"
+                class="hidden flex-grow space-y-3.5 overflow-y-auto pb-4 pr-1"
             >
                 <div
-                    class="product-item p-3.5 rounded-xl shadow-lg hover:bg-slate-700/60 transition-colors duration-200 ease-in-out"
+                    class="product-item rounded-xl p-3.5 shadow-lg transition-colors duration-200 ease-in-out hover:bg-slate-700/60"
                 >
                     <div
-                        class="flex items-center justify-between cursor-pointer product-header group"
+                        class="product-header group flex cursor-pointer items-center justify-between"
                     >
-                        <div class="flex items-center space-x-3.5 min-w-0">
+                        <div class="flex min-w-0 items-center space-x-3.5">
                             <img
                                 src="https://placehold.co/64x64/DB2777/FFFFFF?text=Style"
                                 alt="Detected Product: Red Dress"
-                                class="w-14 h-14 rounded-lg object-cover shadow-md group-hover:scale-105 transition-transform duration-200"
+                                class="h-14 w-14 rounded-lg object-cover shadow-md transition-transform duration-200 group-hover:scale-105"
                             />
                             <div class="min-w-0">
                                 <h3
-                                    class="font-semibold text-md text-slate-50 truncate"
+                                    class="text-md truncate font-semibold text-slate-50"
                                 >
                                     Elegant Red Dress
                                 </h3>
@@ -245,7 +245,7 @@
                             </div>
                         </div>
                         <svg
-                            class="w-5 h-5 transform chevron text-slate-300 group-hover:text-indigo-400 transition-all"
+                            class="chevron h-5 w-5 transform text-slate-300 transition-all group-hover:text-indigo-400"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
@@ -261,7 +261,7 @@
                     </div>
                     <div class="expanded-content">
                         <h4
-                            class="text-xs font-semibold text-indigo-300 my-3 ml-1"
+                            class="my-3 ml-1 text-xs font-semibold text-indigo-300"
                         >
                             Shop similar on Amazon:
                         </h4>
@@ -269,20 +269,20 @@
                             <a
                                 href="https://www.amazon.com/s?k=elegant+red+dress"
                                 target="_blank"
-                                class="amazon-item group block p-2 rounded-lg transition-colors duration-200"
+                                class="amazon-item group block rounded-lg p-2 transition-colors duration-200"
                             >
                                 <img
                                     src="https://placehold.co/120x120/C026D3/FFFFFF?text=Dress1"
                                     alt="Amazon: Red Cocktail Dress"
-                                    class="w-full h-auto rounded-md object-cover mb-1.5 shadow-sm group-hover:opacity-90 transition-opacity"
+                                    class="mb-1.5 h-auto w-full rounded-md object-cover shadow-sm transition-opacity group-hover:opacity-90"
                                 />
                                 <p
-                                    class="text-[11px] leading-tight text-slate-100 truncate"
+                                    class="truncate text-[11px] leading-tight text-slate-100"
                                 >
                                     Evening Party Red Dress
                                 </p>
                                 <p
-                                    class="text-[10px] text-indigo-400 font-semibold"
+                                    class="text-[10px] font-semibold text-indigo-400"
                                 >
                                     $79.99
                                 </p>
@@ -290,20 +290,20 @@
                             <a
                                 href="https://www.amazon.com/s?k=elegant+red+dress"
                                 target="_blank"
-                                class="amazon-item group block p-2 rounded-lg transition-colors duration-200"
+                                class="amazon-item group block rounded-lg p-2 transition-colors duration-200"
                             >
                                 <img
                                     src="https://placehold.co/120x120/C026D3/FFFFFF?text=Dress2"
                                     alt="Amazon: Silk Red Gown"
-                                    class="w-full h-auto rounded-md object-cover mb-1.5 shadow-sm group-hover:opacity-90 transition-opacity"
+                                    class="mb-1.5 h-auto w-full rounded-md object-cover shadow-sm transition-opacity group-hover:opacity-90"
                                 />
                                 <p
-                                    class="text-[11px] leading-tight text-slate-100 truncate"
+                                    class="truncate text-[11px] leading-tight text-slate-100"
                                 >
                                     Luxury Silk Red Gown
                                 </p>
                                 <p
-                                    class="text-[10px] text-indigo-400 font-semibold"
+                                    class="text-[10px] font-semibold text-indigo-400"
                                 >
                                     $129.50
                                 </p>
@@ -313,20 +313,20 @@
                 </div>
 
                 <div
-                    class="product-item p-3.5 rounded-xl shadow-lg transition-colors duration-200 ease-in-out"
+                    class="product-item rounded-xl p-3.5 shadow-lg transition-colors duration-200 ease-in-out"
                 >
                     <div
-                        class="flex items-center justify-between cursor-pointer product-header group"
+                        class="product-header group flex cursor-pointer items-center justify-between"
                     >
-                        <div class="flex items-center space-x-3.5 min-w-0">
+                        <div class="flex min-w-0 items-center space-x-3.5">
                             <img
                                 src="https://placehold.co/64x64/10B981/FFFFFF?text=Tech"
                                 alt="Detected Product: Headphones"
-                                class="w-14 h-14 rounded-lg object-cover shadow-md group-hover:scale-105 transition-transform duration-200"
+                                class="h-14 w-14 rounded-lg object-cover shadow-md transition-transform duration-200 group-hover:scale-105"
                             />
                             <div class="min-w-0">
                                 <h3
-                                    class="font-semibold text-md text-slate-50 truncate"
+                                    class="text-md truncate font-semibold text-slate-50"
                                 >
                                     Wireless Headphones
                                 </h3>
@@ -336,7 +336,7 @@
                             </div>
                         </div>
                         <svg
-                            class="w-5 h-5 transform chevron text-slate-300 group-hover:text-indigo-400 transition-all"
+                            class="chevron h-5 w-5 transform text-slate-300 transition-all group-hover:text-indigo-400"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
@@ -352,7 +352,7 @@
                     </div>
                     <div class="expanded-content">
                         <h4
-                            class="text-xs font-semibold text-indigo-300 my-3 ml-1"
+                            class="my-3 ml-1 text-xs font-semibold text-indigo-300"
                         >
                             Shop similar on Amazon:
                         </h4>
@@ -360,20 +360,20 @@
                             <a
                                 href="https://www.amazon.com/s?k=wireless+headphones"
                                 target="_blank"
-                                class="amazon-item group block p-2 rounded-lg transition-colors duration-200"
+                                class="amazon-item group block rounded-lg p-2 transition-colors duration-200"
                             >
                                 <img
                                     src="https://placehold.co/120x120/059669/FFFFFF?text=Audio1"
                                     alt="Amazon: Noise Cancelling Headphones"
-                                    class="w-full h-auto rounded-md object-cover mb-1.5 shadow-sm group-hover:opacity-90 transition-opacity"
+                                    class="mb-1.5 h-auto w-full rounded-md object-cover shadow-sm transition-opacity group-hover:opacity-90"
                                 />
                                 <p
-                                    class="text-[11px] leading-tight text-slate-100 truncate"
+                                    class="truncate text-[11px] leading-tight text-slate-100"
                                 >
                                     ProBeat Noise-Cancelling
                                 </p>
                                 <p
-                                    class="text-[10px] text-indigo-400 font-semibold"
+                                    class="text-[10px] font-semibold text-indigo-400"
                                 >
                                     $199.00
                                 </p>
@@ -381,20 +381,20 @@
                             <a
                                 href="https://www.amazon.com/s?k=wireless+headphones"
                                 target="_blank"
-                                class="amazon-item group block p-2 rounded-lg transition-colors duration-200"
+                                class="amazon-item group block rounded-lg p-2 transition-colors duration-200"
                             >
                                 <img
                                     src="https://placehold.co/120x120/059669/FFFFFF?text=Audio2"
                                     alt="Amazon: Sport Earbuds"
-                                    class="w-full h-auto rounded-md object-cover mb-1.5 shadow-sm group-hover:opacity-90 transition-opacity"
+                                    class="mb-1.5 h-auto w-full rounded-md object-cover shadow-sm transition-opacity group-hover:opacity-90"
                                 />
                                 <p
-                                    class="text-[11px] leading-tight text-slate-100 truncate"
+                                    class="truncate text-[11px] leading-tight text-slate-100"
                                 >
                                     SportFit Wireless Earbuds
                                 </p>
                                 <p
-                                    class="text-[10px] text-indigo-400 font-semibold"
+                                    class="text-[10px] font-semibold text-indigo-400"
                                 >
                                     $49.99
                                 </p>
@@ -402,20 +402,20 @@
                             <a
                                 href="https://www.amazon.com/s?k=wireless+headphones"
                                 target="_blank"
-                                class="amazon-item group block p-2 rounded-lg transition-colors duration-200"
+                                class="amazon-item group block rounded-lg p-2 transition-colors duration-200"
                             >
                                 <img
                                     src="https://placehold.co/120x120/059669/FFFFFF?text=Audio3"
                                     alt="Amazon: Studio Headphones"
-                                    class="w-full h-auto rounded-md object-cover mb-1.5 shadow-sm group-hover:opacity-90 transition-opacity"
+                                    class="mb-1.5 h-auto w-full rounded-md object-cover shadow-sm transition-opacity group-hover:opacity-90"
                                 />
                                 <p
-                                    class="text-[11px] leading-tight text-slate-100 truncate"
+                                    class="truncate text-[11px] leading-tight text-slate-100"
                                 >
                                     Studio Monitor Headphones
                                 </p>
                                 <p
-                                    class="text-[10px] text-indigo-400 font-semibold"
+                                    class="text-[10px] font-semibold text-indigo-400"
                                 >
                                     $149.00
                                 </p>
@@ -424,20 +424,20 @@
                     </div>
                 </div>
                 <div
-                    class="product-item p-3.5 rounded-xl shadow-lg transition-colors duration-200 ease-in-out"
+                    class="product-item rounded-xl p-3.5 shadow-lg transition-colors duration-200 ease-in-out"
                 >
                     <div
-                        class="flex items-center justify-between cursor-pointer product-header group"
+                        class="product-header group flex cursor-pointer items-center justify-between"
                     >
-                        <div class="flex items-center space-x-3.5 min-w-0">
+                        <div class="flex min-w-0 items-center space-x-3.5">
                             <img
                                 src="https://placehold.co/64x64/F59E0B/FFFFFF?text=Decor"
                                 alt="Detected Product: Modern Lamp"
-                                class="w-14 h-14 rounded-lg object-cover shadow-md group-hover:scale-105 transition-transform duration-200"
+                                class="h-14 w-14 rounded-lg object-cover shadow-md transition-transform duration-200 group-hover:scale-105"
                             />
                             <div class="min-w-0">
                                 <h3
-                                    class="font-semibold text-md text-slate-50 truncate"
+                                    class="text-md truncate font-semibold text-slate-50"
                                 >
                                     Modern Table Lamp
                                 </h3>
@@ -447,7 +447,7 @@
                             </div>
                         </div>
                         <svg
-                            class="w-5 h-5 transform chevron text-slate-300 group-hover:text-indigo-400 transition-all"
+                            class="chevron h-5 w-5 transform text-slate-300 transition-all group-hover:text-indigo-400"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
@@ -463,7 +463,7 @@
                     </div>
                     <div class="expanded-content">
                         <h4
-                            class="text-xs font-semibold text-indigo-300 my-3 ml-1"
+                            class="my-3 ml-1 text-xs font-semibold text-indigo-300"
                         >
                             Shop similar on Amazon:
                         </h4>
@@ -471,20 +471,20 @@
                             <a
                                 href="https://www.amazon.com/s?k=modern+table+lamp"
                                 target="_blank"
-                                class="amazon-item group block p-2 rounded-lg transition-colors duration-200"
+                                class="amazon-item group block rounded-lg p-2 transition-colors duration-200"
                             >
                                 <img
                                     src="https://placehold.co/120x120/D97706/FFFFFF?text=Lamp1"
                                     alt="Amazon: Minimalist Desk Lamp"
-                                    class="w-full h-auto rounded-md object-cover mb-1.5 shadow-sm group-hover:opacity-90 transition-opacity"
+                                    class="mb-1.5 h-auto w-full rounded-md object-cover shadow-sm transition-opacity group-hover:opacity-90"
                                 />
                                 <p
-                                    class="text-[11px] leading-tight text-slate-100 truncate"
+                                    class="truncate text-[11px] leading-tight text-slate-100"
                                 >
                                     Minimalist Desk Lamp
                                 </p>
                                 <p
-                                    class="text-[10px] text-indigo-400 font-semibold"
+                                    class="text-[10px] font-semibold text-indigo-400"
                                 >
                                     $35.00
                                 </p>
@@ -496,11 +496,11 @@
 
             <div
                 id="noProductsMessage"
-                class="hidden flex-col items-center justify-center flex-grow text-center py-10"
+                class="hidden flex-grow flex-col items-center justify-center py-10 text-center"
             >
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    class="h-12 w-12 text-slate-400 mb-4"
+                    class="mb-4 h-12 w-12 text-slate-400"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -520,7 +520,7 @@
                 </p>
             </div>
 
-            <div class="mt-auto pt-3 text-center border-t border-slate-600/80">
+            <div class="mt-auto border-t border-slate-600/80 pt-3 text-center">
                 <p class="text-xs text-slate-400">Powered by PauseShop AI</p>
             </div>
         </div>
