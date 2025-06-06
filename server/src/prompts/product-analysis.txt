@@ -44,7 +44,7 @@ Format your response as a JSON array of objects with this structure:
 }
 
 Important guidelines:
-- NAME LENGTH: Product names must be 25 characters or less
+- NAME LENGTH: Product names must be 25 characters or less, do not include gender
 - GROUPING: Contextually related items must appear consecutively in the output array (e.g., items worn by same person, on same desk, or in same set)
 - SEPARATE ITEMS: Identify each distinct piece of clothing/accessory as its own product entry
 - SINGLE ITEMS WITH MULTIPLE COLORS: Treat multi-colored single items as ONE product (include all visible colors)
