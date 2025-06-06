@@ -16,7 +16,7 @@ const cleanupVideoDetector = initializeVideoDetector();
  
 // Initialize UI Manager immediately when content script loads
 const uiManagerInstance = UIManager.create({
-    enableLogging: true,
+    enableLogging: false,
     logPrefix: 'PauseShop UI'
 }, {}, {});
  

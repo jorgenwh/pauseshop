@@ -40,7 +40,7 @@ interface ScreenshotResponse {
 
 const defaultConfig: ScreenshotConfig = {
     targetWidth: 640,
-    enableLogging: true,
+    enableLogging: false,
     logPrefix: 'PauseShop Screenshot',
     debugMode: true,
     serverUrl: 'http://localhost:3000'

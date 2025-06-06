@@ -146,6 +146,7 @@ export interface SidebarEvents {
     onContentStateChange?: (state: SidebarContentState) => void;
     onProductClick?: (product: AmazonScrapedProduct) => void;
     onError?: (error: Error) => void;
+    onRetry?: () => void; // Added for retry button in error/no products state
 }
 
 // Message types for communication with the background script

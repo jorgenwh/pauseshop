@@ -16,11 +16,9 @@ chrome.runtime.onConnect.addListener((port) => {
         if (port.sender?.tab?.id) {
             const tabId = port.sender.tab.id;
             activePorts.set(tabId, port);
-            console.log(`[Service Worker] Content script connected from tab ${tabId}`);
  
             port.onDisconnect.addListener(() => {
                 activePorts.delete(tabId);
-                console.log(`[Service Worker] Content script disconnected from tab ${tabId}`);
             });
         }
     }
