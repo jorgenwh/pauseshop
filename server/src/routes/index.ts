@@ -4,14 +4,14 @@
 
 import { Router } from 'express';
 import { healthCheckHandler } from './health';
-import { analyzeImageHandler } from './analyze';
+import { analyzeImageStreamingHandler } from './analyze';
 
 const router = Router();
 
 // Health check endpoint
 router.get('/health', healthCheckHandler);
 
-// Image analysis endpoint
-router.post('/analyze', analyzeImageHandler);
+// Streaming image analysis endpoint (only endpoint available)
+router.post('/analyze/stream', analyzeImageStreamingHandler);
 
 export default router;

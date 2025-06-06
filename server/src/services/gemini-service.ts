@@ -1,22 +1,19 @@
 /**
  * Gemini Service
- * Handles image analysis using Google's Gemini API
+ * Handles streaming image analysis using Google's Gemini API
  */
 
 import { GoogleGenAI } from '@google/genai';
 import {
     GeminiConfig,
-    GeminiResponse,
     AnalysisService,
-    Product,
-    GeminiProductResponse
+    StreamingCallbacks
 } from '../types/analyze';
 import {
     loadPrompt,
-    extractJSONFromResponse,
-    validateAndSanitizeProducts,
     handleAPIError
 } from './analysis-utils';
+import { DefaultPartialProductParser } from './partial-product-parser';
 
 export class GeminiService implements AnalysisService {
     private client: GoogleGenAI;
@@ -27,17 +24,18 @@ export class GeminiService implements AnalysisService {
         this.client = new GoogleGenAI({ apiKey: config.apiKey });
     }
 
-    /**
-     * Analyze image using Gemini API
-     */
-    async analyzeImage(imageData: string): Promise<GeminiResponse> {
+    supportsStreaming(): boolean {
+        return true;
+    }
+
+    async analyzeImageStreaming(imageData: string, callbacks: StreamingCallbacks): Promise<void> {
         try {
             const prompt = await loadPrompt();
+            const parser = new DefaultPartialProductParser();
 
-            console.log('[GEMINI_SERVICE] Sending image to Gemini API...');
             const startTime = Date.now();
-
-            console.log("[GEMINI_SERVICE] Using prompt:", prompt);
+            let firstTokenTime: number | null = null;
+            let lastTokenTime: number | null = null;
 
             const requestBody: any = {
                 model: this.config.model,
@@ -66,56 +64,50 @@ export class GeminiService implements AnalysisService {
                 };
             }
 
-            const response = await this.client.models.generateContent(requestBody);
+            const streamResult = await this.client.models.generateContentStream(requestBody);
 
-            const content = response.text;
+            let fullContent = '';
+            let lastChunk: any = null;
+            for await (const chunk of streamResult) { // Iterate directly over streamResult
+                lastChunk = chunk;
+                const chunkText = chunk.text;
+                if (chunkText) {
+                    // Track first and last token times
+                    if (firstTokenTime === null) {
+                        firstTokenTime = Date.now();
+                    }
+                    lastTokenTime = Date.now();
+                    
+                    fullContent += chunkText;
+                    const products = parser.parse(chunkText);
+                    products.forEach(product => callbacks.onProduct(product));
+                }
+            }
 
             const processingTime = Date.now() - startTime;
+            const streamingDuration = firstTokenTime && lastTokenTime ? lastTokenTime - firstTokenTime : 0;
 
-            const promptCost = (response.usageMetadata?.promptTokenCount || 0) * this.config.promptCostPerToken;
-            const completionCost = (response.usageMetadata?.candidatesTokenCount || 0) * this.config.completionCostPerToken;
+            // Usage metadata is available on the last chunk
+            const usageMetadata = lastChunk?.usageMetadata;
+            const promptCost = (usageMetadata?.promptTokenCount || 0) * this.config.promptCostPerToken;
+            const completionCost = (usageMetadata?.candidatesTokenCount || 0) * this.config.completionCostPerToken;
             const totalCost = promptCost + completionCost;
-            console.log(`[GEMINI_SERVICE] LLM Analysis completed in ${processingTime}ms. Tokens: [${response.usageMetadata?.promptTokenCount}/${response.usageMetadata?.candidatesTokenCount}/${response.usageMetadata?.totalTokenCount}]. Cost: $${totalCost.toFixed(6)}`);
+            console.log(`[GEMINI_SERVICE] LLM Streaming Analysis completed in ${processingTime}ms (streaming duration: ${streamingDuration}ms). Tokens: [${usageMetadata?.promptTokenCount}/${usageMetadata?.candidatesTokenCount}/${usageMetadata?.totalTokenCount}]. Cost: $${totalCost.toFixed(6)}`);
 
-            return {
-                content: content || '',
-                usage: response.usageMetadata ? {
-                    promptTokens: response.usageMetadata.promptTokenCount || 0,
-                    completionTokens: response.usageMetadata.candidatesTokenCount || 0,
-                    totalTokens: response.usageMetadata.totalTokenCount || 0,
-                    thoughtsTokenCount: response.usageMetadata.thoughtsTokenCount,
-                    candidatesTokenCount: response.usageMetadata.candidatesTokenCount,
+            callbacks.onComplete({
+                content: fullContent,
+                usage: usageMetadata ? {
+                    promptTokens: usageMetadata.promptTokenCount || 0,
+                    completionTokens: usageMetadata.candidatesTokenCount || 0,
+                    totalTokens: usageMetadata.totalTokenCount || 0,
+                    thoughtsTokenCount: usageMetadata.thoughtsTokenCount,
+                    candidatesTokenCount: usageMetadata.candidatesTokenCount,
                 } : undefined,
-            };
+            });
 
         } catch (error) {
-            console.error('[GEMINI_SERVICE] Error during image analysis:', error);
-            handleAPIError(error, 'GEMINI');
-        }
-    }
-
-    /**
-     * Parse Gemini response into products array
-     */
-    parseResponseToProducts(response: string): Product[] {
-        try {
-            console.log('[GEMINI_SERVICE] Raw Gemini response:', response);
-
-            // Clean the response - remove any non-JSON content
-            const cleanedResponse = extractJSONFromResponse(response);
-
-            // Parse JSON
-            const parsedResponse: GeminiProductResponse = JSON.parse(cleanedResponse);
-
-            // Validate and sanitize products
-            const validatedProducts = validateAndSanitizeProducts(parsedResponse.products || []);
-
-            return validatedProducts;
-
-        } catch (error) {
-            console.error('[GEMINI_SERVICE] Error parsing response:', error);
-            console.log('[GEMINI_SERVICE] Response that failed to parse:', response.substring(0, 200));
-            return [];
+            console.error('[GEMINI_SERVICE] Error during streaming image analysis:', error);
+            callbacks.onError(handleAPIError(error, 'GEMINI'));
         }
     }
 }

@@ -67,7 +67,7 @@ const createApp = (): express.Application => {
             'http://127.0.0.1:3000'
         ],
         methods: ['GET', 'POST', 'OPTIONS'],
-        allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+        allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Cache-Control'],
         credentials: false
     }));
 

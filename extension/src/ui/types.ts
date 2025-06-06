@@ -3,6 +3,7 @@
  */
 
 import { AmazonScrapedProduct, ProductCategory } from '../types/amazon';
+import { Product } from '../background/api-client'; // Import Product
 import { ProductCard } from './components/product-card';
 
 export enum LoadingState {
@@ -129,7 +130,7 @@ export interface AmazonProductGridConfig {
     showRatings: boolean;
 }
 
-export interface NoProductsStateConfig {
+export interface MessageStateConfig {
     title: string;
     message: string;
     iconType: 'search' | 'empty' | 'error';
@@ -145,10 +146,40 @@ export interface SidebarEvents {
     onContentStateChange?: (state: SidebarContentState) => void;
     onProductClick?: (product: AmazonScrapedProduct) => void;
     onError?: (error: Error) => void;
+    onRetry?: () => void; // Added for retry button in error/no products state
 }
 
-// Forward declarations for new components
+// Message types for communication with the background script
+export interface AnalysisStartedMessage {
+    type: 'analysis_started';
+    pauseId?: string;
+}
 
+export interface ProductGroupUpdateMessage {
+    type: 'product_group_update';
+    originalProduct: Product;
+    scrapedProducts: AmazonScrapedProduct[];
+    pauseId?: string;
+}
+
+export interface AnalysisCompleteMessage {
+    type: 'analysis_complete';
+    pauseId?: string;
+}
+
+export interface AnalysisErrorMessage {
+    type: 'analysis_error';
+    error: string;
+    pauseId?: string;
+}
+
+export type BackgroundMessage =
+    | AnalysisStartedMessage
+    | ProductGroupUpdateMessage
+    | AnalysisCompleteMessage
+    | AnalysisErrorMessage;
+
+// Forward declarations for new components
 export interface Sidebar {
     show(): Promise<void>;
     hide(): Promise<void>;
@@ -157,8 +188,10 @@ export interface Sidebar {
     setContentState(state: SidebarContentState): void;
     showProducts(products: ProductDisplayData[]): Promise<void>;
     showLoading(config?: LoadingStateConfig): void;
-    showNoProducts(config?: NoProductsStateConfig): void;
+    showNoProducts(config?: MessageStateConfig): void;
     cleanup(): void;
+    addProduct(product: ProductDisplayData): Promise<void>; // Add addProduct method
+    hasProducts(): boolean; // Add hasProducts method
 }
 
 // Enhanced UI Manager configuration for sidebar
@@ -167,5 +200,5 @@ export interface SidebarUIConfig extends UIConfig {
     headerConfig: SidebarHeaderConfig;
     loadingConfig: LoadingStateConfig;
     productListConfig: ProductListConfig;
-    noProductsConfig: NoProductsStateConfig;
+    messageStateConfig: MessageStateConfig;
 }

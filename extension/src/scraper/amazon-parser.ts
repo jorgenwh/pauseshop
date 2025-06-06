@@ -24,10 +24,12 @@ const DEFAULT_PARSER_CONFIG: AmazonParserConfig = {
  * Extracts thumbnail image URL from HTML content using regex
  */
 const extractThumbnailUrlFromHtml = (htmlContent: string): string | null => {
-    // Primary pattern for Amazon's main image class
+    // Primary pattern for Amazon's main image class (updated for current structure)
     const primaryPatterns = [
         /<img[^>]*class="[^"]*s-image[^"]*"[^>]*src="([^"]+)"/i,
-        /<img[^>]*src="([^"]+)"[^>]*class="[^"]*s-image[^"]*"/i
+        /<img[^>]*src="([^"]+)"[^>]*class="[^"]*s-image[^"]*"/i,
+        // New pattern for current Amazon structure
+        /<img[^>]*class="s-image"[^>]*src="([^"]+)"/i
     ];
 
     for (const pattern of primaryPatterns) {
@@ -37,11 +39,13 @@ const extractThumbnailUrlFromHtml = (htmlContent: string): string | null => {
         }
     }
 
-    // Fallback patterns for different Amazon layouts
+    // Enhanced fallback patterns for different Amazon layouts
     const fallbackPatterns = [
-        /<img[^>]*data-image-latency[^>]*src="([^"]+)"/i,
+        /<img[^>]*data-image-latency="s-product-image"[^>]*src="([^"]+)"/i,
+        /<img[^>]*data-image-index="[^"]*"[^>]*src="([^"]+)"/i,
         /<img[^>]*src="([^"]*images-amazon[^"]+)"/i,
-        /<img[^>]*src="([^"]*ssl-images-amazon[^"]+)"/i
+        /<img[^>]*src="([^"]*ssl-images-amazon[^"]+)"/i,
+        /<img[^>]*src="([^"]*media-amazon[^"]+)"/i
     ];
 
     for (const pattern of fallbackPatterns) {
@@ -59,32 +63,48 @@ const extractThumbnailUrlFromHtml = (htmlContent: string): string | null => {
  */
 const extractProductUrlFromHtml = (htmlContent: string, baseUrl: string): string | null => {
     try {
-        // Primary patterns for Amazon's main product links
+        // Primary patterns for Amazon's main product links (updated for current structure)
         const primaryPatterns = [
+            // Pattern for links within h2 tags
             /<h2[^>]*>[\s\S]*?<a[^>]*href="([^"]+)"[^>]*>/i,
-            /<a[^>]*class="[^"]*a-link-normal[^"]*"[^>]*href="([^"]+)"/i
+            // Pattern for a-link-normal class links
+            /<a[^>]*class="[^"]*a-link-normal[^"]*"[^>]*href="([^"]+)"/i,
+            // New patterns for current Amazon structure
+            /<a[^>]*class="a-link-normal s-line-clamp-2 s-link-style a-text-normal"[^>]*href="([^"]+)"/i,
+            /<a[^>]*class="a-link-normal s-no-outline"[^>]*href="([^"]+)"/i
         ];
 
         for (const pattern of primaryPatterns) {
             const match = htmlContent.match(pattern);
             if (match && match[1]) {
-                const url = new URL(match[1], baseUrl).href;
+                let url = match[1];
+                // Handle relative URLs
+                if (url.startsWith('/')) {
+                    url = new URL(url, baseUrl).href;
+                }
                 if (isValidProductUrl(url)) {
                     return url;
                 }
             }
         }
 
-        // Fallback patterns for any Amazon product link
+        // Enhanced fallback patterns for any Amazon product link
         const fallbackPatterns = [
             /<a[^>]*href="([^"]*\/dp\/[^"]+)"/i,
-            /<a[^>]*href="([^"]*\/gp\/product\/[^"]+)"/i
+            /<a[^>]*href="([^"]*\/gp\/product\/[^"]+)"/i,
+            /<a[^>]*href="([^"]*\/sspa\/click[^"]*\/dp\/[^"]+)"/i,
+            // Pattern for sponsored product links
+            /<a[^>]*href="([^"]*\/sspa\/click[^"]+)"/i
         ];
 
         for (const pattern of fallbackPatterns) {
             const match = htmlContent.match(pattern);
             if (match && match[1]) {
-                const url = new URL(match[1], baseUrl).href;
+                let url = match[1];
+                // Handle relative URLs
+                if (url.startsWith('/')) {
+                    url = new URL(url, baseUrl).href;
+                }
                 if (isValidProductUrl(url)) {
                     return url;
                 }
@@ -112,12 +132,14 @@ const isValidImageUrl = (url: string): boolean => {
         return false;
     }
 
-    // Check if it contains image indicators
-    return url.includes('images-amazon') || 
+    // Check if it contains image indicators (updated for current Amazon structure)
+    return url.includes('images-amazon') ||
            url.includes('ssl-images-amazon') ||
-           url.includes('.jpg') || 
-           url.includes('.jpeg') || 
-           url.includes('.png') || 
+           url.includes('media-amazon') ||
+           url.includes('m.media-amazon') ||
+           url.includes('.jpg') ||
+           url.includes('.jpeg') ||
+           url.includes('.png') ||
            url.includes('.webp');
 };
 
@@ -129,8 +151,14 @@ const isValidProductUrl = (url: string): boolean => {
     
     try {
         const urlObj = new URL(url);
-        return urlObj.hostname.includes('amazon') && 
-               (url.includes('/dp/') || url.includes('/gp/product/'));
+        const isAmazonDomain = urlObj.hostname.includes('amazon');
+        
+        // Check for various Amazon product URL patterns
+        const hasProductPath = url.includes('/dp/') ||
+                              url.includes('/gp/product/') ||
+                              url.includes('/sspa/click'); // Sponsored product links
+        
+        return isAmazonDomain && hasProductPath;
     } catch {
         return false;
     }
@@ -212,30 +240,21 @@ const parseAmazonSearchHtml = (
         const processedAsins = new Set<string>(); // Track processed ASINs to avoid duplicates
         let position = 1;
         
-        // First try the more specific pattern for search results
-        const searchResultPattern = /<div[^>]*data-component-type="s-search-result"[^>]*data-asin="([^"]+)"[^>]*>([\s\S]*?)<\/div>/gi;
+        // Updated patterns to handle both old and new Amazon HTML structures
+        const searchResultPatterns = [
+            // New Amazon structure: data-asin comes BEFORE data-component-type
+            /<div[^>]*data-asin="([^"]+)"[^>]*data-component-type="s-search-result"[^>]*>([\s\S]*?)(?=<div[^>]*role="listitem"[^>]*data-asin=|$)/gi,
+            // Old Amazon structure: data-component-type comes BEFORE data-asin
+            /<div[^>]*data-component-type="s-search-result"[^>]*data-asin="([^"]+)"[^>]*>([\s\S]*?)(?=<div[^>]*data-component-type="s-search-result"|$)/gi
+        ];
+        
         let match;
         
-        while ((match = searchResultPattern.exec(htmlContent)) !== null && position <= config.maxProductsPerSearch) {
-            const asin = match[1];
-            const containerHtml = match[2];
-
-            if (!asin || !containerHtml || processedAsins.has(asin)) continue;
-
-            const productData = extractProductDataFromHtml(containerHtml, asin, position, baseUrl, config);
-
-            if (productData) {
-                scrapedProducts.push(productData);
-                processedAsins.add(asin);
-                position++;
-            }
-        }
-
-        // If we haven't found enough products, try the more general pattern
-        if (position <= config.maxProductsPerSearch) {
-            const generalPattern = /<div[^>]*data-asin="([^"]+)"[^>]*>([\s\S]*?)<\/div>/gi;
-
-            while ((match = generalPattern.exec(htmlContent)) !== null && position <= config.maxProductsPerSearch) {
+        // Try each pattern until we find products or exhaust all patterns
+        for (const pattern of searchResultPatterns) {
+            pattern.lastIndex = 0; // Reset regex state
+            
+            while ((match = pattern.exec(htmlContent)) !== null && position <= config.maxProductsPerSearch) {
                 const asin = match[1];
                 const containerHtml = match[2];
 
@@ -248,6 +267,41 @@ const parseAmazonSearchHtml = (
                     processedAsins.add(asin);
                     position++;
                 }
+            }
+            
+            // If we found products with this pattern, no need to try others
+            if (scrapedProducts.length > 0) break;
+        }
+
+        // If we still haven't found enough products, try more flexible patterns
+        if (position <= config.maxProductsPerSearch) {
+            const flexiblePatterns = [
+                // Pattern with role="listitem"
+                /<div[^>]*role="listitem"[^>]*data-asin="([^"]+)"[^>]*data-component-type="s-search-result"[^>]*>([\s\S]*?)(?=<div[^>]*role="listitem"|$)/gi,
+                // Very flexible pattern - any div with both attributes
+                /<div[^>]*data-asin="([^"]+)"[^>]*data-component-type="s-search-result"[^>]*>([\s\S]*?)(?=<div[^>]*data-asin=|$)/gi
+            ];
+            
+            for (const pattern of flexiblePatterns) {
+                pattern.lastIndex = 0; // Reset regex state
+                
+                while ((match = pattern.exec(htmlContent)) !== null && position <= config.maxProductsPerSearch) {
+                    const asin = match[1];
+                    const containerHtml = match[2];
+
+                    if (!asin || !containerHtml || processedAsins.has(asin)) continue;
+
+                    const productData = extractProductDataFromHtml(containerHtml, asin, position, baseUrl, config);
+
+                    if (productData) {
+                        scrapedProducts.push(productData);
+                        processedAsins.add(asin);
+                        position++;
+                    }
+                }
+                
+                // If we found products with this pattern, no need to try others
+                if (scrapedProducts.length > 0) break;
             }
         }
 
