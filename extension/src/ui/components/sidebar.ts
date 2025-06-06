@@ -189,13 +189,10 @@ export class Sidebar {
             return;
         }
 
-        // Hide all three potential content views
-        this.hideAllContentViews();
-
         // Show the view corresponding to the given state
         switch (state) {
             case 'loading':
-                this.showLoadingView();
+                this.showLoading(); // Use the public showLoading method
                 this.setContentState(SidebarContentState.LOADING);
                 break;
             case 'productList':
@@ -206,7 +203,7 @@ export class Sidebar {
                 this.setContentState(SidebarContentState.PRODUCTS);
                 break;
             case 'noProducts':
-                this.showNoProductsView();
+                this.showNoProducts(); // Use the public showNoProducts method
                 this.setContentState(SidebarContentState.NO_PRODUCTS);
                 break;
         }
@@ -216,31 +213,24 @@ export class Sidebar {
      * Hide all content views (loading, product list, no products)
      */
     private hideAllContentViews(): void {
-        // Hide loading element
-        if (this.loadingElement) {
-            this.loadingElement.style.display = 'none';
+        // Cleanup existing components
+        if (this.loadingComponent) {
+            this.loadingComponent.cleanup();
+            this.loadingComponent = null;
+        }
+        if (this.productListComponent) {
+            this.productListComponent.cleanup();
+            this.productListComponent = null;
+        }
+        if (this.messageComponent) {
+            this.messageComponent.cleanup();
+            this.messageComponent = null;
         }
 
-        // Hide product list element
-        if (this.productListComponent && this.productListComponent.getElement()) {
-            this.productListComponent.getElement()!.style.display = 'none';
+        // Clear DOM
+        if (this.contentContainer) {
+            this.contentContainer.innerHTML = '';
         }
-
-        // Hide no products element
-        if (this.noProductsElement) {
-            this.noProductsElement.style.display = 'none';
-        }
-    }
-
-    /**
-     * Show the loading view
-     */
-    private showLoadingView(): void {
-        if (!this.loadingElement) {
-            this.loadingElement = this.createLoadingElement();
-            this.contentContainer!.appendChild(this.loadingElement);
-        }
-        this.loadingElement.style.display = 'flex';
     }
 
     /**
@@ -271,49 +261,6 @@ export class Sidebar {
     }
 
     /**
-     * Show the no products view
-     */
-    private showNoProductsView(): void {
-        if (!this.noProductsElement) {
-            this.noProductsElement = this.createNoProductsElement();
-            this.contentContainer!.appendChild(this.noProductsElement);
-        }
-        this.noProductsElement.style.display = 'flex';
-    }
-
-    /**
-     * Create the loading element
-     */
-    private createLoadingElement(): HTMLElement {
-        const loadingDiv = document.createElement('div');
-        loadingDiv.className = 'flex flex-col items-center justify-center flex-grow p-8 text-center';
-        loadingDiv.innerHTML = `
-            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mb-4"></div>
-            <p class="text-slate-300 text-sm mb-2">Loading...</p>
-            <p class="text-slate-400 text-xs">Analyzing your paused scene.</p>
-        `;
-        return loadingDiv;
-    }
-
-    /**
-     * Create the no products element
-     */
-    private createNoProductsElement(): HTMLElement {
-        const noProductsDiv = document.createElement('div');
-        noProductsDiv.className = 'flex flex-col items-center justify-center flex-grow p-8 text-center';
-        noProductsDiv.innerHTML = `
-            <div class="w-12 h-12 mb-4 text-slate-400">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                </svg>
-            </div>
-            <p class="text-slate-300 text-sm mb-2">No products found.</p>
-            <p class="text-slate-400 text-xs">Try a different scene or ensure items are clearly visible.</p>
-        `;
-        return noProductsDiv;
-    }
-
-    /**
      * Set content state and update display
      */
     public setContentState(state: SidebarContentState): void {
@@ -329,8 +276,7 @@ export class Sidebar {
      * Show loading state
      */
     public showLoading(config?: LoadingStateConfig): void {
-        this.setContentState(SidebarContentState.LOADING);
-        this.clearContent();
+        this.clearContent(); // Clear existing content before showing new loading state
 
         if (!this.loadingComponent) {
             this.loadingComponent = new LoadingState(config || {
@@ -338,10 +284,17 @@ export class Sidebar {
                 subMessage: 'Analyzing your paused scene.',
                 spinnerSize: 'initial'
             });
+        } else {
+            // Update existing loading component if it already exists
+            this.loadingComponent.updateMessage(
+                config?.message || 'Processing...',
+                config?.subMessage || 'Analyzing your paused scene.'
+            );
         }
 
         const loadingElement = this.loadingComponent.create();
         this.contentContainer?.appendChild(loadingElement);
+        this.loadingComponent.show(); // Animate the loading state in
     }
 
     /**
@@ -374,13 +327,27 @@ export class Sidebar {
      * Add a single product to the sidebar's product list (for streaming)
      */
     public async addProduct(product: ProductDisplayData): Promise<void> {
-        // Ensure the product list view is active and other views are hidden
-        this.setState('productList');
-        
-        // Wait for product list component to be ready if it was just created
-        if (this.productListComponent) {
-            await this.productListComponent.addProduct(product);
+        // If we are currently showing loading or no products, clear it and transition to product list
+        if (this.currentContentState !== SidebarContentState.PRODUCTS) {
+            this.clearContent(); // Clear loading/no products state
+            this.setContentState(SidebarContentState.PRODUCTS);
         }
+
+        if (!this.productListComponent) {
+            // Create product list component if it doesn't exist
+            this.productListComponent = new ProductList({
+                maxHeight: 'calc(100vh - 200px)',
+                enableVirtualScrolling: false,
+                itemSpacing: 14
+            }, {
+                onProductClick: (product) => this.events.onProductClick?.(product)
+            });
+            const element = await this.productListComponent.create();
+            this.contentContainer?.appendChild(element);
+            await this.productListComponent.show();
+        }
+        
+        await this.productListComponent.addProduct(product);
     }
 
     /**

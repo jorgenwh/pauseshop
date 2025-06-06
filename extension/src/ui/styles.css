@@ -179,3 +179,17 @@
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
 }
+
+/* Spinner animation */
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.pauseshop-spinner {
+    animation: spin 1s linear infinite;
+}

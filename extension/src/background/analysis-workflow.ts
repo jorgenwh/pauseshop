@@ -54,6 +54,15 @@ export const handleScreenshotAnalysis = async (config: ScreenshotConfig, windowI
             const pendingOperations: Promise<void>[] = [];
             
             try {
+                // Notify UI that analysis has started
+                const tabId = (await chrome.tabs.query({ active: true, currentWindow: true }))[0]?.id;
+                if (tabId) {
+                    chrome.tabs.sendMessage(tabId, {
+                        type: 'analysis_started',
+                        pauseId: pauseId
+                    }).catch(e => log(config, `Error sending analysis_started to tab ${tabId}: ${e.message}`));
+                }
+
                 await analyzeImageStreaming(
                     imageData,
                     {
