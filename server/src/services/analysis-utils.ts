@@ -21,7 +21,7 @@ export async function loadPrompt(): Promise<string> {
     try {
         const promptPath = resolve(
             __dirname,
-            "../prompts/product-analysis.txt",
+            "../prompts/product-analysis-v2.txt",
         );
         const promptContent = await fs.readFile(promptPath, "utf-8");
         promptCache = promptContent.trim();
