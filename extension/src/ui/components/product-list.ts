@@ -66,11 +66,13 @@ export class ProductList {
             return;
         }
 
+        // Calculate the correct index BEFORE creating the card
+        const cardIndex = this.productCards.length;
 
         const productCard = new ProductCard({
             product: product,
             isExpanded: false,
-            onToggleExpansion: (card: ProductCard) => this.handleCardExpansion(card, this.productCards.length),
+            onToggleExpansion: (card: ProductCard) => this.handleCardExpansion(card, cardIndex),
             onAmazonProductClick: (amazonProduct: AmazonScrapedProduct) => this.events.onProductClick?.(amazonProduct),
             animations: {
                 expansionDuration: 400,
@@ -82,7 +84,6 @@ export class ProductList {
         cardsContainer.appendChild(cardElement);
         this.productCards.push(productCard);
 
-
         // Animate the new card in
         await this.animateCardIn(productCard, 0); // Animate immediately
     }
@@ -91,6 +92,11 @@ export class ProductList {
      * Handle card expansion - collapse others when one expands
      */
     private async handleCardExpansion(expandingCard: ProductCard, cardIndex: number): Promise<void> {
+        // Validate card index
+        if (cardIndex >= this.productCards.length || cardIndex < 0) {
+            return;
+        }
+        
         // If this card is already expanded, just toggle it
         if (this.expandedCardIndex === cardIndex) {
             await expandingCard.toggleExpansion();
