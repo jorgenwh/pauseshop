@@ -46,9 +46,13 @@ const defaultConfig: ScreenshotConfig = {
     serverUrl: 'http://localhost:3000'
 };
 
-// Global UI manager instance
-let uiManager: UIManager | null = null;
-
+// Global UI manager instance (will be set externally)
+export let uiManager: UIManager | null = null;
+ 
+export const setUIManager = (manager: UIManager): void => {
+    uiManager = manager;
+};
+ 
 const log = (config: ScreenshotConfig, message: string): void => {
     if (config.enableLogging) {
         console.log(`${config.logPrefix}: ${message}`);
@@ -89,18 +93,7 @@ const extractProductDisplayData = (amazonResults: AmazonScrapedBatch): ProductDi
     return displayData;
 };
 
-/**
- * Initialize UI manager if not already created
- */
-const ensureUIManager = (): UIManager | null => {
-    if (!uiManager) {
-        uiManager = UIManager.create({
-            enableLogging: true,
-            logPrefix: 'PauseShop UI'
-        }, {}, {});
-    }
-    return uiManager;
-};
+// Removed ensureUIManager as UIManager will be provided externally
 
 /**
  * Captures a screenshot by communicating with the background service worker
@@ -118,18 +111,19 @@ export const captureScreenshot = async (
     if (pauseId) {
         fullConfig.pauseId = pauseId;
     }
-
-    // Initialize and show UI immediately
-    const ui = ensureUIManager();
-    if (ui) {
-        await ui.showLoadingSquare();
+ 
+    // Use the externally provided UI manager
+    if (!uiManager) {
+        log(fullConfig, 'Error: UIManager not set in screenshot-capturer.ts');
+        return;
     }
+ 
+    // Show UI immediately
+    await uiManager.showLoadingSquare();
     
     try {
         // Update UI state to processing
-        if (ui) {
-            ui.updateLoadingState(LoadingState.PROCESSING);
-        }
+        uiManager.updateLoadingState(LoadingState.PROCESSING);
 
         const message: ScreenshotMessage = {
             action: 'captureScreenshot',
@@ -146,9 +140,9 @@ export const captureScreenshot = async (
                 const { products, metadata } = response.analysisResult;
                 log(fullConfig, `Analysis complete: ${products.length} products detected in ${metadata.processingTime}ms`);
             }
-
+ 
             // Check if we have Amazon scraping results to show product grid
-            if (response.amazonScrapedResults && ui) {
+            if (response.amazonScrapedResults && uiManager) {
                 const currentActivePauseId = getCurrentPauseId ? getCurrentPauseId() : null;
                 
                 if (response.pauseId && currentActivePauseId && response.pauseId === currentActivePauseId) {
@@ -156,24 +150,20 @@ export const captureScreenshot = async (
                     const productDisplayData = extractProductDisplayData(amazonResults);
     
                     if (productDisplayData.length > 0) {
-                        await ui.showProductGrid(productDisplayData);
+                        await uiManager.showProductGrid(productDisplayData);
                     } else {
                         log(fullConfig, 'No products found, showing temporary message');
-                        await ui.showNoProductsFound(); // Will auto-hide after 3 seconds
+                        await uiManager.showNoProductsFound(); // Will auto-hide after 3 seconds
                     }
                 } else {
                     log(fullConfig, `Ignoring product display for pauseId ${response.pauseId || 'N/A'} as it's not the current active pauseId (${currentActivePauseId || 'N/A'})`);
                     // Hide UI if this was the only pending action for this pauseId
-                    if (ui) {
-                        await ui.hideLoadingSquare();
-                    }
+                    await uiManager.hideLoadingSquare();
                 }
             } else {
                 // No scraping results available or no UI manager
                 log(fullConfig, 'No scraping results available or UI not initialized, showing no products message');
-                if (ui) {
-                    await ui.showNoProductsFound();
-                }
+                // Removed uiManager.showNoProductsFound() as it was causing premature hiding
                 
                 if (response.amazonScrapedResults) {
                     const { metadata } = response.amazonScrapedResults;
@@ -182,11 +172,9 @@ export const captureScreenshot = async (
             }
         } else {
             log(fullConfig, `Screenshot capture failed: ${response.error || 'Unknown error'}`);
-
+ 
             // Hide UI on error
-            if (ui) {
-                await ui.hideLoadingSquare();
-            }
+            await uiManager.hideLoadingSquare();
         }
     } catch (error) {
         if (error instanceof Error) {
@@ -194,11 +182,9 @@ export const captureScreenshot = async (
         } else {
             log(fullConfig, 'Unknown error during screenshot capture');
         }
-
+ 
         // Hide UI on error
-        if (ui) {
-            await ui.hideLoadingSquare();
-        }
+        await uiManager.hideLoadingSquare();
     }
 };
 
