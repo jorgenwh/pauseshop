@@ -15,15 +15,15 @@ module.exports = {
           'primary': '#4F46E5',      // indigo-600
           'secondary': '#6366F1',    // indigo-500
           'accent': '#EC4899',       // pink-500
-          'glass': 'rgba(20, 30, 50, 0.9)',  // Custom dark blue
-          'glass-light': 'rgba(70, 90, 120, 0.9)', // Custom medium-dark blue
-          'glass-lighter': 'rgba(120, 140, 170, 0.85)', // Custom lighter blue
+          'glass': 'rgba(20, 30, 50, 0.7)',  // Slightly less transparent
+          'glass-light': 'rgba(70, 90, 120, 0.7)', // Slightly less transparent
+          'glass-lighter': 'rgba(120, 140, 170, 0.65)', // Slightly less transparent
           'product-name-text': 'rgb(255, 140, 0)', // Orange
           'category-text': 'rgb(255, 193, 7)', // Amber/Yellow
         }
       },
       backdropBlur: {
-        'pauseshop': '7px' // Changed from 5px to 7px for less transparency
+        'pauseshop': '10px' // Increased blur
       },
       boxShadow: {
         'pauseshop': '-10px 0 30px rgba(0, 0, 0, 0.5)',

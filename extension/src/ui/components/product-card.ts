@@ -251,7 +251,11 @@ export class ProductCard {
      * Get product title
      */
     private getProductTitle(): string {
-        return this.config.product.name || this.config.product.fallbackText || 'Product';
+        const title = this.config.product.name || this.config.product.fallbackText || 'Product';
+        if (title.length > 25) {
+            return title.substring(0, 22) + '...';
+        }
+        return title;
     }
 
     /**
