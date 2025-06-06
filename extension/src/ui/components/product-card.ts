@@ -74,7 +74,7 @@ export class ProductCard {
         const category = document.createElement("p");
         category.className = "text-2xl";
         category.style.color = "var(--pauseshop-category-text)";
-        category.textContent = `Spotted: ${this.getCategoryDisplayName()}`;
+        category.textContent = `Category: ${this.getCategoryDisplayName()}`;
         textInfo.appendChild(category);
 
         productInfo.appendChild(textInfo);
@@ -141,8 +141,17 @@ export class ProductCard {
         // Create header for Amazon products
         const amazonHeader = document.createElement("h4");
         amazonHeader.className = "text-xl font-semibold my-3 ml-1";
-        amazonHeader.style.color = "rgb(255, 153, 0)";
-        amazonHeader.textContent = "Shop similar on Amazon:";
+        // Create span for "Shop similar on"
+        const shopSimilarSpan = document.createElement("span");
+        shopSimilarSpan.textContent = "Shop similar on ";
+        shopSimilarSpan.style.color = "var(--pauseshop-product-name-text)";
+        amazonHeader.appendChild(shopSimilarSpan);
+
+        // Create span for "Amazon"
+        const amazonSpan = document.createElement("span");
+        amazonSpan.textContent = "Amazon";
+        amazonSpan.style.color = "rgb(255, 153, 0)"; // Keep original Amazon color
+        amazonHeader.appendChild(amazonSpan);
         this.expansionElement.appendChild(amazonHeader);
 
         // Create Amazon product grid

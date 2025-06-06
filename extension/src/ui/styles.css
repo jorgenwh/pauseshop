@@ -43,7 +43,6 @@
         255,
         0.05
     ); /* Subtle background for the card */
-    border: 1px solid rgba(255, 255, 255, 0.1); /* Border for the card */
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2); /* Subtle shadow */
 }
 
@@ -72,7 +71,6 @@
     ); /* Example glassmorphic background */
     backdrop-filter: blur(7px); /* Glassmorphic blur */
     -webkit-backdrop-filter: blur(7px); /* Safari support */
-    border-left: 1px solid rgba(255, 255, 255, 0.2); /* Glassmorphic border */
     box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1); /* Subtle shadow */
     z-index: 9999999; /* Ensure it's on top */
     display: flex;

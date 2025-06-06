@@ -46,7 +46,7 @@ export class AmazonProductGrid {
         item.href = product.productUrl;
         item.target = "_blank";
         item.className =
-            "pauseshop-amazon-item group block rounded-lg transition-colors duration-200"; // Use new CSS class for item
+            "pauseshop-amazon-item group block rounded-lg transition-colors duration-200";
 
         // Add click handler
         item.addEventListener("click", (e) => {
