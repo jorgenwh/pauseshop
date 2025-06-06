@@ -480,7 +480,7 @@ export class Sidebar {
         const footer = document.createElement('div');
         footer.className = 'mt-auto pt-3 text-center border-t border-slate-600/80';
         footer.innerHTML = `
-            <p class="text-xs text-slate-400">Powered by PauseShop AI</p>
+            <p class="text-2xl text-slate-400">Powered by PauseShop AI</p>
         `;
         this.element?.appendChild(footer);
     }

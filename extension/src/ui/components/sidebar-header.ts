@@ -26,7 +26,7 @@ export class SidebarHeader {
 
         // Create title section with logo
         const titleSection = document.createElement('div');
-        titleSection.className = 'flex items-center space-x-2.5';
+        titleSection.className = 'flex items-center space-x-2.5 ml-[10px]';
         
         // Create logo icon
         const logoIcon = document.createElement('div');
@@ -59,7 +59,7 @@ export class SidebarHeader {
      */
     private createCloseButton(): HTMLElement {
         const closeButton = document.createElement('button');
-        closeButton.className = 'w-14 h-14 flex items-center justify-center bg-transparent hover:bg-white/10 rounded-full transition-colors duration-200';
+        closeButton.className = 'w-14 h-14 flex items-center justify-center bg-transparent hover:bg-white/10 rounded-full transition-colors duration-200 mr-[20px]';
         closeButton.setAttribute('aria-label', 'Close sidebar');
         closeButton.style.border = 'none';
         closeButton.style.outline = 'none';
