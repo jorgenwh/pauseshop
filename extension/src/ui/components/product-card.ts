@@ -66,7 +66,7 @@ export class ProductCard {
         textInfo.className = "min-w-0";
 
         const title = document.createElement("h3");
-        title.className = "font-semibold text-3xl";
+        title.className = "font-semibold text-2-and-half-xl";
         title.style.color = "var(--pauseshop-product-name-text)";
         title.textContent = this.getProductTitle();
         textInfo.appendChild(title);
@@ -293,7 +293,7 @@ export class ProductCard {
             this.config.product.fallbackText ||
             "Product";
         if (title.length > 25) {
-            return title.substring(0, 20) + "...";
+            return title.substring(0, 25) + "...";
         }
         return title;
     }
