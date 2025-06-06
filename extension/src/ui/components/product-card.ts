@@ -63,7 +63,7 @@ export class ProductCard {
         textInfo.className = 'min-w-0';
 
         const title = document.createElement('h3');
-        title.className = 'font-semibold text-3xl truncate';
+        title.className = 'font-semibold text-3xl';
         title.style.color = 'var(--pauseshop-product-name-text)';
         title.textContent = this.getProductTitle();
         textInfo.appendChild(title);
@@ -134,7 +134,8 @@ export class ProductCard {
 
         // Create header for Amazon products
         const amazonHeader = document.createElement('h4');
-        amazonHeader.className = 'text-lg font-semibold text-indigo-300 my-3 ml-1';
+        amazonHeader.className = 'text-xl font-semibold my-3 ml-1';
+        amazonHeader.style.color = 'rgb(255, 153, 0)';
         amazonHeader.textContent = 'Shop similar on Amazon:';
         this.expansionElement.appendChild(amazonHeader);
 
