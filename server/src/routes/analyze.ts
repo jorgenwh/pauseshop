@@ -81,7 +81,6 @@ export const analyzeImageStreamingHandler = async (req: Request, res: Response):
                 const processingTime = Date.now() - startTime;
                 res.write(`event: complete\ndata: ${JSON.stringify({ totalProducts: 0, processingTime, usage: response.usage })}\n\n`); // totalProducts will be calculated on frontend
                 res.end();
-                console.log(`[ANALYZE_STREAM] Successfully completed streaming analysis in ${processingTime}ms`);
             },
             onError: (error: Error) => {
                 console.error('[ANALYZE_STREAM] Error during streaming analysis:', error);

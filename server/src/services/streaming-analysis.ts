@@ -22,19 +22,9 @@ export class StreamingAnalysisService {
             await this.provider.analyzeImageStreaming(imageData, {
                 onProduct: (product: Product) => {
                     const timestamp = new Date().toISOString();
-                    console.info(`[${timestamp}] Product found and streamed to frontend:`, {
-                        name: product.name,
-                        brand: product.brand,
-                        category: product.category,
-                        primaryColor: product.primaryColor,
-                        searchTerms: product.searchTerms,
-                        targetGender: product.targetGender,
-                        features: product.features.slice(0, 3) // Log first 3 features to avoid clutter
-                    });
-                    
+                    console.info(`[${timestamp}] Product found: ${product.name}`);
                     products.push(product);
                     callbacks.onProduct(product);
-                    // Optional: callbacks.onProgress?.({ processed: products.length, estimated: -1 });
                 },
                 onComplete: (response: GeminiResponse | OpenAIResponse | RequestyResponse | OpenRouterResponse) => {
                     callbacks.onComplete(response);
