@@ -7,6 +7,9 @@ module.exports = {
     ],
     theme: {
         extend: {
+            fontSize: {
+                "2-and-half-xl": "1.7rem", // Custom size between 2xl (1.5rem) and 3xl (1.875rem)
+            },
             fontFamily: {
                 inter: [
                     "Inter",

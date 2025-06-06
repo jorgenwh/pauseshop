@@ -150,9 +150,7 @@ export class ProductList {
     /**
      * Animate a single card in
      */
-    private async animateCardIn(
-        card: ProductCard,
-    ): Promise<void> {
+    private async animateCardIn(card: ProductCard): Promise<void> {
         const element = card.getElement();
         if (!element) {
             return Promise.resolve();
@@ -161,7 +159,10 @@ export class ProductList {
         return new Promise((resolve) => {
             const animation = element.animate(
                 [
-                    { opacity: "0", transform: "translateY(-20px) scale(0.95)" },
+                    {
+                        opacity: "0",
+                        transform: "translateY(-20px) scale(0.95)",
+                    },
                     { opacity: "1", transform: "translateY(0) scale(1)" },
                 ],
                 {
