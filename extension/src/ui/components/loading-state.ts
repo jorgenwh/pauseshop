@@ -3,7 +3,7 @@
  * Shows loading spinner and messages while analyzing content
  */
 
-import { LoadingStateConfig } from '../types';
+import { LoadingStateConfig } from "../types";
 
 export class LoadingState {
     private element: HTMLElement | null = null;
@@ -11,9 +11,9 @@ export class LoadingState {
 
     constructor(config: Partial<LoadingStateConfig>) {
         this.config = {
-            message: config.message || 'Finding products...',
-            subMessage: config.subMessage || 'Analyzing your paused scene.',
-            spinnerSize: config.spinnerSize || 'initial'
+            message: config.message || "Finding products...",
+            subMessage: config.subMessage || "Analyzing your paused scene.",
+            spinnerSize: config.spinnerSize || "initial",
         };
     }
 
@@ -25,23 +25,24 @@ export class LoadingState {
             return this.element;
         }
 
-        this.element = document.createElement('div');
-        this.element.className = 'flex flex-col items-center justify-center flex-grow text-center py-10 px-0';
+        this.element = document.createElement("div");
+        this.element.className =
+            "flex flex-col items-center justify-center flex-grow text-center py-10 px-0";
 
         // Create spinner
         const spinner = this.createSpinner();
         this.element.appendChild(spinner);
 
         // Create main message
-        const mainMessage = document.createElement('p');
-        mainMessage.className = 'text-4xl font-semibold text-slate-100 mb-2';
+        const mainMessage = document.createElement("p");
+        mainMessage.className = "text-4xl font-semibold text-slate-100 mb-2";
         mainMessage.textContent = this.config.message;
         this.element.appendChild(mainMessage);
 
         // Create sub message if provided
         if (this.config.subMessage) {
-            const subMessage = document.createElement('p');
-            subMessage.className = 'text-2xl text-slate-300';
+            const subMessage = document.createElement("p");
+            subMessage.className = "text-2xl text-slate-300";
             subMessage.textContent = this.config.subMessage;
             this.element.appendChild(subMessage);
         }
@@ -53,26 +54,26 @@ export class LoadingState {
      * Create spinner element based on size
      */
     private createSpinner(): HTMLElement {
-        const spinnerContainer = document.createElement('div');
-        spinnerContainer.className = 'mb-5';
+        const spinnerContainer = document.createElement("div");
+        spinnerContainer.className = "mb-5";
 
-        const spinner = document.createElement('div');
-        
+        const spinner = document.createElement("div");
+
         // Set size classes based on config
-        let sizeClasses = '';
+        let sizeClasses = "";
         switch (this.config.spinnerSize) {
-            case 'small':
-                sizeClasses = 'h-6 w-6';
+            case "small":
+                sizeClasses = "h-6 w-6";
                 break;
-            case 'large':
-                sizeClasses = 'h-12 w-12';
+            case "large":
+                sizeClasses = "h-12 w-12";
                 break;
-            case 'initial':
-                sizeClasses = 'h-20 w-20'; // Double the size for initial load
+            case "initial":
+                sizeClasses = "h-20 w-20"; // Double the size for initial load
                 break;
-            case 'medium':
+            case "medium":
             default:
-                sizeClasses = 'h-10 w-10';
+                sizeClasses = "h-10 w-10";
                 break;
         }
 
@@ -94,19 +95,19 @@ export class LoadingState {
     public updateMessage(message: string, subMessage?: string): void {
         if (!this.element) return;
 
-        const mainMessageEl = this.element.querySelector('p.text-4xl');
+        const mainMessageEl = this.element.querySelector("p.text-4xl");
         if (mainMessageEl) {
             mainMessageEl.textContent = message;
         }
 
-        const subMessageEl = this.element.querySelector('p.text-2xl');
+        const subMessageEl = this.element.querySelector("p.text-2xl");
         if (subMessage) {
             if (subMessageEl) {
                 subMessageEl.textContent = subMessage;
             } else {
                 // Create sub message if it doesn't exist
-                const newSubMessage = document.createElement('p');
-                newSubMessage.className = 'text-2xl text-slate-300';
+                const newSubMessage = document.createElement("p");
+                newSubMessage.className = "text-2xl text-slate-300";
                 newSubMessage.textContent = subMessage;
                 this.element.appendChild(newSubMessage);
             }
@@ -122,19 +123,20 @@ export class LoadingState {
     public async show(): Promise<void> {
         if (!this.element) return;
 
-        this.element.style.opacity = '0';
-        this.element.style.transform = 'translateY(10px)';
-        
+        this.element.style.opacity = "0";
+        this.element.style.transform = "translateY(10px)";
+
         // Trigger animation
         requestAnimationFrame(() => {
             if (this.element) {
-                this.element.style.transition = 'opacity 0.3s ease-in-out, transform 0.3s ease-in-out';
-                this.element.style.opacity = '1';
-                this.element.style.transform = 'translateY(0)';
+                this.element.style.transition =
+                    "opacity 0.3s ease-in-out, transform 0.3s ease-in-out";
+                this.element.style.opacity = "1";
+                this.element.style.transform = "translateY(0)";
             }
         });
 
-        return new Promise(resolve => {
+        return new Promise((resolve) => {
             setTimeout(resolve, 300);
         });
     }
@@ -145,11 +147,12 @@ export class LoadingState {
     public async hide(): Promise<void> {
         if (!this.element) return;
 
-        this.element.style.transition = 'opacity 0.3s ease-in-out, transform 0.3s ease-in-out';
-        this.element.style.opacity = '0';
-        this.element.style.transform = 'translateY(-10px)';
+        this.element.style.transition =
+            "opacity 0.3s ease-in-out, transform 0.3s ease-in-out";
+        this.element.style.opacity = "0";
+        this.element.style.transform = "translateY(-10px)";
 
-        return new Promise(resolve => {
+        return new Promise((resolve) => {
             setTimeout(resolve, 300);
         });
     }

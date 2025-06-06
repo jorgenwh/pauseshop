@@ -2,7 +2,7 @@
  * Logging utilities for the PauseShop background service worker
  */
 
-import type { ScreenshotConfig } from './types';
+import type { ScreenshotConfig } from "./types";
 
 /**
  * Logs a message if logging is enabled in the config
@@ -22,27 +22,32 @@ export const log = (config: ScreenshotConfig, message: string): void => {
  * @param message The message to log
  * @param context Optional context object to include in the log
  */
-export const logWithTimestamp = (config: ScreenshotConfig, level: 'info' | 'error' | 'warn', message: string, context?: unknown): void => {
+export const logWithTimestamp = (
+    config: ScreenshotConfig,
+    level: "info" | "error" | "warn",
+    message: string,
+    context?: unknown,
+): void => {
     if (config.enableLogging) {
         const timestamp = new Date().toISOString();
         const logMessage = `[${timestamp}] ${config.logPrefix}: ${message}`;
-        
+
         switch (level) {
-            case 'info':
+            case "info":
                 if (context) {
                     console.info(logMessage, context);
                 } else {
                     console.info(logMessage);
                 }
                 break;
-            case 'error':
+            case "error":
                 if (context) {
                     console.error(logMessage, context);
                 } else {
                     console.error(logMessage);
                 }
                 break;
-            case 'warn':
+            case "warn":
                 if (context) {
                     console.warn(logMessage, context);
                 } else {

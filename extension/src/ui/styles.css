@@ -3,8 +3,12 @@
 .pauseshop-expansion {
     display: block; /* Explicitly set display for transition */
     /* max-height, opacity, transform, and overflow are handled by base.css Tailwind classes */
-    transition: max-height 0.4s ease-in-out, opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
-    will-change: max-height, opacity, transform; /* Hint for browser optimization */
+    transition:
+        max-height 0.4s ease-in-out,
+        opacity 0.4s ease-in-out,
+        transform 0.4s ease-in-out;
+    will-change:
+        max-height, opacity, transform; /* Hint for browser optimization */
     /* Ensure this transition is applied and not overridden by a default Tailwind transition */
 }
 
@@ -33,7 +37,12 @@
     text-align: center;
     aspect-ratio: 1 / 1; /* Make items square */
     padding: 8px; /* Padding inside the square card */
-    background-color: rgba(255, 255, 255, 0.05); /* Subtle background for the card */
+    background-color: rgba(
+        255,
+        255,
+        255,
+        0.05
+    ); /* Subtle background for the card */
     border: 1px solid rgba(255, 255, 255, 0.1); /* Border for the card */
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2); /* Subtle shadow */
 }
@@ -55,7 +64,12 @@
     height: 100%;
     width: 380px;
     border-radius: 16px;
-    background-color: rgba(255, 255, 255, 0.1); /* Example glassmorphic background */
+    background-color: rgba(
+        255,
+        255,
+        255,
+        0.1
+    ); /* Example glassmorphic background */
     backdrop-filter: blur(7px); /* Glassmorphic blur */
     -webkit-backdrop-filter: blur(7px); /* Safari support */
     border-left: 1px solid rgba(255, 255, 255, 0.2); /* Glassmorphic border */
@@ -148,7 +162,9 @@
 
 /* Fallback styles for browsers with limited CSS support */
 .pauseshop-fallback {
-    transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+    transition:
+        transform 0.3s ease-out,
+        opacity 0.3s ease-out;
 }
 
 .pauseshop-fallback.show {

@@ -1,8 +1,8 @@
-import { Product, PartialProductParser } from '../types/analyze';
-import { validateAndSanitizeProducts } from './analysis-utils';
+import { Product, PartialProductParser } from "../types/analyze";
+import { validateAndSanitizeProducts } from "./analysis-utils";
 
 export class DefaultPartialProductParser implements PartialProductParser {
-    private buffer: string = '';
+    private buffer: string = "";
 
     parse(newContent: string): Product[] {
         this.buffer += newContent;
@@ -25,12 +25,22 @@ export class DefaultPartialProductParser implements PartialProductParser {
                 const parsed = JSON.parse(potentialJson);
 
                 // Check if it's a product or an array of products
-                if (parsed && typeof parsed === 'object' && 'name' in parsed && 'category' in parsed) {
+                if (
+                    parsed &&
+                    typeof parsed === "object" &&
+                    "name" in parsed &&
+                    "category" in parsed
+                ) {
                     extractedProducts.push(parsed as Product);
                     lastSuccessfulParseIndex = jsonObjectRegex.lastIndex;
                 } else if (Array.isArray(parsed)) {
-                    parsed.forEach(item => {
-                        if (item && typeof item === 'object' && 'name' in item && 'category' in item) {
+                    parsed.forEach((item) => {
+                        if (
+                            item &&
+                            typeof item === "object" &&
+                            "name" in item &&
+                            "category" in item
+                        ) {
                             extractedProducts.push(item as Product);
                         }
                     });

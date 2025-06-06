@@ -4,179 +4,186 @@
 @tailwind utilities;
 
 /* Inter font import */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
 
 /* Custom CSS variables for glassmorphic effects */
 :root {
-  --pauseshop-glass-bg: rgba(15, 23, 42, 0.8);
-  --pauseshop-glass-border: rgba(255, 255, 255, 0.2);
-  --pauseshop-glass-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
-  --pauseshop-backdrop-blur: blur(20px);
-  --pauseshop-primary: #4F46E5;
-  --pauseshop-secondary: #6366F1;
-  --pauseshop-accent: #EC4899;
-  --pauseshop-product-name-text: rgb(255, 140, 0);
-  --pauseshop-category-text: rgb(255, 193, 7);
+    --pauseshop-glass-bg: rgba(15, 23, 42, 0.8);
+    --pauseshop-glass-border: rgba(255, 255, 255, 0.2);
+    --pauseshop-glass-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
+    --pauseshop-backdrop-blur: blur(20px);
+    --pauseshop-primary: #4f46e5;
+    --pauseshop-secondary: #6366f1;
+    --pauseshop-accent: #ec4899;
+    --pauseshop-product-name-text: rgb(255, 140, 0);
+    --pauseshop-category-text: rgb(255, 193, 7);
 }
 
 /* Base glassmorphic component styles */
 @layer components {
-  .pauseshop-glass {
-    @apply bg-pauseshop-glass backdrop-blur-pauseshop;
-    border: 1px solid var(--pauseshop-glass-border);
-    box-shadow: var(--pauseshop-glass-shadow);
-  }
+    .pauseshop-glass {
+        @apply bg-pauseshop-glass backdrop-blur-pauseshop;
+        border: 1px solid var(--pauseshop-glass-border);
+        box-shadow: var(--pauseshop-glass-shadow);
+    }
 
-  .pauseshop-glass-light {
-    @apply bg-pauseshop-glass-light backdrop-blur-pauseshop;
-    border: 1px solid var(--pauseshop-glass-border);
-  }
+    .pauseshop-glass-light {
+        @apply bg-pauseshop-glass-light backdrop-blur-pauseshop;
+        border: 1px solid var(--pauseshop-glass-border);
+    }
 
-  .pauseshop-glass-lighter {
-    @apply bg-pauseshop-glass-lighter backdrop-blur-pauseshop;
-    border: 1px solid var(--pauseshop-glass-border);
-  }
+    .pauseshop-glass-lighter {
+        @apply bg-pauseshop-glass-lighter backdrop-blur-pauseshop;
+        border: 1px solid var(--pauseshop-glass-border);
+    }
 
-  /* Sidebar base styles */
-  .pauseshop-sidebar {
-    @apply fixed top-[32px] right-[20px] h-[calc(100%-92px)] w-[388px] text-slate-100 p-7 pr-2 transform translate-x-full transition-transform duration-500 ease-in-out flex flex-col pauseshop-glass;
-    border-radius: 48px;
-    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    z-index: 999999;
-  }
+    /* Sidebar base styles */
+    .pauseshop-sidebar {
+        @apply fixed top-[32px] right-[20px] h-[calc(100%-92px)] w-[388px] text-slate-100 p-7 pr-2 transform translate-x-full transition-transform duration-500 ease-in-out flex flex-col pauseshop-glass;
+        border-radius: 48px;
+        font-family:
+            "Inter",
+            system-ui,
+            -apple-system,
+            BlinkMacSystemFont,
+            "Segoe UI",
+            Roboto,
+            sans-serif;
+        z-index: 999999;
+    }
 
-  .pauseshop-sidebar.open {
-    @apply translate-x-0;
-  }
+    .pauseshop-sidebar.open {
+        @apply translate-x-0;
+    }
 
-  /* Product card styles */
-  .pauseshop-product-card {
-    @apply px-2 py-2 rounded-3xl shadow-pauseshop-card hover:shadow-pauseshop-hover transition-all duration-200 ease-in-out pauseshop-glass-light w-full;
-  }
+    /* Product card styles */
+    .pauseshop-product-card {
+        @apply px-2 py-2 rounded-3xl shadow-pauseshop-card hover:shadow-pauseshop-hover transition-all duration-200 ease-in-out pauseshop-glass-light w-full;
+    }
 
-  .pauseshop-product-card:hover {
-    @apply bg-pauseshop-glass-lighter;
-  }
+    .pauseshop-product-card:hover {
+        @apply bg-pauseshop-glass-lighter;
+    }
 
-  /* Amazon product item styles */
-  .pauseshop-amazon-item {
-    @apply block p-2 rounded-lg transition-colors duration-200 pauseshop-glass-lighter w-60 h-60 flex items-center justify-center border border-[var(--pauseshop-glass-border)];
-  }
+    /* Amazon product item styles */
+    .pauseshop-amazon-item {
+        @apply block p-2 rounded-lg transition-colors duration-200 pauseshop-glass-lighter w-60 h-60 flex items-center justify-center border border-[var(--pauseshop-glass-border)];
+    }
 
-  /* Amazon product image styles */
-  .pauseshop-amazon-item-image {
-    @apply max-w-full max-h-full object-contain;
-  }
+    /* Amazon product image styles */
+    .pauseshop-amazon-item-image {
+        @apply max-w-full max-h-full object-contain;
+    }
 
-  .pauseshop-amazon-item:hover {
-    @apply bg-slate-600/75;
-  }
+    .pauseshop-amazon-item:hover {
+        @apply bg-slate-600/75;
+    }
 
-  /* Loading spinner */
-  .pauseshop-spinner {
-    @apply animate-spin h-10 w-10 text-pauseshop-primary;
-  }
+    /* Loading spinner */
+    .pauseshop-spinner {
+        @apply animate-spin h-10 w-10 text-pauseshop-primary;
+    }
 
-  /* Chevron rotation animation */
-  .pauseshop-chevron {
-    @apply transition-transform duration-300 ease-in-out;
-  }
+    /* Chevron rotation animation */
+    .pauseshop-chevron {
+        @apply transition-transform duration-300 ease-in-out;
+    }
 
-  .pauseshop-chevron.open {
-    @apply rotate-180;
-  }
+    .pauseshop-chevron.open {
+        @apply rotate-180;
+    }
 
-  /* Expansion content */
-  .pauseshop-expansion {
-    @apply max-h-0 opacity-0 overflow-hidden; /* Keep max-h-0. Transition will be from styles.css */
-    transform: translateY(-10px);
-    /* transition-all duration-300 ease-in-out is removed, styles.css will handle transition */
-  }
+    /* Expansion content */
+    .pauseshop-expansion {
+        @apply max-h-0 opacity-0 overflow-hidden; /* Keep max-h-0. Transition will be from styles.css */
+        transform: translateY(-10px);
+        /* transition-all duration-300 ease-in-out is removed, styles.css will handle transition */
+    }
 
-  .pauseshop-expansion.open {
-    @apply opacity-100 max-h-200; /* Reverted to predefined max-height for testing */
-    transform: translateY(0);
-  }
+    .pauseshop-expansion.open {
+        @apply opacity-100 max-h-200; /* Reverted to predefined max-height for testing */
+        transform: translateY(0);
+    }
 
-  /* Custom scrollbar for sidebar */
-  .pauseshop-scrollbar {
-    scrollbar-width: thin;
-    scrollbar-color: var(--pauseshop-primary) rgba(30, 41, 59, 0.5);
-    scrollbar-gutter: stable both-edges; /* Add this line */
-    padding-right: 4px; /* Revert to original padding */
-  }
+    /* Custom scrollbar for sidebar */
+    .pauseshop-scrollbar {
+        scrollbar-width: thin;
+        scrollbar-color: var(--pauseshop-primary) rgba(30, 41, 59, 0.5);
+        scrollbar-gutter: stable both-edges; /* Add this line */
+        padding-right: 4px; /* Revert to original padding */
+    }
 
-  .pauseshop-scrollbar::-webkit-scrollbar {
-    @apply w-1;
-  }
+    .pauseshop-scrollbar::-webkit-scrollbar {
+        @apply w-1;
+    }
 
-  .pauseshop-scrollbar::-webkit-scrollbar-track {
-    @apply bg-slate-700/50 rounded-lg;
-  }
+    .pauseshop-scrollbar::-webkit-scrollbar-track {
+        @apply bg-slate-700/50 rounded-lg;
+    }
 
-  .pauseshop-scrollbar::-webkit-scrollbar-thumb {
-    @apply bg-pauseshop-primary rounded-lg border-2 border-slate-700/50;
-  }
+    .pauseshop-scrollbar::-webkit-scrollbar-thumb {
+        @apply bg-pauseshop-primary rounded-lg border-2 border-slate-700/50;
+    }
 
-  .pauseshop-scrollbar::-webkit-scrollbar-thumb:hover {
-    @apply bg-pauseshop-secondary;
-  }
+    .pauseshop-scrollbar::-webkit-scrollbar-thumb:hover {
+        @apply bg-pauseshop-secondary;
+    }
 }
 
 /* Utility classes for specific PauseShop needs */
 @layer utilities {
-  .pauseshop-z-index {
-    z-index: 999999;
-  }
-
-  .pauseshop-z-index-below {
-    z-index: 999998;
-  }
-
-  /* Prevent body scroll when sidebar is open */
-  .pauseshop-no-scroll {
-    overflow: hidden;
-  }
-
-  /* High DPI display optimizations */
-  @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-    .pauseshop-crisp {
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-    }
-  }
-
-  /* Accessibility - Respect user's motion preferences */
-  @media (prefers-reduced-motion: reduce) {
-    .pauseshop-reduce-motion {
-      animation-duration: 0.01ms !important;
-      animation-iteration-count: 1 !important;
-      transition-duration: 0.01ms !important;
+    .pauseshop-z-index {
+        z-index: 999999;
     }
 
-    .pauseshop-spinner {
-      @apply animate-none;
+    .pauseshop-z-index-below {
+        z-index: 999998;
     }
-  }
 
-  /* Dark mode adjustments */
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --pauseshop-glass-bg: rgba(15, 23, 42, 0.9);
-      --pauseshop-glass-border: rgba(255, 255, 255, 0.25);
+    /* Prevent body scroll when sidebar is open */
+    .pauseshop-no-scroll {
+        overflow: hidden;
     }
-  }
+
+    /* High DPI display optimizations */
+    @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+        .pauseshop-crisp {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+    }
+
+    /* Accessibility - Respect user's motion preferences */
+    @media (prefers-reduced-motion: reduce) {
+        .pauseshop-reduce-motion {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+        }
+
+        .pauseshop-spinner {
+            @apply animate-none;
+        }
+    }
+
+    /* Dark mode adjustments */
+    @media (prefers-color-scheme: dark) {
+        :root {
+            --pauseshop-glass-bg: rgba(15, 23, 42, 0.9);
+            --pauseshop-glass-border: rgba(255, 255, 255, 0.25);
+        }
+    }
 }
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
-  .pauseshop-sidebar {
-    @apply w-88; /* 352px on smaller screens */
-  }
+    .pauseshop-sidebar {
+        @apply w-88; /* 352px on smaller screens */
+    }
 }
 
 @media (max-width: 480px) {
-  .pauseshop-sidebar {
-    @apply w-full; /* Full width on mobile */
-  }
+    .pauseshop-sidebar {
+        @apply w-full; /* Full width on mobile */
+    }
 }

@@ -6,12 +6,12 @@
  * Format bytes to human readable string
  */
 export const formatBytes = (bytes: number): string => {
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    if (bytes === 0) return '0 Bytes';
-    
+    const sizes = ["Bytes", "KB", "MB", "GB"];
+    if (bytes === 0) return "0 Bytes";
+
     const i = Math.floor(Math.log(bytes) / Math.log(1024));
     const size = (bytes / Math.pow(1024, i)).toFixed(1);
-    
+
     return `${size} ${sizes[i]}`;
 };
 
@@ -29,7 +29,7 @@ export const getMemoryUsage = () => {
     const usage = process.memoryUsage();
     return {
         used: formatBytes(usage.heapUsed),
-        total: formatBytes(usage.heapTotal)
+        total: formatBytes(usage.heapTotal),
     };
 };
 
@@ -37,7 +37,7 @@ export const getMemoryUsage = () => {
  * Get environment name with fallback
  */
 export const getEnvironment = (): string => {
-    return process.env.NODE_ENV || 'development';
+    return process.env.NODE_ENV || "development";
 };
 
 /**
@@ -46,10 +46,10 @@ export const getEnvironment = (): string => {
 export const getVersion = (): string => {
     try {
         // eslint-disable-next-line @typescript-eslint/no-var-requires
-        const pkg = require('../../package.json');
-        return pkg.version || '1.0.0';
+        const pkg = require("../../package.json");
+        return pkg.version || "1.0.0";
     } catch {
-        return '1.0.0';
+        return "1.0.0";
     }
 };
 
@@ -57,5 +57,5 @@ export const getVersion = (): string => {
  * Check if running in development mode
  */
 export const isDevelopment = (): boolean => {
-    return getEnvironment() === 'development';
+    return getEnvironment() === "development";
 };

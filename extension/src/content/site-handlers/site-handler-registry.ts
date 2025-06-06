@@ -1,7 +1,7 @@
-import { VideoDetectorConfig, SeekingState } from '../../types/video';
-import { SiteHandler } from './site-handler';
-import { YouTubeHandler } from './youtube-handler';
-import { DefaultHandler } from './default-handler';
+import { VideoDetectorConfig, SeekingState } from "../../types/video";
+import { SiteHandler } from "./site-handler";
+import { YouTubeHandler } from "./youtube-handler";
+import { DefaultHandler } from "./default-handler";
 
 export class SiteHandlerRegistry {
     private handlers: SiteHandler[] = [];
@@ -11,10 +11,10 @@ export class SiteHandlerRegistry {
     constructor() {
         // Register all site handlers (order matters - first match wins)
         this.handlers = [
-            new YouTubeHandler()
+            new YouTubeHandler(),
             // Future site handlers can be added here
         ];
-        
+
         // Default handler as fallback
         this.defaultHandler = new DefaultHandler();
         this.activeHandler = this.defaultHandler;
@@ -22,7 +22,9 @@ export class SiteHandlerRegistry {
 
     initialize(): SiteHandler {
         // Find the first applicable handler for the current site, or use default
-        this.activeHandler = this.handlers.find(handler => handler.isApplicable()) || this.defaultHandler;
+        this.activeHandler =
+            this.handlers.find((handler) => handler.isApplicable()) ||
+            this.defaultHandler;
         return this.activeHandler;
     }
 
@@ -38,7 +40,13 @@ export class SiteHandlerRegistry {
         return this.activeHandler.getDebounceTime(seekingState);
     }
 
-    attachSiteSpecificListeners(config: VideoDetectorConfig, seekingState: SeekingState): (() => void) | null {
-        return this.activeHandler.attachSiteSpecificListeners(config, seekingState);
+    attachSiteSpecificListeners(
+        config: VideoDetectorConfig,
+        seekingState: SeekingState,
+    ): (() => void) | null {
+        return this.activeHandler.attachSiteSpecificListeners(
+            config,
+            seekingState,
+        );
     }
 }

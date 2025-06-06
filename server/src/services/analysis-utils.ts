@@ -3,13 +3,9 @@
  * Shared functionality for analysis services
  */
 
-import { promises as fs } from 'fs';
-import { resolve } from 'path';
-import {
-    Product,
-    ProductCategory,
-    TargetGender
-} from '../types/analyze';
+import { promises as fs } from "fs";
+import { resolve } from "path";
+import { Product, ProductCategory, TargetGender } from "../types/analyze";
 
 // Shared prompt cache
 let promptCache: string | null = null;
@@ -23,13 +19,16 @@ export async function loadPrompt(): Promise<string> {
     }
 
     try {
-        const promptPath = resolve(__dirname, '../prompts/product-analysis.txt');
-        const promptContent = await fs.readFile(promptPath, 'utf-8');
+        const promptPath = resolve(
+            __dirname,
+            "../prompts/product-analysis.txt",
+        );
+        const promptContent = await fs.readFile(promptPath, "utf-8");
         promptCache = promptContent.trim();
         return promptCache;
     } catch (error) {
-        console.error('[ANALYSIS_UTILS] Error loading prompt:', error);
-        throw new Error('Failed to load image analysis prompt');
+        console.error("[ANALYSIS_UTILS] Error loading prompt:", error);
+        throw new Error("Failed to load image analysis prompt");
     }
 }
 
@@ -37,12 +36,12 @@ export async function loadPrompt(): Promise<string> {
  * Extract JSON from response, handling potential extra text
  */
 export function extractJSONFromResponse(response: string): string {
-    const jsonStart = response.indexOf('{');
-    if (jsonStart === -1) throw new Error('No JSON found in response');
-    
-    const jsonEnd = response.lastIndexOf('}');
-    if (jsonEnd === -1) throw new Error('Incomplete JSON in response');
-    
+    const jsonStart = response.indexOf("{");
+    if (jsonStart === -1) throw new Error("No JSON found in response");
+
+    const jsonEnd = response.lastIndexOf("}");
+    if (jsonEnd === -1) throw new Error("Incomplete JSON in response");
+
     return response.substring(jsonStart, jsonEnd + 1);
 }
 
@@ -52,8 +51,8 @@ export function extractJSONFromResponse(response: string): string {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function validateAndSanitizeProducts(products: any[]): Product[] {
     return products
-        .filter(product => isValidProduct(product))
-        .map(product => sanitizeProduct(product));
+        .filter((product) => isValidProduct(product))
+        .map((product) => sanitizeProduct(product));
 }
 
 /**
@@ -62,15 +61,15 @@ export function validateAndSanitizeProducts(products: any[]): Product[] {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function isValidProduct(product: any): boolean {
     return (
-        typeof product === 'object' &&
-        typeof product.name === 'string' &&
-        typeof product.category === 'string' &&
-        typeof product.brand === 'string' &&
-        typeof product.primaryColor === 'string' &&
+        typeof product === "object" &&
+        typeof product.name === "string" &&
+        typeof product.category === "string" &&
+        typeof product.brand === "string" &&
+        typeof product.primaryColor === "string" &&
         Array.isArray(product.secondaryColors) &&
         Array.isArray(product.features) &&
-        typeof product.targetGender === 'string' &&
-        typeof product.searchTerms === 'string'
+        typeof product.targetGender === "string" &&
+        typeof product.searchTerms === "string"
     );
 }
 
@@ -87,7 +86,7 @@ function sanitizeProduct(product: any): Product {
         secondaryColors: sanitizeStringArray(product.secondaryColors, 30, 3),
         features: sanitizeStringArray(product.features, 50, 5),
         targetGender: validateTargetGender(product.targetGender),
-        searchTerms: String(product.searchTerms).substring(0, 200).trim()
+        searchTerms: String(product.searchTerms).substring(0, 200).trim(),
     };
 }
 
@@ -97,7 +96,7 @@ function sanitizeProduct(product: any): Product {
 function validateCategory(category: string): ProductCategory {
     const validCategories = Object.values(ProductCategory);
     return validCategories.includes(category as ProductCategory)
-        ? category as ProductCategory
+        ? (category as ProductCategory)
         : ProductCategory.OTHER;
 }
 
@@ -107,7 +106,7 @@ function validateCategory(category: string): ProductCategory {
 function validateTargetGender(targetGender: string): TargetGender {
     const validGenders = Object.values(TargetGender);
     return validGenders.includes(targetGender as TargetGender)
-        ? targetGender as TargetGender
+        ? (targetGender as TargetGender)
         : TargetGender.UNISEX;
 }
 
@@ -115,13 +114,17 @@ function validateTargetGender(targetGender: string): TargetGender {
  * Sanitize array of strings with length and count limits
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function sanitizeStringArray(arr: any[], maxLength: number, maxCount: number): string[] {
+function sanitizeStringArray(
+    arr: any[],
+    maxLength: number,
+    maxCount: number,
+): string[] {
     if (!Array.isArray(arr)) return [];
-    
+
     return arr
         .slice(0, maxCount)
-        .map(item => String(item).substring(0, maxLength).trim())
-        .filter(item => item.length > 0);
+        .map((item) => String(item).substring(0, maxLength).trim())
+        .filter((item) => item.length > 0);
 }
 
 /**
@@ -135,9 +138,9 @@ export function handleAPIError(error: any, servicePrefix: string): never {
     if (error?.status === 429) {
         throw new Error(`${servicePrefix}_RATE_LIMIT`);
     }
-    if (error?.code === 'ECONNRESET' || error?.code === 'ETIMEDOUT') {
+    if (error?.code === "ECONNRESET" || error?.code === "ETIMEDOUT") {
         throw new Error(`${servicePrefix}_TIMEOUT`);
     }
-    
+
     throw new Error(`${servicePrefix}_API_ERROR`);
 }

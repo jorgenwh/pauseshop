@@ -18,10 +18,10 @@ The site handler system allows for platform-specific customizations without clut
 1. **Initialization**: The `SiteHandlerRegistry` checks all registered handlers to find one that applies to the current site
 2. **Fallback**: If no specific handler matches, the `DefaultHandler` is used
 3. **Integration**: The active handler provides site-specific behavior for:
-   - User interaction detection
-   - Pause event filtering
-   - Debounce timing
-   - Additional event listeners
+    - User interaction detection
+    - Pause event filtering
+    - Debounce timing
+    - Additional event listeners
 
 ## Adding New Site Handlers
 
@@ -34,14 +34,17 @@ To add support for a new video platform:
 ### Example Handler Structure
 
 ```typescript
-import { SiteHandler } from './site-handler';
+import { SiteHandler } from "./site-handler";
 
 export class NewSiteHandler implements SiteHandler {
     isApplicable(): boolean {
-        return window.location.hostname.includes('newsite.com');
+        return window.location.hostname.includes("newsite.com");
     }
 
-    handleUserInteraction(config: VideoDetectorConfig, seekingState: SeekingState) {
+    handleUserInteraction(
+        config: VideoDetectorConfig,
+        seekingState: SeekingState,
+    ) {
         return (event: Event): void => {
             // Site-specific interaction logic
         };
@@ -57,7 +60,10 @@ export class NewSiteHandler implements SiteHandler {
         return 300;
     }
 
-    attachSiteSpecificListeners(config: VideoDetectorConfig, seekingState: SeekingState): (() => void) | null {
+    attachSiteSpecificListeners(
+        config: VideoDetectorConfig,
+        seekingState: SeekingState,
+    ): (() => void) | null {
         // Site-specific event listeners
         return null;
     }
@@ -67,6 +73,7 @@ export class NewSiteHandler implements SiteHandler {
 ## YouTube Handler Details
 
 The YouTube handler addresses specific timing issues where:
+
 - Pause events fire before seeking events
 - User interactions on the progress bar need to be detected early
 - Longer debounce times are needed for seeking operations

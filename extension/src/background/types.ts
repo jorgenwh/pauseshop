@@ -2,7 +2,6 @@
  * Types and interfaces for the PauseShop background service worker
  */
 
-
 export interface ScreenshotConfig {
     targetWidth: number;
     enableLogging: boolean;
@@ -13,11 +12,10 @@ export interface ScreenshotConfig {
 }
 
 export interface ScreenshotMessage {
-    action: 'captureScreenshot';
+    action: "captureScreenshot";
     config: ScreenshotConfig;
     pauseId?: string; // Add pauseId
 }
-
 
 export interface ScreenshotResponse {
     success: boolean;

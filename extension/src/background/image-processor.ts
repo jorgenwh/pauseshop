@@ -8,7 +8,10 @@
  * @param targetWidth The desired width in pixels
  * @returns Promise<string> The downscaled image data URL
  */
-export const downscaleImage = async (dataUrl: string, targetWidth: number): Promise<string> => {
+export const downscaleImage = async (
+    dataUrl: string,
+    targetWidth: number,
+): Promise<string> => {
     try {
         // Convert data URL to blob
         const response = await fetch(dataUrl);
@@ -25,26 +28,31 @@ export const downscaleImage = async (dataUrl: string, targetWidth: number): Prom
 
         // Create OffscreenCanvas for downscaling (available in service workers)
         const canvas = new OffscreenCanvas(targetWidth, newHeight);
-        const ctx = canvas.getContext('2d');
+        const ctx = canvas.getContext("2d");
 
         if (!ctx) {
-            throw new Error('Failed to get canvas context');
+            throw new Error("Failed to get canvas context");
         }
 
         // Draw downscaled image
         ctx.drawImage(imageBitmap, 0, 0, targetWidth, newHeight);
 
         // Convert to blob and then to data URL
-        const downscaledBlob = await canvas.convertToBlob({ type: 'image/png' });
+        const downscaledBlob = await canvas.convertToBlob({
+            type: "image/png",
+        });
 
         // Convert blob to data URL
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
             reader.onload = () => resolve(reader.result as string);
-            reader.onerror = () => reject(new Error('Failed to convert blob to data URL'));
+            reader.onerror = () =>
+                reject(new Error("Failed to convert blob to data URL"));
             reader.readAsDataURL(downscaledBlob);
         });
     } catch (error) {
-        throw new Error(`Image downscaling failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        throw new Error(
+            `Image downscaling failed: ${error instanceof Error ? error.message : "Unknown error"}`,
+        );
     }
 };

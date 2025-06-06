@@ -9,7 +9,6 @@ export interface AnalyzeRequest {
     };
 }
 
-
 export interface Product {
     name: string;
     category: ProductCategory;
@@ -22,25 +21,25 @@ export interface Product {
 }
 
 export enum ProductCategory {
-    CLOTHING = 'clothing',
-    ELECTRONICS = 'electronics',
-    FURNITURE = 'furniture',
-    ACCESSORIES = 'accessories',
-    FOOTWEAR = 'footwear',
-    HOME_DECOR = 'home_decor',
-    BOOKS_MEDIA = 'books_media',
-    SPORTS_FITNESS = 'sports_fitness',
-    BEAUTY_PERSONAL_CARE = 'beauty_personal_care',
-    KITCHEN_DINING = 'kitchen_dining',
-    OTHER = 'other'
+    CLOTHING = "clothing",
+    ELECTRONICS = "electronics",
+    FURNITURE = "furniture",
+    ACCESSORIES = "accessories",
+    FOOTWEAR = "footwear",
+    HOME_DECOR = "home_decor",
+    BOOKS_MEDIA = "books_media",
+    SPORTS_FITNESS = "sports_fitness",
+    BEAUTY_PERSONAL_CARE = "beauty_personal_care",
+    KITCHEN_DINING = "kitchen_dining",
+    OTHER = "other",
 }
 
 export enum TargetGender {
-    MEN = 'men',
-    WOMEN = 'women',
-    UNISEX = 'unisex',
-    BOY = 'boy',
-    GIRL = 'girl'
+    MEN = "men",
+    WOMEN = "women",
+    UNISEX = "unisex",
+    BOY = "boy",
+    GIRL = "girl",
 }
 
 export interface OpenAIConfig {
@@ -59,7 +58,6 @@ export interface OpenAIResponse {
         totalTokens: number;
     };
 }
-
 
 export interface OpenRouterConfig {
     apiKey: string;
@@ -102,7 +100,6 @@ export interface GeminiResponse {
     };
 }
 
-
 export interface AnalyzeErrorResponse {
     success: false;
     error: {
@@ -133,23 +130,31 @@ export interface RequestyConfig {
 
 export interface RequestyResponse {
     content: string;
-    usage?: {
-        promptTokens: number;
-        completionTokens: number;
-        totalTokens: number;
-    } | undefined;
+    usage?:
+        | {
+              promptTokens: number;
+              completionTokens: number;
+              totalTokens: number;
+          }
+        | undefined;
 }
 
 export enum AnalysisProvider {
-    OPENAI = 'openai',
-    REQUESTY = 'requesty',
-    GEMINI = 'gemini',
-    OPENROUTER = 'openrouter'
+    OPENAI = "openai",
+    REQUESTY = "requesty",
+    GEMINI = "gemini",
+    OPENROUTER = "openrouter",
 }
 
 export interface StreamingCallbacks {
     onProduct: (product: Product) => void;
-    onComplete: (response: OpenAIResponse | RequestyResponse | GeminiResponse | OpenRouterResponse) => void;
+    onComplete: (
+        response:
+            | OpenAIResponse
+            | RequestyResponse
+            | GeminiResponse
+            | OpenRouterResponse,
+    ) => void;
     onError: (error: Error) => void;
 }
 
@@ -159,5 +164,8 @@ export interface PartialProductParser {
 
 export interface AnalysisService {
     supportsStreaming(): boolean;
-    analyzeImageStreaming(imageData: string, callbacks: StreamingCallbacks): Promise<void>;
+    analyzeImageStreaming(
+        imageData: string,
+        callbacks: StreamingCallbacks,
+    ): Promise<void>;
 }

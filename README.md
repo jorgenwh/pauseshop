@@ -15,14 +15,15 @@ PauseShop is a Chrome extension that turns your streaming addiction into a shopp
 ## What it supports 📺
 
 - Netflix
-- Hulu  
+- Hulu
 - Prime Video
 - Disney+
 - HBO Max
 
 Basically everywhere you procrastinate.
 
-*Disclaimer: We are not responsible for your impulse purchases or explaining to your partner why you bought a $200 throw pillow because you saw it in Bridgerton.*
+_Disclaimer: We are not responsible for your impulse purchases or explaining to your partner why you bought a $200 throw pillow because you saw it in Bridgerton._
 
 ## Bugs and missing features 🪲
+
 https://docs.google.com/spreadsheets/d/1yV6rFRURZqth7h1-V6_pPQ3C8T4gTP0z7h4sA56xFCw/edit?usp=sharing
