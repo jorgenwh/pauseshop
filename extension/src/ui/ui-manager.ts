@@ -7,7 +7,6 @@
 
 import { Sidebar } from './components/sidebar';
 import { AmazonScrapedProduct, ProductCategory } from '../types/amazon'; // Import AmazonScrapedProduct and ProductCategory
-import { Product } from '../background/api-client'; // Import Product from api-client
 import {
   LoadingState,
   UIConfig,
@@ -18,6 +17,7 @@ import {
   SidebarContentState,
   SidebarConfig,
   SidebarEvents,
+  BackgroundMessage, // Import the new type
 } from './types';
 
 export class UIManager {
@@ -299,36 +299,9 @@ export class UIManager {
   }
 
   /**
-   * Add a single product to the UI (for streaming)
-   */
-  public async addProduct(mergedProduct: any): Promise<void> {
-    if (!this.ensureInitialized() || !this.sidebar) {
-      return;
-    }
-
-    // Construct ProductDisplayData from merged product object
-    const productDisplayData: ProductDisplayData = {
-      name: mergedProduct.name,
-      thumbnailUrl: mergedProduct.thumbnailUrl,
-      allProducts: [{
-        productId: mergedProduct.productId,
-        amazonAsin: mergedProduct.amazonAsin,
-        thumbnailUrl: mergedProduct.thumbnailUrl,
-        productUrl: mergedProduct.productUrl,
-        position: mergedProduct.position,
-        confidence: mergedProduct.confidence
-      }], // Convert merged product back to AmazonScrapedProduct format for compatibility
-      category: mergedProduct.category as ProductCategory,
-      fallbackText: mergedProduct.searchTerms // Use searchTerms as fallback
-    };
-
-    await this.sidebar.addProduct(productDisplayData);
-  }
-
-  /**
    * Handle messages from the background script
    */
-  private handleBackgroundMessages = (message: any, sender: chrome.runtime.MessageSender, sendResponse: (response?: any) => void) => {
+  private handleBackgroundMessages = (message: BackgroundMessage, sender: chrome.runtime.MessageSender, sendResponse: (response?: unknown) => void) => {
     if (message.type === 'analysis_started') {
       this.log(`Received analysis_started for pauseId: ${message.pauseId}`);
       this.sidebar?.setState('loading');

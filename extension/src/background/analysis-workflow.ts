@@ -12,25 +12,6 @@ import type { ScreenshotConfig, ScreenshotResponse } from './types';
 import type { AmazonScrapedProduct } from '../types/amazon';
 
 // Define a merged product interface that combines server and scraped data
-interface MergedProduct {
-    // Core product info from server stream
-    name: string;
-    brand: string;
-    category: string;
-    primaryColor: string;
-    secondaryColors: string[];
-    features: string[];
-    targetGender: string;
-    searchTerms: string;
-    
-    // Amazon scraped data
-    productUrl: string;
-    thumbnailUrl: string;
-    amazonAsin?: string;
-    position: number;
-    confidence: number;
-    productId: string;
-}
 
 // Define message types for communication with the UI
 interface ProductGroupMessage { // Changed from ProductMessage to ProductGroupMessage
@@ -46,27 +27,6 @@ interface ProductGroupMessage { // Changed from ProductMessage to ProductGroupMe
  * @param scrapedProduct Scraped Amazon product data
  * @returns Single consolidated product object
  */
-const mergeProductDetails = (originalProduct: Product, scrapedProduct: AmazonScrapedProduct): MergedProduct => {
-    return {
-        // Core product info from server stream
-        name: originalProduct.name,
-        brand: originalProduct.brand,
-        category: originalProduct.category,
-        primaryColor: originalProduct.primaryColor,
-        secondaryColors: originalProduct.secondaryColors,
-        features: originalProduct.features,
-        targetGender: originalProduct.targetGender,
-        searchTerms: originalProduct.searchTerms,
-        
-        // Amazon scraped data
-        productUrl: scrapedProduct.productUrl,
-        thumbnailUrl: scrapedProduct.thumbnailUrl,
-        amazonAsin: scrapedProduct.amazonAsin,
-        position: scrapedProduct.position,
-        confidence: scrapedProduct.confidence,
-        productId: scrapedProduct.productId
-    };
-};
 
 interface AnalysisCompleteMessage {
     type: 'analysis_complete';
@@ -89,7 +49,7 @@ export const handleScreenshotAnalysis = async (config: ScreenshotConfig, windowI
     try {
         const imageData = await captureScreenshot(config, windowId);
 
-        return new Promise<ScreenshotResponse>(async (resolve) => {
+        return new Promise<ScreenshotResponse>(async (resolve) => { // eslint-disable-line no-async-promise-executor
             // Track all async operations from onProduct callbacks
             const pendingOperations: Promise<void>[] = [];
             

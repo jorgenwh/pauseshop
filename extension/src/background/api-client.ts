@@ -150,7 +150,7 @@ export const analyzeImageStreaming = async (
 
         const processStream = async () => {
             try {
-                while (true) {
+                while (true) { // eslint-disable-line no-constant-condition
                     const { done, value } = await reader.read();
                     
                     if (done) {
@@ -166,7 +166,6 @@ export const analyzeImageStreaming = async (
                         if (line.trim() === '') continue;
                         
                         if (line.startsWith('event: ')) {
-                            const eventType = line.substring(7).trim();
                             continue;
                         }
                         

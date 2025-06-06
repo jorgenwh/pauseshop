@@ -22,7 +22,7 @@ export const log = (config: ScreenshotConfig, message: string): void => {
  * @param message The message to log
  * @param context Optional context object to include in the log
  */
-export const logWithTimestamp = (config: ScreenshotConfig, level: 'info' | 'error' | 'warn', message: string, context?: any): void => {
+export const logWithTimestamp = (config: ScreenshotConfig, level: 'info' | 'error' | 'warn', message: string, context?: unknown): void => {
     if (config.enableLogging) {
         const timestamp = new Date().toISOString();
         const logMessage = `[${timestamp}] ${config.logPrefix}: ${message}`;
