@@ -33,6 +33,8 @@ export class ProductCard {
 
         this.element = document.createElement("div");
         this.element.className = "pauseshop-product-card";
+        this.element.style.opacity = "0";
+        this.element.style.transform = "translateY(-20px) scale(0.95)";
 
         // Create header (always visible)
         this.createHeader();
