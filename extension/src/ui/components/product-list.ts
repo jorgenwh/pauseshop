@@ -95,7 +95,7 @@ export class ProductList {
         this.productCards.push(productCard);
 
         // Animate the new card in
-        await this.animateCardIn(productCard, 0); // Animate immediately
+        await this.animateCardIn(productCard);
     }
 
     /**
@@ -152,22 +152,25 @@ export class ProductList {
      */
     private async animateCardIn(
         card: ProductCard,
-        delay: number,
     ): Promise<void> {
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                const element = card.getElement();
-                if (element) {
-                    element.style.transition =
-                        "opacity 0.3s ease-out, transform 0.3s ease-out";
-                    element.style.opacity = "1";
-                    element.style.transform = "translateY(0)";
+        const element = card.getElement();
+        if (!element) {
+            return Promise.resolve();
+        }
 
-                    setTimeout(resolve, 300);
-                } else {
-                    resolve();
-                }
-            }, delay);
+        return new Promise((resolve) => {
+            const animation = element.animate(
+                [
+                    { opacity: "0", transform: "translateY(-20px) scale(0.95)" },
+                    { opacity: "1", transform: "translateY(0) scale(1)" },
+                ],
+                {
+                    duration: 400, // Animation duration
+                    easing: "ease-out",
+                    fill: "forwards",
+                },
+            );
+            animation.onfinish = () => resolve();
         });
     }
 
