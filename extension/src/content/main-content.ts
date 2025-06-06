@@ -51,9 +51,3 @@ window.addEventListener("pagehide", () => {
     cleanupUI();
 });
 
-// Cleanup on visibility change (when tab becomes hidden)
-document.addEventListener("visibilitychange", () => {
-    if (document.hidden) {
-        cleanupUI();
-    }
-});
