@@ -253,7 +253,7 @@ export class ProductCard {
   private getProductTitle(): string {
     const title = this.config.product.name || this.config.product.fallbackText || 'Product';
     if (title.length > 25) {
-      return title.substring(0, 20) + '...';
+      return title.substring(0, 24) + '...';
     }
     return title;
   }
