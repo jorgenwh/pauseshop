@@ -53,7 +53,7 @@
     top: 0;
     right: 0; /* Position on the right */
     height: 100%;
-    width: 584px; /* Adjusted width to accommodate smaller padding */
+    width: 380px;
     background-color: rgba(255, 255, 255, 0.1); /* Example glassmorphic background */
     backdrop-filter: blur(7px); /* Glassmorphic blur */
     -webkit-backdrop-filter: blur(7px); /* Safari support */

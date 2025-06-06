@@ -70,7 +70,7 @@ export class UIManager {
 
     // Configure sidebar system
     this.sidebarConfig = {
-      width: sidebarConfig.width || 415,
+      width: sidebarConfig.width || 380,
       position: sidebarConfig.position || 'right',
       animations: {
         slideInDuration: sidebarConfig.animations?.slideInDuration || 500,

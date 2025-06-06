@@ -29,7 +29,7 @@ export class Sidebar {
 
     constructor(config: Partial<SidebarConfig>, events: SidebarEvents = {}) {
         this.config = {
-            width: config.width || 400,
+            width: config.width || 380,
             position: config.position || 'right',
             animations: {
                 slideInDuration: config.animations?.slideInDuration || 150,
