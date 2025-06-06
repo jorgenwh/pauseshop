@@ -65,6 +65,7 @@ module.exports = {
         }
       },
       spacing: {
+        '5': '1.25rem',   // 20px - Added for space-y-5
         '17': '4.25rem',  // 68px
         '18': '4.5rem',   // 72px
         '24': '6rem',    // 96px - New size for thumbnail
@@ -95,6 +96,7 @@ module.exports = {
     'animation-collapse',
     'text-product-name-text',
     'text-category-text',
+    'space-y-5',
   ],
   // Ensure we don't conflict with existing styles
   corePlugins: {
