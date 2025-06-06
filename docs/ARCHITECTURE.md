@@ -44,20 +44,20 @@ pauseshop/
 graph TB
     A[PauseShop Project Root] --> B[Chrome Extension]
     A --> C[Backend Server]
-    
+
     B --> E[Content Scripts]
     B --> F[Service Worker]
     B --> G[UI Components]
     B --> H[Amazon Scraper]
-    
+
     C --> I[Express.js Server]
     C --> J[OpenAI Integration]
     C --> K[Image Processing]
-    
+
     E --> L[Video Detection]
     E --> M[Screenshot Capture]
     E --> N[UI Injection]
-    
+
     H --> O[Product Search]
     H --> P[Page Scraping]
     H --> Q[Result Processing]
@@ -66,22 +66,26 @@ graph TB
 ## Chrome Extension Components
 
 ### Content Scripts (`extension/src/content/`)
+
 - **`video-detector.ts`** - Detects video elements and pause events across streaming platforms
 - **`screenshot-capturer.ts`** - Captures screenshots of paused video frames
 - **`ui-injector.ts`** - Injects and manages the product overlay UI in the DOM
 - **`main-content.ts`** - Orchestrates all content script functionality
 
 ### Service Worker (`extension/src/background/`)
+
 - **`service-worker.ts`** - Handles extension lifecycle and API communication
 - **`api-client.ts`** - Manages communication with backend server
 
 ### UI Components (`extension/src/ui/`)
+
 - **`overlay.ts`** - Main product overlay component that appears on pause
 - **`product-grid.ts`** - Vertical product display grid
 - **`product-card.ts`** - Individual product card component with expand functionality
 - **`styles.css`** - Overlay styling and responsive design
 
 ### Amazon Scraper (`extension/src/scraper/`)
+
 - **`amazon-search.ts`** - Performs Amazon product searches based on detected items
 - **`product-parser.ts`** - Parses Amazon product pages for relevant information
 - **`scraper-utils.ts`** - Scraping utilities and helper functions
@@ -89,10 +93,12 @@ graph TB
 ## Backend Server Components
 
 ### API Routes (`server/src/routes/`)
+
 - **`analyze.ts`** - POST endpoint for image analysis using OpenAI
 - **`health.ts`** - Health check endpoint for monitoring
 
 ### Services (`server/src/services/`)
+
 - **`openai-service.ts`** - OpenAI API integration and prompt management
 - **`image-processor.ts`** - Image processing utilities and validation
 
@@ -126,6 +132,7 @@ sequenceDiagram
 ## Key Technical Decisions
 
 ### Chrome Extension
+
 - **Manifest V3**: Using service workers instead of background scripts for better security and performance
 - **TypeScript**: Strict typing throughout the entire project
 - **Webpack**: Bundling and build process for the extension
@@ -133,11 +140,13 @@ sequenceDiagram
 - **Client-side Scraping**: Amazon scraping happens in the extension to offload server costs
 
 ### Backend Server
+
 - **Express.js**: Traditional REST API for reliable image analysis handling
 - **OpenAI Integration**: Dedicated service for AI-powered product detection
 - **Minimal Scope**: Backend only handles image analysis, not product searching
 
 ### Development Practices
+
 - **Modular Architecture**: Clear separation of concerns across all components
 - **Test-Driven Development**: Unit tests for each module, integration tests for workflows
 - **Clean Code**: Self-descriptive code with conservative commenting

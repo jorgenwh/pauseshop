@@ -3,13 +3,7 @@
     "name": "PauseShop",
     "version": "1.0.0",
     "description": "Discover products from paused videos and find them on Amazon",
-    "permissions": [
-        "activeTab",
-        "storage",
-        "scripting",
-        "tabs",
-        "tabCapture"
-    ],
+    "permissions": ["activeTab", "storage", "scripting", "tabs", "tabCapture"],
     "host_permissions": [
         "https://*.netflix.com/*",
         "https://*.hulu.com/*",
@@ -39,10 +33,7 @@
     ],
     "web_accessible_resources": [
         {
-            "resources": [
-                "ui/*",
-                "assets/*"
-            ],
+            "resources": ["ui/*", "assets/*"],
             "matches": [
                 "https://*.netflix.com/*",
                 "https://*.hulu.com/*",

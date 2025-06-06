@@ -2,15 +2,19 @@
  * Tests for Amazon HTML parser functionality (regex-based, service worker compatible)
  */
 
-import { scrapeAmazonSearchBatch, scrapeSingleAmazonResult, getDefaultParserConfig } from '../src/scraper/amazon-parser';
+import {
+    scrapeAmazonSearchBatch,
+    scrapeSingleAmazonResult,
+    getDefaultParserConfig,
+} from "../src/scraper/amazon-parser";
 import {
     AmazonSearchExecutionBatch,
     AmazonSearchExecutionResult,
     AmazonSearchResult,
     AmazonParserConfig,
     ProductCategory,
-    TargetGender
-} from '../src/types/amazon';
+    TargetGender,
+} from "../src/types/amazon";
 
 // Mock HTML content for testing (simplified for regex parsing)
 const mockAmazonSearchHtml = `
@@ -46,24 +50,24 @@ const createMockExecutionResult = (
     productId: string,
     searchUrl: string,
     htmlContent: string,
-    success = true
+    success = true,
 ): AmazonSearchExecutionResult => {
     const mockSearchResult: AmazonSearchResult = {
         productId,
         searchUrl,
-        searchTerms: 'test product',
+        searchTerms: "test product",
         category: ProductCategory.ELECTRONICS,
         confidence: 0.8,
         originalProduct: {
-            name: 'Test Product',
+            name: "Test Product",
             category: ProductCategory.ELECTRONICS,
-            brand: 'TestBrand',
-            primaryColor: 'black',
+            brand: "TestBrand",
+            primaryColor: "black",
             secondaryColors: [],
-            features: ['wireless'],
+            features: ["wireless"],
             targetGender: TargetGender.UNISEX,
-            searchTerms: 'test product'
-        }
+            searchTerms: "test product",
+        },
     };
 
     return {
@@ -71,19 +75,19 @@ const createMockExecutionResult = (
         searchUrl,
         success,
         htmlContent: success ? htmlContent : undefined,
-        error: success ? undefined : 'Test error',
+        error: success ? undefined : "Test error",
         statusCode: success ? 200 : 500,
         responseTime: 1000,
         retryCount: 0,
-        originalSearchResult: mockSearchResult
+        originalSearchResult: mockSearchResult,
     };
 };
 
-describe('Amazon Parser', () => {
-    describe('getDefaultParserConfig', () => {
-        it('should return default configuration', () => {
+describe("Amazon Parser", () => {
+    describe("getDefaultParserConfig", () => {
+        it("should return default configuration", () => {
             const config = getDefaultParserConfig();
-            
+
             expect(config.maxProductsPerSearch).toBe(5);
             expect(config.requireThumbnail).toBe(true);
             expect(config.validateUrls).toBe(true);
@@ -91,12 +95,12 @@ describe('Amazon Parser', () => {
         });
     });
 
-    describe('scrapeSingleAmazonResult', () => {
-        it('should scrape products from valid HTML', () => {
+    describe("scrapeSingleAmazonResult", () => {
+        it("should scrape products from valid HTML", () => {
             const executionResult = createMockExecutionResult(
-                'test-product-1',
-                'https://www.amazon.com/s?k=headphones',
-                mockAmazonSearchHtml
+                "test-product-1",
+                "https://www.amazon.com/s?k=headphones",
+                mockAmazonSearchHtml,
             );
 
             const scrapedResult = scrapeSingleAmazonResult(executionResult);
@@ -107,18 +111,20 @@ describe('Amazon Parser', () => {
 
             // Check first product
             const firstProduct = scrapedResult.products[0];
-            expect(firstProduct.amazonAsin).toBe('B08N5WRWNW');
-            expect(firstProduct.thumbnailUrl).toBe('https://m.media-amazon.com/images/I/61abc123.jpg');
-            expect(firstProduct.productUrl).toContain('/dp/B08N5WRWNW');
+            expect(firstProduct.amazonAsin).toBe("B08N5WRWNW");
+            expect(firstProduct.thumbnailUrl).toBe(
+                "https://m.media-amazon.com/images/I/61abc123.jpg",
+            );
+            expect(firstProduct.productUrl).toContain("/dp/B08N5WRWNW");
             expect(firstProduct.position).toBe(1);
             expect(firstProduct.confidence).toBeGreaterThan(0.5);
         });
 
-        it('should handle minimal HTML structure', () => {
+        it("should handle minimal HTML structure", () => {
             const executionResult = createMockExecutionResult(
-                'test-product-2',
-                'https://www.amazon.com/s?k=minimal',
-                mockAmazonMinimalHtml
+                "test-product-2",
+                "https://www.amazon.com/s?k=minimal",
+                mockAmazonMinimalHtml,
             );
 
             const scrapedResult = scrapeSingleAmazonResult(executionResult);
@@ -127,56 +133,59 @@ describe('Amazon Parser', () => {
             // because it doesn't match the primary search result pattern
             expect(scrapedResult.success).toBe(false);
             expect(scrapedResult.products).toHaveLength(0);
-            expect(scrapedResult.error).toBe('No valid products found');
+            expect(scrapedResult.error).toBe("No valid products found");
         });
 
-        it('should handle empty search results', () => {
+        it("should handle empty search results", () => {
             const executionResult = createMockExecutionResult(
-                'test-product-3',
-                'https://www.amazon.com/s?k=empty',
-                mockAmazonEmptyHtml
+                "test-product-3",
+                "https://www.amazon.com/s?k=empty",
+                mockAmazonEmptyHtml,
             );
 
             const scrapedResult = scrapeSingleAmazonResult(executionResult);
 
             expect(scrapedResult.success).toBe(false);
             expect(scrapedResult.products).toHaveLength(0);
-            expect(scrapedResult.error).toBe('No valid products found');
+            expect(scrapedResult.error).toBe("No valid products found");
         });
 
-        it('should handle failed execution results', () => {
+        it("should handle failed execution results", () => {
             const executionResult = createMockExecutionResult(
-                'test-product-4',
-                'https://www.amazon.com/s?k=failed',
-                '',
-                false
+                "test-product-4",
+                "https://www.amazon.com/s?k=failed",
+                "",
+                false,
             );
 
             const scrapedResult = scrapeSingleAmazonResult(executionResult);
 
             expect(scrapedResult.success).toBe(false);
             expect(scrapedResult.products).toHaveLength(0);
-            expect(scrapedResult.error).toBe('Test error');
+            expect(scrapedResult.error).toBe("Test error");
         });
 
-        it('should respect maxProductsPerSearch configuration', () => {
+        it("should respect maxProductsPerSearch configuration", () => {
             const executionResult = createMockExecutionResult(
-                'test-product-5',
-                'https://www.amazon.com/s?k=headphones',
-                mockAmazonSearchHtml
+                "test-product-5",
+                "https://www.amazon.com/s?k=headphones",
+                mockAmazonSearchHtml,
             );
 
             const config: Partial<AmazonParserConfig> = {
-                maxProductsPerSearch: 2
+                maxProductsPerSearch: 2,
             };
 
-            const scrapedResult = scrapeSingleAmazonResult(executionResult, config);
+            const scrapedResult = scrapeSingleAmazonResult(
+                executionResult,
+                config,
+            );
 
             expect(scrapedResult.success).toBe(true);
             expect(scrapedResult.products).toHaveLength(2);
         });
 
-        it('should handle requireThumbnail configuration', () => {
+        it("should handle requireThumbnail configuration", () => {
             const htmlWithoutImages = `
                 <div data-component-type="s-search-result" data-asin="B08NOIMAGE1">
                     <h2><a href="/dp/B08NOIMAGE1/">Product without image</a></h2>
@@ -184,9 +193,9 @@ describe('Amazon Parser', () => {
             `;
 
             const executionResult = createMockExecutionResult(
-                'test-product-6',
-                'https://www.amazon.com/s?k=noimage',
-                htmlWithoutImages
+                "test-product-6",
+                "https://www.amazon.com/s?k=noimage",
+                htmlWithoutImages,
             );
 
             // With requireThumbnail = true (default)
@@ -195,19 +204,31 @@ describe('Amazon Parser', () => {
 
             // With requireThumbnail = false
             const lenientResult = scrapeSingleAmazonResult(executionResult, {
-                requireThumbnail: false
+                requireThumbnail: false,
             });
             expect(lenientResult.success).toBe(true);
             expect(lenientResult.products).toHaveLength(1);
         });
     });
 
-    describe('scrapeAmazonSearchBatch', () => {
-        it('should process multiple execution results', () => {
+    describe("scrapeAmazonSearchBatch", () => {
+        it("should process multiple execution results", () => {
             const executionResults: AmazonSearchExecutionResult[] = [
-                createMockExecutionResult('product-1', 'https://amazon.com/s?k=test1', mockAmazonSearchHtml),
-                createMockExecutionResult('product-2', 'https://amazon.com/s?k=test2', mockAmazonMinimalHtml),
-                createMockExecutionResult('product-3', 'https://amazon.com/s?k=test3', mockAmazonEmptyHtml)
+                createMockExecutionResult(
+                    "product-1",
+                    "https://amazon.com/s?k=test1",
+                    mockAmazonSearchHtml,
+                ),
+                createMockExecutionResult(
+                    "product-2",
+                    "https://amazon.com/s?k=test2",
+                    mockAmazonMinimalHtml,
+                ),
+                createMockExecutionResult(
+                    "product-3",
+                    "https://amazon.com/s?k=test3",
+                    mockAmazonEmptyHtml,
+                ),
             ];
 
             const executionBatch: AmazonSearchExecutionBatch = {
@@ -217,15 +238,15 @@ describe('Amazon Parser', () => {
                     requestDelayMs: 1500,
                     timeoutMs: 10000,
                     maxRetries: 2,
-                    userAgentRotation: true
+                    userAgentRotation: true,
                 },
                 metadata: {
                     totalRequests: 3,
                     successfulRequests: 3,
                     failedRequests: 0,
                     totalExecutionTime: 3000,
-                    averageResponseTime: 1000
-                }
+                    averageResponseTime: 1000,
+                },
             };
 
             const scrapedBatch = scrapeAmazonSearchBatch(executionBatch);
@@ -237,11 +258,26 @@ describe('Amazon Parser', () => {
             expect(scrapedBatch.metadata.totalProductsFound).toBe(3); // 3 from first result only
         });
 
-        it('should handle batch with mixed success/failure results', () => {
+        it("should handle batch with mixed success/failure results", () => {
             const executionResults: AmazonSearchExecutionResult[] = [
-                createMockExecutionResult('product-1', 'https://amazon.com/s?k=test1', mockAmazonSearchHtml, true),
-                createMockExecutionResult('product-2', 'https://amazon.com/s?k=test2', '', false),
-                createMockExecutionResult('product-3', 'https://amazon.com/s?k=test3', mockAmazonMinimalHtml, true)
+                createMockExecutionResult(
+                    "product-1",
+                    "https://amazon.com/s?k=test1",
+                    mockAmazonSearchHtml,
+                    true,
+                ),
+                createMockExecutionResult(
+                    "product-2",
+                    "https://amazon.com/s?k=test2",
+                    "",
+                    false,
+                ),
+                createMockExecutionResult(
+                    "product-3",
+                    "https://amazon.com/s?k=test3",
+                    mockAmazonMinimalHtml,
+                    true,
+                ),
             ];
 
             const executionBatch: AmazonSearchExecutionBatch = {
@@ -251,15 +287,15 @@ describe('Amazon Parser', () => {
                     requestDelayMs: 1500,
                     timeoutMs: 10000,
                     maxRetries: 2,
-                    userAgentRotation: true
+                    userAgentRotation: true,
                 },
                 metadata: {
                     totalRequests: 3,
                     successfulRequests: 2,
                     failedRequests: 1,
                     totalExecutionTime: 3000,
-                    averageResponseTime: 1000
-                }
+                    averageResponseTime: 1000,
+                },
             };
 
             const scrapedBatch = scrapeAmazonSearchBatch(executionBatch);
@@ -270,9 +306,13 @@ describe('Amazon Parser', () => {
             expect(scrapedBatch.metadata.totalProductsFound).toBe(3); // 3 from successful scrape only
         });
 
-        it('should use custom configuration', () => {
+        it("should use custom configuration", () => {
             const executionResults: AmazonSearchExecutionResult[] = [
-                createMockExecutionResult('product-1', 'https://amazon.com/s?k=test1', mockAmazonSearchHtml)
+                createMockExecutionResult(
+                    "product-1",
+                    "https://amazon.com/s?k=test1",
+                    mockAmazonSearchHtml,
+                ),
             ];
 
             const executionBatch: AmazonSearchExecutionBatch = {
@@ -282,23 +322,26 @@ describe('Amazon Parser', () => {
                     requestDelayMs: 1000,
                     timeoutMs: 5000,
                     maxRetries: 1,
-                    userAgentRotation: false
+                    userAgentRotation: false,
                 },
                 metadata: {
                     totalRequests: 1,
                     successfulRequests: 1,
                     failedRequests: 0,
                     totalExecutionTime: 1000,
-                    averageResponseTime: 1000
-                }
+                    averageResponseTime: 1000,
+                },
             };
 
             const customConfig: Partial<AmazonParserConfig> = {
                 maxProductsPerSearch: 2,
-                requireThumbnail: false
+                requireThumbnail: false,
             };
 
-            const scrapedBatch = scrapeAmazonSearchBatch(executionBatch, customConfig);
+            const scrapedBatch = scrapeAmazonSearchBatch(
+                executionBatch,
+                customConfig,
+            );
 
             expect(scrapedBatch.config.maxProductsPerSearch).toBe(2);
             expect(scrapedBatch.config.requireThumbnail).toBe(false);
@@ -306,8 +349,8 @@ describe('Amazon Parser', () => {
         });
     });
 
-    describe('URL validation', () => {
-        it('should validate image URLs correctly', () => {
+    describe("URL validation", () => {
+        it("should validate image URLs correctly", () => {
             const validImageHtml = `
                 <div data-component-type="s-search-result" data-asin="B08VALID1">
                     <img class="s-image" src="https://m.media-amazon.com/images/I/valid123.jpg">
@@ -323,20 +366,28 @@ describe('Amazon Parser', () => {
             `;
 
             const validResult = scrapeSingleAmazonResult(
-                createMockExecutionResult('valid', 'https://amazon.com/s?k=valid', validImageHtml),
-                { validateUrls: true }
+                createMockExecutionResult(
+                    "valid",
+                    "https://amazon.com/s?k=valid",
+                    validImageHtml,
+                ),
+                { validateUrls: true },
             );
 
             const invalidResult = scrapeSingleAmazonResult(
-                createMockExecutionResult('invalid', 'https://amazon.com/s?k=invalid', invalidImageHtml),
-                { validateUrls: true }
+                createMockExecutionResult(
+                    "invalid",
+                    "https://amazon.com/s?k=invalid",
+                    invalidImageHtml,
+                ),
+                { validateUrls: true },
             );
 
             expect(validResult.success).toBe(true);
             expect(invalidResult.success).toBe(false);
         });
 
-        it('should validate product URLs correctly', () => {
+        it("should validate product URLs correctly", () => {
             const validUrlHtml = `
                 <div data-component-type="s-search-result" data-asin="B08VALID1">
                     <img class="s-image" src="https://m.media-amazon.com/images/I/valid123.jpg">
@@ -352,13 +403,21 @@ describe('Amazon Parser', () => {
             `;
 
             const validResult = scrapeSingleAmazonResult(
-                createMockExecutionResult('valid', 'https://amazon.com/s?k=valid', validUrlHtml),
-                { validateUrls: true }
+                createMockExecutionResult(
+                    "valid",
+                    "https://amazon.com/s?k=valid",
+                    validUrlHtml,
+                ),
+                { validateUrls: true },
             );
 
             const invalidResult = scrapeSingleAmazonResult(
-                createMockExecutionResult('invalid', 'https://amazon.com/s?k=invalid', invalidUrlHtml),
-                { validateUrls: true }
+                createMockExecutionResult(
+                    "invalid",
+                    "https://amazon.com/s?k=invalid",
+                    invalidUrlHtml,
+                ),
+                { validateUrls: true },
             );
 
             expect(validResult.success).toBe(true);
@@ -366,46 +425,46 @@ describe('Amazon Parser', () => {
         });
     });
 
-    describe('error handling', () => {
-        it('should handle malformed HTML gracefully', () => {
+    describe("error handling", () => {
+        it("should handle malformed HTML gracefully", () => {
             const malformedHtml = '<div><img><a href=""><span>Broken HTML';
 
             const executionResult = createMockExecutionResult(
-                'malformed',
-                'https://amazon.com/s?k=malformed',
-                malformedHtml
+                "malformed",
+                "https://amazon.com/s?k=malformed",
+                malformedHtml,
             );
 
             const result = scrapeSingleAmazonResult(executionResult);
-            
+
             expect(result.success).toBe(false);
             expect(result.products).toHaveLength(0);
         });
 
-        it('should handle empty HTML content', () => {
+        it("should handle empty HTML content", () => {
             const executionResult = createMockExecutionResult(
-                'empty',
-                'https://amazon.com/s?k=empty',
-                ''
+                "empty",
+                "https://amazon.com/s?k=empty",
+                "",
             );
 
             const result = scrapeSingleAmazonResult(executionResult);
-            
+
             expect(result.success).toBe(false);
             expect(result.products).toHaveLength(0);
         });
 
-        it('should measure scraping time', () => {
+        it("should measure scraping time", () => {
             const executionResult = createMockExecutionResult(
-                'timing',
-                'https://amazon.com/s?k=timing',
-                mockAmazonSearchHtml
+                "timing",
+                "https://amazon.com/s?k=timing",
+                mockAmazonSearchHtml,
             );
 
             const result = scrapeSingleAmazonResult(executionResult);
-            
+
             expect(result.scrapingTime).toBeGreaterThanOrEqual(0);
-            expect(typeof result.scrapingTime).toBe('number');
+            expect(typeof result.scrapingTime).toBe("number");
         });
     });
 });

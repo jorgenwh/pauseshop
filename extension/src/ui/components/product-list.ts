@@ -3,9 +3,9 @@
  * Manages a vertical list of product cards with scrolling
  */
 
-import { ProductListConfig, ProductDisplayData } from '../types';
-import { AmazonScrapedProduct } from '../../types/amazon';
-import { ProductCard } from './product-card';
+import { ProductListConfig, ProductDisplayData } from "../types";
+import { AmazonScrapedProduct } from "../../types/amazon";
+import { ProductCard } from "./product-card";
 
 export interface ProductListEvents {
     onProductClick?: (product: AmazonScrapedProduct) => void;
@@ -18,11 +18,14 @@ export class ProductList {
     private events: ProductListEvents;
     private expandedCardIndex: number | null = null;
 
-    constructor(config: Partial<ProductListConfig>, events: ProductListEvents = {}) {
+    constructor(
+        config: Partial<ProductListConfig>,
+        events: ProductListEvents = {},
+    ) {
         this.config = {
-            maxHeight: config.maxHeight || 'none', // Allow content to dictate height
+            maxHeight: config.maxHeight || "none", // Allow content to dictate height
             enableVirtualScrolling: config.enableVirtualScrolling || false,
-            itemSpacing: config.itemSpacing || 16
+            itemSpacing: config.itemSpacing || 16,
         };
         this.events = events;
     }
@@ -35,17 +38,18 @@ export class ProductList {
             this.cleanup();
         }
 
-        this.element = document.createElement('div');
-        this.element.className = 'pauseshop-scrollbar overflow-y-auto flex-grow pb-4';
-        if (this.config.maxHeight !== 'none') {
+        this.element = document.createElement("div");
+        this.element.className =
+            "pauseshop-scrollbar overflow-y-auto flex-grow pb-4 pr-1";
+        if (this.config.maxHeight !== "none") {
             this.element.style.maxHeight = this.config.maxHeight;
         } else {
-            this.element.style.maxHeight = ''; // Remove max-height style if 'none'
+            this.element.style.maxHeight = ""; // Remove max-height style if 'none'
         }
 
         // Create container for product cards
-        const cardsContainer = document.createElement('div');
-        cardsContainer.className = 'space-y-4';
+        const cardsContainer = document.createElement("div");
+        cardsContainer.className = "space-y-5";
         this.element.appendChild(cardsContainer);
 
         return this.element;
@@ -56,13 +60,17 @@ export class ProductList {
      */
     public async addProduct(product: ProductDisplayData): Promise<void> {
         if (!this.element) {
-            console.warn('ProductList element not created. Cannot add product.');
+            console.warn(
+                "ProductList element not created. Cannot add product.",
+            );
             return;
         }
 
-        const cardsContainer = this.element.querySelector('.space-y-4') as HTMLElement;
+        const cardsContainer = this.element.querySelector(
+            ".space-y-5",
+        ) as HTMLElement;
         if (!cardsContainer) {
-            console.error('Product cards container not found.');
+            console.error("Product cards container not found.");
             return;
         }
 
@@ -72,12 +80,14 @@ export class ProductList {
         const productCard = new ProductCard({
             product: product,
             isExpanded: false,
-            onToggleExpansion: (card: ProductCard) => this.handleCardExpansion(card, cardIndex),
-            onAmazonProductClick: (amazonProduct: AmazonScrapedProduct) => this.events.onProductClick?.(amazonProduct),
+            onToggleExpansion: (card: ProductCard) =>
+                this.handleCardExpansion(card, cardIndex),
+            onAmazonProductClick: (amazonProduct: AmazonScrapedProduct) =>
+                this.events.onProductClick?.(amazonProduct),
             animations: {
                 expansionDuration: 400,
-                hoverTransitionDuration: 200
-            }
+                hoverTransitionDuration: 200,
+            },
         });
 
         const cardElement = await productCard.create();
@@ -91,21 +101,29 @@ export class ProductList {
     /**
      * Handle card expansion - collapse others when one expands
      */
-    private async handleCardExpansion(expandingCard: ProductCard, cardIndex: number): Promise<void> {
+    private async handleCardExpansion(
+        expandingCard: ProductCard,
+        cardIndex: number,
+    ): Promise<void> {
         // Validate card index
         if (cardIndex >= this.productCards.length || cardIndex < 0) {
             return;
         }
-        
+
         // If this card is already expanded, just toggle it
         if (this.expandedCardIndex === cardIndex) {
             await expandingCard.toggleExpansion();
-            this.expandedCardIndex = expandingCard.isExpanded() ? cardIndex : null;
+            this.expandedCardIndex = expandingCard.isExpanded()
+                ? cardIndex
+                : null;
             return;
         }
 
         // Collapse currently expanded card if any
-        if (this.expandedCardIndex !== null && this.expandedCardIndex !== cardIndex) {
+        if (
+            this.expandedCardIndex !== null &&
+            this.expandedCardIndex !== cardIndex
+        ) {
             const currentlyExpanded = this.productCards[this.expandedCardIndex];
             if (currentlyExpanded && currentlyExpanded.isExpanded()) {
                 await currentlyExpanded.toggleExpansion(); // Collapse
@@ -126,21 +144,25 @@ export class ProductList {
         if (!this.element) {
             return;
         }
-        this.element.style.opacity = '1'; // Ensure the main container is visible
+        this.element.style.opacity = "1"; // Ensure the main container is visible
     }
 
     /**
      * Animate a single card in
      */
-    private async animateCardIn(card: ProductCard, delay: number): Promise<void> {
+    private async animateCardIn(
+        card: ProductCard,
+        delay: number,
+    ): Promise<void> {
         return new Promise((resolve) => {
             setTimeout(() => {
                 const element = card.getElement();
                 if (element) {
-                    element.style.transition = 'opacity 0.3s ease-out, transform 0.3s ease-out';
-                    element.style.opacity = '1';
-                    element.style.transform = 'translateY(0)';
-                    
+                    element.style.transition =
+                        "opacity 0.3s ease-out, transform 0.3s ease-out";
+                    element.style.opacity = "1";
+                    element.style.transform = "translateY(0)";
+
                     setTimeout(resolve, 300);
                 } else {
                     resolve();
@@ -158,14 +180,15 @@ export class ProductList {
         }
 
         // Hide all cards simultaneously
-        const hidePromises = this.productCards.map(card => {
+        const hidePromises = this.productCards.map((card) => {
             const element = card.getElement();
             if (element) {
-                element.style.transition = 'opacity 0.2s ease-in, transform 0.2s ease-in';
-                element.style.opacity = '0';
-                element.style.transform = 'translateY(-20px)';
-                
-                return new Promise<void>(resolve => setTimeout(resolve, 200));
+                element.style.transition =
+                    "opacity 0.2s ease-in, transform 0.2s ease-in";
+                element.style.opacity = "0";
+                element.style.transform = "translateY(-20px)";
+
+                return new Promise<void>((resolve) => setTimeout(resolve, 200));
             }
             return Promise.resolve();
         });
@@ -226,7 +249,7 @@ export class ProductList {
      */
     public cleanup(): void {
         // Cleanup all product cards
-        this.productCards.forEach(card => {
+        this.productCards.forEach((card) => {
             card.cleanup();
         });
         this.productCards = [];

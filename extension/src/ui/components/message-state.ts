@@ -3,7 +3,7 @@
  * Shows when no products are found in the analyzed content
  */
 
-import { MessageStateConfig } from '../types';
+import { MessageStateConfig } from "../types";
 
 export class MessageState {
     private element: HTMLElement | null = null;
@@ -11,11 +11,13 @@ export class MessageState {
 
     constructor(config: Partial<MessageStateConfig>) {
         this.config = {
-            title: config.title || 'No products found.',
-            message: config.message || 'Try a different scene or ensure items are clearly visible.',
-            iconType: config.iconType || 'search',
+            title: config.title || "No products found.",
+            message:
+                config.message ||
+                "Try a different scene or ensure items are clearly visible.",
+            iconType: config.iconType || "search",
             showRetryButton: config.showRetryButton || false,
-            onRetry: config.onRetry
+            onRetry: config.onRetry,
         };
     }
 
@@ -39,22 +41,23 @@ export class MessageState {
             return this.element;
         }
 
-        this.element = document.createElement('div');
-        this.element.className = 'flex flex-col items-center justify-center flex-grow text-center py-10';
+        this.element = document.createElement("div");
+        this.element.className =
+            "flex flex-col items-center justify-center flex-grow text-center py-10";
 
         // Create icon
         const icon = this.createIcon();
         this.element.appendChild(icon);
 
         // Create title
-        const title = document.createElement('p');
-        title.className = 'text-lg font-semibold text-slate-200 mb-2';
+        const title = document.createElement("p");
+        title.className = "text-lg font-semibold text-slate-200 mb-2";
         title.textContent = this.config.title;
         this.element.appendChild(title);
 
         // Create message
-        const message = document.createElement('p');
-        message.className = 'text-sm text-slate-400 mb-4';
+        const message = document.createElement("p");
+        message.className = "text-sm text-slate-400 mb-4";
         message.textContent = this.config.message;
         this.element.appendChild(message);
 
@@ -71,29 +74,29 @@ export class MessageState {
      * Create icon based on type
      */
     private createIcon(): HTMLElement {
-        const iconContainer = document.createElement('div');
-        iconContainer.className = 'mb-4';
+        const iconContainer = document.createElement("div");
+        iconContainer.className = "mb-4";
 
-        const icon = document.createElement('div');
-        icon.className = 'h-12 w-12 text-slate-400 mx-auto';
+        const icon = document.createElement("div");
+        icon.className = "h-12 w-12 text-slate-400 mx-auto";
 
-        let iconSvg = '';
+        let iconSvg = "";
         switch (this.config.iconType) {
-            case 'empty':
+            case "empty":
                 iconSvg = `
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
                     </svg>
                 `;
                 break;
-            case 'error':
+            case "error":
                 iconSvg = `
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
                     </svg>
                 `;
                 break;
-            case 'search':
+            case "search":
             default:
                 iconSvg = `
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
@@ -112,11 +115,12 @@ export class MessageState {
      * Create retry button
      */
     private createRetryButton(): HTMLElement {
-        const button = document.createElement('button');
-        button.className = 'px-4 py-2 bg-pauseshop-primary hover:bg-pauseshop-secondary text-white text-sm font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-pauseshop-primary focus:ring-opacity-50';
-        button.textContent = 'Try Again';
+        const button = document.createElement("button");
+        button.className =
+            "px-4 py-2 bg-pauseshop-primary hover:bg-pauseshop-secondary text-white text-sm font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-pauseshop-primary focus:ring-opacity-50";
+        button.textContent = "Try Again";
 
-        button.addEventListener('click', (e) => {
+        button.addEventListener("click", (e) => {
             e.preventDefault();
             e.stopPropagation();
             this.config.onRetry?.();
@@ -136,19 +140,20 @@ export class MessageState {
     public async show(): Promise<void> {
         if (!this.element) return;
 
-        this.element.style.opacity = '0';
-        this.element.style.transform = 'translateY(10px)';
-        
+        this.element.style.opacity = "0";
+        this.element.style.transform = "translateY(10px)";
+
         // Trigger animation
         requestAnimationFrame(() => {
             if (this.element) {
-                this.element.style.transition = 'opacity 0.3s ease-in-out, transform 0.3s ease-in-out';
-                this.element.style.opacity = '1';
-                this.element.style.transform = 'translateY(0)';
+                this.element.style.transition =
+                    "opacity 0.3s ease-in-out, transform 0.3s ease-in-out";
+                this.element.style.opacity = "1";
+                this.element.style.transform = "translateY(0)";
             }
         });
 
-        return new Promise(resolve => {
+        return new Promise((resolve) => {
             setTimeout(resolve, 300);
         });
     }
@@ -159,11 +164,12 @@ export class MessageState {
     public async hide(): Promise<void> {
         if (!this.element) return;
 
-        this.element.style.transition = 'opacity 0.3s ease-in-out, transform 0.3s ease-in-out';
-        this.element.style.opacity = '0';
-        this.element.style.transform = 'translateY(-10px)';
+        this.element.style.transition =
+            "opacity 0.3s ease-in-out, transform 0.3s ease-in-out";
+        this.element.style.opacity = "0";
+        this.element.style.transform = "translateY(-10px)";
 
-        return new Promise(resolve => {
+        return new Promise((resolve) => {
             setTimeout(resolve, 300);
         });
     }

@@ -2,23 +2,23 @@
  * UI-specific type definitions for PauseShop extension
  */
 
-import { AmazonScrapedProduct, ProductCategory } from '../types/amazon';
-import { Product } from '../background/api-client'; // Import Product
-import { ProductCard } from './components/product-card';
+import { AmazonScrapedProduct, ProductCategory } from "../types/amazon";
+import { Product } from "../background/api-client"; // Import Product
+import { ProductCard } from "./components/product-card";
 
 export enum LoadingState {
-    HIDDEN = 'hidden',
-    SLIDING_IN = 'sliding-in',
-    LOADING = 'loading',
-    PROCESSING = 'processing',
-    NO_PRODUCTS_FOUND = 'no-products-found',
-    SLIDING_OUT = 'sliding-out'
+    HIDDEN = "hidden",
+    SLIDING_IN = "sliding-in",
+    LOADING = "loading",
+    PROCESSING = "processing",
+    NO_PRODUCTS_FOUND = "no-products-found",
+    SLIDING_OUT = "sliding-out",
 }
 
 export enum ProductDisplayState {
-    HIDDEN = 'hidden',
-    SLIDING_OUT = 'sliding-out',
-    DISPLAYED = 'displayed'
+    HIDDEN = "hidden",
+    SLIDING_OUT = "sliding-out",
+    DISPLAYED = "displayed",
 }
 
 export interface UIConfig {
@@ -66,25 +66,24 @@ export interface ProductDisplayData {
     fallbackText?: string;
 }
 
-
 // New sidebar-related types for the glassmorphic redesign
 export enum SidebarState {
-    HIDDEN = 'hidden',
-    SLIDING_IN = 'sliding-in',
-    VISIBLE = 'visible',
-    SLIDING_OUT = 'sliding-out'
+    HIDDEN = "hidden",
+    SLIDING_IN = "sliding-in",
+    VISIBLE = "visible",
+    SLIDING_OUT = "sliding-out",
 }
 
 export enum SidebarContentState {
-    LOADING = 'loading',
-    PRODUCTS = 'products',
-    NO_PRODUCTS = 'no-products',
-    ERROR = 'error'
+    LOADING = "loading",
+    PRODUCTS = "products",
+    NO_PRODUCTS = "no-products",
+    ERROR = "error",
 }
 
 export interface SidebarConfig {
     width: number;
-    position: 'right' | 'left';
+    position: "right" | "left";
     animations: {
         slideInDuration: number;
         slideOutDuration: number;
@@ -102,7 +101,7 @@ export interface SidebarHeaderConfig {
 export interface LoadingStateConfig {
     message: string;
     subMessage?: string;
-    spinnerSize: 'small' | 'medium' | 'large' | 'initial';
+    spinnerSize: "small" | "medium" | "large" | "initial";
 }
 
 export interface ProductListConfig {
@@ -133,7 +132,7 @@ export interface AmazonProductGridConfig {
 export interface MessageStateConfig {
     title: string;
     message: string;
-    iconType: 'search' | 'empty' | 'error';
+    iconType: "search" | "empty" | "error";
     showRetryButton: boolean;
     onRetry?: () => void;
 }
@@ -151,24 +150,24 @@ export interface SidebarEvents {
 
 // Message types for communication with the background script
 export interface AnalysisStartedMessage {
-    type: 'analysis_started';
+    type: "analysis_started";
     pauseId?: string;
 }
 
 export interface ProductGroupUpdateMessage {
-    type: 'product_group_update';
+    type: "product_group_update";
     originalProduct: Product;
     scrapedProducts: AmazonScrapedProduct[];
     pauseId?: string;
 }
 
 export interface AnalysisCompleteMessage {
-    type: 'analysis_complete';
+    type: "analysis_complete";
     pauseId?: string;
 }
 
 export interface AnalysisErrorMessage {
-    type: 'analysis_error';
+    type: "analysis_error";
     error: string;
     pauseId?: string;
 }
