@@ -15,8 +15,8 @@
     --pauseshop-primary: #4f46e5;
     --pauseshop-secondary: #6366f1;
     --pauseshop-accent: #ec4899;
-    --pauseshop-product-name-text: rgb(255, 140, 0);
-    --pauseshop-category-text: rgb(255, 193, 7);
+    --pauseshop-product-name-text: rgb(240, 240, 240); /* Very light gray */
+    --pauseshop-category-text: rgb(192, 192, 192); /* Silver gray */
 }
 
 /* Base glassmorphic component styles */
@@ -29,12 +29,10 @@
 
     .pauseshop-glass-light {
         @apply bg-pauseshop-glass-light backdrop-blur-pauseshop;
-        border: 1px solid var(--pauseshop-glass-border);
     }
 
     .pauseshop-glass-lighter {
         @apply bg-pauseshop-glass-lighter backdrop-blur-pauseshop;
-        border: 1px solid var(--pauseshop-glass-border);
     }
 
     /* Sidebar base styles */
@@ -67,7 +65,8 @@
 
     /* Amazon product item styles */
     .pauseshop-amazon-item {
-        @apply pauseshop-glass-lighter block flex h-60 w-60 items-center justify-center rounded-lg border border-[var(--pauseshop-glass-border)] p-2 transition-colors duration-200;
+        background-color: rgba(70, 90, 120, 0.7); /* Direct application of pauseshop-glass-light */
+        @apply block flex h-60 w-60 items-center justify-center rounded-3xl p-2 shadow-pauseshop-card transition-colors duration-200;
     }
 
     /* Amazon product image styles */
@@ -76,7 +75,7 @@
     }
 
     .pauseshop-amazon-item:hover {
-        @apply bg-slate-600/75;
+        background-color: rgba(120, 140, 170, 0.65); /* Direct application of pauseshop-glass-lighter */
     }
 
     /* Loading spinner */
