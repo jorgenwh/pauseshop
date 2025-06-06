@@ -39,7 +39,8 @@
 
   /* Sidebar base styles */
   .pauseshop-sidebar {
-    @apply fixed top-0 right-0 h-full w-[380px] text-slate-100 p-7 transform translate-x-full transition-transform duration-500 ease-in-out flex flex-col pauseshop-glass;
+    @apply fixed top-[32px] right-[20px] h-[calc(100%-92px)] w-[380px] text-slate-100 p-7 transform translate-x-full transition-transform duration-500 ease-in-out flex flex-col pauseshop-glass;
+    border-radius: 48px;
     font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     z-index: 999999;
   }
