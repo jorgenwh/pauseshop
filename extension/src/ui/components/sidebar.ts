@@ -58,9 +58,7 @@ export class Sidebar {
         this.element.style.transition = `transform ${this.config.animations.slideInDuration / 1000}s ease-out`;
         
         // Apply custom width if different from default
-        if (this.config.width !== 400) {
-            this.element.style.width = `${this.config.width}px`;
-        }
+        this.element.style.width = `${this.config.width}px`;
 
         // Create header
         this.headerComponent = new SidebarHeader({

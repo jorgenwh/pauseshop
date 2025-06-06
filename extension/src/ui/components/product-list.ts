@@ -36,7 +36,7 @@ export class ProductList {
         }
 
         this.element = document.createElement('div');
-        this.element.className = 'pauseshop-scrollbar overflow-y-auto flex-grow pb-4';
+        this.element.className = 'pauseshop-scrollbar overflow-y-auto flex-grow pb-4 pr-1';
         if (this.config.maxHeight !== 'none') {
             this.element.style.maxHeight = this.config.maxHeight;
         } else {

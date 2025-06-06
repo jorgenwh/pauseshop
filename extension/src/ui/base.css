@@ -39,7 +39,7 @@
 
   /* Sidebar base styles */
   .pauseshop-sidebar {
-    @apply fixed top-[32px] right-[20px] h-[calc(100%-92px)] w-[380px] text-slate-100 p-7 transform translate-x-full transition-transform duration-500 ease-in-out flex flex-col pauseshop-glass;
+    @apply fixed top-[32px] right-[20px] h-[calc(100%-92px)] w-[388px] text-slate-100 p-7 pr-2 transform translate-x-full transition-transform duration-500 ease-in-out flex flex-col pauseshop-glass;
     border-radius: 48px;
     font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     z-index: 999999;
@@ -103,12 +103,11 @@
     scrollbar-width: thin;
     scrollbar-color: var(--pauseshop-primary) rgba(30, 41, 59, 0.5);
     scrollbar-gutter: stable both-edges; /* Add this line */
-    padding-right: 4px; /* Move content 4px away from edge */
+    padding-right: 4px; /* Revert to original padding */
   }
 
   .pauseshop-scrollbar::-webkit-scrollbar {
-    @apply w-2;
-    margin-right: 4px; /* Move scrollbar 4px to the right */
+    @apply w-1;
   }
 
   .pauseshop-scrollbar::-webkit-scrollbar-track {
