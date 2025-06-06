@@ -291,7 +291,7 @@ export class ProductCard {
             this.config.product.fallbackText ||
             "Product";
         if (title.length > 25) {
-            return title.substring(0, 22) + "...";
+            return title.substring(0, 21) + "...";
         }
         return title;
     }

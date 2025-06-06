@@ -54,260 +54,256 @@ export const handleScreenshotAnalysis = async (
     try {
         const imageData = await captureScreenshot(config, windowId);
 
-        return new Promise<ScreenshotResponse>(async (resolve) => {
-            // eslint-disable-line no-async-promise-executor
-            // Track all async operations from onProduct callbacks
-            const pendingOperations: Promise<void>[] = [];
+        // Track all async operations from onProduct callbacks
+        const pendingOperations: Promise<void>[] = [];
 
-            try {
-                // Notify UI that analysis has started
-                const tabId = (
-                    await chrome.tabs.query({
-                        active: true,
-                        currentWindow: true,
+        try {
+            // Notify UI that analysis has started
+            const tabId = (
+                await chrome.tabs.query({
+                    active: true,
+                    currentWindow: true,
+                })
+            )[0]?.id;
+            if (tabId) {
+                chrome.tabs
+                    .sendMessage(tabId, {
+                        type: "analysis_started",
+                        pauseId: pauseId,
                     })
-                )[0]?.id;
-                if (tabId) {
-                    chrome.tabs
-                        .sendMessage(tabId, {
-                            type: "analysis_started",
-                            pauseId: pauseId,
-                        })
-                        .catch((e) =>
-                            log(
-                                config,
-                                `Error sending analysis_started to tab ${tabId}: ${e.message}`,
-                            ),
-                        );
-                }
+                    .catch((e) =>
+                        log(
+                            config,
+                            `Error sending analysis_started to tab ${tabId}: ${e.message}`,
+                        ),
+                    );
+            }
 
-                await analyzeImageStreaming(
-                    imageData,
-                    {
-                        onProduct: async (product: Product) => {
-                            // Create a promise for this product's async processing
-                            const productProcessingPromise = (async () => {
-                                try {
-                                    const amazonSearchResults =
-                                        constructAmazonSearchBatch([product], {
-                                            domain: "amazon.com",
-                                            enableCategoryFiltering: true,
-                                            fallbackToGenericSearch: true,
-                                        });
+            await analyzeImageStreaming(
+                imageData,
+                {
+                    onProduct: async (product: Product) => {
+                        // Create a promise for this product's async processing
+                        const productProcessingPromise = (async () => {
+                            try {
+                                const amazonSearchResults =
+                                    constructAmazonSearchBatch([product], {
+                                        domain: "amazon.com",
+                                        enableCategoryFiltering: true,
+                                        fallbackToGenericSearch: true,
+                                    });
 
-                                    const amazonExecutionResults =
-                                        await executeAmazonSearchBatch(
-                                            amazonSearchResults,
-                                            {
-                                                maxConcurrentRequests: 1,
-                                                requestDelayMs: 500,
-                                                timeoutMs: 10000,
-                                                maxRetries: 1,
-                                                userAgentRotation: true,
-                                            },
-                                        );
-
-                                    const amazonScrapedResults =
-                                        scrapeAmazonSearchBatch(
-                                            amazonExecutionResults,
-                                            {
-                                                maxProductsPerSearch: 5,
-                                                requireThumbnail: true,
-                                                validateUrls: true,
-                                                timeoutMs: 5000,
-                                            },
-                                        );
-
-                                    if (
-                                        amazonScrapedResults &&
-                                        amazonScrapedResults.scrapedResults
-                                            .length > 0 &&
-                                        amazonScrapedResults.scrapedResults[0]
-                                            .products.length > 0
-                                    ) {
-                                        const scrapedProducts =
-                                            amazonScrapedResults
-                                                .scrapedResults[0].products;
-
-                                        // Send a single message with the original product and all scraped products
-                                        const tabId = (
-                                            await chrome.tabs.query({
-                                                active: true,
-                                                currentWindow: true,
-                                            })
-                                        )[0]?.id;
-                                        if (tabId) {
-                                            chrome.tabs
-                                                .sendMessage(tabId, {
-                                                    type: "product_group_update", // Use new type
-                                                    originalProduct: product, // The original product
-                                                    scrapedProducts:
-                                                        scrapedProducts, // All scraped products
-                                                    pauseId: pauseId,
-                                                } as ProductGroupMessage)
-                                                .catch((e) =>
-                                                    log(
-                                                        config,
-                                                        `Error sending product group update to tab ${tabId}: ${e.message}`,
-                                                    ),
-                                                );
-                                        } else {
-                                            log(
-                                                config,
-                                                "Could not find active tab to send product group update.",
-                                            );
-                                        }
-                                    } else {
-                                        // Log when no products were found
-                                        logWithTimestamp(
-                                            config,
-                                            "warn",
-                                            "Amazon scraping completed but no products found",
-                                            {
-                                                originalProductName:
-                                                    product.name,
-                                                searchTermsUsed:
-                                                    product.searchTerms,
-                                                scrapedResultsCount:
-                                                    amazonScrapedResults
-                                                        ?.scrapedResults
-                                                        ?.length || 0,
-                                            },
-                                        );
-                                    }
-                                } catch (error) {
-                                    const errorMessage =
-                                        error instanceof Error
-                                            ? error.message
-                                            : "Unknown Amazon search/scraping error";
-                                    log(
-                                        config,
-                                        `Amazon search/scraping failed for streamed product: ${errorMessage}`,
+                                const amazonExecutionResults =
+                                    await executeAmazonSearchBatch(
+                                        amazonSearchResults,
+                                        {
+                                            maxConcurrentRequests: 1,
+                                            requestDelayMs: 500,
+                                            timeoutMs: 10000,
+                                            maxRetries: 1,
+                                            userAgentRotation: true,
+                                        },
                                     );
 
-                                    // Log Amazon scraping failure with timestamp and error details
+                                const amazonScrapedResults =
+                                    scrapeAmazonSearchBatch(
+                                        amazonExecutionResults,
+                                        {
+                                            maxProductsPerSearch: 5,
+                                            requireThumbnail: true,
+                                            validateUrls: true,
+                                            timeoutMs: 5000,
+                                        },
+                                    );
+
+                                if (
+                                    amazonScrapedResults &&
+                                    amazonScrapedResults.scrapedResults.length >
+                                        0 &&
+                                    amazonScrapedResults.scrapedResults[0]
+                                        .products.length > 0
+                                ) {
+                                    const scrapedProducts =
+                                        amazonScrapedResults.scrapedResults[0]
+                                            .products;
+
+                                    // Send a single message with the original product and all scraped products
+                                    const tabId = (
+                                        await chrome.tabs.query({
+                                            active: true,
+                                            currentWindow: true,
+                                        })
+                                    )[0]?.id;
+                                    if (tabId) {
+                                        chrome.tabs
+                                            .sendMessage(tabId, {
+                                                type: "product_group_update", // Use new type
+                                                originalProduct: product, // The original product
+                                                scrapedProducts:
+                                                    scrapedProducts, // All scraped products
+                                                pauseId: pauseId,
+                                            } as ProductGroupMessage)
+                                            .catch((e) =>
+                                                log(
+                                                    config,
+                                                    `Error sending product group update to tab ${tabId}: ${e.message}`,
+                                                ),
+                                            );
+                                    } else {
+                                        log(
+                                            config,
+                                            "Could not find active tab to send product group update.",
+                                        );
+                                    }
+                                } else {
+                                    // Log when no products were found
                                     logWithTimestamp(
                                         config,
-                                        "error",
-                                        "Amazon scraping failed",
+                                        "warn",
+                                        "Amazon scraping completed but no products found",
                                         {
                                             originalProductName: product.name,
-                                            brand: product.brand,
-                                            category: product.category,
                                             searchTermsUsed:
                                                 product.searchTerms,
-                                            errorMessage: errorMessage,
-                                            errorType:
-                                                error instanceof Error
-                                                    ? error.constructor.name
-                                                    : "Unknown",
+                                            scrapedResultsCount:
+                                                amazonScrapedResults
+                                                    ?.scrapedResults?.length ||
+                                                0,
                                         },
                                     );
                                 }
-                            })();
-
-                            // Add this promise to our tracking array
-                            pendingOperations.push(productProcessingPromise);
-                        },
-                        onComplete: async () => {
-                            // Wait for all pending operations to complete
-                            try {
-                                await Promise.allSettled(pendingOperations);
                             } catch (error) {
+                                const errorMessage =
+                                    error instanceof Error
+                                        ? error.message
+                                        : "Unknown Amazon search/scraping error";
                                 log(
                                     config,
-                                    `Error waiting for product processing: ${error instanceof Error ? error.message : "Unknown error"}`,
+                                    `Amazon search/scraping failed for streamed product: ${errorMessage}`,
+                                );
+
+                                // Log Amazon scraping failure with timestamp and error details
+                                logWithTimestamp(
+                                    config,
+                                    "error",
+                                    "Amazon scraping failed",
+                                    {
+                                        originalProductName: product.name,
+                                        brand: product.brand,
+                                        category: product.category,
+                                        searchTermsUsed: product.searchTerms,
+                                        errorMessage: errorMessage,
+                                        errorType:
+                                            error instanceof Error
+                                                ? error.constructor.name
+                                                : "Unknown",
+                                    },
                                 );
                             }
+                        })();
 
-                            const tabId = (
-                                await chrome.tabs.query({
-                                    active: true,
-                                    currentWindow: true,
-                                })
-                            )[0]?.id;
-                            if (tabId) {
-                                chrome.tabs
-                                    .sendMessage(tabId, {
-                                        type: "analysis_complete",
-                                        pauseId: pauseId,
-                                    } as AnalysisCompleteMessage)
-                                    .catch((e) =>
-                                        log(
-                                            config,
-                                            `Error sending analysis complete to tab ${tabId}: ${e.message}`,
-                                        ),
-                                    );
-                            }
-                            resolve({ success: true, pauseId: pauseId });
-                        },
-                        onError: async (error: Event) => {
-                            const errorMessage = `Streaming analysis failed: ${error.type || "Unknown error"}`;
-                            log(config, errorMessage);
-                            const tabId = (
-                                await chrome.tabs.query({
-                                    active: true,
-                                    currentWindow: true,
-                                })
-                            )[0]?.id;
-                            if (tabId) {
-                                chrome.tabs
-                                    .sendMessage(tabId, {
-                                        type: "analysis_error",
-                                        error: errorMessage,
-                                        pauseId: pauseId,
-                                    } as AnalysisErrorMessage)
-                                    .catch((e) =>
-                                        log(
-                                            config,
-                                            `Error sending analysis error to tab ${tabId}: ${e.message}`,
-                                        ),
-                                    );
-                            }
-                            resolve({
-                                success: false,
-                                error: errorMessage,
-                                pauseId: pauseId,
-                            });
-                        },
+                        // Add this promise to our tracking array
+                        pendingOperations.push(productProcessingPromise);
                     },
-                    {
-                        baseUrl: config.serverUrl,
-                    },
-                );
-            } catch (error) {
-                const errorMessage =
-                    error instanceof Error
-                        ? error.message
-                        : "Failed to start streaming analysis";
-                log(config, errorMessage);
-                const tabId = (
-                    await chrome.tabs.query({
-                        active: true,
-                        currentWindow: true,
-                    })
-                )[0]?.id;
-                if (tabId) {
-                    chrome.tabs
-                        .sendMessage(tabId, {
-                            type: "analysis_error",
-                            error: errorMessage,
-                            pauseId: pauseId,
-                        } as AnalysisErrorMessage)
-                        .catch((e) =>
+                    onComplete: async () => {
+                        // Wait for all pending operations to complete
+                        try {
+                            await Promise.allSettled(pendingOperations);
+                        } catch (error) {
                             log(
                                 config,
-                                `Error sending analysis error to tab ${tabId}: ${e.message}`,
-                            ),
-                        );
-                }
-                resolve({
-                    success: false,
-                    error: errorMessage,
-                    pauseId: pauseId,
-                });
+                                `Error waiting for product processing: ${error instanceof Error ? error.message : "Unknown error"}`,
+                            );
+                        }
+
+                        const tabId = (
+                            await chrome.tabs.query({
+                                active: true,
+                                currentWindow: true,
+                            })
+                        )[0]?.id;
+                        if (tabId) {
+                            chrome.tabs
+                                .sendMessage(tabId, {
+                                    type: "analysis_complete",
+                                    pauseId: pauseId,
+                                } as AnalysisCompleteMessage)
+                                .catch((e) =>
+                                    log(
+                                        config,
+                                        `Error sending analysis complete to tab ${tabId}: ${e.message}`,
+                                    ),
+                                );
+                        }
+                        return { success: true, pauseId: pauseId };
+                    },
+                    onError: async (error: Event) => {
+                        const errorMessage = `Streaming analysis failed: ${error.type || "Unknown error"}`;
+                        log(config, errorMessage);
+                        const tabId = (
+                            await chrome.tabs.query({
+                                active: true,
+                                currentWindow: true,
+                            })
+                        )[0]?.id;
+                        if (tabId) {
+                            chrome.tabs
+                                .sendMessage(tabId, {
+                                    type: "analysis_error",
+                                    error: errorMessage,
+                                    pauseId: pauseId,
+                                } as AnalysisErrorMessage)
+                                .catch((e) =>
+                                    log(
+                                        config,
+                                        `Error sending analysis error to tab ${tabId}: ${e.message}`,
+                                    ),
+                                );
+                        }
+                        return {
+                            success: false,
+                            error: errorMessage,
+                            pauseId: pauseId,
+                        };
+                    },
+                },
+                {
+                    baseUrl: config.serverUrl,
+                },
+            );
+            return { success: true, pauseId: pauseId }; // Return success if analyzeImageStreaming completes without error
+        } catch (error) {
+            const errorMessage =
+                error instanceof Error
+                    ? error.message
+                    : "Failed to start streaming analysis";
+            log(config, errorMessage);
+            const tabId = (
+                await chrome.tabs.query({
+                    active: true,
+                    currentWindow: true,
+                })
+            )[0]?.id;
+            if (tabId) {
+                chrome.tabs
+                    .sendMessage(tabId, {
+                        type: "analysis_error",
+                        error: errorMessage,
+                        pauseId: pauseId,
+                    } as AnalysisErrorMessage)
+                    .catch((e) =>
+                        log(
+                            config,
+                            `Error sending analysis error to tab ${tabId}: ${e.message}`,
+                        ),
+                    );
             }
-        });
+            return {
+                success: false,
+                error: errorMessage,
+                pauseId: pauseId,
+            };
+        }
     } catch (error) {
         const errorMessage =
             error instanceof Error ? error.message : "Unknown error";

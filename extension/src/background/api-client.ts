@@ -150,64 +150,68 @@ export const analyzeImageStreaming = async (
 
         const processStream = async () => {
             try {
-                while (true) {
-                    // eslint-disable-line no-constant-condition
-                    const { done, value } = await reader.read();
+                let done = false;
+                do {
+                    const { done: currentDone, value } = await reader.read();
+                    done = currentDone;
 
                     if (done) {
                         callbacks.onComplete();
-                        break;
-                    }
+                    } else {
+                        buffer += decoder.decode(value, { stream: true });
+                        const lines = buffer.split("\n");
+                        buffer = lines.pop() || ""; // Keep incomplete line in buffer
 
-                    buffer += decoder.decode(value, { stream: true });
-                    const lines = buffer.split("\n");
-                    buffer = lines.pop() || ""; // Keep incomplete line in buffer
+                        for (const line of lines) {
+                            if (line.trim() === "") continue;
 
-                    for (const line of lines) {
-                        if (line.trim() === "") continue;
+                            if (line.startsWith("event: ")) {
+                                continue;
+                            }
 
-                        if (line.startsWith("event: ")) {
-                            continue;
-                        }
+                            if (line.startsWith("data: ")) {
+                                const data = line.substring(6).trim();
 
-                        if (line.startsWith("data: ")) {
-                            const data = line.substring(6).trim();
+                                try {
+                                    const parsedData = JSON.parse(data);
 
-                            try {
-                                const parsedData = JSON.parse(data);
-
-                                // Handle different event types based on the parsed data structure
-                                if (parsedData.name && parsedData.category) {
-                                    // This is a product event
-                                    callbacks.onProduct(parsedData);
-                                } else if (
-                                    parsedData.totalProducts !== undefined ||
-                                    parsedData.processingTime !== undefined
-                                ) {
-                                    // This is a complete event
-                                    callbacks.onComplete();
-                                    return;
-                                } else if (
-                                    parsedData.message &&
-                                    parsedData.code
-                                ) {
-                                    // This is an error event
-                                    callbacks.onError(
-                                        new Event("server_error"),
+                                    // Handle different event types based on the parsed data structure
+                                    if (
+                                        parsedData.name &&
+                                        parsedData.category
+                                    ) {
+                                        // This is a product event
+                                        callbacks.onProduct(parsedData);
+                                    } else if (
+                                        parsedData.totalProducts !==
+                                            undefined ||
+                                        parsedData.processingTime !== undefined
+                                    ) {
+                                        // This is a complete event
+                                        callbacks.onComplete();
+                                        return;
+                                    } else if (
+                                        parsedData.message &&
+                                        parsedData.code
+                                    ) {
+                                        // This is an error event
+                                        callbacks.onError(
+                                            new Event("server_error"),
+                                        );
+                                        return;
+                                    }
+                                } catch (parseError) {
+                                    console.error(
+                                        "[API Client] Error parsing streaming data:",
+                                        parseError,
+                                        "Data:",
+                                        data,
                                     );
-                                    return;
                                 }
-                            } catch (parseError) {
-                                console.error(
-                                    "[API Client] Error parsing streaming data:",
-                                    parseError,
-                                    "Data:",
-                                    data,
-                                );
                             }
                         }
                     }
-                }
+                } while (!done);
             } catch (error) {
                 console.error("[API Client] Error reading stream:", error);
                 callbacks.onError(new Event("stream_error"));
