@@ -5,21 +5,22 @@
 
 import { UIManager } from "../ui/ui-manager";
 import { LoadingState, ProductDisplayData } from "../ui/types";
-import { AmazonScrapedBatch } from "../types/amazon";
+import { type AmazonScrapedBatch } from "../types/amazon";
 
+// Define local interfaces, not imported types
 interface ScreenshotConfig {
     targetWidth: number;
     enableLogging: boolean;
     logPrefix: string;
     debugMode: boolean;
     serverUrl: string;
-    pauseId?: string; // Add pauseId to config
+    pauseId?: string;
 }
 
 interface ScreenshotMessage {
     action: "captureScreenshot";
     config: ScreenshotConfig;
-    pauseId?: string; // Add pauseId to message
+    pauseId?: string;
 }
 
 interface ScreenshotResponse {
@@ -39,7 +40,7 @@ interface ScreenshotResponse {
     };
     amazonExecutionResults?: unknown;
     amazonScrapedResults?: AmazonScrapedBatch;
-    pauseId?: string; // Add pauseId to response
+    pauseId?: string;
 }
 
 const defaultConfig: ScreenshotConfig = {
@@ -50,17 +51,10 @@ const defaultConfig: ScreenshotConfig = {
     serverUrl: "http://localhost:3000",
 };
 
-// Global UI manager instance (will be set externally)
 export let uiManager: UIManager | null = null;
 
 export const setUIManager = (manager: UIManager): void => {
     uiManager = manager;
-};
-
-const log = (config: ScreenshotConfig, message: string): void => {
-    if (config.enableLogging) {
-        console.log(`${config.logPrefix}: ${message}`);
-    }
 };
 
 /**
@@ -68,7 +62,7 @@ const log = (config: ScreenshotConfig, message: string): void => {
  * Enhanced for Task 4.4: Include all products for horizontal expansion
  */
 const extractProductDisplayData = (
-    amazonResults: AmazonScrapedBatch,
+    amazonResults: AmazonScrapedBatch, // Revert to original type
 ): ProductDisplayData[] => {
     const displayData: ProductDisplayData[] = [];
 
@@ -107,7 +101,7 @@ const extractProductDisplayData = (
  * @param pauseId Optional: A unique ID for the pause event that triggered this capture
  */
 export const captureScreenshot = async (
-    config: Partial<ScreenshotConfig> = {},
+    config: Partial<ScreenshotConfig> = {}, // Revert to original config parameter
     pauseId?: string,
     getCurrentPauseId?: () => string | null, // New parameter
 ): Promise<void> => {
@@ -120,35 +114,32 @@ export const captureScreenshot = async (
 
     // Use the externally provided UI manager
     if (!uiManager) {
-        log(fullConfig, "Error: UIManager not set in screenshot-capturer.ts");
+        // Changed from this.log to console.error
+        console.error("Error: UIManager not set in screenshot-capturer.ts");
         return;
     }
 
     // Show UI immediately
-    await uiManager.showLoadingSquare();
+    await uiManager.showSidebar(); // Adjusted from showLoadingSquare
+    uiManager.updateLoadingState(LoadingState.PROCESSING); // Set loading state
 
     try {
-        // Update UI state to processing
-        uiManager.updateLoadingState(LoadingState.PROCESSING);
-
         const message: ScreenshotMessage = {
             action: "captureScreenshot",
             config: fullConfig,
-            pauseId: fullConfig.pauseId, // Pass pauseId in the message
+            pauseId: fullConfig.pauseId,
         };
 
         // Send message to background service worker
-        const response = (await chrome.runtime.sendMessage(
-            message,
-        )) as ScreenshotResponse;
+        const response = await chrome.runtime.sendMessage(message); // Removed as ScreenshotResponse cast
 
         if (response.success) {
             // Log analysis results if available
             if (response.analysisResult) {
                 const { products, metadata } = response.analysisResult;
-                log(
-                    fullConfig,
-                    `Analysis complete: ${products.length} products detected in ${metadata.processingTime}ms`,
+                // Changed from log to console.info
+                console.info(
+                    `[Screenshot Capturer] Analysis complete: ${products.length} products detected in ${metadata.processingTime}ms`,
                 );
             }
 
@@ -164,63 +155,63 @@ export const captureScreenshot = async (
                     response.pauseId === currentActivePauseId
                 ) {
                     const amazonResults = response.amazonScrapedResults;
-                    const productDisplayData =
-                        extractProductDisplayData(amazonResults);
+                    const productDisplayData = extractProductDisplayData(amazonResults); // Reverted to original call
 
                     if (productDisplayData.length > 0) {
-                        await uiManager.showProductGrid(productDisplayData);
+                        await uiManager.showProducts(productDisplayData); // Adjusted from showProductGrid
                     } else {
-                        log(
-                            fullConfig,
-                            "No products found, showing temporary message",
+                        // Changed from log to console.info
+                        console.info(
+                            "[Screenshot Capturer] No products found, showing temporary message",
                         );
                         await uiManager.showNoProductsFound(); // Will auto-hide after 3 seconds
                     }
                 } else {
-                    log(
-                        fullConfig,
-                        `Ignoring product display for pauseId ${response.pauseId || "N/A"} as it's not the current active pauseId (${currentActivePauseId || "N/A"})`,
+                    // Changed from log to console.warn
+                    console.warn(
+                        `[Screenshot Capturer] Ignoring product display for pauseId ${response.pauseId || "N/A"} as it's not the current active pauseId (${currentActivePauseId || "N/A"})`,
                     );
                     // Hide UI if this was the only pending action for this pauseId
-                    await uiManager.hideLoadingSquare();
+                    await uiManager.hideSidebar(); // Adjusted from hideLoadingSquare
                 }
             } else {
                 // No scraping results available or no UI manager
-                log(
-                    fullConfig,
+                // Changed from log to console.info
+                console.info(
                     "No scraping results available or UI not initialized, showing no products message",
                 );
                 // Removed uiManager.showNoProductsFound() as it was causing premature hiding
 
                 if (response.amazonScrapedResults) {
                     const { metadata } = response.amazonScrapedResults;
-                    log(
-                        fullConfig,
-                        `Amazon scraping: ${metadata.successfulScrapes}/${metadata.totalSearches} successful, ${metadata.totalProductsFound} products found in ${metadata.totalScrapingTime}ms`,
+                    // Changed from log to console.info
+                    console.info(
+                        `[Screenshot Capturer] Amazon scraping: ${metadata.successfulScrapes}/${metadata.totalSearches} successful, ${metadata.totalProductsFound} products found in ${metadata.totalScrapingTime}ms`,
                     );
                 }
             }
         } else {
-            log(
-                fullConfig,
-                `Screenshot capture failed: ${response.error || "Unknown error"}`,
+            // Changed from log to console.error
+            console.error(
+                `[Screenshot Capturer] Screenshot capture failed: ${response.error || "Unknown error"}`,
             );
 
             // Hide UI on error
-            await uiManager.hideLoadingSquare();
+            await uiManager.hideSidebar(); // Adjusted from hideLoadingSquare
         }
     } catch (error) {
         if (error instanceof Error) {
-            log(
-                fullConfig,
-                `Failed to communicate with background service worker: ${error.message}`,
+            // Changed from log to console.error
+            console.error(
+                `[Screenshot Capturer] Failed to communicate with background service worker: ${error.message}`,
             );
         } else {
-            log(fullConfig, "Unknown error during screenshot capture");
+            // Changed from log to console.error
+            console.error("[Screenshot Capturer] Unknown error during screenshot capture");
         }
 
         // Hide UI on error
-        await uiManager.hideLoadingSquare();
+        await uiManager.hideSidebar(); // Adjusted from hideLoadingSquare
     }
 };
 
@@ -247,3 +238,7 @@ export const cleanupUI = (): void => {
  * Initialize screenshot capture functionality
  */
 export const initializeScreenshotCapturer = (): void => {};
+
+/**
+ * Initialize screenshot capture functionality
+ */

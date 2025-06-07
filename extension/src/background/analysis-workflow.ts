@@ -7,7 +7,6 @@ import { constructAmazonSearchBatch } from "../scraper/amazon-search";
 import { executeAmazonSearchBatch } from "../scraper/amazon-http-client";
 import { scrapeAmazonSearchBatch } from "../scraper/amazon-parser";
 import { captureScreenshot } from "./screenshot-capturer";
-import { log, logWithTimestamp } from "./logger";
 import type { ScreenshotConfig, ScreenshotResponse } from "./types";
 import type { AmazonScrapedProduct } from "../types/amazon";
 
@@ -47,12 +46,12 @@ interface AnalysisErrorMessage {
  * @returns Promise<ScreenshotResponse> The analysis results
  */
 export const handleScreenshotAnalysis = async (
-    config: ScreenshotConfig,
+    config: ScreenshotConfig, // Revert to original config parameter
     windowId: number,
     pauseId?: string,
 ): Promise<ScreenshotResponse> => {
     try {
-        const imageData = await captureScreenshot(config, windowId);
+        const imageData = await captureScreenshot(config, windowId); // Pass config object
 
         // Track all async operations from onProduct callbacks
         const pendingOperations: Promise<void>[] = [];
@@ -72,9 +71,8 @@ export const handleScreenshotAnalysis = async (
                         pauseId: pauseId,
                     })
                     .catch((e) =>
-                        log(
-                            config,
-                            `Error sending analysis_started to tab ${tabId}: ${e.message}`,
+                        console.error(
+                            `[Analysis Workflow] Error sending analysis_started to tab ${tabId}: ${e.message}`,
                         ),
                     );
             }
@@ -144,23 +142,19 @@ export const handleScreenshotAnalysis = async (
                                                 pauseId: pauseId,
                                             } as ProductGroupMessage)
                                             .catch((e) =>
-                                                log(
-                                                    config,
-                                                    `Error sending product group update to tab ${tabId}: ${e.message}`,
+                                                console.error(
+                                                    `[Analysis Workflow] Error sending product group update to tab ${tabId}: ${e.message}`,
                                                 ),
                                             );
                                     } else {
-                                        log(
-                                            config,
-                                            "Could not find active tab to send product group update.",
+                                        console.warn(
+                                            "[Analysis Workflow] Could not find active tab to send product group update.",
                                         );
                                     }
                                 } else {
                                     // Log when no products were found
-                                    logWithTimestamp(
-                                        config,
-                                        "warn",
-                                        "Amazon scraping completed but no products found",
+                                    console.warn(
+                                        `[${new Date().toISOString()}] [Analysis Workflow] Amazon scraping completed but no products found`,
                                         {
                                             originalProductName: product.name,
                                             searchTermsUsed:
@@ -177,16 +171,13 @@ export const handleScreenshotAnalysis = async (
                                     error instanceof Error
                                         ? error.message
                                         : "Unknown Amazon search/scraping error";
-                                log(
-                                    config,
-                                    `Amazon search/scraping failed for streamed product: ${errorMessage}`,
+                                console.error(
+                                    `[Analysis Workflow] Amazon search/scraping failed for streamed product: ${errorMessage}`,
                                 );
 
                                 // Log Amazon scraping failure with timestamp and error details
-                                logWithTimestamp(
-                                    config,
-                                    "error",
-                                    "Amazon scraping failed",
+                                console.error(
+                                    `[${new Date().toISOString()}] [Analysis Workflow] Amazon scraping failed`,
                                     {
                                         originalProductName: product.name,
                                         brand: product.brand,
@@ -210,9 +201,8 @@ export const handleScreenshotAnalysis = async (
                         try {
                             await Promise.allSettled(pendingOperations);
                         } catch (error) {
-                            log(
-                                config,
-                                `Error waiting for product processing: ${error instanceof Error ? error.message : "Unknown error"}`,
+                            console.error(
+                                `[Analysis Workflow] Error waiting for product processing: ${error instanceof Error ? error.message : "Unknown error"}`,
                             );
                         }
 
@@ -229,9 +219,8 @@ export const handleScreenshotAnalysis = async (
                                     pauseId: pauseId,
                                 } as AnalysisCompleteMessage)
                                 .catch((e) =>
-                                    log(
-                                        config,
-                                        `Error sending analysis complete to tab ${tabId}: ${e.message}`,
+                                    console.error(
+                                        `[Analysis Workflow] Error sending analysis complete to tab ${tabId}: ${e.message}`,
                                     ),
                                 );
                         }
@@ -239,7 +228,7 @@ export const handleScreenshotAnalysis = async (
                     },
                     onError: async (error: Event) => {
                         const errorMessage = `Streaming analysis failed: ${error.type || "Unknown error"}`;
-                        log(config, errorMessage);
+                        console.error(`[Analysis Workflow] ${errorMessage}`);
                         const tabId = (
                             await chrome.tabs.query({
                                 active: true,
@@ -254,9 +243,8 @@ export const handleScreenshotAnalysis = async (
                                     pauseId: pauseId,
                                 } as AnalysisErrorMessage)
                                 .catch((e) =>
-                                    log(
-                                        config,
-                                        `Error sending analysis error to tab ${tabId}: ${e.message}`,
+                                    console.error(
+                                        `[Analysis Workflow] Error sending analysis error to tab ${tabId}: ${e.message}`,
                                     ),
                                 );
                         }
@@ -268,16 +256,16 @@ export const handleScreenshotAnalysis = async (
                     },
                 },
                 {
-                    baseUrl: config.serverUrl,
+                    baseUrl: config.serverUrl, // Revert to using config.serverUrl
                 },
             );
-            return { success: true, pauseId: pauseId }; // Return success if analyzeImageStreaming completes without error
+            return { success: true, pauseId: pauseId };
         } catch (error) {
             const errorMessage =
                 error instanceof Error
                     ? error.message
                     : "Failed to start streaming analysis";
-            log(config, errorMessage);
+            console.error(`[Analysis Workflow] ${errorMessage}`);
             const tabId = (
                 await chrome.tabs.query({
                     active: true,
@@ -292,9 +280,8 @@ export const handleScreenshotAnalysis = async (
                         pauseId: pauseId,
                     } as AnalysisErrorMessage)
                     .catch((e) =>
-                        log(
-                            config,
-                            `Error sending analysis error to tab ${tabId}: ${e.message}`,
+                        console.error(
+                            `[Analysis Workflow] Error sending analysis error to tab ${tabId}: ${e.message}`,
                         ),
                     );
             }
@@ -307,7 +294,7 @@ export const handleScreenshotAnalysis = async (
     } catch (error) {
         const errorMessage =
             error instanceof Error ? error.message : "Unknown error";
-        log(config, `Screenshot workflow failed: ${errorMessage}`);
+        console.error(`[Analysis Workflow] Screenshot workflow failed: ${errorMessage}`);
         return { success: false, error: errorMessage, pauseId };
     }
 };

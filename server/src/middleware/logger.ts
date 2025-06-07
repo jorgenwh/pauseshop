@@ -3,16 +3,12 @@
  */
 
 import { Request, Response, NextFunction } from "express";
-import { isDevelopment } from "../utils";
 
 export const requestLogger = (
     req: Request,
     res: Response,
     next: NextFunction,
 ): void => {
-    if (!isDevelopment()) {
-        return next();
-    }
 
     const startTime = Date.now();
     const { method, url, ip } = req;

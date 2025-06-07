@@ -76,6 +76,7 @@ const handlePause =
                 ) {
                     if (!seekingState.isSeeking) {
                         // Trigger screenshot capture for intentional pause, passing the pauseId and a function to get the current pause ID
+                        console.log("sending screenshot capture request");
                         captureScreenshot(
                             { pauseId: newPauseId },
                             newPauseId,
@@ -295,6 +296,12 @@ const scanForVideos = (): HTMLVideoElement | null => {
             }
         }
     });
+
+    if (targetVideo) {
+        console.log(
+            `[PauseShop Video Detector] Found video element: ${targetVideo}`,
+        );
+    }
 
     return targetVideo;
 };

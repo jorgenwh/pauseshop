@@ -3,10 +3,8 @@
  */
 
 export interface ScreenshotConfig {
-    targetWidth: number;
-    enableLogging: boolean;
-    logPrefix: string;
-    debugMode: boolean;
+    targetWidth?: number;
+    debugMode?: boolean;
     serverUrl: string;
     pauseId?: string;
 }
@@ -20,5 +18,18 @@ export interface ScreenshotMessage {
 export interface ScreenshotResponse {
     success: boolean;
     error?: string;
+    analysisResult?: {
+        products: Array<{ name: string }>;
+        metadata: { processingTime: number };
+    };
+    amazonScrapedResults?: {
+        scrapedResults: unknown[];
+        metadata: {
+            successfulScrapes: number;
+            totalSearches: number;
+            totalProductsFound: number;
+            totalScrapingTime: number;
+        };
+    };
     pauseId?: string;
 }

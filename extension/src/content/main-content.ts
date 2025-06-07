@@ -3,8 +3,8 @@ import {
     initializeScreenshotCapturer,
     cleanupUI,
     setUIManager,
-} from "./screenshot-capturer"; // Import setUIManager
-import { UIManager } from "../ui/ui-manager"; // Import UIManager
+} from "./screenshot-capturer";
+import { UIManager } from "../ui/ui-manager";
 
 // Establish a long-lived port connection with the background script
 const backgroundPort = chrome.runtime.connect({
@@ -14,17 +14,12 @@ backgroundPort.onDisconnect.addListener(() => {
     console.log("[Content Script] Disconnected from background script.");
 });
 
-// Initialize screenshot capturer
 initializeScreenshotCapturer();
 
-// Initialize video detection
 const cleanupVideoDetector = initializeVideoDetector();
 
-// Initialize UI Manager immediately when content script loads
 const uiManagerInstance = UIManager.create(
     {
-        enableLogging: false,
-        logPrefix: "PauseShop UI",
     },
     {},
     {},
@@ -45,7 +40,7 @@ window.addEventListener("beforeunload", () => {
     cleanupUI();
 });
 
-// Also cleanup when the content script is about to be destroyed
+// Cleanup when the content script is about to be destroyed
 window.addEventListener("pagehide", () => {
     cleanupVideoDetector();
     cleanupUI();

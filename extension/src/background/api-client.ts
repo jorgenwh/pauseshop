@@ -113,7 +113,7 @@ export const analyzeImageStreaming = async (
     imageData: string,
     callbacks: StreamingCallbacks,
     config: Partial<ServerConfig> = {},
-): Promise<EventSource | null> => {
+): Promise<void> => {
     const fullConfig: ServerConfig = { ...defaultConfig, ...config };
     const url = `${fullConfig.baseUrl}/analyze/stream`;
 
@@ -220,21 +220,12 @@ export const analyzeImageStreaming = async (
 
         processStream();
 
-        // Return a mock EventSource-like object for compatibility
-        return {
-            close: () => {
-                reader.cancel();
-            },
-            readyState: 1, // OPEN
-            url: url,
-        } as EventSource;
     } catch (error) {
         console.error(
             "[API Client] Failed to start streaming analysis:",
             error,
         );
         callbacks.onError(new Event("connection_error"));
-        return null;
     }
 };
 

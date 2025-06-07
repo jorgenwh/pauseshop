@@ -16,9 +16,13 @@ export const captureScreenshot = async (
     config: ScreenshotConfig,
     windowId: number,
 ): Promise<string> => {
+    console.log(`Capturing screenshot at ${new Date().toISOString()}`);
     const dataUrl: string = await chrome.tabs.captureVisibleTab(windowId, {
         format: "png",
     });
+    
+    // log with timestamp that screenshot was captured
+    console.log(`Screenshot captured at ${new Date().toISOString()}`);
 
     // log(config, `Downscaling image to ${config.targetWidth}px width`);
     // const downscaledDataUrl = await downscaleImage(dataUrl, config.targetWidth);

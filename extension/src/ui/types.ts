@@ -8,11 +8,9 @@ import { ProductCard } from "./components/product-card";
 
 export enum LoadingState {
     HIDDEN = "hidden",
-    SLIDING_IN = "sliding-in",
     LOADING = "loading",
     PROCESSING = "processing",
     NO_PRODUCTS_FOUND = "no-products-found",
-    SLIDING_OUT = "sliding-out",
 }
 
 export enum ProductDisplayState {
@@ -22,27 +20,10 @@ export enum ProductDisplayState {
 }
 
 export interface UIConfig {
-    enableLogging: boolean;
-    logPrefix: string;
     containerClassName: string;
     zIndex: number;
 }
 
-export interface LoadingSquareConfig {
-    size: number;
-    borderRadius: number;
-    backgroundColor: string;
-    position: {
-        top: number;
-        right: number;
-    };
-    animations: {
-        slideInDuration: number;
-        slideOutDuration: number;
-        pulseDuration: number;
-    };
-    noProductsFoundTimeout?: number; // milliseconds to show before auto-hide (default: 3000)
-}
 
 export interface AnimationConfig {
     duration: number;
@@ -54,8 +35,6 @@ export interface UIManagerEvents {
     onShow?: () => void;
     onHide?: () => void;
     onStateChange?: (state: LoadingState) => void;
-    onProductGridShow?: () => void;
-    onProductGridHide?: () => void;
 }
 
 export interface ProductDisplayData {
@@ -194,10 +173,3 @@ export interface Sidebar {
 }
 
 // Enhanced UI Manager configuration for sidebar
-export interface SidebarUIConfig extends UIConfig {
-    sidebarConfig: SidebarConfig;
-    headerConfig: SidebarHeaderConfig;
-    loadingConfig: LoadingStateConfig;
-    productListConfig: ProductListConfig;
-    messageStateConfig: MessageStateConfig;
-}

@@ -4,7 +4,6 @@
  */
 
 import { handleScreenshotAnalysis } from "./analysis-workflow";
-import { log } from "./logger";
 import type { ScreenshotMessage, ScreenshotResponse } from "./types";
 
 // Store active ports to content scripts
@@ -31,10 +30,10 @@ chrome.runtime.onMessage.addListener(
         sender: chrome.runtime.MessageSender,
         sendResponse: (response: ScreenshotResponse) => void,
     ) => {
+        console.log("Received message:", message);
         if (message.action === "captureScreenshot") {
-            log(
-                message.config,
-                `Received screenshot capture request for pauseId: ${message.pauseId || "N/A"}`,
+            console.log(
+                `[Service Worker] Received screenshot capture request for pauseId: ${message.pauseId || "N/A"}`,
             );
             const windowId =
                 sender.tab?.windowId || chrome.windows.WINDOW_ID_CURRENT;
@@ -48,21 +47,23 @@ chrome.runtime.onMessage.addListener(
 
                     // Check for lastError after sending to detect if the receiving end exists
                     if (chrome.runtime.lastError) {
-                        log(
-                            message.config,
-                            `Message port closed, unable to send response: ${chrome.runtime.lastError.message}`,
+                        console.error(
+                            `[Service Worker] Message port closed, unable to send response: ${chrome.runtime.lastError.message}`,
                         );
                     }
                 } catch (error) {
                     // Catch any synchronous errors when calling sendResponse
-                    log(
-                        message.config,
-                        `Failed to send response - receiving end may not exist: ${error}`,
+                    console.error(
+                        `[Service Worker] Failed to send response - receiving end may not exist: ${error}`,
                     );
                 }
             };
 
-            handleScreenshotAnalysis(message.config, windowId, message.pauseId)
+            handleScreenshotAnalysis(
+                message.config, // Pass the entire config object
+                windowId,
+                message.pauseId,
+            )
                 .then(safeSendResponse)
                 .catch((error) => {
                     console.error("Screenshot analysis error:", error);
@@ -76,3 +77,5 @@ chrome.runtime.onMessage.addListener(
         }
     },
 );
+
+console.log("PauseShop Background Service Worker initialized.");
