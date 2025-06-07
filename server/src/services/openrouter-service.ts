@@ -1,9 +1,8 @@
 /**
  * OpenRouter Service
- * Handles streaming image analysis using OpenRouter's API with support for multiple models and thinking budget
+ * Handles streaming image analysis using OpenRouter's API with support for multiple models
  */
 
-import OpenAI from "openai";
 import {
     AnalysisService,
     OpenRouterConfig,
@@ -13,19 +12,10 @@ import { handleAPIError, loadPrompt } from "./analysis-utils";
 import { DefaultPartialProductParser } from "./partial-product-parser";
 
 export class OpenRouterService implements AnalysisService {
-    private client: OpenAI;
     private config: OpenRouterConfig;
 
     constructor(config: OpenRouterConfig) {
         this.config = config;
-        this.client = new OpenAI({
-            baseURL: "https://openrouter.ai/api/v1",
-            apiKey: config.apiKey,
-            defaultHeaders: {
-                "HTTP-Referer": config.siteUrl || "",
-                "X-Title": config.siteName || "",
-            },
-        });
     }
 
     /**
@@ -50,7 +40,7 @@ export class OpenRouterService implements AnalysisService {
             let firstTokenTime: number | null = null;
             let lastTokenTime: number | null = null;
 
-            const stream = await this.client.chat.completions.create({
+            const body = JSON.stringify({
                 model: this.config.model,
                 messages: [
                     {
@@ -70,25 +60,65 @@ export class OpenRouterService implements AnalysisService {
                 max_tokens: this.config.maxTokens,
             });
 
+            const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+                method: "POST",
+                headers: {
+                    Authorization: `Bearer ${this.config.apiKey}`,
+                    "Content-Type": "application/json",
+                    "HTTP-Referer": this.config.siteUrl || "",
+                    "X-Title": this.config.siteName || "",
+                },
+                body,
+            });
+
+            const reader = response.body?.getReader();
+            if (!reader) throw new Error("Response body is not readable");
+
+            const decoder = new TextDecoder();
+            let buffer = "";
             let fullContent = "";
-            let usage: OpenAI.CompletionUsage | undefined;
+            let usage: any = undefined;
 
-            for await (const chunk of stream) {
-                if (firstTokenTime === null) {
-                    firstTokenTime = Date.now();
-                }
-                lastTokenTime = Date.now();
+            try {
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
 
-                const content = chunk.choices[0]?.delta?.content || "";
-                if (content) {
-                    fullContent += content;
-                    const products = parser.parse(content);
-                    products.forEach((product) => callbacks.onProduct(product));
-                }
+                    buffer += decoder.decode(value, { stream: true });
 
-                if (chunk.usage) {
-                    usage = chunk.usage;
+                    while (true) {
+                        const lineEnd = buffer.indexOf('\n');
+                        if (lineEnd === -1) break;
+
+                        const line = buffer.slice(0, lineEnd).trim();
+                        buffer = buffer.slice(lineEnd + 1);
+
+                        if (line.startsWith('data: ')) {
+                            const data = line.slice(6);
+                            if (data === '[DONE]') break;
+
+                            try {
+                                const parsed = JSON.parse(data);
+                                const content = parsed.choices?.[0]?.delta?.content || "";
+                                if (content) {
+                                    if (firstTokenTime === null) firstTokenTime = Date.now();
+                                    lastTokenTime = Date.now();
+
+                                    fullContent += content;
+                                    const products = parser.parse(content);
+                                    products.forEach((product) => callbacks.onProduct(product));
+                                }
+                                if (parsed.usage) {
+                                    usage = parsed.usage;
+                                }
+                            } catch (e) {
+                                // Ignore invalid JSON
+                            }
+                        }
+                    }
                 }
+            } finally {
+                reader.cancel();
             }
 
             const processingTime = Date.now() - startTime;
