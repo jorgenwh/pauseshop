@@ -7,7 +7,6 @@ module.exports = {
         "background/service-worker": "./src/background/service-worker.ts",
         "content/main-content": "./src/content/main-content.ts",
         "popup/popup": "./src/popup/popup.ts",
-        "ui/styles": "./src/ui/base.css",
     },
     output: {
         path: path.resolve(__dirname, "dist"),
@@ -39,9 +38,6 @@ module.exports = {
         },
     },
     plugins: [
-        new MiniCssExtractPlugin({
-            filename: "ui/styles.css",
-        }),
         new CopyWebpackPlugin({
             patterns: [
                 {
