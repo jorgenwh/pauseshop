@@ -3,12 +3,7 @@
  * Handles HTTP requests to the PauseShop backend server
  */
 
-interface ServerConfig {
-    baseUrl: string;
-    timeout: number;
-    retryAttempts: number;
-    retryDelay: number;
-}
+import { SERVER_BASE_URL } from "./constants";
 
 interface AnalyzeRequest {
     image: string;
@@ -56,55 +51,6 @@ enum TargetGender {
     GIRL = "girl",
 }
 
-const defaultConfig: ServerConfig = {
-    baseUrl: "http://localhost:3000",
-    timeout: 30000, // 30 seconds
-    retryAttempts: 3,
-    retryDelay: 1000, // 1 second
-};
-
-/**
- * Sleeps for the specified number of milliseconds
- */
-const sleep = (ms: number): Promise<void> => {
-    return new Promise((resolve) => setTimeout(resolve, ms));
-};
-
-/**
- * Makes an HTTP request with timeout and retry logic
- */
-const makeRequest = async (
-    url: string,
-    options: RequestInit,
-    config: ServerConfig,
-    attempt: number = 1,
-): Promise<Response> => {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), config.timeout);
-
-    try {
-        const response = await fetch(url, {
-            ...options,
-            signal: controller.signal,
-        });
-
-        clearTimeout(timeoutId);
-        return response;
-    } catch (error) {
-        clearTimeout(timeoutId);
-
-        if (attempt < config.retryAttempts) {
-            console.log(
-                `[API Client] Request failed (attempt ${attempt}/${config.retryAttempts}), retrying in ${config.retryDelay}ms...`,
-            );
-            await sleep(config.retryDelay);
-            return makeRequest(url, options, config, attempt + 1);
-        }
-
-        throw error;
-    }
-};
-
 /**
  * Sends image data to the server for streaming analysis
  * Uses a workaround to send POST data with EventSource by first initiating the stream
@@ -112,10 +58,8 @@ const makeRequest = async (
 export const analyzeImageStreaming = async (
     imageData: string,
     callbacks: StreamingCallbacks,
-    config: Partial<ServerConfig> = {},
-): Promise<EventSource | null> => {
-    const fullConfig: ServerConfig = { ...defaultConfig, ...config };
-    const url = `${fullConfig.baseUrl}/analyze/stream`;
+): Promise<void> => {
+    const url = `${SERVER_BASE_URL}/analyze/stream`;
 
     const request: AnalyzeRequest = {
         image: imageData,
@@ -219,39 +163,11 @@ export const analyzeImageStreaming = async (
         };
 
         processStream();
-
-        // Return a mock EventSource-like object for compatibility
-        return {
-            close: () => {
-                reader.cancel();
-            },
-            readyState: 1, // OPEN
-            url: url,
-        } as EventSource;
     } catch (error) {
         console.error(
             "[API Client] Failed to start streaming analysis:",
             error,
         );
         callbacks.onError(new Event("connection_error"));
-        return null;
-    }
-};
-
-/**
- * Tests server connectivity
- */
-export const testServerConnection = async (
-    config: Partial<ServerConfig> = {},
-): Promise<boolean> => {
-    const fullConfig: ServerConfig = { ...defaultConfig, ...config };
-    const url = `${fullConfig.baseUrl}/health`;
-
-    try {
-        const response = await makeRequest(url, { method: "GET" }, fullConfig);
-        return response.ok;
-    } catch (error) {
-        console.error("[API Client] Server connectivity test failed:", error);
-        return false;
     }
 };

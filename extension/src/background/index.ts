@@ -1,7 +1,3 @@
-/**
- * Background module exports for PauseShop extension
- */
-
 // Core service worker
 export * from "./service-worker";
 
@@ -11,7 +7,6 @@ export * from "./analysis-workflow";
 // Utilities
 export * from "./screenshot-capturer";
 export * from "./image-processor";
-export * from "./logger";
 export * from "./debug-utils";
 
 // Types

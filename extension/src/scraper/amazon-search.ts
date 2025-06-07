@@ -7,22 +7,12 @@ import {
     Product,
     ProductCategory,
     TargetGender,
-    AmazonSearchConfig,
-    AmazonSearchResult,
-    AmazonSearchBatch,
+    AmazonSearch,
     CategoryNodeMapping,
     SearchTermValidationResult,
 } from "../types/amazon";
+import { AMAZON_DOMAIN, AMAZON_ENABLE_CATEGORT_FILTERING, AMAZON_MAX_SEARCH_TERM_LENGHT } from "./constants";
 
-// Default configuration for Amazon searches
-const DEFAULT_CONFIG: AmazonSearchConfig = {
-    domain: "amazon.com",
-    maxSearchTermLength: 200,
-    enableCategoryFiltering: true,
-    fallbackToGenericSearch: true,
-};
-
-// Amazon category node mappings for refined searches
 const CATEGORY_NODES: CategoryNodeMapping = {
     [ProductCategory.CLOTHING]: "7141123011", // Clothing, Shoes & Jewelry
     [ProductCategory.FOOTWEAR]: "679255011", // Shoes
@@ -151,43 +141,31 @@ const getCategoryNode = (category: ProductCategory): string | null => {
 /**
  * Constructs an Amazon search URL for a single product
  */
-const constructSearchUrl = (
+export const constructAmazonSearch = (
     product: Product,
-    config: AmazonSearchConfig = DEFAULT_CONFIG,
-): AmazonSearchResult => {
-    // Generate unique product ID
-    const productId = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+): AmazonSearch | null => {
+    const id = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
-    // Optimize search terms
     const rawSearchTerms = optimizeSearchTerms(product);
     const validation = validateSearchTerms(
         rawSearchTerms,
-        config.maxSearchTermLength,
+        AMAZON_MAX_SEARCH_TERM_LENGHT,
     );
 
     if (!validation.isValid) {
-        // Return failed result
-        return {
-            productId,
-            searchUrl: "",
-            searchTerms: rawSearchTerms,
-            category: product.category,
-            confidence: 0,
-            originalProduct: product,
-        };
+        return null;
     }
 
     const searchTerms = validation.processedTerms;
 
-    // Build base URL
-    const baseUrl = `https://www.${config.domain}/s`;
+    const baseUrl = `https://www.${AMAZON_DOMAIN}/s`;
     const urlParams = new URLSearchParams();
 
     // Add search terms
     urlParams.append("k", searchTerms);
 
     // Add category filtering if enabled
-    if (config.enableCategoryFiltering) {
+    if (AMAZON_ENABLE_CATEGORT_FILTERING) {
         const categoryNode = getCategoryNode(product.category);
         if (categoryNode) {
             urlParams.append("rh", `n:${categoryNode}`);
@@ -205,104 +183,13 @@ const constructSearchUrl = (
 
     const searchUrl = `${baseUrl}?${urlParams.toString()}`;
 
-    // Calculate confidence score based on data quality
-    let confidence = 0.5; // Base confidence
-
-    // Higher confidence if we have AI-generated search terms
-    if (product.searchTerms && product.searchTerms.trim()) {
-        confidence += 0.3;
-    }
-
-    // Higher confidence if we have brand info
-    if (product.brand && product.brand !== "unknown") {
-        confidence += 0.1;
-    }
-
-    // Higher confidence if we have color info
-    if (product.primaryColor && product.primaryColor !== "unknown") {
-        confidence += 0.1;
-    }
-
-    // Cap confidence at 1.0
-    confidence = Math.min(confidence, 1.0);
-
     return {
-        productId,
+        id,
         searchUrl,
         searchTerms,
         category: product.category,
-        confidence,
-        originalProduct: product,
+        product: product,
     };
-};
-
-/**
- * Constructs Amazon search URLs for multiple products
- */
-export const constructAmazonSearchBatch = (
-    products: Product[],
-    config: Partial<AmazonSearchConfig> = {},
-): AmazonSearchBatch => {
-    const startTime = Date.now();
-    const fullConfig: AmazonSearchConfig = { ...DEFAULT_CONFIG, ...config };
-
-    const searchResults: AmazonSearchResult[] = [];
-    let successfulSearches = 0;
-    let failedSearches = 0;
-
-    for (const product of products) {
-        try {
-            const result = constructSearchUrl(product, fullConfig);
-            searchResults.push(result);
-
-            if (result.searchUrl) {
-                successfulSearches++;
-            } else {
-                failedSearches++;
-            }
-        } catch (error) {
-            failedSearches++;
-            console.warn(
-                "Failed to construct search URL for product:",
-                product.name,
-                error,
-            );
-
-            // Add failed result for tracking
-            searchResults.push({
-                productId: `failed-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-                searchUrl: "",
-                searchTerms: product.name || "unknown",
-                category: product.category,
-                confidence: 0,
-                originalProduct: product,
-            });
-        }
-    }
-
-    const processingTime = Date.now() - startTime;
-
-    return {
-        searchResults,
-        config: fullConfig,
-        metadata: {
-            totalProducts: products.length,
-            successfulSearches,
-            failedSearches,
-            processingTime,
-        },
-    };
-};
-
-/**
- * Constructs a single Amazon search URL (convenience function)
- */
-export const constructSingleAmazonSearch = (
-    product: Product,
-    config: Partial<AmazonSearchConfig> = {},
-): AmazonSearchResult => {
-    const fullConfig: AmazonSearchConfig = { ...DEFAULT_CONFIG, ...config };
-    return constructSearchUrl(product, fullConfig);
 };
 
 /**

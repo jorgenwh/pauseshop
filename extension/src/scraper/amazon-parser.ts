@@ -4,21 +4,11 @@
  */
 
 import {
-    AmazonSearchExecutionBatch,
-    AmazonSearchExecutionResult,
-    AmazonScrapedBatch,
+    AmazonSearchResult,
     AmazonScrapedResult,
     AmazonScrapedProduct,
-    AmazonParserConfig,
 } from "../types/amazon";
-
-// Default configuration for Amazon HTML parsing
-const DEFAULT_PARSER_CONFIG: AmazonParserConfig = {
-    maxProductsPerSearch: 5,
-    requireThumbnail: true,
-    validateUrls: true,
-    timeoutMs: 5000,
-};
+import { AMAZON_MAX_PRODUCTS_PER_SEARCH } from "./constants";
 
 /**
  * Extracts thumbnail image URL from HTML content using regex
@@ -177,49 +167,33 @@ const extractProductDataFromHtml = (
     asin: string,
     position: number,
     baseUrl: string,
-    config: AmazonParserConfig,
 ): AmazonScrapedProduct | null => {
     try {
-        const productId = `scraped-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+        const id = `scraped-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
         // Extract core data using regex patterns
         const thumbnailUrl = extractThumbnailUrlFromHtml(htmlContent);
         const productUrl = extractProductUrlFromHtml(htmlContent, baseUrl);
 
-        // Validate required fields based on configuration
-        if (config.requireThumbnail && !thumbnailUrl) {
+        if (!thumbnailUrl) {
             return null;
         }
-
         if (!productUrl) {
             return null;
         }
-
-        // Validate URLs if enabled
-        if (config.validateUrls) {
-            if (thumbnailUrl && !isValidImageUrl(thumbnailUrl)) {
-                return null;
-            }
-
-            if (!isValidProductUrl(productUrl)) {
-                return null;
-            }
+        if (thumbnailUrl && !isValidImageUrl(thumbnailUrl)) {
+            return null;
+        }
+        if (!isValidProductUrl(productUrl)) {
+            return null;
         }
 
-        // Calculate confidence score
-        let confidence = 0.5; // Base confidence
-
-        if (thumbnailUrl) confidence += 0.2;
-        if (productUrl) confidence += 0.3;
-        if (asin) confidence += 0.1;
-
         const productData = {
-            productId,
+            id,
             amazonAsin: asin || undefined,
             thumbnailUrl: thumbnailUrl || "",
             productUrl,
             position,
-            confidence: Math.min(confidence, 1.0),
         };
 
         return productData;
@@ -236,7 +210,6 @@ const extractProductDataFromHtml = (
 const parseAmazonSearchHtml = (
     htmlContent: string,
     baseUrl: string,
-    config: AmazonParserConfig,
 ): AmazonScrapedProduct[] => {
     try {
         // Extract product containers using regex patterns (avoid duplicates by prioritizing specific patterns)
@@ -260,7 +233,7 @@ const parseAmazonSearchHtml = (
 
             while (
                 (match = pattern.exec(htmlContent)) !== null &&
-                position <= config.maxProductsPerSearch
+                position <= AMAZON_MAX_PRODUCTS_PER_SEARCH
             ) {
                 const asin = match[1];
                 const containerHtml = match[2];
@@ -273,7 +246,6 @@ const parseAmazonSearchHtml = (
                     asin,
                     position,
                     baseUrl,
-                    config,
                 );
 
                 if (productData) {
@@ -288,7 +260,7 @@ const parseAmazonSearchHtml = (
         }
 
         // If we still haven't found enough products, try more flexible patterns
-        if (position <= config.maxProductsPerSearch) {
+        if (position <= AMAZON_MAX_PRODUCTS_PER_SEARCH) {
             const flexiblePatterns = [
                 // Pattern with role="listitem"
                 /<div[^>]*role="listitem"[^>]*data-asin="([^"]+)"[^>]*data-component-type="s-search-result"[^>]*>([\s\S]*?)(?=<div[^>]*role="listitem"|$)/gi,
@@ -301,7 +273,7 @@ const parseAmazonSearchHtml = (
 
                 while (
                     (match = pattern.exec(htmlContent)) !== null &&
-                    position <= config.maxProductsPerSearch
+                    position <= AMAZON_MAX_PRODUCTS_PER_SEARCH
                 ) {
                     const asin = match[1];
                     const containerHtml = match[2];
@@ -314,7 +286,6 @@ const parseAmazonSearchHtml = (
                         asin,
                         position,
                         baseUrl,
-                        config,
                     );
 
                     if (productData) {
@@ -337,193 +308,36 @@ const parseAmazonSearchHtml = (
 };
 
 /**
- * Validates a scraped product for completeness and quality
- */
-const validateScrapedProduct = (
-    product: AmazonScrapedProduct,
-    config: AmazonParserConfig,
-): boolean => {
-    // Check required fields
-    if (!product.productUrl) return false;
-
-    if (config.requireThumbnail && !product.thumbnailUrl) return false;
-
-    // Check URL validity if enabled
-    if (config.validateUrls) {
-        if (product.thumbnailUrl && !isValidImageUrl(product.thumbnailUrl))
-            return false;
-        if (!isValidProductUrl(product.productUrl)) return false;
-    }
-
-    // Check confidence threshold
-    if (product.confidence < 0.3) return false;
-
-    return true;
-};
-
-/**
  * Scrapes a single Amazon search execution result
  */
-const scrapeAmazonSearchResult = (
-    executionResult: AmazonSearchExecutionResult,
-    config: AmazonParserConfig,
-): AmazonScrapedResult => {
-    const startTime = Date.now();
-
-    if (!executionResult.success || !executionResult.htmlContent) {
-        return {
-            productId: executionResult.productId,
-            searchUrl: executionResult.searchUrl,
-            success: false,
-            products: [],
-            error: executionResult.error || "No HTML content available",
-            scrapingTime: Date.now() - startTime,
-            originalSearchResult: executionResult.originalSearchResult,
-            originalExecutionResult: executionResult,
-        };
-    }
-
+export const scrapeAmazonSearchResult = (
+    searchResult: AmazonSearchResult,
+): AmazonScrapedResult | null => {
     try {
         // Extract base URL for relative link resolution
-        const baseUrl = new URL(executionResult.searchUrl).origin;
+        const baseUrl = new URL(searchResult.searchUrl).origin;
 
         // Parse HTML and extract products
         const scrapedProducts = parseAmazonSearchHtml(
-            executionResult.htmlContent,
+            searchResult.htmlContent,
             baseUrl,
-            config,
-        );
-
-        // Validate scraped products
-        const validProducts = scrapedProducts.filter((product) =>
-            validateScrapedProduct(product, config),
         );
 
         return {
-            productId: executionResult.productId,
-            searchUrl: executionResult.searchUrl,
-            success: validProducts.length > 0,
-            products: validProducts,
-            error:
-                validProducts.length === 0
-                    ? "No valid products found"
-                    : undefined,
-            scrapingTime: Date.now() - startTime,
-            originalSearchResult: executionResult.originalSearchResult,
-            originalExecutionResult: executionResult,
+            id: searchResult.id,
+            searchUrl: searchResult.searchUrl,
+            products: scrapedProducts,
+            search: searchResult.search,
+            searchResult: searchResult,
         };
     } catch (error) {
         const errorMessage =
             error instanceof Error ? error.message : "Unknown scraping error";
+        console.warn(
+            `[PauseShop] Failed to scrape search result: ${searchResult.id}`,
+            errorMessage,
+        );
 
-        return {
-            productId: executionResult.productId,
-            searchUrl: executionResult.searchUrl,
-            success: false,
-            products: [],
-            error: errorMessage,
-            scrapingTime: Date.now() - startTime,
-            originalSearchResult: executionResult.originalSearchResult,
-            originalExecutionResult: executionResult,
-        };
+        return null;
     }
-};
-
-/**
- * Scrapes Amazon search results from an execution batch
- */
-export const scrapeAmazonSearchBatch = (
-    executionBatch: AmazonSearchExecutionBatch,
-    config: Partial<AmazonParserConfig> = {},
-): AmazonScrapedBatch => {
-    const startTime = Date.now();
-    const fullConfig: AmazonParserConfig = {
-        ...DEFAULT_PARSER_CONFIG,
-        ...config,
-    };
-
-    const scrapedResults: AmazonScrapedResult[] = [];
-    let successfulScrapes = 0;
-    let failedScrapes = 0;
-    let totalProductsFound = 0;
-
-    for (const executionResult of executionBatch.executionResults) {
-        try {
-            const scrapedResult = scrapeAmazonSearchResult(
-                executionResult,
-                fullConfig,
-            );
-            scrapedResults.push(scrapedResult);
-
-            if (scrapedResult.success) {
-                successfulScrapes++;
-                totalProductsFound += scrapedResult.products.length;
-            } else {
-                failedScrapes++;
-            }
-        } catch (error) {
-            failedScrapes++;
-            console.warn(
-                "Failed to scrape execution result:",
-                executionResult.productId,
-                error,
-            );
-
-            // Add failed result for tracking
-            scrapedResults.push({
-                productId: executionResult.productId,
-                searchUrl: executionResult.searchUrl,
-                success: false,
-                products: [],
-                error: error instanceof Error ? error.message : "Unknown error",
-                scrapingTime: 0,
-                originalSearchResult: executionResult.originalSearchResult,
-                originalExecutionResult: executionResult,
-            });
-        }
-    }
-
-    const totalScrapingTime = Date.now() - startTime;
-
-    // Log final batch summary
-    console.log(`[PauseShop] Amazon Scraping Complete:`, {
-        totalSearches: executionBatch.executionResults.length,
-        successfulScrapes,
-        failedScrapes,
-        totalProductsFound,
-        totalScrapingTime: `${totalScrapingTime}ms`,
-    });
-
-    return {
-        scrapedResults,
-        config: fullConfig,
-        metadata: {
-            totalSearches: executionBatch.executionResults.length,
-            successfulScrapes,
-            failedScrapes,
-            totalProductsFound,
-            totalScrapingTime,
-        },
-    };
-};
-
-/**
- * Gets the default parser configuration
- */
-export const getDefaultParserConfig = (): AmazonParserConfig => {
-    return { ...DEFAULT_PARSER_CONFIG };
-};
-
-/**
- * Scrapes a single Amazon search execution result (convenience function)
- */
-export const scrapeSingleAmazonResult = (
-    executionResult: AmazonSearchExecutionResult,
-    config: Partial<AmazonParserConfig> = {},
-): AmazonScrapedResult => {
-    const fullConfig: AmazonParserConfig = {
-        ...DEFAULT_PARSER_CONFIG,
-        ...config,
-    };
-    return scrapeAmazonSearchResult(executionResult, fullConfig);
 };
