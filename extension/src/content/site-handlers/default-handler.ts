@@ -1,4 +1,4 @@
-import { VideoDetectorConfig, SeekingState } from "../../types/video";
+import { SeekingState } from "../../types/video";
 import { SiteHandler } from "./site-handler";
 
 export class DefaultHandler implements SiteHandler {
@@ -8,7 +8,6 @@ export class DefaultHandler implements SiteHandler {
     }
 
     handleUserInteraction(
-        _config: VideoDetectorConfig,
         _seekingState: SeekingState,
     ) {
         return (_event: Event): void => {
@@ -28,7 +27,6 @@ export class DefaultHandler implements SiteHandler {
     }
 
     attachSiteSpecificListeners(
-        _config: VideoDetectorConfig,
         _seekingState: SeekingState,
     ): (() => void) | null {
         // Default handler doesn't need additional listeners

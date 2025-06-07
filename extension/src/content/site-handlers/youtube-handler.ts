@@ -1,4 +1,4 @@
-import { VideoDetectorConfig, SeekingState } from "../../types/video";
+import { SeekingState } from "../../types/video";
 import { SiteHandler } from "./site-handler";
 
 export class YouTubeHandler implements SiteHandler {
@@ -7,14 +7,11 @@ export class YouTubeHandler implements SiteHandler {
     }
 
     handleUserInteraction(
-        config: VideoDetectorConfig,
         seekingState: SeekingState,
     ) {
         return (event: Event): void => {
-            // Only consider interactions that are likely to be seeking-related
             const target = event.target as HTMLElement;
 
-            // For keyboard events, only consider seeking shortcuts
             if (event.type === "keydown") {
                 const keyEvent = event as KeyboardEvent;
                 const isSeekingKey = [
@@ -73,7 +70,6 @@ export class YouTubeHandler implements SiteHandler {
     }
 
     getDebounceTime(seekingState: SeekingState): number {
-        // Use longer debounce only if there was a recent interaction that might indicate seeking
         const hasRecentInteraction =
             seekingState.userInteractionDetected &&
             Date.now() - seekingState.lastInteractionTime < 1000;
@@ -81,19 +77,15 @@ export class YouTubeHandler implements SiteHandler {
     }
 
     attachSiteSpecificListeners(
-        config: VideoDetectorConfig,
         seekingState: SeekingState,
     ): () => void {
         const interactionHandler = this.handleUserInteraction(
-            config,
             seekingState,
         );
 
-        // Listen for mouse interactions on progress bar and keyboard shortcuts
         const mouseDownHandler = interactionHandler;
         const keyDownHandler = (event: Event) => {
             const keyEvent = event as KeyboardEvent;
-            // Arrow keys and other seeking shortcuts
             if (
                 ["ArrowLeft", "ArrowRight", "j", "l", "k"].includes(
                     keyEvent.key,

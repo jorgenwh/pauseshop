@@ -1,4 +1,4 @@
-import { VideoDetectorConfig, SeekingState } from "../../types/video";
+import { SeekingState } from "../../types/video";
 import { SiteHandler } from "./site-handler";
 import { YouTubeHandler } from "./youtube-handler";
 import { DefaultHandler } from "./default-handler";
@@ -41,11 +41,9 @@ export class SiteHandlerRegistry {
     }
 
     attachSiteSpecificListeners(
-        config: VideoDetectorConfig,
         seekingState: SeekingState,
     ): (() => void) | null {
         return this.activeHandler.attachSiteSpecificListeners(
-            config,
             seekingState,
         );
     }
