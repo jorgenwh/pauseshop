@@ -75,7 +75,7 @@ export class UIManager {
                         this.events.onStateChange?.(LoadingState.LOADING);
                         break;
                     case SidebarContentState.PRODUCTS:
-this.events.onShow?.();
+                        this.events.onShow?.();
                         break;
                     case SidebarContentState.NO_PRODUCTS:
                         this.events.onStateChange?.(
@@ -145,14 +145,11 @@ this.events.onShow?.();
             return false;
         }
 
-
         try {
             await this.sidebar.show();
 
             // log with timestamp that sidebar is shown
-            console.log(
-                `Sidebar shown at ${new Date().toISOString()}`
-            );
+            console.log(`Sidebar shown at ${new Date().toISOString()}`);
 
             this.sidebar.setState("loading");
             return true;
@@ -161,7 +158,6 @@ this.events.onShow?.();
             return false;
         }
     }
-
 
     /**
      * Hide the sidebar
@@ -179,7 +175,6 @@ this.events.onShow?.();
             return false;
         }
     }
-
 
     /**
      * Update loading state
@@ -220,9 +215,7 @@ this.events.onShow?.();
             this.sidebar.setState("noProducts");
 
             // Use configured timeout or default
-            const timeout =
-                timeoutMs ??
-                8000;
+            const timeout = timeoutMs ?? 8000;
 
             // Auto-hide after timeout
             this.noProductsFoundTimeoutId = setTimeout(async () => {
@@ -339,9 +332,6 @@ this.events.onShow?.();
         sendResponse(true);
     };
 
-
-
-
     /**
     /**
      * @deprecated Use sidebar methods instead
@@ -381,7 +371,6 @@ this.events.onShow?.();
 
         return LoadingState.HIDDEN;
     }
-
 
     /**
      * Get current sidebar state
@@ -482,7 +471,6 @@ this.events.onShow?.();
         return true;
     }
 
-
     /**
      * Static method to create and initialize a UI manager
      */
@@ -491,10 +479,7 @@ this.events.onShow?.();
         sidebarConfig?: Partial<SidebarConfig>,
     ): UIManager | null {
         try {
-            const manager = new UIManager(
-                events,
-                sidebarConfig,
-            );
+            const manager = new UIManager(events, sidebarConfig);
             if (manager.initialize()) {
                 return manager;
             }

@@ -39,4 +39,3 @@ window.addEventListener("pagehide", () => {
     cleanupVideoDetector();
     cleanupUI();
 });
-

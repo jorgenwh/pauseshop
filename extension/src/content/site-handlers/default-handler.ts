@@ -7,9 +7,7 @@ export class DefaultHandler implements SiteHandler {
         return true;
     }
 
-    handleUserInteraction(
-        _seekingState: SeekingState,
-    ) {
+    handleUserInteraction(_seekingState: SeekingState) {
         return (_event: Event): void => {
             // Default handler doesn't need special interaction detection
             // Most sites work fine with the standard pause/seeking event handling

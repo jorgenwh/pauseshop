@@ -9,7 +9,6 @@ export const requestLogger = (
     res: Response,
     next: NextFunction,
 ): void => {
-
     const startTime = Date.now();
     const { method, url, ip } = req;
 

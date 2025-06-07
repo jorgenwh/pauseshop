@@ -5,12 +5,6 @@ export enum VideoEventType {
     SEEKED = "seeked",
 }
 
-export interface SeekingDetectionConfig {
-    seekingDebounceMs: number; // Time to wait after seeking before resuming normal detection
-    timeJumpThreshold: number; // Minimum time jump to consider as seeking (in seconds)
-    enableTimeBasedDetection: boolean; // Enable fallback time-based seeking detection
-}
-
 export interface VideoEventData {
     type: VideoEventType;
     videoElement?: HTMLVideoElement;

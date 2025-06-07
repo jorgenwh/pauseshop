@@ -43,8 +43,6 @@ export class SiteHandlerRegistry {
     attachSiteSpecificListeners(
         seekingState: SeekingState,
     ): (() => void) | null {
-        return this.activeHandler.attachSiteSpecificListeners(
-            seekingState,
-        );
+        return this.activeHandler.attachSiteSpecificListeners(seekingState);
     }
 }

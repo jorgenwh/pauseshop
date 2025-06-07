@@ -294,7 +294,9 @@ export const handleScreenshotAnalysis = async (
     } catch (error) {
         const errorMessage =
             error instanceof Error ? error.message : "Unknown error";
-        console.error(`[Analysis Workflow] Screenshot workflow failed: ${errorMessage}`);
+        console.error(
+            `[Analysis Workflow] Screenshot workflow failed: ${errorMessage}`,
+        );
         return { success: false, error: errorMessage, pauseId };
     }
 };

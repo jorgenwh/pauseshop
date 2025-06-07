@@ -155,7 +155,8 @@ export const captureScreenshot = async (
                     response.pauseId === currentActivePauseId
                 ) {
                     const amazonResults = response.amazonScrapedResults;
-                    const productDisplayData = extractProductDisplayData(amazonResults); // Reverted to original call
+                    const productDisplayData =
+                        extractProductDisplayData(amazonResults); // Reverted to original call
 
                     if (productDisplayData.length > 0) {
                         await uiManager.showProducts(productDisplayData); // Adjusted from showProductGrid
@@ -207,7 +208,9 @@ export const captureScreenshot = async (
             );
         } else {
             // Changed from log to console.error
-            console.error("[Screenshot Capturer] Unknown error during screenshot capture");
+            console.error(
+                "[Screenshot Capturer] Unknown error during screenshot capture",
+            );
         }
 
         // Hide UI on error

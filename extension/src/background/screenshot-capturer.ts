@@ -20,7 +20,7 @@ export const captureScreenshot = async (
     const dataUrl: string = await chrome.tabs.captureVisibleTab(windowId, {
         format: "png",
     });
-    
+
     // log with timestamp that screenshot was captured
     console.log(`Screenshot captured at ${new Date().toISOString()}`);
 

@@ -6,9 +6,7 @@ export class YouTubeHandler implements SiteHandler {
         return window.location.hostname.includes("youtube.com");
     }
 
-    handleUserInteraction(
-        seekingState: SeekingState,
-    ) {
+    handleUserInteraction(seekingState: SeekingState) {
         return (event: Event): void => {
             const target = event.target as HTMLElement;
 
@@ -22,7 +20,6 @@ export class YouTubeHandler implements SiteHandler {
                 ].includes(keyEvent.key);
                 if (!isSeekingKey) return;
             } else if (event.type === "mousedown") {
-                // Only detect mousedown on very specific progress bar elements
                 const isProgressBarInteraction =
                     target &&
                     (target.classList.contains("ytp-progress-bar") ||
@@ -33,7 +30,6 @@ export class YouTubeHandler implements SiteHandler {
                         (target.closest(".ytp-chrome-bottom") &&
                             target.closest(".ytp-progress-bar")));
 
-                // Explicitly exclude pause button and other controls
                 const isPauseButton =
                     target.classList.contains("ytp-play-button") ||
                     target.closest(".ytp-play-button") ||
@@ -76,12 +72,8 @@ export class YouTubeHandler implements SiteHandler {
         return hasRecentInteraction ? 5000 : 300;
     }
 
-    attachSiteSpecificListeners(
-        seekingState: SeekingState,
-    ): () => void {
-        const interactionHandler = this.handleUserInteraction(
-            seekingState,
-        );
+    attachSiteSpecificListeners(seekingState: SeekingState): () => void {
+        const interactionHandler = this.handleUserInteraction(seekingState);
 
         const mouseDownHandler = interactionHandler;
         const keyDownHandler = (event: Event) => {

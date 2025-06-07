@@ -219,7 +219,6 @@ export const analyzeImageStreaming = async (
         };
 
         processStream();
-
     } catch (error) {
         console.error(
             "[API Client] Failed to start streaming analysis:",
