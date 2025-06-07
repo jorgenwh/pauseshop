@@ -18,5 +18,5 @@ export interface SeekingState {
     previousCurrentTime: number;
     userInteractionDetected: boolean;
     lastInteractionTime: number;
-    currentPauseId: string | null; // Unique ID for the current active pause event
+    currentPauseId: string | null;
 }

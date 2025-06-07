@@ -288,12 +288,11 @@ export class UIManager {
                 thumbnailUrl: message.scrapedProducts[0]?.thumbnailUrl || "",
                 allProducts: message.scrapedProducts.map(
                     (p: AmazonScrapedProduct) => ({
-                        productId: p.productId,
+                        id: p.id,
                         amazonAsin: p.amazonAsin,
                         thumbnailUrl: p.thumbnailUrl,
                         productUrl: p.productUrl,
                         position: p.position,
-                        confidence: p.confidence,
                     }),
                 ),
                 category: message.originalProduct.category as ProductCategory,
@@ -332,28 +331,14 @@ export class UIManager {
         sendResponse(true);
     };
 
-    /**
-    /**
-     * @deprecated Use sidebar methods instead
-     */
-
-    /**
-     * Hide all UI components
-     */
     public async hideUI(): Promise<void> {
         await this.hideSidebar();
     }
 
-    /**
-     * Check if UI is currently visible
-     */
     public isUIVisible(): boolean {
         return this.sidebar?.isVisible() ?? false;
     }
 
-    /**
-     * Get current loading state
-     */
     public getCurrentState(): LoadingState {
         if (this.sidebar) {
             // Map sidebar state to loading state
@@ -372,16 +357,10 @@ export class UIManager {
         return LoadingState.HIDDEN;
     }
 
-    /**
-     * Get current sidebar state
-     */
     public getCurrentSidebarState(): SidebarState {
         return this.currentSidebarState;
     }
 
-    /**
-     * Check if any animations are running
-     */
     public isAnimating(): boolean {
         if (this.sidebar) {
             const state = this.sidebar.getCurrentState();
@@ -394,9 +373,6 @@ export class UIManager {
         return false;
     }
 
-    /**
-     * Complete cleanup of all UI components
-     */
     public cleanup(): void {
         // Clear any pending no products found timeout
         if (this.noProductsFoundTimeoutId) {
@@ -424,9 +400,6 @@ export class UIManager {
         chrome.runtime.onMessage.removeListener(this.handleBackgroundMessages);
     }
 
-    /**
-     * Create the main UI container
-     */
     private createContainer(): void {
         // Remove existing container if it exists
         const existingContainer = document.querySelector(
@@ -461,9 +434,6 @@ export class UIManager {
         chrome.runtime.onMessage.addListener(this.handleBackgroundMessages);
     }
 
-    /**
-     * Ensure UI manager is initialized
-     */
     private ensureInitialized(): boolean {
         if (!this.isInitialized) {
             return this.initialize();
@@ -471,9 +441,6 @@ export class UIManager {
         return true;
     }
 
-    /**
-     * Static method to create and initialize a UI manager
-     */
     public static create(
         events?: UIManagerEvents,
         sidebarConfig?: Partial<SidebarConfig>,

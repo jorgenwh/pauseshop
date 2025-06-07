@@ -3,24 +3,18 @@
  * Handles rate limiting, retry logic, and realistic browser headers
  */
 
+import { 
+    AMAZON_MAX_CONCURRENT_REQUESTS, 
+    AMAZON_MAX_RETRIES, 
+    AMAZON_REQUEST_DELAY_MS, 
+    AMAZON_TIMEOUT_MS, 
+    AMAZON_USER_AGENT_ROTATE 
+} from "@/background/constants";
 import {
-    AmazonSearchBatch,
+    AmazonSearch,
     AmazonSearchResult,
-    AmazonHttpConfig,
-    AmazonSearchExecutionResult,
-    AmazonSearchExecutionBatch,
 } from "../types/amazon";
 
-// Default configuration for Amazon HTTP requests
-const DEFAULT_HTTP_CONFIG: AmazonHttpConfig = {
-    maxConcurrentRequests: 3,
-    requestDelayMs: 1500,
-    timeoutMs: 10000,
-    maxRetries: 2,
-    userAgentRotation: true,
-};
-
-// Realistic user agents for rotation
 const USER_AGENTS = [
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
@@ -31,8 +25,8 @@ const USER_AGENTS = [
 
 // Request queue to manage concurrency
 interface QueuedRequest {
-    searchResult: AmazonSearchResult;
-    resolve: (result: AmazonSearchExecutionResult) => void;
+    search: AmazonSearch;
+    resolve: (result: AmazonSearchResult | null) => void;
     reject: (error: Error) => void;
     retryCount: number;
 }
@@ -40,22 +34,19 @@ interface QueuedRequest {
 class AmazonHttpClient {
     private requestQueue: QueuedRequest[] = [];
     private activeRequests = 0;
-    private config: AmazonHttpConfig;
     private userAgentIndex = 0;
 
-    constructor(config: AmazonHttpConfig = DEFAULT_HTTP_CONFIG) {
-        this.config = config;
-    }
+    constructor() { }
 
     /**
      * Generates realistic headers for Amazon requests
      */
     private generateRealisticHeaders(_url: string): HeadersInit {
-        const userAgent = this.config.userAgentRotation
+        const userAgent = AMAZON_USER_AGENT_ROTATE
             ? USER_AGENTS[this.userAgentIndex % USER_AGENTS.length]
             : USER_AGENTS[0];
 
-        if (this.config.userAgentRotation) {
+        if (AMAZON_USER_AGENT_ROTATE) {
             this.userAgentIndex++;
         }
 
@@ -75,11 +66,8 @@ class AmazonHttpClient {
         };
     }
 
-    /**
-     * Implements rate limiting delay
-     */
     private async handleRateLimit(): Promise<void> {
-        const delay = this.config.requestDelayMs + Math.random() * 500; // Add jitter
+        const delay = AMAZON_REQUEST_DELAY_MS + Math.random() * 500; // Add jitter
         return new Promise((resolve) => setTimeout(resolve, delay));
     }
 
@@ -87,40 +75,34 @@ class AmazonHttpClient {
      * Executes a single Amazon search request with retry logic
      */
     private async executeAmazonSearchWithRetry(
-        searchResult: AmazonSearchResult,
+        search: AmazonSearch,
         retryCount = 0,
-    ): Promise<AmazonSearchExecutionResult> {
-        const startTime = Date.now();
-
+    ): Promise<AmazonSearchResult | null> {
         try {
-            // Apply rate limiting
             if (this.activeRequests > 0) {
                 await this.handleRateLimit();
             }
 
             this.activeRequests++;
 
-            // Generate headers
             const headers = this.generateRealisticHeaders(
-                searchResult.searchUrl,
+                search.searchUrl,
             );
 
-            // Create abort controller for timeout
             const controller = new AbortController();
             const timeoutId = setTimeout(
                 () => controller.abort(),
-                this.config.timeoutMs,
+                AMAZON_TIMEOUT_MS
             );
 
             try {
-                const response = await fetch(searchResult.searchUrl, {
+                const response = await fetch(search.searchUrl, {
                     method: "GET",
                     headers,
                     signal: controller.signal,
                 });
 
                 clearTimeout(timeoutId);
-                const responseTime = Date.now() - startTime;
 
                 if (!response.ok) {
                     throw new Error(
@@ -147,14 +129,10 @@ class AmazonHttpClient {
                 }
 
                 return {
-                    productId: searchResult.productId,
-                    searchUrl: searchResult.searchUrl,
-                    success: true,
+                    id: search.id,
+                    searchUrl: search.searchUrl,
                     htmlContent,
-                    statusCode: response.status,
-                    responseTime,
-                    retryCount,
-                    originalSearchResult: searchResult,
+                    search: search,
                 };
             } catch (fetchError) {
                 clearTimeout(timeoutId);
@@ -164,21 +142,20 @@ class AmazonHttpClient {
                     fetchError.name === "AbortError"
                 ) {
                     throw new Error(
-                        `Request timeout after ${this.config.timeoutMs}ms`,
+                        `Request timeout after ${AMAZON_TIMEOUT_MS}ms`,
                     );
                 }
 
                 throw fetchError;
             }
         } catch (error) {
-            const responseTime = Date.now() - startTime;
             const errorMessage =
                 error instanceof Error ? error.message : "Unknown error";
 
             // Retry logic
-            if (retryCount < this.config.maxRetries) {
+            if (retryCount < AMAZON_MAX_RETRIES) {
                 console.warn(
-                    `Amazon request failed (attempt ${retryCount + 1}/${this.config.maxRetries + 1}): ${errorMessage}`,
+                    `Amazon request failed (attempt ${retryCount + 1}/${AMAZON_MAX_RETRIES + 1}): ${errorMessage}`,
                 );
 
                 // Exponential backoff with jitter
@@ -189,21 +166,11 @@ class AmazonHttpClient {
                 );
 
                 return this.executeAmazonSearchWithRetry(
-                    searchResult,
+                    search,
                     retryCount + 1,
                 );
             }
-
-            // Final failure
-            return {
-                productId: searchResult.productId,
-                searchUrl: searchResult.searchUrl,
-                success: false,
-                error: errorMessage,
-                responseTime,
-                retryCount,
-                originalSearchResult: searchResult,
-            };
+            return null;
         } finally {
             this.activeRequests--;
         }
@@ -215,14 +182,14 @@ class AmazonHttpClient {
     private async processQueue(): Promise<void> {
         while (
             this.requestQueue.length > 0 &&
-            this.activeRequests < this.config.maxConcurrentRequests
+            this.activeRequests < AMAZON_MAX_CONCURRENT_REQUESTS
         ) {
             const queuedRequest = this.requestQueue.shift();
             if (!queuedRequest) continue;
 
             // Process request asynchronously
             this.executeAmazonSearchWithRetry(
-                queuedRequest.searchResult,
+                queuedRequest.search,
                 queuedRequest.retryCount,
             )
                 .then(queuedRequest.resolve)
@@ -234,11 +201,11 @@ class AmazonHttpClient {
      * Executes a single Amazon search request
      */
     async executeAmazonSearch(
-        searchResult: AmazonSearchResult,
-    ): Promise<AmazonSearchExecutionResult> {
-        return new Promise<AmazonSearchExecutionResult>((resolve, reject) => {
+        search: AmazonSearch,
+    ): Promise<AmazonSearchResult | null> {
+        return new Promise<AmazonSearchResult | null>((resolve, reject) => {
             this.requestQueue.push({
-                searchResult,
+                search,
                 resolve,
                 reject,
                 retryCount: 0,
@@ -247,115 +214,15 @@ class AmazonHttpClient {
             this.processQueue();
         });
     }
-
-    /**
-     * Executes multiple Amazon search requests in batch
-     */
-    async executeAmazonSearchBatch(
-        searchBatch: AmazonSearchBatch,
-    ): Promise<AmazonSearchExecutionBatch> {
-        const startTime = Date.now();
-        const executionResults: AmazonSearchExecutionResult[] = [];
-
-        try {
-            // Filter out failed search results from Task 3.1
-            const validSearchResults = searchBatch.searchResults.filter(
-                (result) => result.searchUrl && result.searchUrl.length > 0,
-            );
-
-            if (validSearchResults.length === 0) {
-                return {
-                    executionResults: [],
-                    config: this.config,
-                    metadata: {
-                        totalRequests: 0,
-                        successfulRequests: 0,
-                        failedRequests: 0,
-                        totalExecutionTime: Date.now() - startTime,
-                        averageResponseTime: 0,
-                    },
-                };
-            }
-
-            // Execute all requests
-            const promises = validSearchResults.map((searchResult) =>
-                this.executeAmazonSearch(searchResult),
-            );
-
-            const results = await Promise.all(promises);
-            executionResults.push(...results);
-
-            // Calculate metadata
-            const totalExecutionTime = Date.now() - startTime;
-            const successfulRequests = executionResults.filter(
-                (r) => r.success,
-            ).length;
-            const failedRequests = executionResults.length - successfulRequests;
-            const totalResponseTime = executionResults.reduce(
-                (sum, r) => sum + r.responseTime,
-                0,
-            );
-            const averageResponseTime =
-                executionResults.length > 0
-                    ? totalResponseTime / executionResults.length
-                    : 0;
-
-            return {
-                executionResults,
-                config: this.config,
-                metadata: {
-                    totalRequests: executionResults.length,
-                    successfulRequests,
-                    failedRequests,
-                    totalExecutionTime,
-                    averageResponseTime,
-                },
-            };
-        } catch (error) {
-            console.error("Batch execution failed:", error);
-
-            return {
-                executionResults,
-                config: this.config,
-                metadata: {
-                    totalRequests: searchBatch.searchResults.length,
-                    successfulRequests: 0,
-                    failedRequests: searchBatch.searchResults.length,
-                    totalExecutionTime: Date.now() - startTime,
-                    averageResponseTime: 0,
-                },
-            };
-        }
-    }
 }
 
-/**
- * Executes Amazon search requests for multiple products
- */
-export const executeAmazonSearchBatch = async (
-    searchBatch: AmazonSearchBatch,
-    config: Partial<AmazonHttpConfig> = {},
-): Promise<AmazonSearchExecutionBatch> => {
-    const fullConfig: AmazonHttpConfig = { ...DEFAULT_HTTP_CONFIG, ...config };
-    const client = new AmazonHttpClient(fullConfig);
-    return client.executeAmazonSearchBatch(searchBatch);
-};
 
 /**
  * Executes a single Amazon search request (convenience function)
  */
 export const executeAmazonSearch = async (
-    searchResult: AmazonSearchResult,
-    config: Partial<AmazonHttpConfig> = {},
-): Promise<AmazonSearchExecutionResult> => {
-    const fullConfig: AmazonHttpConfig = { ...DEFAULT_HTTP_CONFIG, ...config };
-    const client = new AmazonHttpClient(fullConfig);
-    return client.executeAmazonSearch(searchResult);
-};
-
-/**
- * Gets the default HTTP configuration
- */
-export const getDefaultHttpConfig = (): AmazonHttpConfig => {
-    return { ...DEFAULT_HTTP_CONFIG };
+    search: AmazonSearch,
+): Promise<AmazonSearchResult | null> => {
+    const client = new AmazonHttpClient();
+    return client.executeAmazonSearch(search);
 };

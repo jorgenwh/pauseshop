@@ -3,12 +3,7 @@
  * Handles HTTP requests to the PauseShop backend server
  */
 
-interface ServerConfig {
-    baseUrl: string;
-    timeout: number;
-    retryAttempts: number;
-    retryDelay: number;
-}
+import { SERVER_BASE_URL, SERVER_RETRY_ATTEMPTS, SERVER_RETRY_DELAY_MS, SERVER_TIMEOUT_MS } from "./constants";
 
 interface AnalyzeRequest {
     image: string;
@@ -56,16 +51,6 @@ enum TargetGender {
     GIRL = "girl",
 }
 
-const defaultConfig: ServerConfig = {
-    baseUrl: "http://localhost:3000",
-    timeout: 30000, // 30 seconds
-    retryAttempts: 3,
-    retryDelay: 1000, // 1 second
-};
-
-/**
- * Sleeps for the specified number of milliseconds
- */
 const sleep = (ms: number): Promise<void> => {
     return new Promise((resolve) => setTimeout(resolve, ms));
 };
@@ -76,11 +61,10 @@ const sleep = (ms: number): Promise<void> => {
 const makeRequest = async (
     url: string,
     options: RequestInit,
-    config: ServerConfig,
     attempt: number = 1,
 ): Promise<Response> => {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), config.timeout);
+    const timeoutId = setTimeout(() => controller.abort(), SERVER_TIMEOUT_MS);
 
     try {
         const response = await fetch(url, {
@@ -93,12 +77,12 @@ const makeRequest = async (
     } catch (error) {
         clearTimeout(timeoutId);
 
-        if (attempt < config.retryAttempts) {
+        if (attempt < SERVER_RETRY_ATTEMPTS) {
             console.log(
-                `[API Client] Request failed (attempt ${attempt}/${config.retryAttempts}), retrying in ${config.retryDelay}ms...`,
+                `[API Client] Request failed (attempt ${attempt}/${SERVER_RETRY_ATTEMPTS}), retrying in ${SERVER_RETRY_DELAY_MS}ms...`,
             );
-            await sleep(config.retryDelay);
-            return makeRequest(url, options, config, attempt + 1);
+            await sleep(SERVER_RETRY_DELAY_MS);
+            return makeRequest(url, options, attempt + 1);
         }
 
         throw error;
@@ -112,10 +96,8 @@ const makeRequest = async (
 export const analyzeImageStreaming = async (
     imageData: string,
     callbacks: StreamingCallbacks,
-    config: Partial<ServerConfig> = {},
 ): Promise<void> => {
-    const fullConfig: ServerConfig = { ...defaultConfig, ...config };
-    const url = `${fullConfig.baseUrl}/analyze/stream`;
+    const url = `${SERVER_BASE_URL}/analyze/stream`;
 
     const request: AnalyzeRequest = {
         image: imageData,
@@ -225,23 +207,5 @@ export const analyzeImageStreaming = async (
             error,
         );
         callbacks.onError(new Event("connection_error"));
-    }
-};
-
-/**
- * Tests server connectivity
- */
-export const testServerConnection = async (
-    config: Partial<ServerConfig> = {},
-): Promise<boolean> => {
-    const fullConfig: ServerConfig = { ...defaultConfig, ...config };
-    const url = `${fullConfig.baseUrl}/health`;
-
-    try {
-        const response = await makeRequest(url, { method: "GET" }, fullConfig);
-        return response.ok;
-    } catch (error) {
-        console.error("[API Client] Server connectivity test failed:", error);
-        return false;
     }
 };

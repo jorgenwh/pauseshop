@@ -51,11 +51,7 @@ const handlePause = (
                 seekingState.currentPauseId === newPauseId
             ) {
                 if (!seekingState.isSeeking) {
-                    captureScreenshot(
-                        { pauseId: newPauseId },
-                        newPauseId,
-                        () => seekingState.currentPauseId, // Pass a function to get the current pause ID
-                    ).catch((_error) => {
+                    captureScreenshot(newPauseId).catch((_error) => {
                         // Error logging is handled within captureScreenshot
                     });
                 }
