@@ -3,7 +3,7 @@
  * Handles HTTP requests to the PauseShop backend server
  */
 
-import { SERVER_BASE_URL, SERVER_RETRY_ATTEMPTS, SERVER_RETRY_DELAY_MS, SERVER_TIMEOUT_MS } from "./constants";
+import { SERVER_BASE_URL } from "./constants";
 
 interface AnalyzeRequest {
     image: string;
@@ -50,44 +50,6 @@ enum TargetGender {
     BOY = "boy",
     GIRL = "girl",
 }
-
-const sleep = (ms: number): Promise<void> => {
-    return new Promise((resolve) => setTimeout(resolve, ms));
-};
-
-/**
- * Makes an HTTP request with timeout and retry logic
- */
-const makeRequest = async (
-    url: string,
-    options: RequestInit,
-    attempt: number = 1,
-): Promise<Response> => {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), SERVER_TIMEOUT_MS);
-
-    try {
-        const response = await fetch(url, {
-            ...options,
-            signal: controller.signal,
-        });
-
-        clearTimeout(timeoutId);
-        return response;
-    } catch (error) {
-        clearTimeout(timeoutId);
-
-        if (attempt < SERVER_RETRY_ATTEMPTS) {
-            console.log(
-                `[API Client] Request failed (attempt ${attempt}/${SERVER_RETRY_ATTEMPTS}), retrying in ${SERVER_RETRY_DELAY_MS}ms...`,
-            );
-            await sleep(SERVER_RETRY_DELAY_MS);
-            return makeRequest(url, options, attempt + 1);
-        }
-
-        throw error;
-    }
-};
 
 /**
  * Sends image data to the server for streaming analysis
