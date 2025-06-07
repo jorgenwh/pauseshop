@@ -19,12 +19,6 @@ export enum ProductDisplayState {
     DISPLAYED = "displayed",
 }
 
-export interface UIConfig {
-    containerClassName: string;
-    zIndex: number;
-}
-
-
 export interface AnimationConfig {
     duration: number;
     easing: string;
@@ -67,8 +61,6 @@ export interface SidebarConfig {
         slideInDuration: number;
         slideOutDuration: number;
     };
-    enableBackdropBlur: boolean;
-    enableGlassmorphism: boolean;
 }
 
 export interface SidebarHeaderConfig {

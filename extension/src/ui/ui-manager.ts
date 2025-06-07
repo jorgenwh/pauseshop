@@ -7,7 +7,6 @@ import { Sidebar } from "./components/sidebar";
 import { AmazonScrapedProduct, ProductCategory } from "../types/amazon";
 import {
     LoadingState,
-    UIConfig,
     UIManagerEvents,
     ProductDisplayData,
     SidebarState,
@@ -19,6 +18,8 @@ import {
 
 export class UIManager {
     private container: HTMLElement | null = null;
+    private containerClassName: string = "pauseshop-ui-container";
+    private zIndex: number = 999999;
 
     // Sidebar state management
     private sidebar: Sidebar | null = null;
@@ -26,23 +27,14 @@ export class UIManager {
     private sidebarConfig: SidebarConfig;
     private sidebarEvents: SidebarEvents;
 
-    private config: UIConfig;
     private events: UIManagerEvents;
     private isInitialized: boolean = false;
     private noProductsFoundTimeoutId: NodeJS.Timeout | null = null;
 
     constructor(
-        config: Partial<UIConfig> = {},
         events: UIManagerEvents = {},
         sidebarConfig: Partial<SidebarConfig> = {},
     ) {
-        this.config = {
-            containerClassName: "pauseshop-ui-container",
-            zIndex: 999999,
-            ...config,
-        };
-
-
         this.events = events;
 
         // Configure sidebar system
@@ -55,14 +47,6 @@ export class UIManager {
                 slideOutDuration:
                     sidebarConfig.animations?.slideOutDuration || 500,
             },
-            enableBackdropBlur:
-                sidebarConfig.enableBackdropBlur !== undefined
-                    ? sidebarConfig.enableBackdropBlur
-                    : true,
-            enableGlassmorphism:
-                sidebarConfig.enableGlassmorphism !== undefined
-                    ? sidebarConfig.enableGlassmorphism
-                    : true,
         };
 
         // Configure sidebar events
@@ -457,14 +441,14 @@ this.events.onShow?.();
     private createContainer(): void {
         // Remove existing container if it exists
         const existingContainer = document.querySelector(
-            `.${this.config.containerClassName}`,
+            `.${this.containerClassName}`,
         );
         if (existingContainer) {
             existingContainer.remove();
         }
 
         this.container = document.createElement("div");
-        this.container.className = this.config.containerClassName;
+        this.container.className = this.containerClassName;
 
         // Apply container styles
         const containerStyles = {
@@ -474,7 +458,7 @@ this.events.onShow?.();
             width: "100%",
             height: "100%",
             pointerEvents: "none" as const,
-            zIndex: this.config.zIndex.toString(),
+            zIndex: this.zIndex.toString(),
             userSelect: "none" as const,
         };
 
@@ -503,13 +487,11 @@ this.events.onShow?.();
      * Static method to create and initialize a UI manager
      */
     public static create(
-        config?: Partial<UIConfig>,
         events?: UIManagerEvents,
         sidebarConfig?: Partial<SidebarConfig>,
     ): UIManager | null {
         try {
             const manager = new UIManager(
-                config,
                 events,
                 sidebarConfig,
             );

@@ -346,16 +346,8 @@ const createDOMObserver = (
 };
 
 export const initializeVideoDetector = (
-    userConfig: Partial<VideoDetectorConfig> = {},
 ): CleanupFunction => {
-    const config: VideoDetectorConfig = {
-        ...defaultConfig,
-        ...userConfig,
-        seekingDetection: {
-            ...defaultSeekingDetectionConfig,
-            ...userConfig.seekingDetection,
-        },
-    };
+    const seekingDetectionConfig: SeekingDetectionConfig = defaultSeekingDetectionConfig;
 
     // Initialize site handler registry
     const siteHandlerRegistry = new SiteHandlerRegistry();

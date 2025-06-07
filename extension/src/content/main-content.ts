@@ -18,15 +18,9 @@ initializeScreenshotCapturer();
 
 const cleanupVideoDetector = initializeVideoDetector();
 
-const uiManagerInstance = UIManager.create(
-    {
-    },
-    {},
-    {},
-);
+const uiManagerInstance = UIManager.create();
 
 if (uiManagerInstance) {
-    console.log("PauseShop UI: UIManager initialized in main-content.ts");
     setUIManager(uiManagerInstance); // Pass the initialized UIManager to screenshot-capturer
 } else {
     console.error(

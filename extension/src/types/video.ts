@@ -11,12 +11,6 @@ export interface SeekingDetectionConfig {
     enableTimeBasedDetection: boolean; // Enable fallback time-based seeking detection
 }
 
-export interface VideoDetectorConfig {
-    enableLogging?: boolean;
-    logPrefix?: string;
-    seekingDetection?: Partial<SeekingDetectionConfig>;
-}
-
 export interface VideoEventData {
     type: VideoEventType;
     videoElement?: HTMLVideoElement;

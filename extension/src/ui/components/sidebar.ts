@@ -25,10 +25,6 @@ export class Sidebar {
     private messageComponent: MessageState | null = null; // Renamed from noProductsComponent
     private contentContainer: HTMLElement | null = null;
 
-    // Internal state elements for the three views
-    private loadingElement: HTMLElement | null = null;
-    private noProductsElement: HTMLElement | null = null;
-
     private currentState: SidebarState = SidebarState.HIDDEN;
     private currentContentState: SidebarContentState =
         SidebarContentState.LOADING;
@@ -44,14 +40,6 @@ export class Sidebar {
                 slideInDuration: config.animations?.slideInDuration || 150,
                 slideOutDuration: config.animations?.slideOutDuration || 500,
             },
-            enableBackdropBlur:
-                config.enableBackdropBlur !== undefined
-                    ? config.enableBackdropBlur
-                    : true,
-            enableGlassmorphism:
-                config.enableGlassmorphism !== undefined
-                    ? config.enableGlassmorphism
-                    : true,
         };
         this.events = events;
     }
@@ -406,17 +394,6 @@ export class Sidebar {
         await this.productListComponent.show();
 
         await this.productListComponent.addProduct(product);
-    }
-
-    /**
-     * Hide the loading state and show product list (or empty state if no products)
-     */
-    public hideLoading(): void {
-        // This method is called when analysis is complete but no products are found,
-        // or when products are about to be displayed.
-        // The content state will be set by showProducts or showNoProducts,
-        // which will also handle hiding the loading component.
-        // No explicit action needed here beyond what clearContent() does.
     }
 
     /**
