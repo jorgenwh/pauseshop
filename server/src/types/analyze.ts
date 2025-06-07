@@ -63,7 +63,6 @@ export interface OpenRouterConfig {
     apiKey: string;
     model: string;
     maxTokens: number;
-    thinkingBudget?: number; // OpenRouter specific
     siteUrl?: string;
     siteName?: string;
     promptCostPerToken: number;
