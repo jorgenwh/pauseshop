@@ -7,6 +7,7 @@ import {
     AnalysisService,
     OpenRouterConfig,
     StreamingCallbacks,
+    OpenRouterResponse,
 } from "../types/analyze";
 import { handleAPIError, loadPrompt } from "./analysis-utils";
 import { DefaultPartialProductParser } from "./partial-product-parser";
@@ -77,18 +78,16 @@ export class OpenRouterService implements AnalysisService {
             const decoder = new TextDecoder();
             let buffer = "";
             let fullContent = "";
-            let usage: any = undefined;
+            let usage: OpenRouterResponse['usage'] = undefined;
 
             try {
-                while (true) {
-                    const { done, value } = await reader.read();
-                    if (done) break;
-
+                let done;
+                let value;
+                while (({ done, value } = await reader.read()) && !done) {
                     buffer += decoder.decode(value, { stream: true });
 
-                    while (true) {
-                        const lineEnd = buffer.indexOf('\n');
-                        if (lineEnd === -1) break;
+                    let lineEnd;
+                    while ((lineEnd = buffer.indexOf('\n')) !== -1) {
 
                         const line = buffer.slice(0, lineEnd).trim();
                         buffer = buffer.slice(lineEnd + 1);
@@ -109,7 +108,11 @@ export class OpenRouterService implements AnalysisService {
                                     products.forEach((product) => callbacks.onProduct(product));
                                 }
                                 if (parsed.usage) {
-                                    usage = parsed.usage;
+                                    usage = {
+                                        promptTokens: parsed.usage.prompt_tokens,
+                                        completionTokens: parsed.usage.completion_tokens,
+                                        totalTokens: parsed.usage.total_tokens,
+                                    };
                                 }
                             } catch (e) {
                                 // Ignore invalid JSON
@@ -128,22 +131,22 @@ export class OpenRouterService implements AnalysisService {
                     : 0;
 
             const promptCost =
-                (usage?.prompt_tokens || 0) * this.config.promptCostPerToken;
+                (usage?.promptTokens || 0) * this.config.promptCostPerToken;
             const completionCost =
-                (usage?.completion_tokens || 0) *
+                (usage?.completionTokens || 0) *
                 this.config.completionCostPerToken;
             const totalCost = promptCost + completionCost;
             console.log(
-                `[OPENROUTER_SERVICE] LLM Streaming Analysis completed in ${processingTime}ms (streaming duration: ${streamingDuration}ms). Tokens: [${usage?.prompt_tokens}/${usage?.completion_tokens}/${usage?.total_tokens}]. Cost: $${totalCost.toFixed(6)}`,
+                `[OPENROUTER_SERVICE] LLM Streaming Analysis completed in ${processingTime}ms (streaming duration: ${streamingDuration}ms). Tokens: [${usage?.promptTokens}/${usage?.completionTokens}/${usage?.totalTokens}]. Cost: $${totalCost.toFixed(6)}`,
             );
 
             callbacks.onComplete({
                 content: fullContent,
                 usage: usage
                     ? {
-                          promptTokens: usage.prompt_tokens,
-                          completionTokens: usage.completion_tokens,
-                          totalTokens: usage.total_tokens,
+                          promptTokens: usage.promptTokens,
+                          completionTokens: usage.completionTokens,
+                          totalTokens: usage.totalTokens,
                       }
                     : undefined,
             });
