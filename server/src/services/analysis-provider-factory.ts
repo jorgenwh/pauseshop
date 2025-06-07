@@ -3,24 +3,24 @@
  * Creates the appropriate analysis service based on environment configuration
  */
 
-import { OpenAIService } from "./openai-service";
-import { RequestyService } from "./requesty-service";
-import { GeminiService } from "./gemini-service";
-import { OpenRouterService } from "./openrouter-service";
 import {
-    AnalysisService,
-    AnalysisProvider,
-    OpenAIConfig,
-    RequestyConfig,
-    GeminiConfig,
-    OpenRouterConfig,
-} from "../types/analyze";
-import {
-    OPENAI_MODEL_PRICING,
     GEMINI_MODEL_PRICING,
-    REQUESTY_MODEL_PRICING,
+    OPENAI_MODEL_PRICING,
     OPENROUTER_MODEL_PRICING,
+    REQUESTY_MODEL_PRICING,
 } from "../config/model-pricing";
+import {
+    AnalysisProvider,
+    AnalysisService,
+    GeminiConfig,
+    OpenAIConfig,
+    OpenRouterConfig,
+    RequestyConfig,
+} from "../types/analyze";
+import { GeminiService } from "./gemini-service";
+import { OpenAIService } from "./openai-service";
+import { OpenRouterService } from "./openrouter-service";
+import { RequestyService } from "./requesty-service";
 
 /**
  * Get OpenAI configuration from environment variables
@@ -127,7 +127,6 @@ const getOpenRouterConfig = (): OpenRouterConfig => {
         apiKey,
         model,
         maxTokens: parseInt(process.env.OPENROUTER_MAX_TOKENS || "1000"),
-        thinkingBudget: parseInt(process.env.OPENROUTER_THINKING_BUDGET || "0"),
         siteUrl: process.env.OPENROUTER_SITE_URL,
         siteName: process.env.OPENROUTER_SITE_NAME,
         promptCostPerToken: pricing.promptCostPerMillionTokens / 1_000_000,
