@@ -2,7 +2,9 @@ import { initializeVideoDetector } from "./video-detector";
 import {
     initializeScreenshotCapturer,
     cleanupUI,
+    setUIManager,
 } from "./screenshot-capturer";
+import { UIManager } from "../ui/ui-manager";
 
 // Establish a long-lived port connection with the background script
 const backgroundPort = chrome.runtime.connect({
@@ -15,6 +17,16 @@ backgroundPort.onDisconnect.addListener(() => {
 initializeScreenshotCapturer();
 
 const cleanupVideoDetector = initializeVideoDetector();
+
+const uiManagerInstance = UIManager.create();
+
+if (uiManagerInstance) {
+    setUIManager(uiManagerInstance); // Pass the initialized UIManager to screenshot-capturer
+} else {
+    console.error(
+        "PauseShop UI: Failed to initialize UIManager in main-content.ts",
+    );
+}
 
 // Cleanup when page unloads
 window.addEventListener("beforeunload", () => {
