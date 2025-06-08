@@ -7,12 +7,3 @@ It is important that the project and its code remains readable, scalable and mai
 Development should be done in small increments, with small and concise pull requests being made for each increment.
 The code should be test-driven.
 Use comments conservatively, and make the code as self-describeable as possible.
-
-## Testing Requirements
-
-⚠️ **Important**: Extension testing can only be performed manually by the project owner. When testing is needed:
-
-- Request manual testing from the project owner
-- Do not attempt to launch browser tools or create testing environments
-- Provide clear instructions on what to test and what logs to look for
-- Manual testing is required to verify extension functionality on actual video streaming sites
