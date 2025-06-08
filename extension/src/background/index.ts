@@ -6,7 +6,6 @@ export * from "./analysis-workflow";
 
 // Utilities
 export * from "./screenshot-capturer";
-export * from "./image-processor";
 export * from "./debug-utils";
 
 // Types
