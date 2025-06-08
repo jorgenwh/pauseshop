@@ -38,6 +38,9 @@ module.exports = {
         },
     },
     plugins: [
+        new MiniCssExtractPlugin({
+            filename: "[name].css",
+        }),
         new CopyWebpackPlugin({
             patterns: [
                 {
@@ -51,6 +54,11 @@ module.exports = {
                 {
                     from: "public",
                     to: "assets",
+                    noErrorOnMissing: true,
+                },
+                {
+                    from: "src/ui/styles.css",
+                    to: "ui/styles.css",
                     noErrorOnMissing: true,
                 },
             ],
