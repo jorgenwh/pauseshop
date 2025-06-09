@@ -3,12 +3,10 @@
     top: 0;
     width: var(--sidebar-width);
     height: 100vh;
-    /* box-shadow: 1px 0px 5px rgba(0, 0, 0, 0.6); */
     z-index: 99999;
     transition: transform var(--sidebar-transition-speed) ease-in-out;
     overflow: hidden;
     pointer-events: all;
-    background-color: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(20px); /* Glassmorphic blur */
-    -webkit-backdrop-filter: blur(7px); /* Safari support */
+    background-color: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
 }

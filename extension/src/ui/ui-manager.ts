@@ -8,13 +8,13 @@ import { AmazonScrapedProduct } from "../types/amazon";
 import { 
     DEFAULT_DARK_MODE, 
     DEFAULT_SIDEBAR_POSITION, 
+    DEFAULT_COMPACT,
     NO_PRODUCTS_TIMEOUT_MS,
     UI_CONTAINER_CLASS_NAME,
     UI_Z_INDEX
 } from "./constants";
 import {
     ProductDisplayData,
-    SidebarState,
     SidebarContentState,
     SidebarConfig,
     SidebarEvents,
@@ -40,6 +40,7 @@ export class UIManager {
         this.sidebarConfig = {
             darkMode: DEFAULT_DARK_MODE,
             position: DEFAULT_SIDEBAR_POSITION,
+            compact: DEFAULT_COMPACT,
         };
 
         this.sidebarEvents = {

@@ -28,6 +28,7 @@ export enum SidebarContentState {
 export interface SidebarConfig {
     darkMode: boolean;
     position: "right" | "left";
+    compact: boolean;
 }
 
 export interface SidebarEvents {
