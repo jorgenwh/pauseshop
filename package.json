@@ -1,6 +1,6 @@
 {
     "name": "pauseshop",
-    "version": "1.0.2",
+    "version": "0.0.0",
     "description": "Chrome extension that detects paused videos and suggests Amazon products",
     "private": true,
     "workspaces": [

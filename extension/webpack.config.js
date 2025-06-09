@@ -61,6 +61,10 @@ module.exports = {
                     to: "ui/styles.css",
                     noErrorOnMissing: true,
                 },
+                {
+                    from: "icons",
+                    to: "icons",
+                },
             ],
         }),
     ],
