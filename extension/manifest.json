@@ -39,7 +39,11 @@
     ],
     "web_accessible_resources": [
         {
-            "resources": ["ui/*", "assets/*"],
+            "resources": [
+                "ui/*", 
+                "icons/icon-128.png",
+                "fonts/*.ttf"
+            ],
             "matches": [
                 "https://*.netflix.com/*",
                 "https://*.hulu.com/*",

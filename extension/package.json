@@ -1,6 +1,6 @@
 {
     "name": "pauseshop-extension",
-    "version": "1.0.1",
+    "version": "0.0.0",
     "description": "PauseShop Chrome Extension",
     "private": true,
     "scripts": {

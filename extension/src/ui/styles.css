@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Encode+Sans+SC:wght@100..900&family=Numans&family=Raleway:ital,wght@0,100..900;1,100..900&display=swap');
+
 .pauseshop-sidebar {
     position: fixed;
     top: 0;
@@ -9,4 +11,34 @@
     pointer-events: all;
     background-color: rgba(0, 0, 0, 0.7);
     backdrop-filter: blur(5px);
+}
+
+.pauseshop-sidebar-header {
+    height: var(--sidebar-header-height);
+
+    display: flex;
+    align-items: center;
+}
+
+.pauseshop-sidebar-header-icon {
+    margin-left: 16px;
+}
+
+.pauseshop-sidebar-header-title-container {
+    color: white;
+    margin: auto;
+    display: flex;
+    flex-direction: row;
+    font-size: 1.2rem;
+    font-family: 'Encode Sans SC', sans-serif;
+}
+
+.pauseshop-sidebar-header-title-pause {
+    font-weight: 800;
+    font-size: 3.25rem;
+}
+
+.pauseshop-sidebar-header-title-shop {
+    font-weight: 300;
+    font-size: 3.25rem;
 }

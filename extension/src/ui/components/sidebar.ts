@@ -1,4 +1,6 @@
 import { 
+    SIDEBAR_HEADER_HEIGHT,
+    SIDEBAR_HEADER_ICON_SIZE,
     SIDEBAR_SLIDE_DURATION,
     SIDEBAR_WIDTH
 } from "../constants";
@@ -36,6 +38,9 @@ export class Sidebar {
         sidebarElement.id = "pauseshop-sidebar";
         sidebarElement.classList.add("pauseshop-sidebar");
 
+        const headerElement = this.createHeader();
+        sidebarElement.appendChild(headerElement);
+
         // Set the CSS variables
         sidebarElement.style.setProperty(
             "--sidebar-width", `${SIDEBAR_WIDTH}px`
@@ -54,6 +59,38 @@ export class Sidebar {
         }
 
         return sidebarElement;
+    }
+
+    private createHeader(): HTMLElement {
+        const headerElement = document.createElement("div");
+        headerElement.classList.add("pauseshop-sidebar-header");
+        headerElement.style.setProperty(
+            "--sidebar-header-height", `${SIDEBAR_HEADER_HEIGHT}px`
+        );
+
+        const iconElement = document.createElement("img");
+        iconElement.src = chrome.runtime.getURL('icons/icon-128.png');
+        iconElement.style.width = `${SIDEBAR_HEADER_ICON_SIZE}px`;
+        iconElement.style.height = `${SIDEBAR_HEADER_ICON_SIZE}px`;
+        iconElement.classList.add("pauseshop-sidebar-header-icon");
+        headerElement.appendChild(iconElement);
+
+        const titleContainer = document.createElement("div");
+        titleContainer.classList.add("pauseshop-sidebar-header-title-container");
+
+        const pauseTitle = document.createElement("h1");
+        pauseTitle.classList.add("pauseshop-sidebar-header-title-pause");
+        pauseTitle.innerText = "Pause";
+        titleContainer.appendChild(pauseTitle);
+
+        const shopTitle = document.createElement("h1");
+        shopTitle.classList.add("pauseshop-sidebar-header-title-shop");
+        shopTitle.innerText = "Shop";
+        titleContainer.appendChild(shopTitle);
+
+        headerElement.appendChild(titleContainer);
+
+        return headerElement;
     }
 
     public async show(): Promise<void> {
