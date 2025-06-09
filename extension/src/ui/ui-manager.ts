@@ -4,7 +4,7 @@
  */
 
 import { Sidebar } from "./components/sidebar";
-import { AmazonScrapedProduct, ProductCategory } from "../types/amazon";
+import { AmazonScrapedProduct } from "../types/amazon";
 import { 
     DEFAULT_DARK_MODE, 
     DEFAULT_SIDEBAR_POSITION, 
@@ -45,7 +45,6 @@ export class UIManager {
         this.sidebarEvents = {
             onShow: () => {},
             onHide: () => {},
-            onStateChange: (_state: SidebarState) => {},
             onContentStateChange: (_state: SidebarContentState) => {},
             onProductClick: (product: AmazonScrapedProduct) => {
                 if (product.amazonAsin) {
@@ -73,7 +72,14 @@ export class UIManager {
 
         try {
             this.createContainer();
-            this.sidebar = new Sidebar(this.sidebarConfig, this.sidebarEvents);
+            if (!this.container) {
+                throw new Error("UI container was not created.");
+            }
+            this.sidebar = new Sidebar(
+                this.container,
+                this.sidebarConfig,
+                this.sidebarEvents,
+            );
             this.isInitialized = true;
             console.log("UIManager initialized successfully.");
             return true;
@@ -154,12 +160,13 @@ export class UIManager {
     }
 
     private handleAnalysisStarted = (message: AnalysisStartedMessage): boolean => {
-        if (!this.sidebar) {
-            return false;
-        }
         console.info(
             `Received analysis_started for pauseId: ${message.pauseId}`,
         );
+        if (!this.sidebar) {
+            return false;
+        }
+
         this.sidebar.setContentState(SidebarContentState.LOADING);
 
         return true;
@@ -223,8 +230,6 @@ export class UIManager {
     };
 
     public cleanup(): void {
-        console.log("Running UI manager cleanup");
-
         // Clear any pending no products found timeout
         if (this.noProductsFoundTimeoutId) {
             clearTimeout(this.noProductsFoundTimeoutId);
@@ -245,13 +250,11 @@ export class UIManager {
 
         this.isInitialized = false;
 
-        // Remove message listener
-        console.info("Removing background message listener.");
+        // Remove message listener for background script communication
         chrome.runtime.onMessage.removeListener(this.handleBackgroundMessages);
     }
 
     private createContainer(): void {
-        // Remove existing container if it exists
         const existingContainer = document.querySelector(
             `.${UI_CONTAINER_CLASS_NAME}`,
         );
@@ -262,7 +265,6 @@ export class UIManager {
         this.container = document.createElement("div");
         this.container.className = UI_CONTAINER_CLASS_NAME
 
-        // Apply container styles
         const containerStyles = {
             position: "fixed" as const,
             top: "0",
@@ -273,14 +275,12 @@ export class UIManager {
             zIndex: UI_Z_INDEX.toString(),
             userSelect: "none" as const,
         };
-
         Object.assign(this.container.style, containerStyles);
 
         // Append to document body
         document.body.appendChild(this.container);
 
         // Add message listener for background script communication
-        console.info("Adding background message listener.");
         chrome.runtime.onMessage.addListener(this.handleBackgroundMessages);
     }
 

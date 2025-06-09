@@ -33,7 +33,6 @@ export interface SidebarConfig {
 export interface SidebarEvents {
     onShow: () => void;
     onHide: () => void;
-    onStateChange: (state: SidebarState) => void;
     onContentStateChange: (state: SidebarContentState) => void;
     onProductClick: (product: AmazonScrapedProduct) => void;
     onError: (error: Error) => void;

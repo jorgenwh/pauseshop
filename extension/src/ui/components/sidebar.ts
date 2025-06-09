@@ -1,13 +1,17 @@
 import { 
-    ProductDisplayData, 
-    SidebarConfig, 
-    SidebarContentState, 
-    SidebarEvents, 
-    SidebarState 
+    SIDEBAR_SLIDE_DURATION,
+    SIDEBAR_WIDTH
+} from "../constants";
+import {
+    ProductDisplayData,
+    SidebarConfig,
+    SidebarContentState,
+    SidebarEvents,
+    SidebarState
 } from "../types";
 
 export class Sidebar {
-    private element: HTMLElement | null = null;
+    private element: HTMLElement;
 
     private state: SidebarState = SidebarState.HIDDEN;
     private contentState: SidebarContentState = SidebarContentState.LOADING;
@@ -15,18 +19,85 @@ export class Sidebar {
     private config: SidebarConfig;
     private events: SidebarEvents;
 
-    constructor(sidebarConfig: SidebarConfig, sidebarEvents: SidebarEvents) {
+    constructor(
+        container: HTMLElement,
+        sidebarConfig: SidebarConfig,
+        sidebarEvents: SidebarEvents
+    ) {
         this.config = sidebarConfig;
         this.events = sidebarEvents;
-        console.log("Sidebar initialized");
+
+        this.element = this.createElement();
+        container.appendChild(this.element);
+    }
+
+    private createElement(): HTMLElement {
+        const sidebarElement = document.createElement("div");
+        sidebarElement.id = "pauseshop-sidebar";
+        sidebarElement.classList.add("pauseshop-sidebar");
+
+        // Set the CSS variables
+        sidebarElement.style.setProperty(
+            "--sidebar-width", `${SIDEBAR_WIDTH}px`
+        );
+        sidebarElement.style.setProperty(
+            "--sidebar-transition-speed", `${SIDEBAR_SLIDE_DURATION}s`
+        );
+
+        // Set initial position and transform to be off-screen
+        if (this.config.position === "right") {
+            sidebarElement.style.right = "0";
+            sidebarElement.style.transform = `translateX(${SIDEBAR_WIDTH}px)`;
+        } else {
+            sidebarElement.style.left = "0";
+            sidebarElement.style.transform = `translateX(-${SIDEBAR_WIDTH}px)`;
+        }
+
+        return sidebarElement;
     }
 
     public async show(): Promise<void> {
-        console.log("Showing sidebar");
+        if (this.state === SidebarState.VISIBLE || this.state === SidebarState.SLIDING_IN) {
+            return;
+        }
+
+        this.setState(SidebarState.SLIDING_IN);
+        // Only modify transform, base position (left/right) is fixed
+        this.element.style.transform = `translateX(0)`;
+
+        // Listen for the end of the transition
+        this.element.addEventListener("transitionend", () => {
+            if (this.state === SidebarState.SLIDING_IN) {
+                this.setState(SidebarState.VISIBLE);
+                this.events.onShow();
+            }
+        }, { once: true });
     }
 
     public async hide(): Promise<void> {
-        console.log("Hiding sidebar");
+        if (this.state === SidebarState.HIDDEN || this.state === SidebarState.SLIDING_OUT) {
+            return;
+        }
+
+        this.setState(SidebarState.SLIDING_OUT);
+        // Set transform back to off-screen based on position
+        if (this.config.position === "right") {
+            this.element.style.transform = `translateX(${SIDEBAR_WIDTH}px)`;
+        } else {
+            this.element.style.transform = `translateX(-${SIDEBAR_WIDTH}px)`;
+        }
+
+        // Listen for the end of the transition
+        this.element.addEventListener("transitionend", () => {
+            if (this.state === SidebarState.SLIDING_OUT) {
+                this.setState(SidebarState.HIDDEN);
+                this.events.onHide();
+            }
+        }, { once: true });
+    }
+
+    private setState(newState: SidebarState): void {
+        this.state = newState;
     }
 
     public async showLoading(): Promise<void> {
@@ -58,7 +129,6 @@ export class Sidebar {
         if (this.element && this.element.parentNode) {
             this.element.parentNode.removeChild(this.element);
         }
-        this.element = null;
         this.state = SidebarState.HIDDEN;
         this.contentState = SidebarContentState.LOADING;
     }
