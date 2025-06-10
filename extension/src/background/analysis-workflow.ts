@@ -88,7 +88,6 @@ export const handleScreenshotAnalysis = async (
                                     })
                                 )[0]?.id;
                                 if (tabId) {
-                                    console.log("tabId:", tabId);
                                     chrome.tabs.sendMessage(
                                         tabId, 
                                         {

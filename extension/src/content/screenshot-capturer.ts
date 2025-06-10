@@ -1,4 +1,5 @@
 import { UIManager } from "../ui/ui-manager";
+import { LoadingState } from "../ui/types";
 
 interface ScreenshotMessage {
     action: "captureScreenshot";
@@ -20,6 +21,7 @@ export const captureScreenshot = async (
     }
 
     await uiManager.showSidebar();
+    uiManager.updateLoadingState(LoadingState.PROCESSING);
 
     try {
         const message: ScreenshotMessage = {
@@ -48,7 +50,7 @@ export const captureScreenshot = async (
 
 export const hideUI = async (): Promise<void> => {
     if (uiManager) {
-        await uiManager.hideSidebar();
+        await uiManager.hideUI();
     }
 };
 
