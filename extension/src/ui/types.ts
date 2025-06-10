@@ -2,8 +2,8 @@
  * UI-specific type definitions for PauseShop extension
  */
 
-import { AmazonScrapedProduct, Category } from "../types/amazon";
-import { Product } from "../types/common";
+import { AmazonScrapedProduct } from "../types/amazon";
+import { Category, Product } from "../types/common";
 
 export interface ProductDisplayData {
     name: string;
