@@ -5,7 +5,7 @@
 
 import {
     Product,
-    ProductCategory,
+    Category,
     TargetGender,
     AmazonSearch,
     CategoryNodeMapping,
@@ -14,17 +14,17 @@ import {
 import { AMAZON_DOMAIN, AMAZON_ENABLE_CATEGORT_FILTERING, AMAZON_MAX_SEARCH_TERM_LENGHT } from "./constants";
 
 const CATEGORY_NODES: CategoryNodeMapping = {
-    [ProductCategory.CLOTHING]: "7141123011", // Clothing, Shoes & Jewelry
-    [ProductCategory.FOOTWEAR]: "679255011", // Shoes
-    [ProductCategory.ACCESSORIES]: "2475687011", // Accessories
-    [ProductCategory.ELECTRONICS]: "172282", // Electronics
-    [ProductCategory.FURNITURE]: "1063306", // Home & Kitchen > Furniture
-    [ProductCategory.HOME_DECOR]: "1063498", // Home & Kitchen > Home Décor
-    [ProductCategory.BOOKS_MEDIA]: "283155", // Books
-    [ProductCategory.SPORTS_FITNESS]: "3375251", // Sports & Outdoors
-    [ProductCategory.BEAUTY_PERSONAL_CARE]: "3760901", // Beauty & Personal Care
-    [ProductCategory.KITCHEN_DINING]: "1063498", // Home & Kitchen
-    [ProductCategory.OTHER]: "", // No specific category
+    [Category.CLOTHING]: "7141123011", // Clothing, Shoes & Jewelry
+    [Category.FOOTWEAR]: "679255011", // Shoes
+    [Category.ACCESSORIES]: "2475687011", // Accessories
+    [Category.ELECTRONICS]: "172282", // Electronics
+    [Category.FURNITURE]: "1063306", // Home & Kitchen > Furniture
+    [Category.HOME_DECOR]: "1063498", // Home & Kitchen > Home Décor
+    [Category.BOOKS_MEDIA]: "283155", // Books
+    [Category.SPORTS_FITNESS]: "3375251", // Sports & Outdoors
+    [Category.BEAUTY_PERSONAL_CARE]: "3760901", // Beauty & Personal Care
+    [Category.KITCHEN_DINING]: "1063498", // Home & Kitchen
+    [Category.OTHER]: "", // No specific category
 };
 
 /**
@@ -87,9 +87,9 @@ const optimizeSearchTerms = (product: Product): string => {
     // Add gender prefix for clothing categories
     if (
         [
-            ProductCategory.CLOTHING,
-            ProductCategory.FOOTWEAR,
-            ProductCategory.ACCESSORIES,
+            Category.CLOTHING,
+            Category.FOOTWEAR,
+            Category.ACCESSORIES,
         ].includes(product.category)
     ) {
         if (product.targetGender !== TargetGender.UNISEX) {
@@ -134,7 +134,7 @@ const optimizeSearchTerms = (product: Product): string => {
 /**
  * Gets Amazon category node for filtering
  */
-const getCategoryNode = (category: ProductCategory): string | null => {
+const getCategoryNode = (category: Category): string | null => {
     return CATEGORY_NODES[category] || null;
 };
 

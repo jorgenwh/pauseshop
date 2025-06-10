@@ -2,13 +2,13 @@
  * UI-specific type definitions for PauseShop extension
  */
 
-import { AmazonScrapedProduct, ProductCategory } from "../types/amazon";
+import { AmazonScrapedProduct, Category } from "../types/amazon";
 import { Product } from "../background/api-client";
 
 export interface ProductDisplayData {
     name: string;
     products: AmazonScrapedProduct[];
-    category: ProductCategory;
+    category: Category;
 }
 
 export enum SidebarState {

@@ -2,7 +2,7 @@
  * Type definitions for Amazon search functionality
  */
 
-export enum ProductCategory {
+export enum Category {
     CLOTHING = "clothing",
     ELECTRONICS = "electronics",
     FURNITURE = "furniture",
@@ -26,7 +26,8 @@ export enum TargetGender {
 
 export interface Product {
     name: string;
-    category: ProductCategory;
+    iconCategory: string;
+    category: Category;
     brand: string;
     primaryColor: string;
     secondaryColors: string[];
@@ -39,7 +40,7 @@ export interface AmazonSearch {
     id: string;
     searchUrl: string;
     searchTerms: string;
-    category: ProductCategory
+    category: Category
     product: Product;
 }
 

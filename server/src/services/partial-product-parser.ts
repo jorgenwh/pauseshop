@@ -29,6 +29,7 @@ export class DefaultPartialProductParser implements PartialProductParser {
                     parsed &&
                     typeof parsed === "object" &&
                     "name" in parsed &&
+                    "iconCategory" in parsed &&
                     "category" in parsed
                 ) {
                     extractedProducts.push(parsed as Product);
@@ -39,6 +40,7 @@ export class DefaultPartialProductParser implements PartialProductParser {
                             item &&
                             typeof item === "object" &&
                             "name" in item &&
+                            "iconCategory" in item &&
                             "category" in item
                         ) {
                             extractedProducts.push(item as Product);

@@ -14,7 +14,8 @@ interface AnalyzeRequest {
 
 export interface Product {
     name: string;
-    category: ProductCategory;
+    iconCategory: string;
+    category: Category;
     brand: string;
     primaryColor: string;
     secondaryColors: string[];
@@ -23,13 +24,7 @@ export interface Product {
     searchTerms: string;
 }
 
-export interface StreamingCallbacks {
-    onProduct: (product: Product) => void;
-    onComplete: () => void;
-    onError: (error: Event) => void;
-}
-
-enum ProductCategory {
+export enum Category {
     CLOTHING = "clothing",
     ELECTRONICS = "electronics",
     FURNITURE = "furniture",
@@ -43,12 +38,18 @@ enum ProductCategory {
     OTHER = "other",
 }
 
-enum TargetGender {
+export enum TargetGender {
     MEN = "men",
     WOMEN = "women",
     UNISEX = "unisex",
     BOY = "boy",
     GIRL = "girl",
+}
+
+export interface StreamingCallbacks {
+    onProduct: (product: Product) => void;
+    onComplete: (response?: any) => void;
+    onError: (error: Event) => void;
 }
 
 /**
@@ -122,6 +123,7 @@ export const analyzeImageStreaming = async (
                                     // Handle different event types based on the parsed data structure
                                     if (
                                         parsedData.name &&
+                                        parsedData.iconCategory &&
                                         parsedData.category
                                     ) {
                                         // This is a product event
