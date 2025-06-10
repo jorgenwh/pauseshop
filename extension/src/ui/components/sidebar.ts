@@ -1,4 +1,5 @@
 import { 
+    BASE_COLOR,
     SIDEBAR_HEADER_HEIGHT,
     SIDEBAR_HEADER_ICON_SIZE,
     SIDEBAR_SLIDE_DURATION,
@@ -14,7 +15,6 @@ import {
 
 export class Sidebar {
     private element: HTMLElement;
-
     private state: SidebarState = SidebarState.HIDDEN;
     private contentState: SidebarContentState = SidebarContentState.LOADING;
 
@@ -41,6 +41,7 @@ export class Sidebar {
         const headerElement = this.createHeader();
         sidebarElement.appendChild(headerElement);
 
+
         // Set the CSS variables
         sidebarElement.style.setProperty(
             "--sidebar-width", `${SIDEBAR_WIDTH}px`
@@ -48,6 +49,8 @@ export class Sidebar {
         sidebarElement.style.setProperty(
             "--sidebar-transition-speed", `${SIDEBAR_SLIDE_DURATION}s`
         );
+
+        sidebarElement.classList.add(`position-${this.config.position}`);
 
         // Set initial position and transform to be off-screen
         if (this.config.position === "right") {
@@ -85,6 +88,9 @@ export class Sidebar {
 
         const shopTitle = document.createElement("h1");
         shopTitle.classList.add("pauseshop-sidebar-header-title-shop");
+        shopTitle.style.setProperty(
+            "--sidebar-title-color", `${BASE_COLOR}`
+        );
         shopTitle.innerText = "Shop";
         titleContainer.appendChild(shopTitle);
 
@@ -92,6 +98,7 @@ export class Sidebar {
 
         return headerElement;
     }
+
 
     public async show(): Promise<void> {
         if (this.state === SidebarState.VISIBLE || this.state === SidebarState.SLIDING_IN) {
@@ -117,11 +124,12 @@ export class Sidebar {
         }
 
         this.setState(SidebarState.SLIDING_OUT);
-        // Set transform back to off-screen based on position
+        // Set transform back to off-screen based on position and current mode
+        const currentWidth = SIDEBAR_WIDTH;
         if (this.config.position === "right") {
-            this.element.style.transform = `translateX(${SIDEBAR_WIDTH}px)`;
+            this.element.style.transform = `translateX(${currentWidth}px)`;
         } else {
-            this.element.style.transform = `translateX(-${SIDEBAR_WIDTH}px)`;
+            this.element.style.transform = `translateX(-${currentWidth}px)`;
         }
 
         // Listen for the end of the transition

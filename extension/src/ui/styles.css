@@ -18,15 +18,18 @@
 
     display: flex;
     align-items: center;
+    position: relative;
 }
 
 .pauseshop-sidebar-header-icon {
-    margin-left: 16px;
+    margin-left: 8px;
 }
 
 .pauseshop-sidebar-header-title-container {
     color: white;
-    margin: auto;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
     display: flex;
     flex-direction: row;
     font-size: 1.2rem;
@@ -34,11 +37,13 @@
 }
 
 .pauseshop-sidebar-header-title-pause {
-    font-weight: 800;
+    font-weight: 900;
     font-size: 3.25rem;
 }
 
 .pauseshop-sidebar-header-title-shop {
     font-weight: 300;
     font-size: 3.25rem;
+    color: var(--sidebar-title-color);
 }
+
