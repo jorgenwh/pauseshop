@@ -5,8 +5,7 @@
 
 import { promises as fs } from "fs";
 import { resolve } from "path";
-import { Product, TargetGender } from "../types/analyze";
-import { PRODUCT_CATEGORIES } from "../config/product-categories";
+import { Product, ProductCategory, TargetGender } from "../types/analyze";
 
 // Shared prompt cache
 let promptCache: string | null = null;
@@ -24,12 +23,7 @@ export async function loadPrompt(): Promise<string> {
             __dirname,
             "../prompts/product-analysis-v2.txt",
         );
-        let promptContent = await fs.readFile(promptPath, "utf-8");
-
-        // Dynamically inject product categories into the prompt
-        const categoriesList = PRODUCT_CATEGORIES.map(cat => `'${cat}'`).join(', ');
-        promptContent = promptContent.replace("[LIST_OF_CATEGORIES_HERE]", categoriesList);
-
+        const promptContent = await fs.readFile(promptPath, "utf-8");
         promptCache = promptContent.trim();
         return promptCache;
     } catch (error) {
@@ -99,11 +93,11 @@ function sanitizeProduct(product: any): Product {
 /**
  * Validate product category, fallback to OTHER if invalid
  */
-function validateCategory(category: string): string {
-    // Ensure the category is one of the predefined product categories
-    return PRODUCT_CATEGORIES.includes(category)
-        ? category
-        : "other"; // Fallback to "other" if category is not in the list
+function validateCategory(category: string): ProductCategory {
+    const validCategories = Object.values(ProductCategory);
+    return validCategories.includes(category as ProductCategory)
+        ? (category as ProductCategory)
+        : ProductCategory.OTHER;
 }
 
 /**

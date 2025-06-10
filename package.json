@@ -1,6 +1,6 @@
 {
     "name": "pauseshop",
-    "version": "0.0.0",
+    "version": "1.0.2",
     "description": "Chrome extension that detects paused videos and suggests Amazon products",
     "private": true,
     "workspaces": [
@@ -26,15 +26,7 @@
         "eslint": "^8.0.0",
         "prettier": "^3.5.3",
         "prettier-plugin-tailwindcss": "^0.6.12",
-        "typescript": "^5.0.0",
-        "webpack": "^5.88.0",
-        "webpack-cli": "^5.1.0",
-        "css-loader": "^6.7.1",
-        "postcss-loader": "^7.1.0",
-        "mini-css-extract-plugin": "^2.9.2",
-        "autoprefixer": "^10.4.21",
-        "tailwindcss": "^3.0.0",
-        "cssesc": "^3.0.0"
+        "typescript": "^5.0.0"
     },
     "engines": {
         "node": ">=18.0.0",

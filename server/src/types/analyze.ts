@@ -9,8 +9,6 @@ export interface AnalyzeRequest {
     };
 }
 
-import { ProductCategory } from "../config/product-categories";
-
 export interface Product {
     name: string;
     category: ProductCategory;
@@ -20,6 +18,20 @@ export interface Product {
     features: string[];
     targetGender: TargetGender;
     searchTerms: string;
+}
+
+export enum ProductCategory {
+    CLOTHING = "clothing",
+    ELECTRONICS = "electronics",
+    FURNITURE = "furniture",
+    ACCESSORIES = "accessories",
+    FOOTWEAR = "footwear",
+    HOME_DECOR = "home_decor",
+    BOOKS_MEDIA = "books_media",
+    SPORTS_FITNESS = "sports_fitness",
+    BEAUTY_PERSONAL_CARE = "beauty_personal_care",
+    KITCHEN_DINING = "kitchen_dining",
+    OTHER = "other",
 }
 
 export enum TargetGender {
