@@ -9,7 +9,7 @@ import {
     CategoryNodeMapping,
     SearchTermValidationResult
 } from "../types/amazon";
-import { AMAZON_DOMAIN, AMAZON_ENABLE_CATEGORT_FILTERING, AMAZON_MAX_SEARCH_TERM_LENGHT } from "./constants";
+import { AMAZON_DOMAIN, AMAZON_ENABLE_CATEGORT_FILTERING, AMAZON_MAX_SEARCH_TERM_LENGTH } from "./constants";
 
 const CATEGORY_NODES: CategoryNodeMapping = {
     [Category.CLOTHING]: "7141123011", // Clothing, Shoes & Jewelry
@@ -100,16 +100,17 @@ const optimizeSearchTerms = (product: Product): string => {
         parts.push(product.primaryColor);
     }
 
-    // Add product name (without color if already included)
-    const productName = product.name;
+    // Add product name (remove color if already included and added separately)
+    let productName = product.name;
     if (
         product.primaryColor &&
+        product.primaryColor !== "unknown" &&
         productName.toLowerCase().includes(product.primaryColor.toLowerCase())
     ) {
-        // Color already in name, use as-is
-        parts.push(productName);
-    } else {
-        // Add color and name separately
+        // If color was added separately and is in the name, remove it from the name
+        productName = productName.toLowerCase().replace(product.primaryColor.toLowerCase(), '').trim();
+    }
+    if (productName) { // Only add if not empty after potential removal
         parts.push(productName);
     }
 
@@ -147,7 +148,7 @@ export const constructAmazonSearch = (
     const rawSearchTerms = optimizeSearchTerms(product);
     const validation = validateSearchTerms(
         rawSearchTerms,
-        AMAZON_MAX_SEARCH_TERM_LENGHT,
+        AMAZON_MAX_SEARCH_TERM_LENGTH,
     );
 
     if (!validation.isValid) {

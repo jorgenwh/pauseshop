@@ -1,5 +1,5 @@
 export const AMAZON_DOMAIN: string = "amazon.com";
-export const AMAZON_MAX_SEARCH_TERM_LENGHT: number = 200;
+export const AMAZON_MAX_SEARCH_TERM_LENGTH: number = 200;
 export const AMAZON_ENABLE_CATEGORT_FILTERING: boolean = true;
 export const AMAZON_FALLBACK_TO_GENERIC_SEARCH: boolean = true;
 export const AMAZON_MAX_PRODUCTS_PER_SEARCH: number = 5;
