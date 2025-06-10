@@ -34,7 +34,7 @@ export class StreamingAnalysisService {
                 onProduct: (product: Product) => {
                     const timestamp = new Date().toISOString();
                     console.info(
-                        `[${timestamp}] Product found: ${product.name}`,
+                        `[${timestamp}] Product found: ${product.name} (Category: ${product.category})`,
                     );
                     products.push(product);
                     callbacks.onProduct(product);

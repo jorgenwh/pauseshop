@@ -141,6 +141,7 @@ export class Sidebar {
         console.log("Showing loading state");
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
     public async showProducts(products: ProductDisplayData): Promise<void> {
         console.log("Showing products state");
     }

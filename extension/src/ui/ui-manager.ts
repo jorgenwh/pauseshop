@@ -14,6 +14,7 @@ import {
     UI_Z_INDEX
 } from "./constants";
 import {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
     ProductDisplayData,
     SidebarContentState,
     SidebarConfig,
