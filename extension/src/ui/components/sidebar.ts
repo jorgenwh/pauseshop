@@ -1,5 +1,6 @@
-import { 
+import {
     BASE_COLOR,
+    COMPACT_SIDEBAR_WIDTH,
     SIDEBAR_HEADER_HEIGHT,
     SIDEBAR_HEADER_ICON_SIZE,
     SIDEBAR_SLIDE_DURATION,
@@ -17,6 +18,8 @@ export class Sidebar {
     private element: HTMLElement;
     private state: SidebarState = SidebarState.HIDDEN;
     private contentState: SidebarContentState = SidebarContentState.LOADING;
+
+    private toggleButton: HTMLElement | null = null;
 
     private config: SidebarConfig;
     private events: SidebarEvents;
@@ -50,15 +53,20 @@ export class Sidebar {
             "--sidebar-transition-speed", `${SIDEBAR_SLIDE_DURATION}s`
         );
 
+        if (this.config.compact) {
+            sidebarElement.classList.add("pauseshop-sidebar-compact");
+        }
+
         sidebarElement.classList.add(`position-${this.config.position}`);
 
         // Set initial position and transform to be off-screen
+        const initialWidth = this.config.compact ? COMPACT_SIDEBAR_WIDTH : SIDEBAR_WIDTH;
         if (this.config.position === "right") {
             sidebarElement.style.right = "0";
-            sidebarElement.style.transform = `translateX(${SIDEBAR_WIDTH}px)`;
+            sidebarElement.style.transform = `translateX(${initialWidth}px)`;
         } else {
             sidebarElement.style.left = "0";
-            sidebarElement.style.transform = `translateX(-${SIDEBAR_WIDTH}px)`;
+            sidebarElement.style.transform = `translateX(-${initialWidth}px)`;
         }
 
         return sidebarElement;
@@ -96,6 +104,13 @@ export class Sidebar {
 
         headerElement.appendChild(titleContainer);
 
+        this.toggleButton = document.createElement("button");
+        this.toggleButton.classList.add("pauseshop-sidebar-toggle-button");
+        this.toggleButton.addEventListener("click", () => this.toggleCompactMode());
+        headerElement.appendChild(this.toggleButton);
+
+        this.updateToggleButtonIcon();
+
         return headerElement;
     }
 
@@ -125,7 +140,7 @@ export class Sidebar {
 
         this.setState(SidebarState.SLIDING_OUT);
         // Set transform back to off-screen based on position and current mode
-        const currentWidth = SIDEBAR_WIDTH;
+        const currentWidth = this.config.compact ? COMPACT_SIDEBAR_WIDTH : SIDEBAR_WIDTH;
         if (this.config.position === "right") {
             this.element.style.transform = `translateX(${currentWidth}px)`;
         } else {
@@ -177,5 +192,37 @@ export class Sidebar {
         }
         this.state = SidebarState.HIDDEN;
         this.contentState = SidebarContentState.LOADING;
+    }
+
+    private toggleCompactMode(): void {
+        this.config.compact = !this.config.compact;
+        if (this.config.compact) {
+            this.element.classList.add("pauseshop-sidebar-compact");
+            this.element.style.setProperty(
+                "--sidebar-compact-width", `${COMPACT_SIDEBAR_WIDTH}px`
+            );
+        } else {
+            this.element.classList.remove("pauseshop-sidebar-compact");
+        }
+        this.updateToggleButtonIcon();
+
+        // Adjust sidebar position if it's currently visible
+        if (this.state === SidebarState.VISIBLE || this.state === SidebarState.SLIDING_IN) {
+            this.element.style.transform = `translateX(0)`;
+        }
+    }
+
+    private updateToggleButtonIcon(): void {
+        if (this.toggleButton) {
+            this.toggleButton.innerHTML = ""; // Clear existing icon
+            const arrowIcon = document.createElement("span");
+            arrowIcon.classList.add("arrow-icon");
+            if (this.config.compact) {
+                arrowIcon.classList.add(this.config.position === "right" ? "arrow-left" : "arrow-right");
+            } else {
+                arrowIcon.classList.add(this.config.position === "right" ? "arrow-right" : "arrow-left");
+            }
+            this.toggleButton.appendChild(arrowIcon);
+        }
     }
 }
