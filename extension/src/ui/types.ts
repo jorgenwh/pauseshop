@@ -3,47 +3,18 @@
  */
 
 import { AmazonScrapedProduct, ProductCategory } from "../types/amazon";
-import { Product } from "../background/api-client"; // Import Product
-import { ProductCard } from "./components/product-card";
-
-export enum LoadingState {
-    HIDDEN = "hidden",
-    LOADING = "loading",
-    PROCESSING = "processing",
-    NO_PRODUCTS_FOUND = "no-products-found",
-}
-
-export enum ProductDisplayState {
-    HIDDEN = "hidden",
-    SLIDING_OUT = "sliding-out",
-    DISPLAYED = "displayed",
-}
-
-export interface AnimationConfig {
-    duration: number;
-    easing: string;
-    iterations?: number;
-}
-
-export interface UIManagerEvents {
-    onShow?: () => void;
-    onHide?: () => void;
-    onStateChange?: (state: LoadingState) => void;
-}
+import { Product } from "../background/api-client";
 
 export interface ProductDisplayData {
-    name: string; // Added product name
-    thumbnailUrl: string | null;
-    allProducts: AmazonScrapedProduct[]; // Enhanced: All 1-5 products for category
+    name: string;
+    products: AmazonScrapedProduct[];
     category: ProductCategory;
-    fallbackText?: string;
 }
 
-// New sidebar-related types for the glassmorphic redesign
 export enum SidebarState {
     HIDDEN = "hidden",
-    SLIDING_IN = "sliding-in",
     VISIBLE = "visible",
+    SLIDING_IN = "sliding-in",
     SLIDING_OUT = "sliding-out",
 }
 
@@ -55,92 +26,41 @@ export enum SidebarContentState {
 }
 
 export interface SidebarConfig {
-    width: number;
+    darkMode: boolean;
     position: "right" | "left";
-    animations: {
-        slideInDuration: number;
-        slideOutDuration: number;
-    };
+    compact: boolean;
 }
 
-export interface SidebarHeaderConfig {
-    title: string;
-    showCloseButton: boolean;
-    onClose?: () => void;
-}
-
-export interface LoadingStateConfig {
-    message: string;
-    subMessage?: string;
-    spinnerSize: "small" | "medium" | "large" | "initial";
-}
-
-export interface ProductListConfig {
-    maxHeight: string;
-    enableVirtualScrolling: boolean;
-    itemSpacing: number;
-}
-
-export interface ProductCardConfig {
-    product: ProductDisplayData;
-    isExpanded: boolean;
-    onToggleExpansion: (card: ProductCard) => void | Promise<void>;
-    onAmazonProductClick: (product: AmazonScrapedProduct) => void;
-    animations: {
-        expansionDuration: number;
-        hoverTransitionDuration: number;
-    };
-}
-
-export interface AmazonProductGridConfig {
-    products: AmazonScrapedProduct[];
-    columns: number;
-    onProductClick: (product: AmazonScrapedProduct) => void;
-    showPrices: boolean;
-    showRatings: boolean;
-}
-
-export interface MessageStateConfig {
-    title: string;
-    message: string;
-    iconType: "search" | "empty" | "error";
-    showRetryButton: boolean;
-    onRetry?: () => void;
-}
-
-// Events for the new sidebar system
 export interface SidebarEvents {
-    onShow?: () => void;
-    onHide?: () => void;
-    onStateChange?: (state: SidebarState) => void;
-    onContentStateChange?: (state: SidebarContentState) => void;
-    onProductClick?: (product: AmazonScrapedProduct) => void;
-    onError?: (error: Error) => void;
-    onRetry?: () => void; // Added for retry button in error/no products state
+    onShow: () => void;
+    onHide: () => void;
+    onContentStateChange: (state: SidebarContentState) => void;
+    onProductClick: (product: AmazonScrapedProduct) => void;
+    onError: (error: Error) => void;
 }
 
 // Message types for communication with the background script
 export interface AnalysisStartedMessage {
     type: "analysis_started";
-    pauseId?: string;
+    pauseId: string;
 }
 
 export interface ProductGroupUpdateMessage {
     type: "product_group_update";
     originalProduct: Product;
     scrapedProducts: AmazonScrapedProduct[];
-    pauseId?: string;
+    pauseId: string;
 }
 
 export interface AnalysisCompleteMessage {
     type: "analysis_complete";
-    pauseId?: string;
+    pauseId: string;
 }
 
 export interface AnalysisErrorMessage {
     type: "analysis_error";
     error: string;
-    pauseId?: string;
+    pauseId: string;
 }
 
 export type BackgroundMessage =
@@ -148,20 +68,3 @@ export type BackgroundMessage =
     | ProductGroupUpdateMessage
     | AnalysisCompleteMessage
     | AnalysisErrorMessage;
-
-// Forward declarations for new components
-export interface Sidebar {
-    show(): Promise<void>;
-    hide(): Promise<void>;
-    isVisible(): boolean;
-    getCurrentState(): SidebarState;
-    setContentState(state: SidebarContentState): void;
-    showProducts(products: ProductDisplayData[]): Promise<void>;
-    showLoading(config?: LoadingStateConfig): void;
-    showNoProducts(config?: MessageStateConfig): void;
-    cleanup(): void;
-    addProduct(product: ProductDisplayData): Promise<void>; // Add addProduct method
-    hasProducts(): boolean; // Add hasProducts method
-}
-
-// Enhanced UI Manager configuration for sidebar

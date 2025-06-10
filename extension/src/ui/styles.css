@@ -1,210 +1,44 @@
-/* PauseShop Extension UI Styles - Phase 4: Cleaned up for sidebar-only architecture */
+@import url('https://fonts.googleapis.com/css2?family=Encode+Sans+SC:wght@100..900&family=Numans&family=Raleway:ital,wght@0,100..900;1,100..900&display=swap');
 
-.pauseshop-expansion {
-    display: block; /* Explicitly set display for transition */
-    /* max-height, opacity, transform, and overflow are handled by base.css Tailwind classes */
-    transition:
-        max-height 0.4s ease-in-out,
-        opacity 0.4s ease-in-out,
-        transform 0.4s ease-in-out;
-    will-change:
-        max-height, opacity, transform; /* Hint for browser optimization */
-    /* Ensure this transition is applied and not overridden by a default Tailwind transition */
-}
-
-.pauseshop-expansion.open {
-    /* max-height and opacity are handled by base.css Tailwind classes for the .open state */
-    /* transform is also handled by base.css for the .open state */
-    /* This class selector is mostly for specificity if needed, but properties are in base.css */
-}
-
-.pauseshop-chevron.open {
-    transform: rotate(180deg);
-}
-
-/* Amazon Product Grid specific styles */
-.pauseshop-amazon-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr); /* 2x2 grid */
-    gap: 10px; /* Spacing between items */
-    padding: 10px 16px; /* Padding around the grid */
-}
-
-.pauseshop-amazon-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    aspect-ratio: 1 / 1; /* Make items square */
-    padding: 8px; /* Padding inside the square card */
-    background-color: rgba(
-        255,
-        255,
-        255,
-        0.05
-    ); /* Subtle background for the card */
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2); /* Subtle shadow */
-}
-
-.pauseshop-amazon-item img,
-.pauseshop-amazon-item .fallback-thumbnail {
-    width: 100%; /* Fill the width of the square card */
-    height: auto; /* Maintain aspect ratio */
-    max-height: 100%; /* Ensure it fits within the card */
-    object-fit: contain; /* Ensure the entire image is visible */
-    margin-bottom: 5px; /* Space between image and text */
-}
-
-/* Sidebar specific styles */
 .pauseshop-sidebar {
     position: fixed;
     top: 0;
-    right: 0; /* Position on the right */
-    height: 100%;
-    width: 380px;
-    border-radius: 16px;
-    background-color: rgba(
-        255,
-        255,
-        255,
-        0.1
-    ); /* Example glassmorphic background */
-    backdrop-filter: blur(7px); /* Glassmorphic blur */
-    -webkit-backdrop-filter: blur(7px); /* Safari support */
-    box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1); /* Subtle shadow */
-    z-index: 9999999; /* Ensure it's on top */
+    width: var(--sidebar-width);
+    height: 100vh;
+    z-index: 99999;
+    transition: transform var(--sidebar-transition-speed) ease-in-out;
+    overflow: hidden;
+    pointer-events: all;
+    background-color: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+}
+
+.pauseshop-sidebar-header {
+    height: var(--sidebar-header-height);
+
     display: flex;
-    flex-direction: column;
-    overflow: hidden; /* Hide overflowing content */
-    transform: translateX(100%); /* Start off-screen to the right */
-    transition: transform 0.5s ease-out; /* Default transition for slide-in/out */
+    align-items: center;
 }
 
-.pauseshop-sidebar[data-state="visible"],
-.pauseshop-sidebar[data-state="sliding_in"] {
-    transform: translateX(0); /* Slide into view */
+.pauseshop-sidebar-header-icon {
+    margin-left: 16px;
 }
 
-.pauseshop-sidebar[data-state="hidden"],
-.pauseshop-sidebar[data-state="sliding_out"] {
-    transform: translateX(100%); /* Slide out of view */
+.pauseshop-sidebar-header-title-container {
+    color: white;
+    margin: auto;
+    display: flex;
+    flex-direction: row;
+    font-size: 1.2rem;
+    font-family: 'Encode Sans SC', sans-serif;
 }
 
-/* Utility classes for positioning and crispness */
-.pauseshop-z-index {
-    z-index: 9999999;
+.pauseshop-sidebar-header-title-pause {
+    font-weight: 800;
+    font-size: 3.25rem;
 }
 
-.pauseshop-crisp {
-    image-rendering: -webkit-optimize-contrast;
-    image-rendering: crisp-edges;
-}
-
-/* Prevent body scroll when sidebar is open */
-.pauseshop-no-scroll {
-    overflow: hidden !important;
-}
-
-/* Main UI Container - Keep for backward compatibility */
-.pauseshop-ui-container {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: 999999;
-    user-select: none;
-}
-
-/* Browser compatibility and reset styles */
-
-/* Ensure consistent box-sizing across all browsers */
-*,
-*::before,
-*::after {
-    box-sizing: border-box;
-}
-
-/* Reset margins and padding for consistent rendering */
-.pauseshop-ui-container * {
-    margin: 0;
-    padding: 0;
-}
-
-/* Ensure smooth hardware acceleration for animations */
-.pauseshop-ui-container * {
-    will-change: auto;
-    backface-visibility: hidden;
-    -webkit-backface-visibility: hidden;
-}
-
-/* High DPI display optimizations */
-@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-    .pauseshop-ui-container {
-        /* Ensure crisp rendering on high DPI displays */
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-    }
-}
-
-/* Accessibility - Respect user's motion preferences */
-@media (prefers-reduced-motion: reduce) {
-    .pauseshop-ui-container * {
-        /* Reduce or disable animations for users who prefer less motion */
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-    }
-}
-
-/* Fallback styles for browsers with limited CSS support */
-.pauseshop-fallback {
-    transition:
-        transform 0.3s ease-out,
-        opacity 0.3s ease-out;
-}
-
-.pauseshop-fallback.show {
-    transform: translateX(0);
-    opacity: 1;
-}
-
-.pauseshop-fallback.hide {
-    transform: translateX(100%);
-    opacity: 0;
-}
-
-/* Ensure proper z-index stacking context */
-.pauseshop-ui-container {
-    isolation: isolate;
-}
-
-/* Prevent text selection in UI components */
-.pauseshop-ui-container {
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-}
-
-/* Ensure proper font rendering across browsers */
-.pauseshop-ui-container {
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-rendering: optimizeLegibility;
-}
-
-/* Spinner animation */
-@keyframes spin {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
-    }
-}
-
-.pauseshop-spinner {
-    animation: spin 1s linear infinite;
+.pauseshop-sidebar-header-title-shop {
+    font-weight: 300;
+    font-size: 3.25rem;
 }

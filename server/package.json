@@ -1,9 +1,10 @@
 {
     "name": "pauseshop-server",
-    "version": "1.0.1",
+    "version": "0.0.0",
     "description": "PauseShop Backend Server",
     "private": true,
     "scripts": {
+        "prebuild": "ts-node scripts/generate-product-categories.ts",
         "build": "tsc",
         "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
         "start": "node dist/index.js",
