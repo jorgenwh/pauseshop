@@ -4,7 +4,7 @@
  */
 
 import { SERVER_BASE_URL } from "./constants";
-import { Product, Category, TargetGender } from "../types/common";
+import { Product } from "../types/common";
 
 interface AnalyzeRequest {
     image: string;
@@ -16,7 +16,7 @@ interface AnalyzeRequest {
 
 export interface StreamingCallbacks {
     onProduct: (product: Product) => void;
-    onComplete: (response?: any) => void;
+    onComplete: (response?: unknown) => void;
     onError: (error: Event) => void;
 }
 
