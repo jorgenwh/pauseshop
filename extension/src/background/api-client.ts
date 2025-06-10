@@ -4,6 +4,7 @@
  */
 
 import { SERVER_BASE_URL } from "./constants";
+import { Product } from "../types/common";
 
 interface AnalyzeRequest {
     image: string;
@@ -12,43 +13,11 @@ interface AnalyzeRequest {
     };
 }
 
-export interface Product {
-    name: string;
-    category: ProductCategory;
-    brand: string;
-    primaryColor: string;
-    secondaryColors: string[];
-    features: string[];
-    targetGender: TargetGender;
-    searchTerms: string;
-}
 
 export interface StreamingCallbacks {
     onProduct: (product: Product) => void;
-    onComplete: () => void;
+    onComplete: (response?: unknown) => void;
     onError: (error: Event) => void;
-}
-
-enum ProductCategory {
-    CLOTHING = "clothing",
-    ELECTRONICS = "electronics",
-    FURNITURE = "furniture",
-    ACCESSORIES = "accessories",
-    FOOTWEAR = "footwear",
-    HOME_DECOR = "home_decor",
-    BOOKS_MEDIA = "books_media",
-    SPORTS_FITNESS = "sports_fitness",
-    BEAUTY_PERSONAL_CARE = "beauty_personal_care",
-    KITCHEN_DINING = "kitchen_dining",
-    OTHER = "other",
-}
-
-enum TargetGender {
-    MEN = "men",
-    WOMEN = "women",
-    UNISEX = "unisex",
-    BOY = "boy",
-    GIRL = "girl",
 }
 
 /**
@@ -122,6 +91,7 @@ export const analyzeImageStreaming = async (
                                     // Handle different event types based on the parsed data structure
                                     if (
                                         parsedData.name &&
+                                        parsedData.iconCategory &&
                                         parsedData.category
                                     ) {
                                         // This is a product event

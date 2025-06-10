@@ -2,7 +2,8 @@
  * Streaming analysis workflow for processing screenshots and constructing Amazon search results
  */
 
-import { analyzeImageStreaming, Product } from "./api-client";
+import { analyzeImageStreaming } from "./api-client";
+import { Product } from "../types/common";
 import { constructAmazonSearch } from "../scraper/amazon-search";
 import { executeAmazonSearch } from "../scraper/amazon-http-client";
 import { scrapeAmazonSearchResult } from "../scraper/amazon-parser";

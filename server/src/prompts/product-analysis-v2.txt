@@ -27,7 +27,8 @@ Contextually related items must appear consecutively in the output array (e.g., 
 **REQUIRED PRODUCT ATTRIBUTES**
 For each product, provide the following:
 1.  Product name/description (include color if visible)
-2.  Category (MUST be one of the following: [LIST_OF_CATEGORIES_HERE])
+2.  Icon Category (MUST be one of the following: [LIST_OF_CATEGORIES_HERE])
+3.  Category (MUST be one of the broad categories: 'clothing', 'electronics', 'furniture', 'accessories', 'footwear', 'home_decor', 'books_media', 'sports_fitness', 'beauty_personal_care', 'kitchen_dining', 'other')
 3.  Brand (if visible/identifiable)
 4.  Primary color (the main/dominant color of the item)
 5.  Secondary colors (if applicable)
@@ -41,7 +42,8 @@ Format your response as a JSON array of objects with this structure:
     "products": [
         {
             "name": "product name with color",
-            "category": "category",  "Must be one of the allowed categories"
+            "iconCategory": "icon category", "Must be one of the allowed icon categories",
+            "category": "broad category", "Must be one of the broad categories"
             "brand": "brand name or unknown",
             "primaryColor": "main color",
             "secondaryColors": ["color1", "color2"],

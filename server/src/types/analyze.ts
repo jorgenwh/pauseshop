@@ -9,11 +9,26 @@ export interface AnalyzeRequest {
     };
 }
 
-import { ProductCategory } from "../config/product-categories";
+import { IconCategory } from "../config/icon-categories";
+
+export enum Category {
+    CLOTHING = "clothing",
+    ELECTRONICS = "electronics",
+    FURNITURE = "furniture",
+    ACCESSORIES = "accessories",
+    FOOTWEAR = "footwear",
+    HOME_DECOR = "home_decor",
+    BOOKS_MEDIA = "books_media",
+    SPORTS_FITNESS = "sports_fitness",
+    BEAUTY_PERSONAL_CARE = "beauty_personal_care",
+    KITCHEN_DINING = "kitchen_dining",
+    OTHER = "other",
+}
 
 export interface Product {
     name: string;
-    category: ProductCategory;
+    iconCategory: IconCategory;
+    category: Category;
     brand: string;
     primaryColor: string;
     secondaryColors: string[];

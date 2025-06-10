@@ -4,7 +4,7 @@
     "description": "PauseShop Backend Server",
     "private": true,
     "scripts": {
-        "prebuild": "ts-node scripts/generate-product-categories.ts",
+        "prebuild": "ts-node scripts/generate-icon-categories.ts",
         "build": "tsc",
         "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
         "start": "node dist/index.js",
