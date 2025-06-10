@@ -3,13 +3,11 @@
  * Converts OpenAI product analysis results into optimized Amazon search URLs
  */
 
+import { Product, Category, TargetGender } from "../types/common";
 import {
-    Product,
-    Category,
-    TargetGender,
     AmazonSearch,
     CategoryNodeMapping,
-    SearchTermValidationResult,
+    SearchTermValidationResult
 } from "../types/amazon";
 import { AMAZON_DOMAIN, AMAZON_ENABLE_CATEGORT_FILTERING, AMAZON_MAX_SEARCH_TERM_LENGHT } from "./constants";
 

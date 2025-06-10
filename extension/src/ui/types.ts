@@ -3,7 +3,7 @@
  */
 
 import { AmazonScrapedProduct, Category } from "../types/amazon";
-import { Product } from "../background/api-client";
+import { Product } from "../types/common";
 
 export interface ProductDisplayData {
     name: string;
