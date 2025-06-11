@@ -37,6 +37,7 @@ export interface SidebarEvents {
     onContentStateChange: (state: SidebarContentState) => void;
     onProductClick: (product: AmazonScrapedProduct) => void;
     onError: (error: Error) => void;
+    onToggleCompact: () => void; // New event for toggling compact mode
 }
 
 // Message types for communication with the background script

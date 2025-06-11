@@ -5,7 +5,7 @@ export const SIDEBAR_SLIDE_DURATION: number = 0.2;
 export const SIDEBAR_HEADER_HEIGHT: number = 60;
 export const SIDEBAR_HEADER_ICON_SIZE: number = 46;
 
-export const DEFAULT_SIDEBAR_POSITION = "right";
+export const DEFAULT_SIDEBAR_POSITION = "left";
 export const DEFAULT_DARK_MODE: boolean = true;
 export const DEFAULT_COMPACT: boolean = false;
 
