@@ -10,35 +10,14 @@ import {
 import { AmazonScrapedProduct } from '../../types/amazon';
 import {
   COMPACT_SIDEBAR_WIDTH,
-  SIDEBAR_HEADER_HEIGHT,
-  SIDEBAR_HEADER_ICON_SIZE,
   SIDEBAR_SLIDE_DURATION,
   SIDEBAR_WIDTH
 } from "../constants";
+import SidebarHeader from './SidebarHeader';
+import SidebarContent from './SidebarContent';
+import SidebarFooter from './SidebarFooter';
 
-const textVariants = {
-  hidden: { x: -20, opacity: 0 },
-  visible: {
-    x: 0,
-    opacity: 1,
-    transition: {
-      type: "tween",
-      ease: "easeOut",
-      duration: 0.2,
-    },
-  },
-};
-
-const headerContainerVariants = {
-  visible: {
-    transition: {
-      staggerChildren: 0.05,
-      delayChildren: 0.05,
-    },
-  },
-};
-
-interface SidebarComponentProps {
+interface SidebarProps {
   isVisible: boolean;
   contentState: SidebarContentState;
   darkMode: boolean;
@@ -53,8 +32,8 @@ interface SidebarComponentProps {
   onToggleDarkMode: () => void;
   onTogglePosition: () => void;
 }
-
-const SidebarComponent: React.FC<SidebarComponentProps> = ({
+ 
+const Sidebar: React.FC<SidebarProps> = ({
   isVisible,
   contentState,
   darkMode,
@@ -114,14 +93,6 @@ const SidebarComponent: React.FC<SidebarComponentProps> = ({
     return `translateX(0)`;
   };
 
-  const getToggleButtonIconClass = () => {
-    if (currentCompact) {
-      return position === "right" ? "arrow-left" : "arrow-right";
-    } else {
-      return position === "right" ? "arrow-right" : "arrow-left";
-    }
-  };
-
   return (
     <motion.div
       id="pauseshop-sidebar"
@@ -133,69 +104,26 @@ const SidebarComponent: React.FC<SidebarComponentProps> = ({
       }}
       
 
-      
      animate={currentCompact ? "hidden" : "visible"}
    >
-     <div
-       className="pauseshop-sidebar-header"
-       style={{
-         height: `${SIDEBAR_HEADER_HEIGHT}px`,
-        }}
-      >
-        <img
-          src={chrome.runtime.getURL('icons/icon-128.png')}
-          alt="PauseShop Icon"
-
-          className="pauseshop-sidebar-header-icon"
-          style={{
-            width: `${SIDEBAR_HEADER_ICON_SIZE}px`,
-            height: `${SIDEBAR_HEADER_ICON_SIZE}px`,
-          }}
-        />
-        <motion.div
-          className="pauseshop-sidebar-header-title-container"
-          variants={headerContainerVariants}
-        >
-          <motion.h1 className="pauseshop-sidebar-header-title-pause" variants={textVariants}>Pause</motion.h1>
-          <motion.h1
-            className="pauseshop-sidebar-header-title-shop"
-            variants={textVariants}
-          >
-            Shop
-          </motion.h1>
-        </motion.div>
-        <button
-          className="pauseshop-sidebar-toggle-button"
-          onClick={toggleCompactMode}
-        >
-          <span className={`arrow-icon ${getToggleButtonIconClass()}`}></span>
-        </button>
-      </div>
-      <div className="pauseshop-sidebar-content">
-        {contentState === SidebarContentState.LOADING && <p>Loading products...</p>}
-        {contentState === SidebarContentState.PRODUCTS && <p>Displaying products...</p>}
-        {contentState === SidebarContentState.NO_PRODUCTS && <p>No products found.</p>}
-        {contentState === SidebarContentState.ERROR && <p>An error occurred. Check console for details.</p>}
-      </div>
-      <div className="pauseshop-sidebar-footer">
-        <button
-          className="pauseshop-sidebar-button"
-          onClick={onToggleDarkMode}
-        >
-          <span>{darkMode ? "Light" : "Dark"}</span>
-        </button>
-        <button
-          className="pauseshop-sidebar-button"
-          onClick={onTogglePosition}
-        >
-          <span>{position === "right" ? "Left" : "Right"}</span>
-        </button>
-      </div>
-    </motion.div>
+     <SidebarHeader
+       compact={currentCompact}
+       position={position}
+       onToggleCompact={toggleCompactMode}
+     />
+     <SidebarContent contentState={contentState} />
+     <SidebarFooter
+       darkMode={darkMode}
+       position={position}
+       onToggleDarkMode={onToggleDarkMode}
+       onTogglePosition={onTogglePosition}
+     />
+     </motion.div>
   );
 };
 
-export default SidebarComponent;
+export default Sidebar;
+
 
 
 

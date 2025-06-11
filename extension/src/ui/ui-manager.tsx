@@ -5,7 +5,7 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import SidebarComponent from './components/SidebarComponent'; // New React component
+import Sidebar from './components/Sidebar'; // New React component
 import { AmazonScrapedProduct } from "../types/amazon";
 import {
     DEFAULT_DARK_MODE,
@@ -58,7 +58,7 @@ export class UIManager {
                 console.log("Sidebar hidden.");
             },
             onContentStateChange: (state: SidebarContentState) => {
-                // UIManager reacts to content state changes from SidebarComponent
+                // UIManager reacts to content state changes from Sidebar
                 console.log(`Sidebar content state changed to: ${state}`);
             },
             onProductClick: (product: AmazonScrapedProduct) => {
@@ -154,7 +154,7 @@ export class UIManager {
 
             this.reactRoot.render(
                 <React.StrictMode>
-                    <SidebarComponent
+                    <Sidebar
                         isVisible={this.sidebarVisible}
                         contentState={this.sidebarContentState}
                         darkMode={this.sidebarConfig.darkMode}
@@ -259,7 +259,7 @@ export class UIManager {
         );
         this.sidebarContentState = SidebarContentState.PRODUCTS;
         this.sidebarVisible = true; // Make sure sidebar is visible to show products
-        // TODO: Pass product data to SidebarComponent props
+        // TODO: Pass product data to Sidebar props
         this.renderSidebar();
         return true;
     }
