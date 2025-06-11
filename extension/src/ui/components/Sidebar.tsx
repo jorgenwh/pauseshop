@@ -14,8 +14,9 @@ import {
   SIDEBAR_WIDTH
 } from "../constants";
 import SidebarHeader from './SidebarHeader';
-import SidebarContent from './SidebarContent';
 import SidebarFooter from './SidebarFooter';
+import ExpandedSidebarContent from './ExpandedSidebarContent';
+import CollapsedSidebarContent from './CollapsedSidebarContent';
 
 interface SidebarProps {
   isVisible: boolean;
@@ -111,7 +112,11 @@ const Sidebar: React.FC<SidebarProps> = ({
        position={position}
        onToggleCompact={toggleCompactMode}
      />
-     <SidebarContent contentState={contentState} />
+     {currentCompact ? (
+       <CollapsedSidebarContent />
+     ) : (
+       <ExpandedSidebarContent contentState={contentState} />
+     )}
      <SidebarFooter
        darkMode={darkMode}
        position={position}
