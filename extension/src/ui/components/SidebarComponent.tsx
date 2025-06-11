@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { motion } from 'motion/react';
 
 import {
   SidebarConfig,
@@ -14,6 +15,28 @@ import {
   SIDEBAR_SLIDE_DURATION,
   SIDEBAR_WIDTH
 } from "../constants";
+
+const textVariants = {
+  hidden: { x: -20, opacity: 0 },
+  visible: {
+    x: 0,
+    opacity: 1,
+    transition: {
+      type: "tween",
+      ease: "easeOut",
+      duration: 0.2,
+    },
+  },
+};
+
+const headerContainerVariants = {
+  visible: {
+    transition: {
+      staggerChildren: 0.05,
+      delayChildren: 0.05,
+    },
+  },
+};
 
 interface SidebarComponentProps {
   isVisible: boolean;
@@ -100,7 +123,7 @@ const SidebarComponent: React.FC<SidebarComponentProps> = ({
   };
 
   return (
-    <div
+    <motion.div
       id="pauseshop-sidebar"
       className={`pauseshop-sidebar ${currentCompact ? "pauseshop-sidebar-compact" : ""} position-${position}`}
       style={{
@@ -108,6 +131,8 @@ const SidebarComponent: React.FC<SidebarComponentProps> = ({
         transform: getSidebarTransform(),
         pointerEvents: sidebarState === SidebarState.HIDDEN ? 'none' : 'auto',
       }}
+      initial="hidden"
+      animate={currentCompact ? "hidden" : "visible"}
     >
       <div
         className="pauseshop-sidebar-header"
@@ -124,14 +149,18 @@ const SidebarComponent: React.FC<SidebarComponentProps> = ({
             height: `${SIDEBAR_HEADER_ICON_SIZE}px`,
           }}
         />
-        <div className="pauseshop-sidebar-header-title-container">
-          <h1 className="pauseshop-sidebar-header-title-pause">Pause</h1>
-          <h1
+        <motion.div
+          className="pauseshop-sidebar-header-title-container"
+          variants={headerContainerVariants}
+        >
+          <motion.h1 className="pauseshop-sidebar-header-title-pause" variants={textVariants}>Pause</motion.h1>
+          <motion.h1
             className="pauseshop-sidebar-header-title-shop"
+            variants={textVariants}
           >
             Shop
-          </h1>
-        </div>
+          </motion.h1>
+        </motion.div>
         <button
           className="pauseshop-sidebar-toggle-button"
           onClick={toggleCompactMode}
@@ -159,7 +188,7 @@ const SidebarComponent: React.FC<SidebarComponentProps> = ({
           <span>{position === "right" ? "Left" : "Right"}</span>
         </button>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
