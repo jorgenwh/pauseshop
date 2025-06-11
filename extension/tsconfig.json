@@ -24,8 +24,9 @@
         "noEmit": false,
         "removeComments": true,
         "experimentalDecorators": true,
-        "emitDecoratorMetadata": true
+        "emitDecoratorMetadata": true,
+        "jsx": "react-jsx"
     },
     "include": ["src/**/*"],
-    "exclude": ["node_modules", "dist", "tests/**/*"]
+    "exclude": ["node_modules", "dist", "tests/**/*", "src/popup/popup.ts"]
 }

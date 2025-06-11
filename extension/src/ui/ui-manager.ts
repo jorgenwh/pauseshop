@@ -3,19 +3,20 @@
  * Orchestrates all UI components and handles lifecycle management
  */
 
-import { Sidebar } from "./components/sidebar";
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import SidebarComponent from './components/SidebarComponent'; // New React component
 import { AmazonScrapedProduct } from "../types/amazon";
-import { 
-    DEFAULT_DARK_MODE, 
-    DEFAULT_SIDEBAR_POSITION, 
+import {
+    DEFAULT_DARK_MODE,
+    DEFAULT_SIDEBAR_POSITION,
     DEFAULT_COMPACT,
     NO_PRODUCTS_TIMEOUT_MS,
     UI_CONTAINER_CLASS_NAME,
     UI_Z_INDEX
 } from "./constants";
 import {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
-    ProductDisplayData,
+    ProductDisplayData, // Keep ProductDisplayData if it's still used by background messages
     SidebarContentState,
     SidebarConfig,
     SidebarEvents,
@@ -28,11 +29,13 @@ import {
 
 export class UIManager {
     private container: HTMLElement | null = null;
+    private reactRoot: ReactDOM.Root | null = null; // React root for the sidebar
 
-    // Sidebar state management
-    private sidebar: Sidebar | null = null;
+    // Internal state for the React sidebar
+    private sidebarVisible: boolean = false;
+    private sidebarContentState: SidebarContentState = SidebarContentState.LOADING;
     private sidebarConfig: SidebarConfig;
-    private sidebarEvents: SidebarEvents;
+    private sidebarEvents: SidebarEvents; // Events for UIManager to handle or pass to React component
 
     private isInitialized: boolean = false;
     private noProductsFoundTimeoutId: NodeJS.Timeout | null = null;
@@ -299,3 +302,4 @@ export class UIManager {
         }
     }
 }
+

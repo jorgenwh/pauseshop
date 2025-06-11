@@ -6,7 +6,7 @@ module.exports = {
     entry: {
         "background/service-worker": "./src/background/service-worker.ts",
         "content/main-content": "./src/content/main-content.ts",
-        "popup/popup": "./src/popup/popup.ts",
+        "popup/popup": "./src/popup/popup.tsx",
     },
     output: {
         path: path.resolve(__dirname, "dist"),
@@ -15,7 +15,7 @@ module.exports = {
     module: {
         rules: [
             {
-                test: /\.ts$/,
+                test: /\.ts(x?)$/,
                 use: "ts-loader",
                 exclude: /node_modules/,
             },
@@ -30,7 +30,7 @@ module.exports = {
         ],
     },
     resolve: {
-        extensions: [".ts", ".js"],
+        extensions: [".ts", ".tsx", ".js"],
         alias: {
             "@": path.resolve(__dirname, "src"),
             "@types": path.resolve(__dirname, "src/types"),

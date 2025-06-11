@@ -4,13 +4,21 @@
         "es2021": true,
         "webextensions": true
     },
-    "extends": ["eslint:recommended"],
+    "extends": [
+        "eslint:recommended",
+        "plugin:react/recommended",
+        "plugin:react-hooks/recommended"
+    ],
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
         "ecmaVersion": "latest",
         "sourceType": "module"
     },
-    "plugins": ["@typescript-eslint"],
+    "plugins": [
+        "@typescript-eslint",
+        "react",
+        "react-hooks"
+    ],
     "rules": {
         "@typescript-eslint/no-unused-vars": [
             "error",
@@ -23,7 +31,14 @@
         "no-unused-vars": [
             "error",
             { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" }
-        ]
+        ],
+        "react/react-in-jsx-scope": "off",
+        "react/prop-types": "off"
+    },
+    "settings": {
+        "react": {
+            "version": "detect"
+        }
     },
     "ignorePatterns": ["dist/**", "node_modules/**", "webpack.config.js"]
 }
