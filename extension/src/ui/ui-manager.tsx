@@ -16,7 +16,7 @@ import {
     UI_Z_INDEX
 } from "./constants";
 import {
-    ProductDisplayData, // Keep ProductDisplayData if it's still used by background messages
+    ProductDisplayData,
     SidebarContentState,
     SidebarConfig,
     SidebarEvents,
@@ -47,10 +47,20 @@ export class UIManager {
             compact: DEFAULT_COMPACT,
         };
 
+        // Initialize with actual event handlers
         this.sidebarEvents = {
-            onShow: () => {},
-            onHide: () => {},
-            onContentStateChange: (_state: SidebarContentState) => {},
+            onShow: () => {
+                // Future: UIManager might handle some side effects here
+                console.log("Sidebar shown.");
+            },
+            onHide: () => {
+                // Future: UIManager might handle some side effects here
+                console.log("Sidebar hidden.");
+            },
+            onContentStateChange: (state: SidebarContentState) => {
+                // UIManager reacts to content state changes from SidebarComponent
+                console.log(`Sidebar content state changed to: ${state}`);
+            },
             onProductClick: (product: AmazonScrapedProduct) => {
                 if (product.amazonAsin) {
                     window.open(
@@ -58,7 +68,6 @@ export class UIManager {
                         "_blank",
                     );
                 } else if (product.productUrl) {
-                    // Fallback to productUrl if ASIN is missing
                     const decodedUrl = product.productUrl.replace(/&/g, "&");
                     window.open(decodedUrl, "_blank");
                 }
@@ -67,9 +76,38 @@ export class UIManager {
                 console.error(`Sidebar error: ${error.message}`);
             },
         };
+
+        // Add message listener for background script communication only once
+        chrome.runtime.onMessage.addListener(this.handleBackgroundMessages);
     }
 
-    // Initialize the UI manager and create container
+    private createContainer(): void {
+        const existingContainer = document.querySelector(
+            `.${UI_CONTAINER_CLASS_NAME}`,
+        );
+        if (existingContainer) {
+            existingContainer.remove();
+        }
+
+        this.container = document.createElement("div");
+        this.container.className = UI_CONTAINER_CLASS_NAME
+
+        const containerStyles = {
+            position: "fixed" as const,
+            top: "0",
+            left: "0",
+            width: "100%",
+            height: "100%",
+            pointerEvents: "none" as const,
+            zIndex: UI_Z_INDEX.toString(),
+            userSelect: "none" as const,
+        };
+        Object.assign(this.container.style, containerStyles);
+
+        // Append to document body
+        document.body.appendChild(this.container);
+    }
+
     public initialize(): boolean {
         if (this.isInitialized) {
             return true;
@@ -80,17 +118,37 @@ export class UIManager {
             if (!this.container) {
                 throw new Error("UI container was not created.");
             }
-            this.sidebar = new Sidebar(
-                this.container,
-                this.sidebarConfig,
-                this.sidebarEvents,
-            );
+            this.reactRoot = ReactDOM.createRoot(this.container);
+            this.renderSidebar(); // Initial render of the React sidebar
+
             this.isInitialized = true;
             console.log("UIManager initialized successfully.");
             return true;
         } catch (error) {
             console.error(`Failed to initialize UI Manager: ${error}`);
+            this.isInitialized = false; // Mark as not initialized on error
             return false;
+        }
+    }
+
+    private renderSidebar(): void {
+        if (this.reactRoot) {
+            this.reactRoot.render(
+                <React.StrictMode>
+                    <SidebarComponent
+                        isVisible={this.sidebarVisible}
+                        contentState={this.sidebarContentState}
+                        darkMode={this.sidebarConfig.darkMode}
+                        position={this.sidebarConfig.position}
+                        compact={this.sidebarConfig.compact}
+                        onShow={this.sidebarEvents.onShow}
+                        onHide={this.sidebarEvents.onHide}
+                        onContentStateChange={this.sidebarEvents.onContentStateChange}
+                        onProductClick={this.sidebarEvents.onProductClick}
+                        onError={this.sidebarEvents.onError}
+                    />
+                </React.StrictMode>
+            );
         }
     }
 
@@ -98,82 +156,59 @@ export class UIManager {
      * Show the sidebar
      */
     public async showSidebar(): Promise<boolean> {
-        if (!this.initialize()) {
-            return false;
+        if (!this.isInitialized) {
+            if (!this.initialize()) {
+                return false;
+            }
         }
-
-        if (!this.sidebar) {
-            console.warn("Cannot show sidebar because it is not initialized");
-            return false;
-        }
-
-        try {
-            await this.sidebar.show();
-            return true;
-        } catch (error) {
-            console.error(`Failed to show sidebar: ${error}`);
-            return false;
-        }
+        this.sidebarVisible = true;
+        this.renderSidebar();
+        return true;
     }
 
     /**
      * Hide the sidebar
      */
     public async hideSidebar(): Promise<boolean> {
-        if (!this.sidebar) {
-            return true;
-        }
-
-        try {
-            await this.sidebar.hide();
-            return true;
-        } catch (error) {
-            console.error(`Failed to hide sidebar: ${error}`);
-            return false;
-        }
+        this.sidebarVisible = false;
+        this.renderSidebar();
+        return true;
     }
 
     /**
      * Show "no products found" state and auto-hide after timeout
      */
     public async showNoProductsFound(): Promise<boolean> {
-        if (!this.sidebar) {
-            return false;
-        }
-
-        try {
-            // Clear any existing timeout
-            if (this.noProductsFoundTimeoutId) {
-                clearTimeout(this.noProductsFoundTimeoutId);
-                this.noProductsFoundTimeoutId = null;
+        if (!this.isInitialized) {
+            if (!this.initialize()) {
+                return false;
             }
-
-            // Show no products state in sidebar using new state management
-            this.sidebar.setContentState(SidebarContentState.NO_PRODUCTS);
-
-            // Auto-hide after timeout
-            this.noProductsFoundTimeoutId = setTimeout(async () => {
-                this.noProductsFoundTimeoutId = null;
-                await this.hideSidebar();
-            }, NO_PRODUCTS_TIMEOUT_MS);
-
-            return true;
-        } catch (error) {
-            console.error(`Failed to show no products found state: ${error}`);
-            return false;
         }
+        // Clear any existing timeout
+        if (this.noProductsFoundTimeoutId) {
+            clearTimeout(this.noProductsFoundTimeoutId);
+            this.noProductsFoundTimeoutId = null;
+        }
+
+        this.sidebarContentState = SidebarContentState.NO_PRODUCTS;
+        this.renderSidebar();
+
+        // Auto-hide after timeout
+        this.noProductsFoundTimeoutId = setTimeout(async () => {
+            this.noProductsFoundTimeoutId = null;
+            await this.hideSidebar();
+        }, NO_PRODUCTS_TIMEOUT_MS);
+
+        return true;
     }
 
     private handleAnalysisStarted = (message: AnalysisStartedMessage): boolean => {
         console.info(
             `Received analysis_started for pauseId: ${message.pauseId}`,
         );
-        if (!this.sidebar) {
-            return false;
-        }
-
-        this.sidebar.setContentState(SidebarContentState.LOADING);
-
+        this.sidebarContentState = SidebarContentState.LOADING;
+        this.sidebarVisible = true; // Make sure sidebar is visible when analysis starts
+        this.renderSidebar();
         return true;
     }
 
@@ -181,6 +216,8 @@ export class UIManager {
         console.info(
             `Received analysis_complete for pauseId: ${message.pauseId}`,
         );
+        // Maybe hide sidebar or change content to "results" state
+        // For now, no change needed for completion
         return true;
     }
 
@@ -188,12 +225,9 @@ export class UIManager {
         console.error(
             `Received analysis_error for pauseId: ${message.pauseId}`,
         );
-        if (!this.sidebar) {
-            return false;
-        }
-
-        this.sidebar.showError();
-
+        this.sidebarContentState = SidebarContentState.ERROR;
+        this.sidebarVisible = true; // Make sure sidebar is visible to show error
+        this.renderSidebar();
         return true;
     }
 
@@ -201,7 +235,10 @@ export class UIManager {
         console.info(
             `Received product_group_update for pauseId: ${message.pauseId} with ${message.scrapedProducts.length} products`,
         );
-
+        this.sidebarContentState = SidebarContentState.PRODUCTS;
+        this.sidebarVisible = true; // Make sure sidebar is visible to show products
+        // TODO: Pass product data to SidebarComponent props
+        this.renderSidebar();
         return true;
     }
 
@@ -241,13 +278,13 @@ export class UIManager {
             this.noProductsFoundTimeoutId = null;
         }
 
-        // Cleanup sidebar
-        if (this.sidebar) {
-            this.sidebar.cleanup();
-            this.sidebar = null;
+        // Unmount React component
+        if (this.reactRoot) {
+            this.reactRoot.unmount();
+            this.reactRoot = null;
         }
 
-        // Remove container from DOM
+        // Remove container from DOM if it exists and has a parent
         if (this.container && this.container.parentNode) {
             this.container.parentNode.removeChild(this.container);
         }
@@ -257,36 +294,6 @@ export class UIManager {
 
         // Remove message listener for background script communication
         chrome.runtime.onMessage.removeListener(this.handleBackgroundMessages);
-    }
-
-    private createContainer(): void {
-        const existingContainer = document.querySelector(
-            `.${UI_CONTAINER_CLASS_NAME}`,
-        );
-        if (existingContainer) {
-            existingContainer.remove();
-        }
-
-        this.container = document.createElement("div");
-        this.container.className = UI_CONTAINER_CLASS_NAME
-
-        const containerStyles = {
-            position: "fixed" as const,
-            top: "0",
-            left: "0",
-            width: "100%",
-            height: "100%",
-            pointerEvents: "none" as const,
-            zIndex: UI_Z_INDEX.toString(),
-            userSelect: "none" as const,
-        };
-        Object.assign(this.container.style, containerStyles);
-
-        // Append to document body
-        document.body.appendChild(this.container);
-
-        // Add message listener for background script communication
-        chrome.runtime.onMessage.addListener(this.handleBackgroundMessages);
     }
 
     public static create(): UIManager | null {
@@ -302,4 +309,3 @@ export class UIManager {
         }
     }
 }
-
