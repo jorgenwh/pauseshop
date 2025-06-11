@@ -52,6 +52,12 @@ const SidebarComponent: React.FC<SidebarComponentProps> = ({
   }, [compact]);
 
   useEffect(() => {
+    document.documentElement.style.setProperty('--sidebar-width', `${SIDEBAR_WIDTH}px`);
+    document.documentElement.style.setProperty('--sidebar-compact-width', `${COMPACT_SIDEBAR_WIDTH}px`);
+    document.documentElement.style.setProperty('--sidebar-transition-speed', `${SIDEBAR_SLIDE_DURATION}s`);
+  }, []); // Run once on mount
+
+  useEffect(() => {
     if (isVisible) {
       if (sidebarState === SidebarState.HIDDEN || sidebarState === SidebarState.SLIDING_OUT) {
         setSidebarState(SidebarState.SLIDING_IN);
@@ -98,8 +104,6 @@ const SidebarComponent: React.FC<SidebarComponentProps> = ({
       id="pauseshop-sidebar"
       className={`pauseshop-sidebar ${currentCompact ? "pauseshop-sidebar-compact" : ""} position-${position}`}
       style={{
-        width: `${currentCompact ? COMPACT_SIDEBAR_WIDTH : SIDEBAR_WIDTH}px`,
-        transition: `transform ${SIDEBAR_SLIDE_DURATION}s ease-in-out`,
         [position]: "0",
         transform: getSidebarTransform(),
         pointerEvents: sidebarState === SidebarState.HIDDEN ? 'none' : 'auto',
