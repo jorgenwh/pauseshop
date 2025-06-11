@@ -145,6 +145,13 @@ export class UIManager {
 
     private renderSidebar(): void {
         if (this.reactRoot) {
+            // Apply dark mode class to body
+            if (this.sidebarConfig.darkMode) {
+                document.body.classList.add("dark-mode");
+            } else {
+                document.body.classList.remove("dark-mode");
+            }
+
             this.reactRoot.render(
                 <React.StrictMode>
                     <SidebarComponent
