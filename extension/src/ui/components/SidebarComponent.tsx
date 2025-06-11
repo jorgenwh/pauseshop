@@ -71,14 +71,14 @@ const SidebarComponent: React.FC<SidebarComponentProps> = ({
   const [currentCompact, setCurrentCompact] = useState<boolean>(compact);
 
   useEffect(() => {
-    setCurrentCompact(compact);
-  }, [compact]);
-
-  useEffect(() => {
     document.documentElement.style.setProperty('--sidebar-width', `${SIDEBAR_WIDTH}px`);
     document.documentElement.style.setProperty('--sidebar-compact-width', `${COMPACT_SIDEBAR_WIDTH}px`);
     document.documentElement.style.setProperty('--sidebar-transition-speed', `${SIDEBAR_SLIDE_DURATION}s`);
   }, []); // Run once on mount
+
+  useEffect(() => {
+    setCurrentCompact(compact);
+  }, [compact]);
 
   useEffect(() => {
     if (isVisible) {
@@ -131,18 +131,21 @@ const SidebarComponent: React.FC<SidebarComponentProps> = ({
         transform: getSidebarTransform(),
         pointerEvents: sidebarState === SidebarState.HIDDEN ? 'none' : 'auto',
       }}
-      initial="hidden"
-      animate={currentCompact ? "hidden" : "visible"}
-    >
-      <div
-        className="pauseshop-sidebar-header"
-        style={{
-          height: `${SIDEBAR_HEADER_HEIGHT}px`,
+      
+
+      
+     animate={currentCompact ? "hidden" : "visible"}
+   >
+     <div
+       className="pauseshop-sidebar-header"
+       style={{
+         height: `${SIDEBAR_HEADER_HEIGHT}px`,
         }}
       >
         <img
           src={chrome.runtime.getURL('icons/icon-128.png')}
           alt="PauseShop Icon"
+
           className="pauseshop-sidebar-header-icon"
           style={{
             width: `${SIDEBAR_HEADER_ICON_SIZE}px`,
@@ -193,4 +196,7 @@ const SidebarComponent: React.FC<SidebarComponentProps> = ({
 };
 
 export default SidebarComponent;
+
+
+
 
