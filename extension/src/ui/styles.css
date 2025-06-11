@@ -182,14 +182,59 @@ body.dark-mode {
 }
 
 /* PNG Icon Tinting for Dark Mode */
-.pauseshop-sidebar-header-icon,
-.pauseshop-sidebar-content img { /* Assuming product images will be in .pauseshop-sidebar-content */
-    filter: invert(1) hue-rotate(180deg) brightness(0.8); /* Apply filter by default for light mode */
+.pauseshop-sidebar-header-icon { /* Apply filter by default for light mode */
+    filter: invert(1) hue-rotate(180deg) brightness(0.8);
 }
 
-body.dark-mode .pauseshop-sidebar-header-icon,
-body.dark-mode .pauseshop-sidebar-content img {
+body.dark-mode .pauseshop-sidebar-header-icon {
     filter: none; /* Remove filter in dark mode to show original icon */
+}
+
+/* Styles for Collapsed Sidebar Content */
+.pauseshop-collapsed-sidebar-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px 0;
+    gap: 15px; /* Spacing between icons */
+    overflow-y: auto;
+    flex-grow: 1; /* Allow content to take available space */
+}
+
+.pauseshop-collapsed-icon-container {
+    position: relative;
+    width: 35px; /* Adjust size as needed */
+    height: 35px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.pauseshop-collapsed-icon {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    /* Dark mode tinting handled by the filter property on the img itself */
+}
+
+.pauseshop-collapsed-icon.dark-mode-icon {
+  filter: invert(1) hue-rotate(180deg) brightness(0.8);
+}
+
+
+.pauseshop-collapsed-icon-count {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: var(--shop-text-color); /* Use shop-text-color for the count bubble */
+    color: white;
+    border-radius: 50%;
+    font-size: 0.7em;
+    padding: 2px 5px;
+    min-width: 15px;
+    text-align: center;
+    line-height: 1;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 .arrow-icon.arrow-left {
@@ -221,6 +266,7 @@ body.dark-mode .pauseshop-sidebar-content img {
     justify-content: center;
     height: 24px;
 }
+
 
 
 

@@ -24,6 +24,7 @@ interface SidebarProps {
   darkMode: boolean;
   position: "right" | "left";
   compact: boolean;
+  aggregatedProductIcons: { [key: string]: number; };
   onShow: () => void;
   onHide: () => void;
   onContentStateChange: (state: SidebarContentState) => void;
@@ -40,6 +41,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   darkMode,
   position,
   compact,
+  aggregatedProductIcons, // Destructure the new prop
   onShow,
   onHide,
   onContentStateChange,
@@ -113,7 +115,7 @@ const Sidebar: React.FC<SidebarProps> = ({
        onToggleCompact={toggleCompactMode}
      />
      {currentCompact ? (
-       <CollapsedSidebarContent />
+       <CollapsedSidebarContent aggregatedProductIcons={aggregatedProductIcons} darkMode={darkMode} />
      ) : (
        <ExpandedSidebarContent contentState={contentState} />
      )}

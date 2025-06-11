@@ -5,6 +5,10 @@
 import { AmazonScrapedProduct } from "../types/amazon";
 import { Category, Product } from "../types/common";
 
+export interface AggregatedProductIcons {
+    [iconCategory: string]: number;
+}
+
 export interface ProductDisplayData {
     name: string;
     products: AmazonScrapedProduct[];

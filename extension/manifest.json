@@ -40,8 +40,9 @@
     "web_accessible_resources": [
         {
             "resources": [
-                "ui/*", 
+                "ui/*",
                 "icons/icon-128.png",
+                "icons/products/*.png",
                 "fonts/*.ttf"
             ],
             "matches": [

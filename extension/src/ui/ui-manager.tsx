@@ -25,6 +25,7 @@ import {
     AnalysisCompleteMessage,
     AnalysisErrorMessage,
     ProductGroupUpdateMessage,
+    AggregatedProductIcons
 } from "./types";
 
 export class UIManager {
@@ -36,6 +37,7 @@ export class UIManager {
     private sidebarContentState: SidebarContentState = SidebarContentState.LOADING;
     private sidebarConfig: SidebarConfig;
     private sidebarEvents: SidebarEvents; // Events for UIManager to handle or pass to React component
+    private aggregatedProductIcons: AggregatedProductIcons = {};
 
     private isInitialized: boolean = false;
     private noProductsFoundTimeoutId: NodeJS.Timeout | null = null;
@@ -160,6 +162,7 @@ export class UIManager {
                         darkMode={this.sidebarConfig.darkMode}
                         position={this.sidebarConfig.position}
                         compact={this.sidebarConfig.compact}
+                        aggregatedProductIcons={this.aggregatedProductIcons} // Pass the new prop
                         onShow={this.sidebarEvents.onShow}
                         onHide={this.sidebarEvents.onHide}
                         onContentStateChange={this.sidebarEvents.onContentStateChange}
@@ -230,6 +233,7 @@ export class UIManager {
         );
         this.sidebarContentState = SidebarContentState.LOADING;
         this.sidebarVisible = true; // Make sure sidebar is visible when analysis starts
+        this.aggregatedProductIcons = {}; // Clear previous icons
         this.renderSidebar();
         return true;
     }
@@ -259,7 +263,15 @@ export class UIManager {
         );
         this.sidebarContentState = SidebarContentState.PRODUCTS;
         this.sidebarVisible = true; // Make sure sidebar is visible to show products
-        // TODO: Pass product data to Sidebar props
+
+        // Aggregate product icons
+        const newAggregatedProductIcons: AggregatedProductIcons = { ...this.aggregatedProductIcons };
+        if (message.originalProduct && message.originalProduct.iconCategory) {
+            const iconCategory = message.originalProduct.iconCategory;
+            newAggregatedProductIcons[iconCategory] = (newAggregatedProductIcons[iconCategory] || 0) + 1;
+        }
+
+        this.aggregatedProductIcons = newAggregatedProductIcons;
         this.renderSidebar();
         return true;
     }
