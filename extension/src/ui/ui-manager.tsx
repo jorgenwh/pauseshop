@@ -78,6 +78,14 @@ export class UIManager {
             onToggleCompact: () => {
                 this.sidebarConfig.compact = !this.sidebarConfig.compact;
                 this.renderSidebar();
+            },
+            onToggleDarkMode: () => {
+                this.sidebarConfig.darkMode = !this.sidebarConfig.darkMode;
+                this.renderSidebar();
+            },
+            onTogglePosition: () => {
+                this.sidebarConfig.position = this.sidebarConfig.position === "right" ? "left" : "right";
+                this.renderSidebar();
             }
         };
 
@@ -151,6 +159,8 @@ export class UIManager {
                         onProductClick={this.sidebarEvents.onProductClick}
                         onError={this.sidebarEvents.onError}
                         onToggleCompact={this.sidebarEvents.onToggleCompact}
+                        onToggleDarkMode={this.sidebarEvents.onToggleDarkMode}
+                        onTogglePosition={this.sidebarEvents.onTogglePosition}
                     />
                 </React.StrictMode>
             );

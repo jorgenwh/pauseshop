@@ -28,6 +28,8 @@ interface SidebarComponentProps {
     onProductClick: (product: AmazonScrapedProduct) => void; // Keep for future, but not used now
     onError: (error: Error) => void;
     onToggleCompact: () => void;
+    onToggleDarkMode: () => void;
+    onTogglePosition: () => void;
 }
 
 const SidebarComponent: React.FC<SidebarComponentProps> = ({
@@ -40,6 +42,8 @@ const SidebarComponent: React.FC<SidebarComponentProps> = ({
     onHide,
     onContentStateChange,
     onToggleCompact,
+    onToggleDarkMode,
+    onTogglePosition,
 }) => {
     const [sidebarState, setSidebarState] = useState<SidebarState>(SidebarState.HIDDEN);
     const [currentCompact, setCurrentCompact] = useState<boolean>(compact);
@@ -138,6 +142,20 @@ const SidebarComponent: React.FC<SidebarComponentProps> = ({
                 {contentState === SidebarContentState.PRODUCTS && <p>Displaying products...</p>}
                 {contentState === SidebarContentState.NO_PRODUCTS && <p>No products found.</p>}
                 {contentState === SidebarContentState.ERROR && <p>An error occurred. Check console for details.</p>}
+            </div>
+            <div className="pauseshop-sidebar-footer">
+                <button
+                    className="pauseshop-sidebar-button"
+                    onClick={onToggleDarkMode}
+                >
+                    <span>{darkMode ? "Light" : "Dark"}</span>
+                </button>
+                <button
+                    className="pauseshop-sidebar-button"
+                    onClick={onTogglePosition}
+                >
+                    <span>{position === "right" ? "Left" : "Right"}</span>
+                </button>
             </div>
         </div>
     );

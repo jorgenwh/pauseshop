@@ -39,6 +39,11 @@
     margin-left: 8px;
 }
 
+.pauseshop-sidebar.position-right .pauseshop-sidebar-header-icon {
+    margin-left: auto; /* Push to the right */
+    margin-right: 8px;
+}
+
 .pauseshop-sidebar-header-title-container {
     color: white;
     position: absolute;
@@ -71,6 +76,11 @@
     transform: translateY(-50%);
     right: 8px; /* Default position for normal mode */
     z-index: 100000;
+}
+
+.pauseshop-sidebar.position-right .pauseshop-sidebar-toggle-button {
+    left: 8px; /* Position on the left for right mode */
+    right: auto; /* Override default right position */
     color: white;
     font-size: 1.5rem;
     padding: 0;
@@ -87,6 +97,47 @@
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
 }
 
+.pauseshop-sidebar.pauseshop-sidebar-compact.position-right .pauseshop-sidebar-toggle-button {
+    left: -40px; /* Position floating outside to the left when compact and in right mode */
+    right: auto; /* Override default right position */
+}
+
+/* Adjust header for button layout */
+.pauseshop-sidebar-header {
+    height: var(--sidebar-header-height);
+
+    display: flex;
+    align-items: center;
+    position: relative;
+    overflow: visible;
+}
+
+.pauseshop-sidebar-header-icon {
+    margin-left: 8px;
+}
+
+.pauseshop-sidebar.position-right .pauseshop-sidebar-header-icon {
+    margin-left: auto; /* Push to the right */
+    margin-right: 8px;
+}
+
+.pauseshop-sidebar-header-title-container {
+    color: white;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: row;
+    font-size: 1.2rem;
+    font-family: 'Encode Sans SC', sans-serif;
+}
+
+.pauseshop-sidebar.position-right .pauseshop-sidebar-header-title-container {
+    left: auto; /* Reset left */
+    right: 50%; /* Position from right */
+    transform: translateX(50%); /* Adjust transform for right positioning */
+}
+
 /* Arrow Icons */
 .arrow-icon {
     display: inline-block;
@@ -100,4 +151,31 @@
 
 .arrow-icon.arrow-left {
     transform: rotate(180deg);
+}
+
+.pauseshop-sidebar-footer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 8px;
+    gap: 8px; /* Space between buttons */
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.7); /* Same as sidebar background */
+    backdrop-filter: blur(5px);
+}
+
+.pauseshop-sidebar-button {
+    background: none;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    cursor: pointer;
+    color: white;
+    font-size: 0.8rem;
+    padding: 4px 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 32px;
 }
