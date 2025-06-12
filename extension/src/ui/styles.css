@@ -160,8 +160,8 @@
 .pauseshop-sidebar.pauseshop-sidebar-compact .pauseshop-sidebar-toggle-button {
     right: -35px; /* Position floating outside when compact, 5px closer to the sidebar */
     background-color: var(
-        --sidebar-bg
-    ); /* Use sidebar background for more opacity */
+        --sidebar-toggle-button-bg
+    ); /* Use sidebar toggle button background for consistency */
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5); /* More prominent shadow */
 }
 
