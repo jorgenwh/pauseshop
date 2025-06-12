@@ -24,7 +24,7 @@
 
 body.dark-mode {
     /* Dark Mode Overrides */
-    --sidebar-bg:                 rgba(255, 255, 255, 0.1); /* Adjusted to be a bit lighter */
+    --sidebar-bg:                 rgba(255, 255, 255, 0.25); /* Adjusted to be a bit lighter */
     --sidebar-text-color:         #A0A0A0; /* New icon/text gray */
     --sidebar-text-color-light:   #A0A0A0; /* Consistent light text */
     --sidebar-border-color:       rgba(255, 255, 255, 0.18); /* New border color */
@@ -210,7 +210,7 @@ body.dark-mode .pauseshop-sidebar-header-icon {
     align-items:                  center;
     gap:                          6px; /* Reduced space between dots */
     height:                       100%; /* Take full height of parent */
-    margin-top:                   20px; /* Lower the dots a bit */
+    margin-top:                   20px; /* Lower the dots a bit (per user's previous explicit edit) */
 }
 
 .pauseshop-loading-dot {
@@ -237,7 +237,7 @@ body.dark-mode .pauseshop-sidebar-header-icon {
 }
 
 .pauseshop-collapsed-icon.dark-mode-icon {
-  filter:                       invert(0.8) grayscale(1) brightness(0.7); /* Make black icons gray */
+  filter:                       invert(0.8) grayscale(1) brightness(0.9); /* Revert to previous icon brightness (user feedback was sidebar color, not icon) */
 }
 
 .pauseshop-collapsed-icon-count {
