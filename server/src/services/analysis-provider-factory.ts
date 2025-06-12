@@ -149,75 +149,75 @@ export class AnalysisProviderFactory {
         ).toLowerCase() as AnalysisProvider;
 
         switch (provider) {
-            case AnalysisProvider.OPENAI:
-                try {
-                    const config = getOpenAIConfig();
-                    return new OpenAIService(config);
-                } catch (error) {
-                    const errorMessage =
+        case AnalysisProvider.OPENAI:
+            try {
+                const config = getOpenAIConfig();
+                return new OpenAIService(config);
+            } catch (error) {
+                const errorMessage =
                         error instanceof Error
                             ? error.message
                             : "Unknown error";
-                    console.error(
-                        `[PROVIDER_FACTORY] Failed to create OpenAI provider: ${errorMessage}`,
-                    );
-                    throw new Error(
-                        `OpenAI provider configuration error: ${errorMessage}`,
-                    );
-                }
-            case AnalysisProvider.REQUESTY:
-                try {
-                    const config = getRequestyConfig();
-                    return new RequestyService(config);
-                } catch (error) {
-                    const errorMessage =
-                        error instanceof Error
-                            ? error.message
-                            : "Unknown error";
-                    console.error(
-                        `[PROVIDER_FACTORY] Failed to create Requesty provider: ${errorMessage}`,
-                    );
-                    throw new Error(
-                        `Requesty provider configuration error: ${errorMessage}`,
-                    );
-                }
-            case AnalysisProvider.GEMINI:
-                try {
-                    const config = getGeminiConfig();
-                    return new GeminiService(config);
-                } catch (error) {
-                    const errorMessage =
-                        error instanceof Error
-                            ? error.message
-                            : "Unknown error";
-                    console.error(
-                        `[PROVIDER_FACTORY] Failed to create Gemini provider: ${errorMessage}`,
-                    );
-                    throw new Error(
-                        `Gemini provider configuration error: ${errorMessage}`,
-                    );
-                }
-            case AnalysisProvider.OPENROUTER:
-                try {
-                    const config = getOpenRouterConfig();
-                    return new OpenRouterService(config);
-                } catch (error) {
-                    const errorMessage =
-                        error instanceof Error
-                            ? error.message
-                            : "Unknown error";
-                    console.error(
-                        `[PROVIDER_FACTORY] Failed to create OpenRouter provider: ${errorMessage}`,
-                    );
-                    throw new Error(
-                        `OpenRouter provider configuration error: ${errorMessage}`,
-                    );
-                }
-            default: {
-                const errorMessage = `Unknown analysis provider: ${provider}. Supported providers: ${Object.values(AnalysisProvider).join(", ")}`;
-                console.error(`[PROVIDER_FACTORY] ${errorMessage}`);
-                throw new Error(errorMessage);
+                console.error(
+                    `[PROVIDER_FACTORY] Failed to create OpenAI provider: ${errorMessage}`,
+                );
+                throw new Error(
+                    `OpenAI provider configuration error: ${errorMessage}`,
+                );
             }
+        case AnalysisProvider.REQUESTY:
+            try {
+                const config = getRequestyConfig();
+                return new RequestyService(config);
+            } catch (error) {
+                const errorMessage =
+                        error instanceof Error
+                            ? error.message
+                            : "Unknown error";
+                console.error(
+                    `[PROVIDER_FACTORY] Failed to create Requesty provider: ${errorMessage}`,
+                );
+                throw new Error(
+                    `Requesty provider configuration error: ${errorMessage}`,
+                );
+            }
+        case AnalysisProvider.GEMINI:
+            try {
+                const config = getGeminiConfig();
+                return new GeminiService(config);
+            } catch (error) {
+                const errorMessage =
+                        error instanceof Error
+                            ? error.message
+                            : "Unknown error";
+                console.error(
+                    `[PROVIDER_FACTORY] Failed to create Gemini provider: ${errorMessage}`,
+                );
+                throw new Error(
+                    `Gemini provider configuration error: ${errorMessage}`,
+                );
+            }
+        case AnalysisProvider.OPENROUTER:
+            try {
+                const config = getOpenRouterConfig();
+                return new OpenRouterService(config);
+            } catch (error) {
+                const errorMessage =
+                        error instanceof Error
+                            ? error.message
+                            : "Unknown error";
+                console.error(
+                    `[PROVIDER_FACTORY] Failed to create OpenRouter provider: ${errorMessage}`,
+                );
+                throw new Error(
+                    `OpenRouter provider configuration error: ${errorMessage}`,
+                );
+            }
+        default: {
+            const errorMessage = `Unknown analysis provider: ${provider}. Supported providers: ${Object.values(AnalysisProvider).join(", ")}`;
+            console.error(`[PROVIDER_FACTORY] ${errorMessage}`);
+            throw new Error(errorMessage);
+        }
         }
     }
 
@@ -238,27 +238,27 @@ export class AnalysisProviderFactory {
             const provider = AnalysisProviderFactory.getCurrentProvider();
 
             switch (provider) {
-                case AnalysisProvider.OPENAI:
-                    getOpenAIConfig();
-                    return { isValid: true };
+            case AnalysisProvider.OPENAI:
+                getOpenAIConfig();
+                return { isValid: true };
 
-                case AnalysisProvider.REQUESTY:
-                    getRequestyConfig();
-                    return { isValid: true };
+            case AnalysisProvider.REQUESTY:
+                getRequestyConfig();
+                return { isValid: true };
 
-                case AnalysisProvider.GEMINI:
-                    getGeminiConfig();
-                    return { isValid: true };
+            case AnalysisProvider.GEMINI:
+                getGeminiConfig();
+                return { isValid: true };
 
-                case AnalysisProvider.OPENROUTER:
-                    getOpenRouterConfig();
-                    return { isValid: true };
+            case AnalysisProvider.OPENROUTER:
+                getOpenRouterConfig();
+                return { isValid: true };
 
-                default:
-                    return {
-                        isValid: false,
-                        error: `Unknown provider: ${provider}`,
-                    };
+            default:
+                return {
+                    isValid: false,
+                    error: `Unknown provider: ${provider}`,
+                };
             }
         } catch (error) {
             const errorMessage =

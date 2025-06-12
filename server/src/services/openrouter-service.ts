@@ -45,11 +45,11 @@ export class OpenRouterService implements AnalysisService {
                 model: this.config.model,
                 messages: [
                     {
-                        role: 'user',
+                        role: "user",
                         content: [
-                            { type: 'text', text: prompt },
+                            { type: "text", text: prompt },
                             {
-                                type: 'image_url',
+                                type: "image_url",
                                 image_url: {
                                     url: imageData,
                                 },
@@ -61,16 +61,19 @@ export class OpenRouterService implements AnalysisService {
                 max_tokens: this.config.maxTokens,
             });
 
-            const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-                method: "POST",
-                headers: {
-                    Authorization: `Bearer ${this.config.apiKey}`,
-                    "Content-Type": "application/json",
-                    "HTTP-Referer": this.config.siteUrl || "",
-                    "X-Title": this.config.siteName || "",
+            const response = await fetch(
+                "https://openrouter.ai/api/v1/chat/completions",
+                {
+                    method: "POST",
+                    headers: {
+                        Authorization: `Bearer ${this.config.apiKey}`,
+                        "Content-Type": "application/json",
+                        "HTTP-Referer": this.config.siteUrl || "",
+                        "X-Title": this.config.siteName || "",
+                    },
+                    body,
                 },
-                body,
-            });
+            );
 
             const reader = response.body?.getReader();
             if (!reader) throw new Error("Response body is not readable");
@@ -78,7 +81,7 @@ export class OpenRouterService implements AnalysisService {
             const decoder = new TextDecoder();
             let buffer = "";
             let fullContent = "";
-            let usage: OpenRouterResponse['usage'] = undefined;
+            let usage: OpenRouterResponse["usage"] = undefined;
 
             try {
                 let done;
@@ -87,30 +90,35 @@ export class OpenRouterService implements AnalysisService {
                     buffer += decoder.decode(value, { stream: true });
 
                     let lineEnd;
-                    while ((lineEnd = buffer.indexOf('\n')) !== -1) {
-
+                    while ((lineEnd = buffer.indexOf("\n")) !== -1) {
                         const line = buffer.slice(0, lineEnd).trim();
                         buffer = buffer.slice(lineEnd + 1);
 
-                        if (line.startsWith('data: ')) {
+                        if (line.startsWith("data: ")) {
                             const data = line.slice(6);
-                            if (data === '[DONE]') break;
+                            if (data === "[DONE]") break;
 
                             try {
                                 const parsed = JSON.parse(data);
-                                const content = parsed.choices?.[0]?.delta?.content || "";
+                                const content =
+                                    parsed.choices?.[0]?.delta?.content || "";
                                 if (content) {
-                                    if (firstTokenTime === null) firstTokenTime = Date.now();
+                                    if (firstTokenTime === null)
+                                        firstTokenTime = Date.now();
                                     lastTokenTime = Date.now();
 
                                     fullContent += content;
                                     const products = parser.parse(content);
-                                    products.forEach((product) => callbacks.onProduct(product));
+                                    products.forEach((product) =>
+                                        callbacks.onProduct(product),
+                                    );
                                 }
                                 if (parsed.usage) {
                                     usage = {
-                                        promptTokens: parsed.usage.prompt_tokens,
-                                        completionTokens: parsed.usage.completion_tokens,
+                                        promptTokens:
+                                            parsed.usage.prompt_tokens,
+                                        completionTokens:
+                                            parsed.usage.completion_tokens,
                                         totalTokens: parsed.usage.total_tokens,
                                     };
                                 }
@@ -144,10 +152,10 @@ export class OpenRouterService implements AnalysisService {
                 content: fullContent,
                 usage: usage
                     ? {
-                          promptTokens: usage.promptTokens,
-                          completionTokens: usage.completionTokens,
-                          totalTokens: usage.totalTokens,
-                      }
+                        promptTokens: usage.promptTokens,
+                        completionTokens: usage.completionTokens,
+                        totalTokens: usage.totalTokens,
+                    }
                     : undefined,
             });
         } catch (error) {

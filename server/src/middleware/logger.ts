@@ -25,8 +25,8 @@ export const requestLogger = (
             statusCode >= 400
                 ? "\x1b[31m"
                 : statusCode >= 300
-                  ? "\x1b[33m"
-                  : "\x1b[32m";
+                    ? "\x1b[33m"
+                    : "\x1b[32m";
 
         console.log(
             `[${new Date().toISOString()}] ${method} ${url} - ${statusColor}${statusCode}\x1b[0m - ${duration}ms`,

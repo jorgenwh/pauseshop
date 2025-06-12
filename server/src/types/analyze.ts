@@ -9,18 +9,9 @@ export interface AnalyzeRequest {
     };
 }
 
-export interface Product {
-    name: string;
-    category: ProductCategory;
-    brand: string;
-    primaryColor: string;
-    secondaryColors: string[];
-    features: string[];
-    targetGender: TargetGender;
-    searchTerms: string;
-}
+import { IconCategory } from "../config/icon-categories";
 
-export enum ProductCategory {
+export enum Category {
     CLOTHING = "clothing",
     ELECTRONICS = "electronics",
     FURNITURE = "furniture",
@@ -32,6 +23,18 @@ export enum ProductCategory {
     BEAUTY_PERSONAL_CARE = "beauty_personal_care",
     KITCHEN_DINING = "kitchen_dining",
     OTHER = "other",
+}
+
+export interface Product {
+    name: string;
+    iconCategory: IconCategory;
+    category: Category;
+    brand: string;
+    primaryColor: string;
+    secondaryColors: string[];
+    features: string[];
+    targetGender: TargetGender;
+    searchTerms: string;
 }
 
 export enum TargetGender {

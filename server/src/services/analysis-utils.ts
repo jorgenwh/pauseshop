@@ -5,7 +5,8 @@
 
 import { promises as fs } from "fs";
 import { resolve } from "path";
-import { Product, ProductCategory, TargetGender } from "../types/analyze";
+import { Product, TargetGender, Category } from "../types/analyze";
+import { ICON_CATEGORIES, IconCategory } from "../config/icon-categories";
 
 // Shared prompt cache
 let promptCache: string | null = null;
@@ -23,7 +24,17 @@ export async function loadPrompt(): Promise<string> {
             __dirname,
             "../prompts/product-analysis-v2.txt",
         );
-        const promptContent = await fs.readFile(promptPath, "utf-8");
+        let promptContent = await fs.readFile(promptPath, "utf-8");
+
+        // Dynamically inject product categories into the prompt
+        const iconCategoriesList = ICON_CATEGORIES.map(
+            (cat) => `'${cat}'`,
+        ).join(", ");
+        promptContent = promptContent.replace(
+            "[LIST_OF_CATEGORIES_HERE]",
+            iconCategoriesList,
+        );
+
         promptCache = promptContent.trim();
         return promptCache;
     } catch (error) {
@@ -63,6 +74,7 @@ function isValidProduct(product: any): boolean {
     return (
         typeof product === "object" &&
         typeof product.name === "string" &&
+        typeof product.iconCategory === "string" &&
         typeof product.category === "string" &&
         typeof product.brand === "string" &&
         typeof product.primaryColor === "string" &&
@@ -80,7 +92,8 @@ function isValidProduct(product: any): boolean {
 function sanitizeProduct(product: any): Product {
     return {
         name: String(product.name).substring(0, 100).trim(),
-        category: validateCategory(product.category),
+        iconCategory: validateIconCategory(product.iconCategory),
+        category: validateBroadCategory(product.category),
         brand: String(product.brand).substring(0, 50).trim(),
         primaryColor: String(product.primaryColor).substring(0, 30).trim(),
         secondaryColors: sanitizeStringArray(product.secondaryColors, 30, 3),
@@ -93,11 +106,21 @@ function sanitizeProduct(product: any): Product {
 /**
  * Validate product category, fallback to OTHER if invalid
  */
-function validateCategory(category: string): ProductCategory {
-    const validCategories = Object.values(ProductCategory);
-    return validCategories.includes(category as ProductCategory)
-        ? (category as ProductCategory)
-        : ProductCategory.OTHER;
+function validateIconCategory(iconCategory: string): IconCategory {
+    // Ensure the icon category is one of the predefined product categories
+    return ICON_CATEGORIES.includes(iconCategory as IconCategory)
+        ? (iconCategory as IconCategory)
+        : ("other" as IconCategory); // Fallback to "other" if category is not in the list
+}
+
+/**
+ * Validate broad category, fallback to OTHER if invalid
+ */
+function validateBroadCategory(category: string): Category {
+    const validCategories = Object.values(Category);
+    return validCategories.includes(category as Category)
+        ? (category as Category)
+        : Category.OTHER; // Fallback to "other" if category is not in the list
 }
 
 /**

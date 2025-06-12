@@ -3,17 +3,14 @@
  * Handles rate limiting, retry logic, and realistic browser headers
  */
 
-import { 
-    AMAZON_MAX_CONCURRENT_REQUESTS, 
-    AMAZON_MAX_RETRIES, 
-    AMAZON_REQUEST_DELAY_MS, 
-    AMAZON_TIMEOUT_MS, 
-    AMAZON_USER_AGENT_ROTATE 
-} from "@/background/constants";
 import {
-    AmazonSearch,
-    AmazonSearchResult,
-} from "../types/amazon";
+    AMAZON_MAX_CONCURRENT_REQUESTS,
+    AMAZON_MAX_RETRIES,
+    AMAZON_REQUEST_DELAY_MS,
+    AMAZON_TIMEOUT_MS,
+    AMAZON_USER_AGENT_ROTATE,
+} from "@/background/constants";
+import { AmazonSearch, AmazonSearchResult } from "../types/amazon";
 
 const USER_AGENTS = [
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
@@ -36,7 +33,7 @@ class AmazonHttpClient {
     private activeRequests = 0;
     private userAgentIndex = 0;
 
-    constructor() { }
+    constructor() {}
 
     /**
      * Generates realistic headers for Amazon requests
@@ -85,14 +82,12 @@ class AmazonHttpClient {
 
             this.activeRequests++;
 
-            const headers = this.generateRealisticHeaders(
-                search.searchUrl,
-            );
+            const headers = this.generateRealisticHeaders(search.searchUrl);
 
             const controller = new AbortController();
             const timeoutId = setTimeout(
                 () => controller.abort(),
-                AMAZON_TIMEOUT_MS
+                AMAZON_TIMEOUT_MS,
             );
 
             try {
@@ -215,7 +210,6 @@ class AmazonHttpClient {
         });
     }
 }
-
 
 /**
  * Executes a single Amazon search request (convenience function)

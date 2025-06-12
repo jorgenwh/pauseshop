@@ -54,10 +54,7 @@ chrome.runtime.onMessage.addListener(
             }
         };
 
-        handleScreenshotAnalysis(
-            windowId,
-            message.pauseId,
-        )
+        handleScreenshotAnalysis(windowId, message.pauseId)
             .then(safeSendResponse)
             .catch((error) => {
                 console.error("Screenshot analysis error:", error);

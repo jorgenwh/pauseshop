@@ -1,5 +1,4 @@
 import { UIManager } from "../ui/ui-manager";
-import { LoadingState } from "../ui/types";
 
 interface ScreenshotMessage {
     action: "captureScreenshot";
@@ -12,16 +11,13 @@ export const setUIManager = (manager: UIManager): void => {
     uiManager = manager;
 };
 
-export const captureScreenshot = async (
-    pauseId: string,
-): Promise<void> => {
+export const captureScreenshot = async (pauseId: string): Promise<void> => {
     if (!uiManager) {
         console.error("Error: UIManager has not been set!");
         return;
     }
 
     await uiManager.showSidebar();
-    uiManager.updateLoadingState(LoadingState.PROCESSING);
 
     try {
         const message: ScreenshotMessage = {
@@ -50,7 +46,7 @@ export const captureScreenshot = async (
 
 export const hideUI = async (): Promise<void> => {
     if (uiManager) {
-        await uiManager.hideUI();
+        await uiManager.hideSidebar();
     }
 };
 

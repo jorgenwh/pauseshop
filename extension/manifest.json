@@ -1,8 +1,14 @@
 {
     "manifest_version": 3,
     "name": "PauseShop",
-    "version": "1.0.0",
+    "version": "0.0.0",
     "description": "Discover products from paused videos and find them on Amazon",
+    "icons": {
+        "16": "icons/icon-128.png",
+        "32": "icons/icon-128.png",
+        "64": "icons/icon-128.png",
+        "128": "icons/icon-128.png"
+    },
     "permissions": ["activeTab", "storage", "scripting", "tabs", "tabCapture"],
     "host_permissions": [
         "https://*.netflix.com/*",
@@ -33,7 +39,12 @@
     ],
     "web_accessible_resources": [
         {
-            "resources": ["ui/*", "assets/*"],
+            "resources": [
+                "ui/*",
+                "icons/icon-128.png",
+                "icons/products/*.png",
+                "fonts/*.ttf"
+            ],
             "matches": [
                 "https://*.netflix.com/*",
                 "https://*.hulu.com/*",

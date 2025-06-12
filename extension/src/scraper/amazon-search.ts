@@ -3,28 +3,30 @@
  * Converts OpenAI product analysis results into optimized Amazon search URLs
  */
 
+import { Product, Category, TargetGender } from "../types/common";
 import {
-    Product,
-    ProductCategory,
-    TargetGender,
     AmazonSearch,
     CategoryNodeMapping,
     SearchTermValidationResult,
 } from "../types/amazon";
-import { AMAZON_DOMAIN, AMAZON_ENABLE_CATEGORT_FILTERING, AMAZON_MAX_SEARCH_TERM_LENGHT } from "./constants";
+import {
+    AMAZON_DOMAIN,
+    AMAZON_ENABLE_CATEGORT_FILTERING,
+    AMAZON_MAX_SEARCH_TERM_LENGTH,
+} from "./constants";
 
 const CATEGORY_NODES: CategoryNodeMapping = {
-    [ProductCategory.CLOTHING]: "7141123011", // Clothing, Shoes & Jewelry
-    [ProductCategory.FOOTWEAR]: "679255011", // Shoes
-    [ProductCategory.ACCESSORIES]: "2475687011", // Accessories
-    [ProductCategory.ELECTRONICS]: "172282", // Electronics
-    [ProductCategory.FURNITURE]: "1063306", // Home & Kitchen > Furniture
-    [ProductCategory.HOME_DECOR]: "1063498", // Home & Kitchen > Home Décor
-    [ProductCategory.BOOKS_MEDIA]: "283155", // Books
-    [ProductCategory.SPORTS_FITNESS]: "3375251", // Sports & Outdoors
-    [ProductCategory.BEAUTY_PERSONAL_CARE]: "3760901", // Beauty & Personal Care
-    [ProductCategory.KITCHEN_DINING]: "1063498", // Home & Kitchen
-    [ProductCategory.OTHER]: "", // No specific category
+    [Category.CLOTHING]: "7141123011", // Clothing, Shoes & Jewelry
+    [Category.FOOTWEAR]: "679255011", // Shoes
+    [Category.ACCESSORIES]: "2475687011", // Accessories
+    [Category.ELECTRONICS]: "172282", // Electronics
+    [Category.FURNITURE]: "1063306", // Home & Kitchen > Furniture
+    [Category.HOME_DECOR]: "1063498", // Home & Kitchen > Home Décor
+    [Category.BOOKS_MEDIA]: "283155", // Books
+    [Category.SPORTS_FITNESS]: "3375251", // Sports & Outdoors
+    [Category.BEAUTY_PERSONAL_CARE]: "3760901", // Beauty & Personal Care
+    [Category.KITCHEN_DINING]: "1063498", // Home & Kitchen
+    [Category.OTHER]: "", // No specific category
 };
 
 /**
@@ -86,11 +88,9 @@ const optimizeSearchTerms = (product: Product): string => {
 
     // Add gender prefix for clothing categories
     if (
-        [
-            ProductCategory.CLOTHING,
-            ProductCategory.FOOTWEAR,
-            ProductCategory.ACCESSORIES,
-        ].includes(product.category)
+        [Category.CLOTHING, Category.FOOTWEAR, Category.ACCESSORIES].includes(
+            product.category,
+        )
     ) {
         if (product.targetGender !== TargetGender.UNISEX) {
             parts.push(product.targetGender);
@@ -102,16 +102,21 @@ const optimizeSearchTerms = (product: Product): string => {
         parts.push(product.primaryColor);
     }
 
-    // Add product name (without color if already included)
-    const productName = product.name;
+    // Add product name (remove color if already included and added separately)
+    let productName = product.name;
     if (
         product.primaryColor &&
+        product.primaryColor !== "unknown" &&
         productName.toLowerCase().includes(product.primaryColor.toLowerCase())
     ) {
-        // Color already in name, use as-is
-        parts.push(productName);
-    } else {
-        // Add color and name separately
+        // If color was added separately and is in the name, remove it from the name
+        productName = productName
+            .toLowerCase()
+            .replace(product.primaryColor.toLowerCase(), "")
+            .trim();
+    }
+    if (productName) {
+        // Only add if not empty after potential removal
         parts.push(productName);
     }
 
@@ -134,7 +139,7 @@ const optimizeSearchTerms = (product: Product): string => {
 /**
  * Gets Amazon category node for filtering
  */
-const getCategoryNode = (category: ProductCategory): string | null => {
+const getCategoryNode = (category: Category): string | null => {
     return CATEGORY_NODES[category] || null;
 };
 
@@ -149,7 +154,7 @@ export const constructAmazonSearch = (
     const rawSearchTerms = optimizeSearchTerms(product);
     const validation = validateSearchTerms(
         rawSearchTerms,
-        AMAZON_MAX_SEARCH_TERM_LENGHT,
+        AMAZON_MAX_SEARCH_TERM_LENGTH,
     );
 
     if (!validation.isValid) {
