@@ -12,7 +12,7 @@ const CollapsedSidebarContent = ({
     productStorage,
     isLoading,
 }: CollapsedSidebarContentProps) => {
-    if (isLoading) {
+    const buildLoadingContent = () => {
         return (
             <LoadingThreeDotsJumping />
         );
@@ -87,9 +87,11 @@ const CollapsedSidebarContent = ({
     return (
         <div className="pauseshop-collapsed-sidebar-content">
             {
-                iconCategories.size === 0 ? 
-                    buildNoProductsContent() : 
-                    buildContent()
+                isLoading ?
+                    buildLoadingContent() :
+                    iconCategories.size === 0 ?
+                        buildNoProductsContent() :
+                        buildContent()
             }
         </div>
     );
