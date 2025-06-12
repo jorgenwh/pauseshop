@@ -112,6 +112,7 @@ const Sidebar: React.FC<SidebarProps> = ({
      <SidebarHeader
        compact={currentCompact}
        position={position}
+       darkMode={darkMode} // Pass the darkMode prop
        onToggleCompact={toggleCompactMode}
      />
      {currentCompact ? (

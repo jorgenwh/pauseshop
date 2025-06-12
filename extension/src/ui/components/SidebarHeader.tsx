@@ -32,12 +32,14 @@ const headerContainerVariants = {
 interface SidebarHeaderProps {
   compact: boolean;
   position: "right" | "left";
+  darkMode: boolean; // Add darkMode prop
   onToggleCompact: () => void;
 }
 
 const SidebarHeader: React.FC<SidebarHeaderProps> = ({
   compact,
   position,
+  darkMode, // Destructure darkMode
   onToggleCompact,
 }) => {
   const getToggleButtonIconClass = () => {
@@ -58,7 +60,7 @@ const SidebarHeader: React.FC<SidebarHeaderProps> = ({
       <img
         src={chrome.runtime.getURL('icons/icon-128.png')}
         alt="PauseShop Icon"
-        className="pauseshop-sidebar-header-icon"
+        className={`pauseshop-sidebar-header-icon ${darkMode ? 'dark-mode-icon' : ''}`}
         style={{
           width: `${SIDEBAR_HEADER_ICON_SIZE}px`,
           height: `${SIDEBAR_HEADER_ICON_SIZE}px`,
