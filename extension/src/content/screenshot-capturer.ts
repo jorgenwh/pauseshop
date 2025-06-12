@@ -11,9 +11,7 @@ export const setUIManager = (manager: UIManager): void => {
     uiManager = manager;
 };
 
-export const captureScreenshot = async (
-    pauseId: string,
-): Promise<void> => {
+export const captureScreenshot = async (pauseId: string): Promise<void> => {
     if (!uiManager) {
         console.error("Error: UIManager has not been set!");
         return;

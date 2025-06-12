@@ -27,8 +27,13 @@ export async function loadPrompt(): Promise<string> {
         let promptContent = await fs.readFile(promptPath, "utf-8");
 
         // Dynamically inject product categories into the prompt
-        const iconCategoriesList = ICON_CATEGORIES.map(cat => `'${cat}'`).join(', ');
-        promptContent = promptContent.replace("[LIST_OF_CATEGORIES_HERE]", iconCategoriesList);
+        const iconCategoriesList = ICON_CATEGORIES.map(
+            (cat) => `'${cat}'`,
+        ).join(", ");
+        promptContent = promptContent.replace(
+            "[LIST_OF_CATEGORIES_HERE]",
+            iconCategoriesList,
+        );
 
         promptCache = promptContent.trim();
         return promptCache;
@@ -105,7 +110,7 @@ function validateIconCategory(iconCategory: string): IconCategory {
     // Ensure the icon category is one of the predefined product categories
     return ICON_CATEGORIES.includes(iconCategory as IconCategory)
         ? (iconCategory as IconCategory)
-        : "other" as IconCategory; // Fallback to "other" if category is not in the list
+        : ("other" as IconCategory); // Fallback to "other" if category is not in the list
 }
 
 /**

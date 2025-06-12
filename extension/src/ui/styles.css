@@ -1,65 +1,55 @@
-@import url('https://fonts.googleapis.com/css2?family=Encode+Sans+SC:wght@100..900&family=Numans&family=Raleway:ital,wght@0,100..900;1,100..900&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Encode+Sans+SC:wght@100..900&family=Numans&family=Raleway:ital,wght@0,100..900;1,100..900&display=swap");
 
 /* Root Variables for Theming and Spacing */
 :root {
-    /* Light Mode Defaults */
-    --sidebar-bg:                 rgba(255, 255, 255, 0.7);
-    --sidebar-text-color:         #333;
-    --sidebar-text-color-light:   #666;
-    --sidebar-border-color:       rgba(0, 0, 0, 0.2);
-    --sidebar-toggle-button-bg:   rgba(255, 255, 255, 1); /* No transparency */
-    --sidebar-toggle-button-border: rgba(0, 0, 0, 1); /* No transparency */
-    --sidebar-toggle-button-text: #333;
-    --arrow-icon-color:           #333;
-    --sidebar-title-color:        #666; /* Default for light mode */
-    --shop-text-color:            #235336;
-
-    /* Spacing and Sizing */
-    --spacing-sm:                 8px;
-    --spacing-md:                 10px;
-    --spacing-lg:                 15px;
-    --toggle-button-size:         25px;
-    --icon-count-offset:          8px;
-}
-
-body.dark-mode {
-    /* Dark Mode Overrides */
-    --sidebar-bg:                 rgba(255, 255, 255, 0.25); /* Adjusted to be a bit lighter */
-    --sidebar-text-color:         #A0A0A0; /* New icon/text gray */
-    --sidebar-text-color-light:   #A0A0A0; /* Consistent light text */
-    --sidebar-border-color:       rgba(255, 255, 255, 0.18); /* New border color */
-    --sidebar-toggle-button-bg:   rgba(0, 0, 0, 1); /* No transparency */
-    --sidebar-toggle-button-border: rgba(255, 255, 255, 1); /* No transparency */
+    /* Theme and Spacing */
+    --sidebar-bg: rgba(255, 255, 255, 0.25); /* Adjusted to be a bit lighter */
+    --sidebar-text-color: #a0a0a0; /* New icon/text gray */
+    --sidebar-text-color-light: #a0a0a0; /* Consistent light text */
+    --sidebar-border-color: rgba(255, 255, 255, 0.18); /* New border color */
+    --sidebar-toggle-button-bg: rgba(0, 0, 0, 1); /* No transparency */
+    --sidebar-toggle-button-border: rgba(
+        255,
+        255,
+        255,
+        1
+    ); /* No transparency */
     --sidebar-toggle-button-text: white;
-    --arrow-icon-color:           #A0A0A0; /* New arrow icon gray */
-    --sidebar-title-color:        #A0A0A0; /* New title text gray */
-    --shop-text-color:            #5fb881; /* Keep as is */
+    --arrow-icon-color: #a0a0a0; /* New arrow icon gray */
+    --sidebar-title-color: #a0a0a0; /* New title text gray */
+    --shop-text-color: #5fb881; /* Keep as is */
+    --spacing-sm: 8px;
+    --spacing-md: 10px;
+    --spacing-lg: 15px;
+    --toggle-button-size: 25px;
+    --icon-count-offset: 8px;
 }
 
-/* Apply glassy effects specifically for dark mode sidebar within dark-mode context */
-body.dark-mode .pauseshop-sidebar {
-    backdrop-filter:              blur(10px); /* New blur effect */
-    border-radius:                16px;       /* New border radius */
-    border:                       1px solid var(--sidebar-border-color); /* Use the new border color variable */
-    box-shadow:                   0 8px 32px 0 rgba(0, 0, 0, 0.37); /* New box shadow */
+/* Apply glassy effects to sidebar */
+.pauseshop-sidebar {
+    backdrop-filter: blur(10px); /* New blur effect */
+    border-radius: 16px; /* New border radius */
+    border: 1px solid var(--sidebar-border-color); /* Use the new border color variable */
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); /* New box shadow */
 }
 
 /* Main Sidebar Container Styles */
 .pauseshop-sidebar {
-    position:                     fixed;
-    top:                          80px; /* Detach from top by 60px */
-    bottom:                       200px; /* Detach from bottom by 100px */
-    width:                        var(--sidebar-width);
+    position: fixed;
+    top: 80px; /* Detach from top by 60px */
+    bottom: 200px; /* Detach from bottom by 100px */
+    width: var(--sidebar-width);
     /* height: 100vh; removed */
-    z-index:                      99999;
-    transition:                   transform var(--sidebar-transition-speed) ease-in-out,
-                                  width var(--sidebar-transition-speed) ease-in-out,
-                                  left var(--sidebar-transition-speed) ease-in-out, /* Added for position change */
-                                  right var(--sidebar-transition-speed) ease-in-out; /* Added for position change */
-    pointer-events:               all;
-    background-color:             var(--sidebar-bg);
-    /* backdrop-filter: blur(5px); moved to dark-mode specific rule */
-    overflow:                     visible; /* Reverted to visible */
+    z-index: 99999;
+    transition:
+        transform var(--sidebar-transition-speed) ease-in-out,
+        width var(--sidebar-transition-speed) ease-in-out,
+        left var(--sidebar-transition-speed) ease-in-out,
+        /* Added for position change */ right var(--sidebar-transition-speed)
+            ease-in-out; /* Added for position change */
+    pointer-events: all;
+    background-color: var(--sidebar-bg);
+    overflow: visible; /* Reverted to visible */
 }
 
 .pauseshop-sidebar.pauseshop-sidebar-compact {
@@ -78,79 +68,81 @@ body.dark-mode .pauseshop-sidebar {
 
 /* Sidebar Header Styles */
 .pauseshop-sidebar-header {
-    height:                       var(--sidebar-header-height);
-    display:                      flex;
-    align-items:                  center;
-    position:                     relative;
-    overflow:                     visible;
+    height: var(--sidebar-header-height);
+    display: flex;
+    align-items: center;
+    position: relative;
+    overflow: visible;
 }
 
 /* Sidebar Header Title Container */
 .pauseshop-sidebar-header-title-container {
-    color:                        var(--sidebar-text-color);
-    transition:                   opacity var(--sidebar-transition-speed) ease-in-out, transform var(--sidebar-transition-speed) ease-in-out;
+    color: var(--sidebar-text-color);
+    transition:
+        opacity var(--sidebar-transition-speed) ease-in-out,
+        transform var(--sidebar-transition-speed) ease-in-out;
 }
-.pauseshop-sidebar.pauseshop-sidebar-compact .pauseshop-sidebar-header-title-container {
-    opacity:                      0;
-    pointer-events:               none;
+.pauseshop-sidebar.pauseshop-sidebar-compact
+    .pauseshop-sidebar-header-title-container {
+    opacity: 0;
+    pointer-events: none;
 }
 
 .pauseshop-sidebar-header-icon {
-    margin-left:                  var(--spacing-sm);
-    /* Filter explicitly for dark mode when class is applied */
+    margin-left: var(--spacing-sm);
 }
 
 .pauseshop-sidebar.position-right .pauseshop-sidebar-header-icon {
     margin-left: auto; /* Push to the right */
-    margin-right:                 var(--spacing-sm);
+    margin-right: var(--spacing-sm);
 }
 
 .pauseshop-sidebar-header-title-container {
-    position:                     absolute;
-    left:                         50%;
-    transform:                    translateX(-50%);
-    display:                      flex;
-    flex-direction:               row;
-    font-size:                    1.2rem;
-    font-family:                  'Encode Sans SC', sans-serif;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: row;
+    font-size: 1.2rem;
+    font-family: "Encode Sans SC", sans-serif;
 }
 
 .pauseshop-sidebar.position-right .pauseshop-sidebar-header-title-container {
-    left:                         auto; /* Reset left */
-    right:                        50%; /* Position from right */
-    transform:                    translateX(50%); /* Adjust transform for right positioning */
+    left: auto; /* Reset left */
+    right: 50%; /* Position from right */
+    transform: translateX(50%); /* Adjust transform for right positioning */
 }
 
 .pauseshop-sidebar-header-title-pause {
-    font-weight:                  900;
-    font-size:                    2.25rem;
+    font-weight: 900;
+    font-size: 2.25rem;
 }
 
 .pauseshop-sidebar-header-title-shop {
-    font-weight:                  300;
-    font-size:                    2.25rem;
-    color:                        var(--shop-text-color);
+    font-weight: 300;
+    font-size: 2.25rem;
+    color: var(--shop-text-color);
 }
 
 /* Sidebar Toggle Button Styles */
 .pauseshop-sidebar-toggle-button {
-    background-color:             var(--sidebar-toggle-button-bg);
-    border:                       1px solid var(--sidebar-toggle-button-border);
-    border-radius:                8px; /* Rounded edges for square */
-    cursor:                       pointer;
-    position:                     absolute;
-    top:                          50%;
-    transform:                    translateY(-50%);
-    right:                        var(--spacing-sm); /* Default position for normal mode */
-    z-index:                      100001; /* Higher z-index for prominence */
-    color:                        var(--sidebar-toggle-button-text); /* Apply text color */
-    box-shadow:                   0 2px 5px rgba(0, 0, 0, 0.3); /* Add shadow for prominence */
-    width:                        var(--toggle-button-size); /* Decrease size */
-    height:                       var(--toggle-button-size); /* Decrease size */
-    display:                      flex;
-    align-items:                  center;
-    justify-content:              center;
-    transition:                   all 0.2s ease-in-out; /* Add transition for hover effect */
+    background-color: var(--sidebar-toggle-button-bg);
+    border: 1px solid var(--sidebar-toggle-button-border);
+    border-radius: 8px; /* Rounded edges for square */
+    cursor: pointer;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    right: var(--spacing-sm); /* Default position for normal mode */
+    z-index: 100001; /* Higher z-index for prominence */
+    color: var(--sidebar-toggle-button-text); /* Apply text color */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); /* Add shadow for prominence */
+    width: var(--toggle-button-size); /* Decrease size */
+    height: var(--toggle-button-size); /* Decrease size */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease-in-out; /* Add transition for hover effect */
 }
 
 .pauseshop-sidebar-toggle-button:hover {
@@ -159,114 +151,115 @@ body.dark-mode .pauseshop-sidebar {
 }
 
 .pauseshop-sidebar.position-right .pauseshop-sidebar-toggle-button {
-    left:                         var(--spacing-sm); /* Position on the left for right mode */
-    right:                        auto; /* Override default right position */
+    left: var(--spacing-sm); /* Position on the left for right mode */
+    right: auto; /* Override default right position */
 }
 
 .pauseshop-sidebar.pauseshop-sidebar-compact .pauseshop-sidebar-toggle-button {
-    right:                        -35px; /* Position floating outside when compact, 5px closer to the sidebar */
-    background-color:             var(--sidebar-bg); /* Use sidebar background for more opacity */
-    box-shadow:                   0 4px 10px rgba(0, 0, 0, 0.5); /* More prominent shadow */
+    right: -35px; /* Position floating outside when compact, 5px closer to the sidebar */
+    background-color: var(
+        --sidebar-bg
+    ); /* Use sidebar background for more opacity */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5); /* More prominent shadow */
 }
 
-.pauseshop-sidebar.pauseshop-sidebar-compact.position-right .pauseshop-sidebar-toggle-button {
-    left:                         -35px; /* Position floating outside to the left when compact and in right mode, 5px closer to the sidebar */
-    right:                        auto; /* Override default right position */
+.pauseshop-sidebar.pauseshop-sidebar-compact.position-right
+    .pauseshop-sidebar-toggle-button {
+    left: -35px; /* Position floating outside to the left when compact and in right mode, 5px closer to the sidebar */
+    right: auto; /* Override default right position */
 }
 
 /* Arrow Icon Specific Rotation */
 .arrow-icon {
-    display:                      inline-block;
-    width:                        0;
-    height:                       0;
-    border-style:                 solid;
-    border-width:                 7px 0 7px 7px; /* Slightly larger arrow */
-    border-color:                 transparent transparent transparent var(--arrow-icon-color);
-    transition:                   transform 0.3s ease-in-out;
-}
-
-/* PNG Icon Tinting for Dark Mode */
-/* Redundant, moved to .pauseshop-sidebar-header-icon directly */
-body.dark-mode .pauseshop-sidebar-header-icon {
-    filter:                       none; /* Removed all filters as requested */
+    display: inline-block;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 7px 0 7px 7px; /* Slightly larger arrow */
+    border-color: transparent transparent transparent var(--arrow-icon-color);
+    transition: transform 0.3s ease-in-out;
 }
 
 /* Styles for Collapsed Sidebar Content */
 .pauseshop-collapsed-sidebar-content {
-    display:                      flex;
-    flex-direction:               column;
-    align-items:                  center;
-    justify-content:              center; /* Added to center content vertically */
-    padding:                      var(--spacing-md) 0;
-    gap:                          var(--spacing-lg); /* Spacing between icons */
-    overflow-y:                   auto;
-    flex-grow:                    1; /* Allow content to take available space */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center; /* Added to center content vertically */
+    padding: var(--spacing-md) 0;
+    gap: var(--spacing-lg); /* Spacing between icons */
+    overflow-y: auto;
+    flex-grow: 1; /* Allow content to take available space */
 }
 
 /* Styles for LoadingThreeDotsJumping component */
 .pauseshop-loading-container {
-    display:                      flex;
-    justify-content:              center;
-    align-items:                  center;
-    gap:                          6px; /* Reduced space between dots */
-    height:                       100%; /* Take full height of parent */
-    margin-top:                   20px; /* Lower the dots a bit (per user's previous explicit edit) */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px; /* Reduced space between dots */
+    height: 100%; /* Take full height of parent */
+    margin-top: 20px; /* Lower the dots a bit (per user's previous explicit edit) */
 }
 
 .pauseshop-loading-dot {
-    width:                        8px; /* Make dots smaller */
-    height:                       8px;
-    border-radius:                50%;
+    width: 8px; /* Make dots smaller */
+    height: 8px;
+    border-radius: 50%;
     /* Background color set via inline style in component */
 }
 
 .pauseshop-collapsed-icon-container {
-    position:                     relative;
-    width:                        35px; /* Adjust size as needed */
-    height:                       35px;
-    display:                      flex;
-    justify-content:              center;
-    align-items:                  center;
+    position: relative;
+    width: 35px; /* Adjust size as needed */
+    height: 35px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .pauseshop-collapsed-icon {
-    width:                        100%;
-    height:                       100%;
-    object-fit:                   contain;
-    /* Dark mode tinting handled by the filter property on the img itself */
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
 }
 
-.pauseshop-collapsed-icon.dark-mode-icon {
-  filter:                       invert(0.8) grayscale(1) brightness(0.9); /* Revert to previous icon brightness (user feedback was sidebar color, not icon) */
+.pauseshop-collapsed-icon.icon {
+    filter: invert(0.8) grayscale(1) brightness(0.9);
 }
 
 .pauseshop-collapsed-icon-count {
-    position:                     absolute;
-    top:                          calc(-1 * var(--icon-count-offset)); /* Adjust position for larger circle */
-    right:                        calc(-1 * var(--icon-count-offset)); /* Adjust position for larger circle */
-    background-color:             #fd0d00; /* Red color */
-    color:                        white;
-    border-radius:                50%;
-    font-size:                    1.2em; /* Adjusted font size */
-    padding:                      1px; /* Keep padding */
-    min-width:                    16px; /* Keep min-width */
-    min-height:                   16px; /* Keep min-height */
-    top:                          -8px; /* Keep vertical position */
-    right:                        -3px; /* Adjust as needed for desired position in left mode */
-    display:                      flex; /* Use flexbox for centering content */
-    justify-content:              center;
-    align-items:                  center;
-    line-height:                  1;
-    box-shadow:                   0 1px 3px rgba(0, 0, 0, 0.2);
-    font-weight:                  bold; /* Make font bold for better visibility */
+    position: absolute;
+    top: calc(
+        -1 * var(--icon-count-offset)
+    ); /* Adjust position for larger circle */
+    right: calc(
+        -1 * var(--icon-count-offset)
+    ); /* Adjust position for larger circle */
+    background-color: #fd0d00; /* Red color */
+    color: white;
+    border-radius: 50%;
+    font-size: 1.2em; /* Adjusted font size */
+    padding: 1px; /* Keep padding */
+    min-width: 16px; /* Keep min-width */
+    min-height: 16px; /* Keep min-height */
+    top: -8px; /* Keep vertical position */
+    right: -3px; /* Adjust as needed for desired position in left mode */
+    display: flex; /* Use flexbox for centering content */
+    justify-content: center;
+    align-items: center;
+    line-height: 1;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    font-weight: bold; /* Make font bold for better visibility */
 }
 
 /* Adjust position of count overlay when sidebar is in right mode */
-.pauseshop-sidebar.position-right .pauseshop-collapsed-icon-container .pauseshop-collapsed-icon-count {
-    left:                         -3px; /* Adjust as needed for desired position in right mode */
-    right:                        auto; /* Override default right position */
+.pauseshop-sidebar.position-right
+    .pauseshop-collapsed-icon-container
+    .pauseshop-collapsed-icon-count {
+    left: -3px; /* Adjust as needed for desired position in right mode */
+    right: auto; /* Override default right position */
 }
-
 
 .arrow-icon.arrow-left {
     transform: rotate(180deg);
@@ -274,30 +267,27 @@ body.dark-mode .pauseshop-sidebar-header-icon {
 
 /* Sidebar Footer Styles */
 .pauseshop-sidebar-footer {
-    display:                      flex;
-    justify-content:              center;
-    align-items:                  center;
-    padding:                      var(--spacing-sm);
-    gap:                          var(--spacing-sm); /* Space between buttons */
-    position:                     absolute;
-    bottom:                       0;
-    width:                        100%;
-    box-sizing:                   border-box; /* Include padding in the width calculation */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: var(--spacing-sm);
+    gap: var(--spacing-sm); /* Space between buttons */
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    box-sizing: border-box; /* Include padding in the width calculation */
 }
 
 .pauseshop-sidebar-button {
-    background:                   none;
-    border:                       1px solid var(--sidebar-border-color);
-    border-radius:                4px;
-    cursor:                       pointer;
-    color:                        var(--sidebar-text-color);
-    font-size:                    0.7rem;
-    padding:                      3px 6px;
-    display:                      flex;
-    align-items:                  center;
-    justify-content:              center;
-    height:                       24px;
+    background: none;
+    border: 1px solid var(--sidebar-border-color);
+    border-radius: 4px;
+    cursor: pointer;
+    color: var(--sidebar-text-color);
+    font-size: 0.7rem;
+    padding: 3px 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 24px;
 }
-
-
-

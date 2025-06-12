@@ -13,7 +13,6 @@ interface AnalyzeRequest {
     };
 }
 
-
 export interface StreamingCallbacks {
     onProduct: (product: Product) => void;
     onComplete: (response?: unknown) => void;

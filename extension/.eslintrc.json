@@ -14,12 +14,9 @@
         "ecmaVersion": "latest",
         "sourceType": "module"
     },
-    "plugins": [
-        "@typescript-eslint",
-        "react",
-        "react-hooks"
-    ],
+    "plugins": ["@typescript-eslint", "react", "react-hooks"],
     "rules": {
+        "indent": ["error", 4],
         "@typescript-eslint/no-unused-vars": [
             "error",
             { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" }

@@ -1,11 +1,6 @@
-import React from "react";
 import { motion, Variants } from "motion/react";
 
-interface LoadingThreeDotsJumpingProps {
-    darkMode: boolean;
-}
-
-const LoadingThreeDotsJumping: React.FC<LoadingThreeDotsJumpingProps> = ({ darkMode }) => {
+const LoadingThreeDotsJumping = () => {
     const dotVariants: Variants = {
         jump: {
             y: -30,
@@ -18,7 +13,7 @@ const LoadingThreeDotsJumping: React.FC<LoadingThreeDotsJumpingProps> = ({ darkM
         },
     };
 
-    const dotColor = darkMode ? "#A0A0A0" : "#ff0088"; // Use a gray for dark mode, original for light
+    const dotColor = "#A0A0A0";
 
     return (
         <motion.div
@@ -26,11 +21,23 @@ const LoadingThreeDotsJumping: React.FC<LoadingThreeDotsJumpingProps> = ({ darkM
             transition={{ staggerChildren: -0.2, staggerDirection: -1 }}
             className="pauseshop-loading-container"
         >
-            <motion.div className="pauseshop-loading-dot" variants={dotVariants} style={{ backgroundColor: dotColor }} />
-            <motion.div className="pauseshop-loading-dot" variants={dotVariants} style={{ backgroundColor: dotColor }} />
-            <motion.div className="pauseshop-loading-dot" variants={dotVariants} style={{ backgroundColor: dotColor }} />
+            <motion.div
+                className="pauseshop-loading-dot"
+                variants={dotVariants}
+                style={{ backgroundColor: dotColor }}
+            />
+            <motion.div
+                className="pauseshop-loading-dot"
+                variants={dotVariants}
+                style={{ backgroundColor: dotColor }}
+            />
+            <motion.div
+                className="pauseshop-loading-dot"
+                variants={dotVariants}
+                style={{ backgroundColor: dotColor }}
+            />
         </motion.div>
     );
-}
+};
 
 export default LoadingThreeDotsJumping;

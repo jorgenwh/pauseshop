@@ -2,14 +2,13 @@
  * Type definitions for Amazon search functionality
  */
 
-
 import { Category, Product } from "./common";
 
 export interface AmazonSearch {
     id: string;
     searchUrl: string;
     searchTerms: string;
-    category: Category
+    category: Category;
     product: Product;
 }
 

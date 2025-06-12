@@ -1,5 +1,3 @@
 {
-    "plugins": ["prettier-plugin-tailwindcss"],
-    "tailwindConfig": "./extension/tailwind.config.js",
     "tabWidth": 4
 }

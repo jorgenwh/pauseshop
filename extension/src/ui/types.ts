@@ -30,7 +30,6 @@ export enum SidebarContentState {
 }
 
 export interface SidebarConfig {
-    darkMode: boolean;
     position: "right" | "left";
     compact: boolean;
 }
@@ -42,7 +41,6 @@ export interface SidebarEvents {
     onProductClick: (product: AmazonScrapedProduct) => void;
     onError: (error: Error) => void;
     onToggleCompact: () => void; // New event for toggling compact mode
-    onToggleDarkMode: () => void;
     onTogglePosition: () => void;
 }
 

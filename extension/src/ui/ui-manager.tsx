@@ -3,17 +3,16 @@
  * Orchestrates all UI components and handles lifecycle management
  */
 
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import Sidebar from './components/Sidebar'; // New React component
+import React from "react";
+import ReactDOM from "react-dom/client";
+import Sidebar from "./components/Sidebar"; // New React component
 import { AmazonScrapedProduct } from "../types/amazon";
 import {
-    DEFAULT_DARK_MODE,
     DEFAULT_SIDEBAR_POSITION,
     DEFAULT_COMPACT,
     NO_PRODUCTS_TIMEOUT_MS,
     UI_CONTAINER_CLASS_NAME,
-    UI_Z_INDEX
+    UI_Z_INDEX,
 } from "./constants";
 import {
     ProductDisplayData,
@@ -25,7 +24,7 @@ import {
     AnalysisCompleteMessage,
     AnalysisErrorMessage,
     ProductGroupUpdateMessage,
-    AggregatedProductIcons
+    AggregatedProductIcons,
 } from "./types";
 
 export class UIManager {
@@ -34,7 +33,8 @@ export class UIManager {
 
     // Internal state for the React sidebar
     private sidebarVisible: boolean = false;
-    private sidebarContentState: SidebarContentState = SidebarContentState.LOADING;
+    private sidebarContentState: SidebarContentState =
+        SidebarContentState.LOADING;
     private sidebarConfig: SidebarConfig;
     private sidebarEvents: SidebarEvents; // Events for UIManager to handle or pass to React component
     private aggregatedProductIcons: AggregatedProductIcons = {};
@@ -44,7 +44,6 @@ export class UIManager {
 
     constructor() {
         this.sidebarConfig = {
-            darkMode: DEFAULT_DARK_MODE,
             position: DEFAULT_SIDEBAR_POSITION,
             compact: DEFAULT_COMPACT,
         };
@@ -80,14 +79,11 @@ export class UIManager {
                 this.sidebarConfig.compact = !this.sidebarConfig.compact;
                 this.renderSidebar();
             },
-            onToggleDarkMode: () => {
-                this.sidebarConfig.darkMode = !this.sidebarConfig.darkMode;
+            onTogglePosition: () => {
+                this.sidebarConfig.position =
+                    this.sidebarConfig.position === "right" ? "left" : "right";
                 this.renderSidebar();
             },
-            onTogglePosition: () => {
-                this.sidebarConfig.position = this.sidebarConfig.position === "right" ? "left" : "right";
-                this.renderSidebar();
-            }
         };
 
         // Add message listener for background script communication only once
@@ -103,7 +99,7 @@ export class UIManager {
         }
 
         this.container = document.createElement("div");
-        this.container.className = UI_CONTAINER_CLASS_NAME
+        this.container.className = UI_CONTAINER_CLASS_NAME;
 
         const containerStyles = {
             position: "fixed" as const,
@@ -146,32 +142,25 @@ export class UIManager {
 
     private renderSidebar(): void {
         if (this.reactRoot) {
-            // Apply dark mode class to body
-            if (this.sidebarConfig.darkMode) {
-                document.body.classList.add("dark-mode");
-            } else {
-                document.body.classList.remove("dark-mode");
-            }
-
             this.reactRoot.render(
                 <React.StrictMode>
                     <Sidebar
                         isVisible={this.sidebarVisible}
                         contentState={this.sidebarContentState}
-                        darkMode={this.sidebarConfig.darkMode}
                         position={this.sidebarConfig.position}
                         compact={this.sidebarConfig.compact}
                         aggregatedProductIcons={this.aggregatedProductIcons} // Pass the new prop
                         onShow={this.sidebarEvents.onShow}
                         onHide={this.sidebarEvents.onHide}
-                        onContentStateChange={this.sidebarEvents.onContentStateChange}
+                        onContentStateChange={
+                            this.sidebarEvents.onContentStateChange
+                        }
                         onProductClick={this.sidebarEvents.onProductClick}
                         onError={this.sidebarEvents.onError}
                         onToggleCompact={this.sidebarEvents.onToggleCompact}
-                        onToggleDarkMode={this.sidebarEvents.onToggleDarkMode}
                         onTogglePosition={this.sidebarEvents.onTogglePosition}
                     />
-                </React.StrictMode>
+                </React.StrictMode>,
             );
         }
     }
@@ -233,7 +222,9 @@ export class UIManager {
         return true;
     }
 
-    private handleAnalysisStarted = (message: AnalysisStartedMessage): boolean => {
+    private handleAnalysisStarted = (
+        message: AnalysisStartedMessage,
+    ): boolean => {
         console.info(
             `Received analysis_started for pauseId: ${message.pauseId}`,
         );
@@ -241,16 +232,18 @@ export class UIManager {
         this.sidebarVisible = true; // Make sure sidebar is visible when analysis starts
         this.renderSidebar();
         return true;
-    }
+    };
 
-    private handleAnalysisComplete = (message: AnalysisCompleteMessage): boolean => {
+    private handleAnalysisComplete = (
+        message: AnalysisCompleteMessage,
+    ): boolean => {
         console.info(
             `Received analysis_complete for pauseId: ${message.pauseId}`,
         );
         // Maybe hide sidebar or change content to "results" state
         // For now, no change needed for completion
         return true;
-    }
+    };
 
     private handleAnalysisError = (message: AnalysisErrorMessage): boolean => {
         console.error(
@@ -260,9 +253,11 @@ export class UIManager {
         this.sidebarVisible = true; // Make sure sidebar is visible to show error
         this.renderSidebar();
         return true;
-    }
+    };
 
-    private handleProductGroupUpdate = (message: ProductGroupUpdateMessage): boolean => {
+    private handleProductGroupUpdate = (
+        message: ProductGroupUpdateMessage,
+    ): boolean => {
         console.info(
             `Received product_group_update for pauseId: ${message.pauseId} with ${message.scrapedProducts.length} products`,
         );
@@ -270,16 +265,19 @@ export class UIManager {
         this.sidebarVisible = true; // Make sure sidebar is visible to show products
 
         // Aggregate product icons
-        const newAggregatedProductIcons: AggregatedProductIcons = { ...this.aggregatedProductIcons };
+        const newAggregatedProductIcons: AggregatedProductIcons = {
+            ...this.aggregatedProductIcons,
+        };
         if (message.originalProduct && message.originalProduct.iconCategory) {
             const iconCategory = message.originalProduct.iconCategory;
-            newAggregatedProductIcons[iconCategory] = (newAggregatedProductIcons[iconCategory] || 0) + 1;
+            newAggregatedProductIcons[iconCategory] =
+                (newAggregatedProductIcons[iconCategory] || 0) + 1;
         }
 
         this.aggregatedProductIcons = newAggregatedProductIcons;
         this.renderSidebar();
         return true;
-    }
+    };
 
     /**
      * Handle messages from the background script

@@ -7,9 +7,13 @@ import { Product, Category, TargetGender } from "../types/common";
 import {
     AmazonSearch,
     CategoryNodeMapping,
-    SearchTermValidationResult
+    SearchTermValidationResult,
 } from "../types/amazon";
-import { AMAZON_DOMAIN, AMAZON_ENABLE_CATEGORT_FILTERING, AMAZON_MAX_SEARCH_TERM_LENGTH } from "./constants";
+import {
+    AMAZON_DOMAIN,
+    AMAZON_ENABLE_CATEGORT_FILTERING,
+    AMAZON_MAX_SEARCH_TERM_LENGTH,
+} from "./constants";
 
 const CATEGORY_NODES: CategoryNodeMapping = {
     [Category.CLOTHING]: "7141123011", // Clothing, Shoes & Jewelry
@@ -84,11 +88,9 @@ const optimizeSearchTerms = (product: Product): string => {
 
     // Add gender prefix for clothing categories
     if (
-        [
-            Category.CLOTHING,
-            Category.FOOTWEAR,
-            Category.ACCESSORIES,
-        ].includes(product.category)
+        [Category.CLOTHING, Category.FOOTWEAR, Category.ACCESSORIES].includes(
+            product.category,
+        )
     ) {
         if (product.targetGender !== TargetGender.UNISEX) {
             parts.push(product.targetGender);
@@ -108,9 +110,13 @@ const optimizeSearchTerms = (product: Product): string => {
         productName.toLowerCase().includes(product.primaryColor.toLowerCase())
     ) {
         // If color was added separately and is in the name, remove it from the name
-        productName = productName.toLowerCase().replace(product.primaryColor.toLowerCase(), '').trim();
+        productName = productName
+            .toLowerCase()
+            .replace(product.primaryColor.toLowerCase(), "")
+            .trim();
     }
-    if (productName) { // Only add if not empty after potential removal
+    if (productName) {
+        // Only add if not empty after potential removal
         parts.push(productName);
     }
 
