@@ -14,7 +14,7 @@ import {
     UI_CONTAINER_CLASS_NAME,
 } from "./constants";
 import {
-    ProductDisplayData,
+    // ProductDisplayData,
     SidebarContentState,
     SidebarConfig,
     SidebarEvents,
@@ -288,21 +288,21 @@ export class UIManager {
     ) => {
         let result;
         switch (message.type) {
-            case "analysis_started":
-                result = this.handleAnalysisStarted(message);
-                break;
-            case "analysis_complete":
-                result = this.handleAnalysisComplete(message);
-                break;
-            case "analysis_error":
-                result = this.handleAnalysisError(message);
-                break;
-            case "product_group_update":
-                result = this.handleProductGroupUpdate(message);
-                break;
-            default:
-                result = false;
-                console.warn("UI manager received bad background message");
+        case "analysis_started":
+            result = this.handleAnalysisStarted(message);
+            break;
+        case "analysis_complete":
+            result = this.handleAnalysisComplete(message);
+            break;
+        case "analysis_error":
+            result = this.handleAnalysisError(message);
+            break;
+        case "product_group_update":
+            result = this.handleProductGroupUpdate(message);
+            break;
+        default:
+            result = false;
+            console.warn("UI manager received bad background message");
         }
         sendResponse(result);
     };

@@ -109,14 +109,14 @@ export class GeminiService implements AnalysisService {
                 content: fullContent,
                 usage: usageMetadata
                     ? {
-                          promptTokens: usageMetadata.promptTokenCount || 0,
-                          completionTokens:
+                        promptTokens: usageMetadata.promptTokenCount || 0,
+                        completionTokens:
                               usageMetadata.candidatesTokenCount || 0,
-                          totalTokens: usageMetadata.totalTokenCount || 0,
-                          thoughtsTokenCount: usageMetadata.thoughtsTokenCount,
-                          candidatesTokenCount:
+                        totalTokens: usageMetadata.totalTokenCount || 0,
+                        thoughtsTokenCount: usageMetadata.thoughtsTokenCount,
+                        candidatesTokenCount:
                               usageMetadata.candidatesTokenCount,
-                      }
+                    }
                     : undefined,
             });
         } catch (error) {

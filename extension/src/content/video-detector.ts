@@ -18,113 +18,113 @@ const createInitialSeekingState = (): SeekingState => ({
 
 const handlePause =
     (seekingState: SeekingState, siteHandlerRegistry: SiteHandlerRegistry) =>
-    (_event: Event): void => {
-        if (seekingState.isSeeking) {
-            return;
-        }
+        (_event: Event): void => {
+            if (seekingState.isSeeking) {
+                return;
+            }
 
-        const newPauseId = Date.now().toString();
-        seekingState.currentPauseId = newPauseId;
+            const newPauseId = Date.now().toString();
+            seekingState.currentPauseId = newPauseId;
 
-        if (siteHandlerRegistry.shouldIgnorePause(seekingState)) {
-            return;
-        }
+            if (siteHandlerRegistry.shouldIgnorePause(seekingState)) {
+                return;
+            }
 
-        if (seekingState.pauseDebounceTimeoutId !== null) {
-            clearTimeout(seekingState.pauseDebounceTimeoutId);
-        }
+            if (seekingState.pauseDebounceTimeoutId !== null) {
+                clearTimeout(seekingState.pauseDebounceTimeoutId);
+            }
 
-        const debounceTime = siteHandlerRegistry.getDebounceTime(seekingState);
+            const debounceTime = siteHandlerRegistry.getDebounceTime(seekingState);
 
-        seekingState.pauseDebounceTimeoutId = window.setTimeout(() => {
-            const videoElement = document.querySelector(
-                "video",
-            ) as HTMLVideoElement;
-            if (videoElement && videoElement.paused) {
+            seekingState.pauseDebounceTimeoutId = window.setTimeout(() => {
                 const videoElement = document.querySelector(
                     "video",
                 ) as HTMLVideoElement;
-                if (
-                    videoElement &&
+                if (videoElement && videoElement.paused) {
+                    const videoElement = document.querySelector(
+                        "video",
+                    ) as HTMLVideoElement;
+                    if (
+                        videoElement &&
                     videoElement.paused &&
                     seekingState.currentPauseId === newPauseId
-                ) {
-                    if (!seekingState.isSeeking) {
-                        captureScreenshot(newPauseId).catch((_error) => {
+                    ) {
+                        if (!seekingState.isSeeking) {
+                            captureScreenshot(newPauseId).catch((_error) => {
                             // Error logging is handled within captureScreenshot
-                        });
+                            });
+                        }
                     }
                 }
-            }
-            seekingState.pauseDebounceTimeoutId = null;
-        }, debounceTime);
-    };
+                seekingState.pauseDebounceTimeoutId = null;
+            }, debounceTime);
+        };
 
 const handlePlay =
     (seekingState: SeekingState) =>
-    (_event: Event): void => {
-        if (seekingState.currentPauseId !== null) {
-            seekingState.currentPauseId = null;
-        }
-        if (seekingState.pauseDebounceTimeoutId !== null) {
-            clearTimeout(seekingState.pauseDebounceTimeoutId);
-            seekingState.pauseDebounceTimeoutId = null;
-        }
-        hideUI();
-    };
+        (_event: Event): void => {
+            if (seekingState.currentPauseId !== null) {
+                seekingState.currentPauseId = null;
+            }
+            if (seekingState.pauseDebounceTimeoutId !== null) {
+                clearTimeout(seekingState.pauseDebounceTimeoutId);
+                seekingState.pauseDebounceTimeoutId = null;
+            }
+            hideUI();
+        };
 
 const handleSeeking =
     (seekingState: SeekingState) =>
-    (_event: Event): void => {
-        seekingState.isSeeking = true;
-        seekingState.lastSeekTime = Date.now();
+        (_event: Event): void => {
+            seekingState.isSeeking = true;
+            seekingState.lastSeekTime = Date.now();
 
-        // Clear user interaction flag since seeking has now started
-        if (seekingState.userInteractionDetected) {
-            seekingState.userInteractionDetected = false;
-        }
+            // Clear user interaction flag since seeking has now started
+            if (seekingState.userInteractionDetected) {
+                seekingState.userInteractionDetected = false;
+            }
 
-        // Clear any existing debounce timeouts
-        if (seekingState.debounceTimeoutId !== null) {
-            clearTimeout(seekingState.debounceTimeoutId);
-            seekingState.debounceTimeoutId = null;
-        }
+            // Clear any existing debounce timeouts
+            if (seekingState.debounceTimeoutId !== null) {
+                clearTimeout(seekingState.debounceTimeoutId);
+                seekingState.debounceTimeoutId = null;
+            }
 
-        // The pause debounce timeout is now conditionally executed, so explicit clearing here is not strictly necessary
-        // However, we can still clear it to prevent any potential race conditions or unnecessary executions.
-        if (seekingState.pauseDebounceTimeoutId !== null) {
-            clearTimeout(seekingState.pauseDebounceTimeoutId);
-            seekingState.pauseDebounceTimeoutId = null;
-        }
-    };
+            // The pause debounce timeout is now conditionally executed, so explicit clearing here is not strictly necessary
+            // However, we can still clear it to prevent any potential race conditions or unnecessary executions.
+            if (seekingState.pauseDebounceTimeoutId !== null) {
+                clearTimeout(seekingState.pauseDebounceTimeoutId);
+                seekingState.pauseDebounceTimeoutId = null;
+            }
+        };
 
 const handleSeeked =
     (seekingState: SeekingState, siteHandlerRegistry: SiteHandlerRegistry) =>
-    (event: Event): void => {
-        const video = event.target as HTMLVideoElement;
+        (event: Event): void => {
+            const video = event.target as HTMLVideoElement;
 
-        if (seekingState.debounceTimeoutId !== null) {
-            clearTimeout(seekingState.debounceTimeoutId);
-        }
-
-        seekingState.debounceTimeoutId = window.setTimeout(() => {
-            seekingState.isSeeking = false;
-            seekingState.debounceTimeoutId = null;
-
-            if (video && video.paused) {
-                if (!siteHandlerRegistry.shouldIgnorePause(seekingState)) {
-                    setTimeout(() => {
-                        if (video.paused && !seekingState.isSeeking) {
-                            handlePause(
-                                seekingState,
-                                siteHandlerRegistry,
-                            )(event);
-                        }
-                    }, 1500);
-                }
+            if (seekingState.debounceTimeoutId !== null) {
+                clearTimeout(seekingState.debounceTimeoutId);
             }
-        }, seekingDebounceMs);
-    };
+
+            seekingState.debounceTimeoutId = window.setTimeout(() => {
+                seekingState.isSeeking = false;
+                seekingState.debounceTimeoutId = null;
+
+                if (video && video.paused) {
+                    if (!siteHandlerRegistry.shouldIgnorePause(seekingState)) {
+                        setTimeout(() => {
+                            if (video.paused && !seekingState.isSeeking) {
+                                handlePause(
+                                    seekingState,
+                                    siteHandlerRegistry,
+                                )(event);
+                            }
+                        }, 1500);
+                    }
+                }
+            }, seekingDebounceMs);
+        };
 
 const handleTimeUpdate =
     (
@@ -132,29 +132,29 @@ const handleTimeUpdate =
         video: HTMLVideoElement,
         siteHandlerRegistry: SiteHandlerRegistry,
     ) =>
-    (event: Event): void => {
-        const currentTime = video.currentTime;
-        const timeDifference = Math.abs(
-            currentTime - seekingState.previousCurrentTime,
-        );
+        (event: Event): void => {
+            const currentTime = video.currentTime;
+            const timeDifference = Math.abs(
+                currentTime - seekingState.previousCurrentTime,
+            );
 
-        if (
-            timeDifference > timeJumpThreshold &&
+            if (
+                timeDifference > timeJumpThreshold &&
             seekingState.previousCurrentTime > 0
-        ) {
-            if (!seekingState.isSeeking) {
-                handleSeeking(seekingState)(event);
+            ) {
+                if (!seekingState.isSeeking) {
+                    handleSeeking(seekingState)(event);
 
-                setTimeout(() => {
-                    if (seekingState.isSeeking) {
-                        handleSeeked(seekingState, siteHandlerRegistry)(event);
-                    }
-                }, seekingDebounceMs);
+                    setTimeout(() => {
+                        if (seekingState.isSeeking) {
+                            handleSeeked(seekingState, siteHandlerRegistry)(event);
+                        }
+                    }, seekingDebounceMs);
+                }
             }
-        }
 
-        seekingState.previousCurrentTime = currentTime;
-    };
+            seekingState.previousCurrentTime = currentTime;
+        };
 
 const attachVideoListeners = (
     video: HTMLVideoElement,

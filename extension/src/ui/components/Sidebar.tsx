@@ -36,7 +36,7 @@ const Sidebar = ({
     aggregatedProductIcons, // Destructure the new prop
     onShow,
     onHide,
-    onContentStateChange,
+    // onContentStateChange,
     onToggleCompact,
     onTogglePosition,
 }: SidebarProps) => {

@@ -152,10 +152,10 @@ export class OpenRouterService implements AnalysisService {
                 content: fullContent,
                 usage: usage
                     ? {
-                          promptTokens: usage.promptTokens,
-                          completionTokens: usage.completionTokens,
-                          totalTokens: usage.totalTokens,
-                      }
+                        promptTokens: usage.promptTokens,
+                        completionTokens: usage.completionTokens,
+                        totalTokens: usage.totalTokens,
+                    }
                     : undefined,
             });
         } catch (error) {
