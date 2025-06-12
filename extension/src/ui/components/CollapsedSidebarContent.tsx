@@ -52,6 +52,9 @@ const CollapsedSidebarContent = ({
                     className="pauseshop-collapsed-icon-container"
                     initial={{ opacity: 0, scale: 0 }}
                     animate={{ opacity: 1, scale: 1 }}
+                    whileHover={{
+                        scale: 1.3
+                    }}
                     transition={{
                         duration: 0.4,
                         scale: {

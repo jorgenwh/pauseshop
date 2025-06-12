@@ -213,11 +213,15 @@
 
 .pauseshop-collapsed-icon-container {
     position: relative;
-    width: 35px; /* Adjust size as needed */
-    height: 35px;
+    width: 27px; /* Slightly smaller size */
+    height: 27px; /* Slightly smaller size */
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+.pauseshop-collapsed-icon-container:hover {
+    transform: scale(1.1); /* Slightly increase size on hover */
 }
 
 .pauseshop-collapsed-icon {
