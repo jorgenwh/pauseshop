@@ -27,7 +27,6 @@ interface SidebarProps {
     onProductClick: (product: AmazonScrapedProduct) => void; // Keep for future, but not used now
     onError: (error: Error) => void;
     onToggleCompact: () => void;
-    onTogglePosition: () => void;
 }
 
 const Sidebar = ({
@@ -40,7 +39,6 @@ const Sidebar = ({
     onHide,
     // onContentStateChange,
     onToggleCompact,
-    onTogglePosition,
 }: SidebarProps) => {
     const [sidebarState, setSidebarState] = useState<SidebarState>(
         SidebarState.HIDDEN,
@@ -154,10 +152,7 @@ const Sidebar = ({
             ) : (
                 <ExpandedSidebarContent contentState={contentState} />
             )}
-            <SidebarFooter
-                position={position}
-                onTogglePosition={onTogglePosition}
-            />
+            <SidebarFooter />
         </motion.div>
     );
 };

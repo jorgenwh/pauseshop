@@ -158,7 +158,6 @@ export class UIManager {
                         onProductClick={this.sidebarEvents.onProductClick}
                         onError={this.sidebarEvents.onError}
                         onToggleCompact={this.sidebarEvents.onToggleCompact}
-                        onTogglePosition={this.sidebarEvents.onTogglePosition}
                     />
                 </React.StrictMode>,
             );
