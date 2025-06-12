@@ -12,7 +12,6 @@ import {
     DEFAULT_COMPACT,
     NO_PRODUCTS_TIMEOUT_MS,
     UI_CONTAINER_CLASS_NAME,
-    UI_Z_INDEX,
 } from "./constants";
 import {
     ProductDisplayData,
@@ -108,7 +107,7 @@ export class UIManager {
             width: "100%",
             height: "100%",
             pointerEvents: "none" as const,
-            zIndex: UI_Z_INDEX.toString(),
+            zIndex: "999999",
             userSelect: "none" as const,
         };
         Object.assign(this.container.style, containerStyles);
