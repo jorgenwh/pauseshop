@@ -3,6 +3,7 @@
 /* Root Variables for Theming and Spacing */
 :root {
     /* Theme and Spacing */
+    --pauseshop-theme-trim-color: #30b3a4;
     --sidebar-bg: rgba(255, 255, 255, 0.25); /* Adjusted to be a bit lighter */
     --sidebar-text-color: #a0a0a0; /* New icon/text gray */
     --sidebar-text-color-light: #a0a0a0; /* Consistent light text */
@@ -17,7 +18,7 @@
     --sidebar-toggle-button-text: white;
     --arrow-icon-color: #a0a0a0; /* New arrow icon gray */
     --sidebar-title-color: #a0a0a0; /* New title text gray */
-    --shop-text-color: #5fb881; /* Keep as is */
+    --shop-text-color: var(--pauseshop-theme-trim-color);
     --spacing-sm: 8px;
     --spacing-md: 10px;
     --spacing-lg: 15px;
@@ -37,16 +38,16 @@
 .pauseshop-sidebar {
     position: fixed;
     top: 80px; /* Detach from top by 60px */
-    bottom: 200px; /* Detach from bottom by 100px */
     width: var(--sidebar-width);
-    /* height: 100vh; removed */
+    height: auto;
+    max-height: 80vh; /* Default max-height for expanded */
     z-index: 99999;
     transition:
         transform var(--sidebar-transition-speed) ease-in-out,
         width var(--sidebar-transition-speed) ease-in-out,
         left var(--sidebar-transition-speed) ease-in-out,
-        /* Added for position change */ right var(--sidebar-transition-speed)
-            ease-in-out; /* Added for position change */
+        right var(--sidebar-transition-speed) ease-in-out,
+        max-height var(--sidebar-transition-speed) ease-in-out;
     pointer-events: all;
     background-color: var(--sidebar-bg);
     overflow: visible; /* Reverted to visible */
@@ -54,6 +55,7 @@
 
 .pauseshop-sidebar.pauseshop-sidebar-compact {
     width: var(--sidebar-compact-width);
+    max-height: 70px; /* Initial small height */
 }
 
 .pauseshop-sidebar.position-left {
@@ -236,7 +238,7 @@
     right: calc(
         -1 * var(--icon-count-offset)
     ); /* Adjust position for larger circle */
-    background-color: #fd0d00; /* Red color */
+    background-color: var(--pauseshop-theme-trim-color);
     color: white;
     border-radius: 50%;
     font-size: 1.2em; /* Adjusted font size */

@@ -1,68 +1,96 @@
 import { motion } from "motion/react";
-import { AggregatedProductIcons } from "../types";
 import LoadingThreeDotsJumping from "./LoadingThreeDotsJumping"; // Import the new component
+import { ProductStorage } from "../types";
+import { getIconCounts, getUniqueIcons } from "../utils";
 
 interface CollapsedSidebarContentProps {
-    aggregatedProductIcons: AggregatedProductIcons;
-    isLoading: boolean; // Add the new isLoading prop
+    productStorage: ProductStorage;
+    isLoading: boolean;
 }
 
 const CollapsedSidebarContent = ({
-    aggregatedProductIcons,
+    productStorage,
     isLoading,
 }: CollapsedSidebarContentProps) => {
-    const iconPaths = Object.keys(aggregatedProductIcons);
+    if (isLoading) {
+        return (
+            <LoadingThreeDotsJumping />
+        );
+    }
+
+    const iconCounts = getIconCounts(productStorage);
+    const iconCategories = getUniqueIcons(productStorage);
+
+    const buildCategoryCounter = (iconCategory: string) => {
+        if (iconCounts[iconCategory] <= 1) {
+            return null;
+        }
+
+        return (
+            <motion.span
+                key={iconCounts[iconCategory]}
+                className="pauseshop-collapsed-icon-count"
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{
+                    type: "spring",
+                    stiffness: 500,
+                    damping: 30,
+                    bounce: 0.7,
+                }}
+            >
+                {iconCounts[iconCategory]}
+            </motion.span>
+        );
+    }
+
+    const buildContent = () => {
+        return (
+            Array.from(iconCategories.values()).map((iconCategory, index) => (
+                <motion.div
+                    key={iconCategory}
+                    className="pauseshop-collapsed-icon-container"
+                    initial={{ opacity: 0, scale: 0 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{
+                        duration: 0.4,
+                        scale: {
+                            type: "spring",
+                            stiffness: 260,
+                            damping: 20,
+                            bounce: 0.5,
+                        },
+                        delay: index * 0.05,
+                    }}
+                >
+                    <img
+                        src={chrome.runtime.getURL(
+                            `icons/products/${iconCategory}.png`,
+                        )}
+                        alt={iconCategory}
+                        className={`pauseshop-collapsed-icon icon`}
+                    />
+                    {buildCategoryCounter(iconCategory)}
+                </motion.div>
+            )) || null
+        );
+    }
+
+    const buildNoProductsContent = () => {
+        return (
+            <div className="pauseshop-collapsed-sidebar-content">
+                <p>No products to display.</p>
+            </div>
+        );
+    }
 
     return (
         <div className="pauseshop-collapsed-sidebar-content">
-            {isLoading ? ( // Conditionally render based on isLoading prop
-                <LoadingThreeDotsJumping />
-            ) : iconPaths.length > 0 ? (
-                iconPaths.map((iconCategory, index) => (
-                    <motion.div
-                        key={iconCategory}
-                        className="pauseshop-collapsed-icon-container"
-                        initial={{ opacity: 0, scale: 0 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{
-                            duration: 0.4,
-                            scale: {
-                                type: "spring",
-                                stiffness: 260,
-                                damping: 20,
-                                bounce: 0.5,
-                            },
-                            delay: index * 0.05,
-                        }}
-                    >
-                        <img
-                            src={chrome.runtime.getURL(
-                                `icons/products/${iconCategory}.png`,
-                            )}
-                            alt={iconCategory}
-                            className={`pauseshop-collapsed-icon icon`}
-                        />
-                        {aggregatedProductIcons[iconCategory] > 1 && (
-                            <motion.span
-                                key={aggregatedProductIcons[iconCategory]} // Key changes when count changes, re-triggers animation
-                                className="pauseshop-collapsed-icon-count"
-                                initial={{ scale: 0, opacity: 0 }}
-                                animate={{ scale: 1, opacity: 1 }}
-                                transition={{
-                                    type: "spring",
-                                    stiffness: 500,
-                                    damping: 30,
-                                    bounce: 0.7,
-                                }}
-                            >
-                                {aggregatedProductIcons[iconCategory]}
-                            </motion.span>
-                        )}
-                    </motion.div>
-                ))
-            ) : (
-                <p>No products to display.</p>
-            )}
+            {
+                iconCategories.size === 0 ? 
+                    buildNoProductsContent() : 
+                    buildContent()
+            }
         </div>
     );
 };

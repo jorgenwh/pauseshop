@@ -1,24 +1,26 @@
 import { useState, useEffect } from "react";
 import { motion } from "motion/react";
 
-import { SidebarContentState, SidebarState } from "../types";
+import { ProductStorage, SidebarContentState, SidebarState } from "../types";
 import { AmazonScrapedProduct } from "../../types/amazon";
 import {
     COMPACT_SIDEBAR_WIDTH,
     SIDEBAR_SLIDE_DURATION,
     SIDEBAR_WIDTH,
+    SIDEBAR_HEADER_HEIGHT,
 } from "../constants";
 import SidebarHeader from "./SidebarHeader";
 import SidebarFooter from "./SidebarFooter";
 import ExpandedSidebarContent from "./ExpandedSidebarContent";
 import CollapsedSidebarContent from "./CollapsedSidebarContent";
+import { countUniqueIcons } from "../utils";
 
 interface SidebarProps {
     isVisible: boolean;
     contentState: SidebarContentState;
     position: "right" | "left";
     compact: boolean;
-    aggregatedProductIcons: { [key: string]: number };
+    productStorage: ProductStorage;
     onShow: () => void;
     onHide: () => void;
     onContentStateChange: (state: SidebarContentState) => void;
@@ -33,7 +35,7 @@ const Sidebar = ({
     contentState,
     position,
     compact,
-    aggregatedProductIcons, // Destructure the new prop
+    productStorage,
     onShow,
     onHide,
     // onContentStateChange,
@@ -112,6 +114,21 @@ const Sidebar = ({
         return `translateX(0)`;
     };
 
+    const getCompactHeight = () => {
+        if (!currentCompact) {
+            return {}; // Don't apply height styles if not compact
+        }
+
+        const iconCount = countUniqueIcons(productStorage);
+        if (contentState === SidebarContentState.LOADING || iconCount === 0) {
+            return { maxHeight: "200px" };
+        }
+
+        // Calculate height: Header + (Icon Height + Gap) * Num Icons + Bottom Padding
+        const newHeight = SIDEBAR_HEADER_HEIGHT + iconCount * (35 + 15) + 20;
+        return { maxHeight: `${newHeight}px` };
+    };
+
     return (
         <motion.div
             id="pauseshop-sidebar"
@@ -120,6 +137,7 @@ const Sidebar = ({
                 transform: getSidebarTransform(),
                 pointerEvents:
                     sidebarState === SidebarState.HIDDEN ? "none" : "auto",
+                ...getCompactHeight(),
             }}
             animate={currentCompact ? "hidden" : "visible"}
         >
@@ -130,7 +148,7 @@ const Sidebar = ({
             />
             {currentCompact ? (
                 <CollapsedSidebarContent
-                    aggregatedProductIcons={aggregatedProductIcons}
+                    productStorage={productStorage}
                     isLoading={contentState === SidebarContentState.LOADING}
                 />
             ) : (
