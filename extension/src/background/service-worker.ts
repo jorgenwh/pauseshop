@@ -4,7 +4,7 @@
  */
 
 import { handleScreenshotAnalysis } from "./analysis-workflow";
-import type { ScreenshotMessage, ScreenshotResponse } from "./types";
+import type { BackgroundMessage, ScreenshotMessage, ScreenshotResponse } from "./types";
 
 const activePorts = new Map<number, chrome.runtime.Port>();
 
@@ -23,16 +23,10 @@ chrome.runtime.onConnect.addListener((port) => {
 
 chrome.runtime.onMessage.addListener(
     (
-        message: ScreenshotMessage,
+        message: BackgroundMessage,
         sender: chrome.runtime.MessageSender,
         sendResponse: (response: ScreenshotResponse) => void,
     ) => {
-        console.log(
-            `[Service Worker] Received screenshot capture request for pauseId: ${message.pauseId || "N/A"}`,
-        );
-        const windowId =
-            sender.tab?.windowId || chrome.windows.WINDOW_ID_CURRENT;
-
         // Helper function to safely send response
         const safeSendResponse = (response: ScreenshotResponse) => {
             try {
@@ -54,16 +48,35 @@ chrome.runtime.onMessage.addListener(
             }
         };
 
-        handleScreenshotAnalysis(windowId, message.pauseId)
-            .then(safeSendResponse)
-            .catch((error) => {
-                console.error("Screenshot analysis error:", error);
-                safeSendResponse({
-                    success: false,
-                    error: error.message || "Unknown error",
-                    pauseId: message.pauseId,
+        if (message.action === "captureScreenshot") {
+            console.log(
+                `[Service Worker] Received screenshot capture request for pauseId: ${message.pauseId || "N/A"}`,
+            );
+            const windowId =
+                sender.tab?.windowId || chrome.windows.WINDOW_ID_CURRENT;
+
+            handleScreenshotAnalysis(windowId, message.pauseId)
+                .then(safeSendResponse)
+                .catch((error) => {
+                    console.error("Screenshot analysis error:", error);
+                    safeSendResponse({
+                        success: false,
+                        error: error.message || "Unknown error",
+                        pauseId: message.pauseId,
+                    });
                 });
+        } else if (message.action === "toggleSidebarPosition") {
+            // Find the active tab to send the message to its content script
+            chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+                if (tabs && tabs.length > 0 && tabs[0].id) {
+                    const tabId = tabs[0].id;
+                    chrome.tabs.sendMessage(tabId, {
+                        type: "toggleSidebarPosition", // Changed 'action' to 'type'
+                    });
+                }
             });
+            safeSendResponse({ success: true });
+        }
 
         return true; // Keep message channel open for async response
     },

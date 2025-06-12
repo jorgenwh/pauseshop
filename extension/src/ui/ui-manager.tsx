@@ -299,9 +299,14 @@ export class UIManager {
         case "product_group_update":
             result = this.handleProductGroupUpdate(message);
             break;
+        case "toggleSidebarPosition":
+            this.sidebarEvents.onTogglePosition();
+            result = true;
+            break;
         default:
             result = false;
-            console.warn("UI manager received bad background message");
+            // Cast message to BackgroundMessage to access 'type' property safely
+            console.warn("UI manager received unhandled background message:", (message as BackgroundMessage).type);
         }
         sendResponse(result);
     };

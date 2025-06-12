@@ -74,8 +74,13 @@ export interface AnalysisErrorMessage {
     pauseId: string;
 }
 
+export interface ToggleSidebarPositionMessage {
+    type: "toggleSidebarPosition";
+}
+
 export type BackgroundMessage =
     | AnalysisStartedMessage
     | ProductGroupUpdateMessage
     | AnalysisCompleteMessage
-    | AnalysisErrorMessage;
+    | AnalysisErrorMessage
+    | ToggleSidebarPositionMessage;
