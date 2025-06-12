@@ -224,17 +224,29 @@ body.dark-mode .pauseshop-sidebar-header-icon {
 
 .pauseshop-collapsed-icon-count {
     position: absolute;
-    top: -5px;
-    right: -5px;
-    background-color: var(--shop-text-color); /* Use shop-text-color for the count bubble */
+    top: -8px; /* Adjust position for larger circle */
+    right: -8px; /* Adjust position for larger circle */
+    background-color: #fd0d00; /* Red color */
     color: white;
     border-radius: 50%;
-    font-size: 0.7em;
-    padding: 2px 5px;
-    min-width: 15px;
-    text-align: center;
+    font-size: 1.2em; /* Adjusted font size */
+    padding: 1px; /* Keep padding */
+    min-width: 16px; /* Keep min-width */
+    min-height: 16px; /* Keep min-height */
+    top: -8px; /* Keep vertical position */
+    right: -3px; /* Adjust as needed for desired position in left mode */
+    display: flex; /* Use flexbox for centering content */
+    justify-content: center;
+    align-items: center;
     line-height: 1;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    font-weight: bold; /* Make font bold for better visibility */
+}
+
+/* Adjust position of count overlay when sidebar is in right mode */
+.pauseshop-sidebar.position-right .pauseshop-collapsed-icon-container .pauseshop-collapsed-icon-count {
+    left: -3px; /* Adjust as needed for desired position in right mode */
+    right: auto; /* Override default right position */
 }
 
 .arrow-icon.arrow-left {

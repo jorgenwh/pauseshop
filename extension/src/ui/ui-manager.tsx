@@ -196,6 +196,7 @@ export class UIManager {
      */
     public async hideSidebar(): Promise<boolean> {
         this.sidebarVisible = false;
+        this.aggregatedProductIcons = {}; // Clear icons when sidebar is hidden
         this.renderSidebar();
         return true;
     }
@@ -233,7 +234,6 @@ export class UIManager {
         );
         this.sidebarContentState = SidebarContentState.LOADING;
         this.sidebarVisible = true; // Make sure sidebar is visible when analysis starts
-        this.aggregatedProductIcons = {}; // Clear previous icons
         this.renderSidebar();
         return true;
     }
