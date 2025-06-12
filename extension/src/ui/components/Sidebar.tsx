@@ -91,8 +91,8 @@ const Sidebar: React.FC<SidebarProps> = ({
   const getSidebarTransform = () => {
     const currentWidth = currentCompact ? COMPACT_SIDEBAR_WIDTH : SIDEBAR_WIDTH;
     if (sidebarState === SidebarState.HIDDEN || sidebarState === SidebarState.SLIDING_OUT) {
-      // Adjust translation to account for the 20px floating offset and 35px button protrusion
-      return position === "right" ? `translateX(${currentWidth + 55}px)` : `translateX(-${currentWidth + 55}px)`;
+      // Adjust translation to account for the 20px floating offset and 35px button protrusion (increased to 60px for complete hiding)
+      return position === "right" ? `translateX(${currentWidth + 60}px)` : `translateX(-${currentWidth + 60}px)`;
     }
     return `translateX(0)`;
   };
@@ -116,7 +116,11 @@ const Sidebar: React.FC<SidebarProps> = ({
        onToggleCompact={toggleCompactMode}
      />
      {currentCompact ? (
-       <CollapsedSidebarContent aggregatedProductIcons={aggregatedProductIcons} darkMode={darkMode} />
+       <CollapsedSidebarContent
+         aggregatedProductIcons={aggregatedProductIcons}
+         darkMode={darkMode}
+         isLoading={contentState === SidebarContentState.LOADING}
+       />
      ) : (
        <ExpandedSidebarContent contentState={contentState} />
      )}

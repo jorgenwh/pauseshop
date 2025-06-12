@@ -52,15 +52,14 @@ export class UIManager {
         // Initialize with actual event handlers
         this.sidebarEvents = {
             onShow: () => {
-                // Future: UIManager might handle some side effects here
                 console.log("Sidebar shown.");
             },
             onHide: () => {
-                // Future: UIManager might handle some side effects here
                 console.log("Sidebar hidden.");
+                this.aggregatedProductIcons = {}; // Clear icons AFTER sidebar is fully hidden
+                this.sidebarContentState = SidebarContentState.LOADING; // Reset content state for next show
             },
             onContentStateChange: (state: SidebarContentState) => {
-                // UIManager reacts to content state changes from Sidebar
                 console.log(`Sidebar content state changed to: ${state}`);
             },
             onProductClick: (product: AmazonScrapedProduct) => {
@@ -187,6 +186,12 @@ export class UIManager {
             }
         }
         this.sidebarVisible = true;
+        // Ensure content state is loading and clear products on initial show
+        // only if not already in loading state from an analysis start
+        if (this.sidebarContentState !== SidebarContentState.LOADING) {
+            this.sidebarContentState = SidebarContentState.LOADING;
+            this.aggregatedProductIcons = {}; // Clear previous products immediately
+        }
         this.renderSidebar();
         return true;
     }
@@ -196,7 +201,7 @@ export class UIManager {
      */
     public async hideSidebar(): Promise<boolean> {
         this.sidebarVisible = false;
-        this.aggregatedProductIcons = {}; // Clear icons when sidebar is hidden
+        // Do NOT clear aggregatedProductIcons here, it's done in onHide callback after animation
         this.renderSidebar();
         return true;
     }
