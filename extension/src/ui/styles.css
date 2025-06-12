@@ -24,34 +24,56 @@
 
 body.dark-mode {
     /* Dark Mode Overrides */
-    --sidebar-bg:                 rgba(0, 0, 0, 0.7);
-    --sidebar-text-color:         white;
-    --sidebar-text-color-light:   #ccc;
-    --sidebar-border-color:       rgba(255, 255, 255, 0.2);
+    --sidebar-bg:                 rgba(255, 255, 255, 0.1); /* Adjusted to be a bit lighter */
+    --sidebar-text-color:         #A0A0A0; /* New icon/text gray */
+    --sidebar-text-color-light:   #A0A0A0; /* Consistent light text */
+    --sidebar-border-color:       rgba(255, 255, 255, 0.18); /* New border color */
     --sidebar-toggle-button-bg:   rgba(0, 0, 0, 1); /* No transparency */
     --sidebar-toggle-button-border: rgba(255, 255, 255, 1); /* No transparency */
     --sidebar-toggle-button-text: white;
-    --arrow-icon-color:           #ccc;
-    --sidebar-title-color:        #ccc; /* Dark mode specific title color */
-    --shop-text-color:            #5fb881;
+    --arrow-icon-color:           #A0A0A0; /* New arrow icon gray */
+    --sidebar-title-color:        #A0A0A0; /* New title text gray */
+    --shop-text-color:            #5fb881; /* Keep as is */
+}
+
+/* Apply glassy effects specifically for dark mode sidebar within dark-mode context */
+body.dark-mode .pauseshop-sidebar {
+    backdrop-filter:              blur(10px); /* New blur effect */
+    border-radius:                16px;       /* New border radius */
+    border:                       1px solid var(--sidebar-border-color); /* Use the new border color variable */
+    box-shadow:                   0 8px 32px 0 rgba(0, 0, 0, 0.37); /* New box shadow */
 }
 
 /* Main Sidebar Container Styles */
 .pauseshop-sidebar {
     position:                     fixed;
-    top:                          0;
+    top:                          80px; /* Detach from top by 60px */
+    bottom:                       200px; /* Detach from bottom by 100px */
     width:                        var(--sidebar-width);
-    height:                       100vh;
+    /* height: 100vh; removed */
     z-index:                      99999;
-    transition:                   transform var(--sidebar-transition-speed) ease-in-out, width var(--sidebar-transition-speed) ease-in-out;
+    transition:                   transform var(--sidebar-transition-speed) ease-in-out,
+                                  width var(--sidebar-transition-speed) ease-in-out,
+                                  left var(--sidebar-transition-speed) ease-in-out, /* Added for position change */
+                                  right var(--sidebar-transition-speed) ease-in-out; /* Added for position change */
     pointer-events:               all;
     background-color:             var(--sidebar-bg);
-    backdrop-filter:              blur(5px);
-    overflow:                     visible;
+    /* backdrop-filter: blur(5px); moved to dark-mode specific rule */
+    overflow:                     visible; /* Reverted to visible */
 }
 
 .pauseshop-sidebar.pauseshop-sidebar-compact {
     width: var(--sidebar-compact-width);
+}
+
+.pauseshop-sidebar.position-left {
+    left: 20px; /* Floating from the left */
+    right: auto; /* Ensure no conflict with right positioning */
+}
+
+.pauseshop-sidebar.position-right {
+    right: 20px; /* Floating from the right */
+    left: auto; /* Ensure no conflict with left positioning */
 }
 
 /* Sidebar Header Styles */
@@ -166,7 +188,7 @@ body.dark-mode {
 /* PNG Icon Tinting for Dark Mode */
 /* Redundant, moved to .pauseshop-sidebar-header-icon directly */
 body.dark-mode .pauseshop-sidebar-header-icon {
-    filter:                       none; /* Remove filter in dark mode to show original icon */
+    filter:                       grayscale(100%) brightness(0.8) contrast(1.2); /* Make header icon gray */
 }
 
 /* Styles for Collapsed Sidebar Content */
@@ -197,7 +219,7 @@ body.dark-mode .pauseshop-sidebar-header-icon {
 }
 
 .pauseshop-collapsed-icon.dark-mode-icon {
-  filter:                       invert(1) brightness(0.8); /* Unified icon tinting for dark mode */
+  filter:                       grayscale(100%) brightness(0.8) contrast(1.2); /* Make collapsed icons gray */
 }
 
 .pauseshop-collapsed-icon-count {

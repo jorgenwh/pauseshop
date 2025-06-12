@@ -91,7 +91,8 @@ const Sidebar: React.FC<SidebarProps> = ({
   const getSidebarTransform = () => {
     const currentWidth = currentCompact ? COMPACT_SIDEBAR_WIDTH : SIDEBAR_WIDTH;
     if (sidebarState === SidebarState.HIDDEN || sidebarState === SidebarState.SLIDING_OUT) {
-      return position === "right" ? `translateX(${currentWidth}px)` : `translateX(-${currentWidth}px)`;
+      // Adjust translation to account for the 20px floating offset and 35px button protrusion
+      return position === "right" ? `translateX(${currentWidth + 55}px)` : `translateX(-${currentWidth + 55}px)`;
     }
     return `translateX(0)`;
   };
@@ -101,7 +102,6 @@ const Sidebar: React.FC<SidebarProps> = ({
       id="pauseshop-sidebar"
       className={`pauseshop-sidebar ${currentCompact ? "pauseshop-sidebar-compact" : ""} position-${position}`}
       style={{
-        [position]: "0",
         transform: getSidebarTransform(),
         pointerEvents: sidebarState === SidebarState.HIDDEN ? 'none' : 'auto',
       }}
