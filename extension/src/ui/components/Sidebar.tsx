@@ -37,13 +37,15 @@ const Sidebar = ({
     productStorage,
     onShow,
     onHide,
-    // onContentStateChange,
+    onContentStateChange,
     onToggleCompact,
 }: SidebarProps) => {
     const [sidebarState, setSidebarState] = useState<SidebarState>(
         SidebarState.HIDDEN,
     );
     const [currentCompact, setCurrentCompact] = useState<boolean>(compact);
+    const [lastUserSelectedCompactState, setLastUserSelectedCompactState] =
+        useState<boolean>(compact); // Store the last user-selected compact state
 
     useEffect(() => {
         document.documentElement.style.setProperty(
@@ -61,8 +63,20 @@ const Sidebar = ({
     }, []); // Run once on mount
 
     useEffect(() => {
+        // Update currentCompact when the prop changes, and store it as the last user-selected state
         setCurrentCompact(compact);
+        setLastUserSelectedCompactState(compact);
     }, [compact]);
+
+    useEffect(() => {
+        if (contentState === SidebarContentState.LOADING) {
+            // When loading, always start in collapsed mode
+            setCurrentCompact(true);
+        } else {
+            // Once loading completes, revert to the last user-selected state
+            setCurrentCompact(lastUserSelectedCompactState);
+        }
+    }, [contentState, lastUserSelectedCompactState]);
 
     useEffect(() => {
         if (isVisible) {
