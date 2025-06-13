@@ -4,20 +4,16 @@
 :root {
     /* Theme and Spacing */
     --pauseshop-theme-trim-color: #30b3a4;
-    --sidebar-bg: rgba(0, 0, 0, 0.4); /* Adjusted to be a bit lighter */
-    --sidebar-text-color: #a0a0a0; /* New icon/text gray */
-    --sidebar-text-color-light: #a0a0a0; /* Consistent light text */
-    --sidebar-border-color: rgba(255, 255, 255, 0.18); /* New border color */
-    --sidebar-toggle-button-bg: rgba(0, 0, 0, 1); /* No transparency */
-    --sidebar-toggle-button-border: rgba(
-        255,
-        255,
-        255,
-        1
-    ); /* No transparency */
-    --sidebar-toggle-button-text: white;
-    --arrow-icon-color: #a0a0a0; /* New arrow icon gray */
-    --sidebar-title-color: #a0a0a0; /* New title text gray */
+    --sidebar-bg: rgba(30, 30, 30, 1.0);
+    --pauseshop-white: rgba(190, 190, 190, 1);
+    --sidebar-text-color: var(--pauseshop-white);
+    --sidebar-text-color-light: #a0a0a0;
+    --sidebar-border-color: var(--pauseshop-white);
+    --sidebar-toggle-button-bg: var(--sidebar-bg);
+    --sidebar-toggle-button-border: var(--pauseshop-white);
+    --sidebar-toggle-button-text: var(--pauseshop-white);
+    --arrow-icon-color: var(--pauseshop-white);
+    --sidebar-title-color: #a0a0a0;
     --shop-text-color: var(--pauseshop-theme-trim-color);
     --spacing-sm: 8px;
     --spacing-md: 10px;
@@ -26,80 +22,79 @@
     --icon-count-offset: 8px;
 }
 
-
 /* Apply glassy effects to sidebar */
 .pauseshop-sidebar {
-    backdrop-filter: blur(14px); /* New blur effect */
-    border-radius: 16px; /* New border radius */
-    border: 1px solid var(--sidebar-border-color); /* Use the new border color variable */
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); /* New box shadow */
+    /* backdrop-filter: blur(14px); */
+    border-radius: 16px;
+    border: 1px solid var(--sidebar-border-color);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
 }
 
 /* Product Card Glassy Effect */
 .pauseshop-product-card {
     backdrop-filter: blur(10px);
     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-    border-radius: 1rem; /* rounded-2xl */
-    background-color: var(--sidebar-bg); /* bg-[var(--sidebar-bg)] */
-    border: 1px solid var(--sidebar-border-color); /* border border-[var(--sidebar-border-color)] */
-    margin: 0.75rem; /* ml-3 mr-3 mb-3 */
-    padding: .25rem; /* p-4 */
+    border-radius: 1rem;
+    background-color: var(--sidebar-bg);
+    border: 1px solid var(--sidebar-border-color);
+    margin: 0.75rem;
+    padding: .25rem;
 }
 
 /* Product List Styles */
 .pauseshop-product-list {
-    padding: 1rem; /* p-4 */
-    display: flex; /* flex */
-    flex-direction: column; /* flex-col */
-    gap: 0.75rem; /* gap-3 */
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
 }
 
 /* Product Card Header Styles */
 .pauseshop-product-card-header {
-    display: flex; /* flex */
-    align-items: center; /* items-center */
-    justify-content: space-between; /* justify-between */
-    padding: 0.75rem; /* p-3 - adjusted padding for better spacing */
-    cursor: pointer; /* cursor-pointer */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem;
+    cursor: pointer;
 }
 
 /* Product Card Title Styles */
 .pauseshop-product-card-title {
-    color: var(--pauseshop-theme-trim-color); /* text-white -> theme-trim-color */
-    font-size: 1.5rem; /* text-lg -> text-2xl (larger) */
-    font-weight: 600; /* font-semibold */
+    color: var(--pauseshop-theme-trim-color);
+    font-size: 1.5rem;
+    font-weight: 600;
 }
 
 /* Product Card Arrow Styles */
 .pauseshop-product-card-arrow {
-    color: #9ca3af; /* text-gray-400 */
+    color: var(--pauseshop-white);
 }
 
 /* Product Card Price Range Styles */
 .pauseshop-product-card-price-range {
     color: var(--sidebar-text-color);
-    font-size: 0.875rem; /* text-sm */
+    font-size: 0.875rem;
     font-weight: 400;
 }
 
 /* Product Card Content Styles */
 .pauseshop-product-card-content {
-    padding: 1rem; /* p-4 */
-    border-top: 1px solid #374151; /* border-t border-gray-700 */
+    padding: 1rem;
+    border-top: 1px solid #374151;
 }
 
 /* Product Card Text Styles */
 .pauseshop-product-card-text {
-    color: #9ca3af; /* text-gray-400 */
+    color: #9ca3af;
 }
 
 /* Main Sidebar Container Styles */
 .pauseshop-sidebar {
     position: fixed;
-    top: 80px; /* Detach from top by 60px */
+    top: 80px;
     width: var(--sidebar-width);
     height: auto;
-    max-height: 80vh; /* Default max-height for expanded */
+    max-height: 80vh;
     z-index: 99999;
     transition:
         transform var(--sidebar-transition-speed) ease-in-out,
@@ -109,22 +104,22 @@
         max-height var(--sidebar-transition-speed) ease-in-out;
     pointer-events: all;
     background-color: var(--sidebar-bg);
-    overflow: visible; /* Reverted to visible */
+    overflow: visible;
 }
 
 .pauseshop-sidebar.pauseshop-sidebar-compact {
     width: var(--sidebar-compact-width);
-    max-height: 70px; /* Initial small height */
+    max-height: 70px;
 }
 
 .pauseshop-sidebar.position-left {
-    left: 20px; /* Floating from the left */
-    right: auto; /* Ensure no conflict with right positioning */
+    left: 20px;
+    right: auto;
 }
 
 .pauseshop-sidebar.position-right {
-    right: 20px; /* Floating from the right */
-    left: auto; /* Ensure no conflict with left positioning */
+    right: 20px;
+    left: auto;
 }
 
 /* Sidebar Header Styles */
@@ -154,7 +149,7 @@
 }
 
 .pauseshop-sidebar.position-right .pauseshop-sidebar-header-icon {
-    margin-left: auto; /* Push to the right */
+    margin-left: auto;
     margin-right: var(--spacing-sm);
 }
 
@@ -169,9 +164,9 @@
 }
 
 .pauseshop-sidebar.position-right .pauseshop-sidebar-header-title-container {
-    left: auto; /* Reset left */
-    right: 50%; /* Position from right */
-    transform: translateX(50%); /* Adjust transform for right positioning */
+    left: auto;
+    right: 50%;
+    transform: translateX(50%);
 }
 
 .pauseshop-sidebar-header-title-pause {
@@ -180,7 +175,7 @@
 }
 
 .pauseshop-sidebar-header-title-shop {
-    font-weight: 300;
+    font-weight: 400;
     font-size: 2.25rem;
     color: var(--shop-text-color);
 }
@@ -189,45 +184,45 @@
 .pauseshop-sidebar-toggle-button {
     background-color: var(--sidebar-toggle-button-bg);
     border: 1px solid var(--sidebar-toggle-button-border);
-    border-radius: 8px; /* Rounded edges for square */
+    border-radius: 8px;
     cursor: pointer;
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    right: var(--spacing-sm); /* Default position for normal mode */
-    z-index: 100001; /* Higher z-index for prominence */
-    color: var(--sidebar-toggle-button-text); /* Apply text color */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); /* Add shadow for prominence */
-    width: var(--toggle-button-size); /* Decrease size */
-    height: var(--toggle-button-size); /* Decrease size */
+    right: var(--spacing-sm);
+    z-index: 100001;
+    color: var(--sidebar-toggle-button-text);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    width: var(--toggle-button-size);
+    height: var(--toggle-button-size);
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.2s ease-in-out; /* Add transition for hover effect */
+    transition: all 0.2s ease-in-out;
 }
 
 .pauseshop-sidebar-toggle-button:hover {
-    transform: translateY(-50%) scale(1.1); /* Slightly increase size on hover */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4); /* More prominent shadow on hover */
+    transform: translateY(-50%) scale(1.1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
 }
 
 .pauseshop-sidebar.position-right .pauseshop-sidebar-toggle-button {
-    left: var(--spacing-sm); /* Position on the left for right mode */
-    right: auto; /* Override default right position */
+    left: var(--spacing-sm);
+    right: auto;
 }
 
 .pauseshop-sidebar.pauseshop-sidebar-compact .pauseshop-sidebar-toggle-button {
-    right: -35px; /* Position floating outside when compact, 5px closer to the sidebar */
+    right: -35px;
     background-color: var(
         --sidebar-toggle-button-bg
-    ); /* Use sidebar toggle button background for consistency */
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5); /* More prominent shadow */
+    );
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
 }
 
 .pauseshop-sidebar.pauseshop-sidebar-compact.position-right
     .pauseshop-sidebar-toggle-button {
-    left: -35px; /* Position floating outside to the left when compact and in right mode, 5px closer to the sidebar */
-    right: auto; /* Override default right position */
+    left: -35px;
+    right: auto;
 }
 
 /* Arrow Icon Specific Rotation */
@@ -236,7 +231,7 @@
     width: 0;
     height: 0;
     border-style: solid;
-    border-width: 7px 0 7px 7px; /* Slightly larger arrow */
+    border-width: 7px 0 7px 7px;
     border-color: transparent transparent transparent var(--arrow-icon-color);
     transition: transform 0.3s ease-in-out;
 }
@@ -246,11 +241,11 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center; /* Added to center content vertically */
-    padding: var(--spacing-md) 0;
-    gap: var(--spacing-lg); /* Spacing between icons */
+    justify-content: center;
+    padding: calc(var(--spacing-md) + 5px) 0;
+    gap: var(--spacing-lg);
     overflow-y: auto;
-    flex-grow: 1; /* Allow content to take available space */
+    flex-grow: 1;
 }
 
 /* Styles for LoadingThreeDotsJumping component */
@@ -258,29 +253,28 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 6px; /* Reduced space between dots */
-    height: 100%; /* Take full height of parent */
-    margin-top: 20px; /* Lower the dots a bit (per user's previous explicit edit) */
+    gap: 6px;
+    height: 100%;
+    margin-top: 20px;
 }
 
 .pauseshop-loading-dot {
-    width: 8px; /* Make dots smaller */
+    width: 8px;
     height: 8px;
     border-radius: 50%;
-    /* Background color set via inline style in component */
 }
 
 .pauseshop-compact-icon-container {
     position: relative;
-    width: 27px; /* Slightly smaller size */
-    height: 27px; /* Slightly smaller size */
+    width: 27px;
+    height: 27px;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
 .pauseshop-compact-icon-container:hover {
-    transform: scale(1.1); /* Slightly increase size on hover */
+    transform: scale(1.1);
 }
 
 .pauseshop-compact-icon {
@@ -297,33 +291,33 @@
     position: absolute;
     top: calc(
         -1 * var(--icon-count-offset)
-    ); /* Adjust position for larger circle */
+    );
     right: calc(
         -1 * var(--icon-count-offset)
-    ); /* Adjust position for larger circle */
+    );
     background-color: var(--pauseshop-theme-trim-color);
     color: white;
     border-radius: 50%;
-    font-size: 1.2em; /* Adjusted font size */
-    padding: 1px; /* Keep padding */
-    min-width: 16px; /* Keep min-width */
-    min-height: 16px; /* Keep min-height */
-    top: -8px; /* Keep vertical position */
-    right: -3px; /* Adjust as needed for desired position in left mode */
-    display: flex; /* Use flexbox for centering content */
+    font-size: 1.2em;
+    padding: 1px;
+    min-width: 16px;
+    min-height: 16px;
+    top: -8px;
+    right: -3px;
+    display: flex;
     justify-content: center;
     align-items: center;
     line-height: 1;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-    font-weight: bold; /* Make font bold for better visibility */
+    font-weight: bold;
 }
 
 /* Adjust position of count overlay when sidebar is in right mode */
 .pauseshop-sidebar.position-right
     .pauseshop-compact-icon-container
     .pauseshop-compact-icon-count {
-    left: -3px; /* Adjust as needed for desired position in right mode */
-    right: auto; /* Override default right position */
+    left: -3px;
+    right: auto;
 }
 
 .arrow-icon.arrow-left {

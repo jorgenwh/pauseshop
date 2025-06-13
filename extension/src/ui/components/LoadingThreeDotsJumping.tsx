@@ -13,7 +13,7 @@ const LoadingThreeDotsJumping = () => {
         },
     };
 
-    const dotColor = "#A0A0A0";
+    const dotColor = "rgba(230, 230, 230, 1)";
 
     return (
         <motion.div
