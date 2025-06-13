@@ -3,15 +3,15 @@ import LoadingThreeDotsJumping from "./LoadingThreeDotsJumping"; // Import the n
 import { ProductStorage } from "../types";
 import { getIconCounts, getUniqueIcons } from "../utils";
 
-interface CollapsedSidebarContentProps {
+interface CompactSidebarContentProps {
     productStorage: ProductStorage;
     isLoading: boolean;
 }
 
-const CollapsedSidebarContent = ({
+const CompactSidebarContent = ({
     productStorage,
     isLoading,
-}: CollapsedSidebarContentProps) => {
+}: CompactSidebarContentProps) => {
     const buildLoadingContent = () => {
         return (
             <LoadingThreeDotsJumping />
@@ -29,7 +29,7 @@ const CollapsedSidebarContent = ({
         return (
             <motion.span
                 key={iconCounts[iconCategory]}
-                className="pauseshop-collapsed-icon-count"
+                className="pauseshop-compact-icon-count"
                 initial={{ scale: 0, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{
@@ -49,7 +49,7 @@ const CollapsedSidebarContent = ({
             Array.from(iconCategories.values()).map((iconCategory, index) => (
                 <motion.div
                     key={iconCategory}
-                    className="pauseshop-collapsed-icon-container"
+                    className="pauseshop-compact-icon-container"
                     initial={{ opacity: 0, scale: 0 }}
                     animate={{ opacity: 1, scale: 1 }}
                     whileHover={{
@@ -71,7 +71,7 @@ const CollapsedSidebarContent = ({
                             `icons/products/${iconCategory}.png`,
                         )}
                         alt={iconCategory}
-                        className={`pauseshop-collapsed-icon icon`}
+                        className={`pauseshop-compact-icon icon`}
                     />
                     {buildCategoryCounter(iconCategory)}
                 </motion.div>
@@ -81,14 +81,14 @@ const CollapsedSidebarContent = ({
 
     const buildNoProductsContent = () => {
         return (
-            <div className="pauseshop-collapsed-sidebar-content">
+            <div className="pauseshop-compact-sidebar-content">
                 <p>No products to display.</p>
             </div>
         );
     }
 
     return (
-        <div className="pauseshop-collapsed-sidebar-content">
+        <div className="pauseshop-compact-sidebar-content">
             {
                 isLoading ?
                     buildLoadingContent() :
@@ -100,4 +100,4 @@ const CollapsedSidebarContent = ({
     );
 };
 
-export default CollapsedSidebarContent;
+export default CompactSidebarContent;

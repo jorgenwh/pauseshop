@@ -12,7 +12,7 @@ import {
 import SidebarHeader from "./SidebarHeader";
 import SidebarFooter from "./SidebarFooter";
 import ExpandedSidebarContent from "./ExpandedSidebarContent";
-import CollapsedSidebarContent from "./CollapsedSidebarContent";
+import CompactSidebarContent from "./CompactSidebarContent";
 import { countUniqueIcons } from "../utils";
 
 interface SidebarProps {
@@ -70,7 +70,7 @@ const Sidebar = ({
 
     useEffect(() => {
         if (contentState === SidebarContentState.LOADING) {
-            // When loading, always start in collapsed mode
+            // When loading, always start in compact mode
             setCurrentCompact(true);
         } else {
             // Once loading completes, revert to the last user-selected state
@@ -157,9 +157,10 @@ const Sidebar = ({
                 compact={currentCompact}
                 position={position}
                 onToggleCompact={toggleCompactMode}
+                isLoading={contentState === SidebarContentState.LOADING}
             />
             {currentCompact ? (
-                <CollapsedSidebarContent
+                <CompactSidebarContent
                     productStorage={productStorage}
                     isLoading={contentState === SidebarContentState.LOADING}
                 />
