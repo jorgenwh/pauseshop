@@ -1,28 +1,29 @@
-import { SidebarContentState } from "../types";
+import { /*ProductStorage,*/ SidebarContentState } from "../types";
+import ProductCard from "./ProductCard";
 
 interface ExpandedSidebarContentProps {
     contentState: SidebarContentState;
-    // Potentially add other props needed for expanded content
+    // productStorage: ProductStorage;
 }
 
-const ExpandedSidebarContent = ({
-    contentState,
-}: ExpandedSidebarContentProps) => {
+const ExpandedSidebarContent = ({contentState, /*productStorage*/ }: ExpandedSidebarContentProps) => {
     return (
         <div className="pauseshop-expanded-sidebar-content">
             {contentState === SidebarContentState.LOADING && (
-                <p>Loading products...</p>
+                <p className="text-white">Loading products...</p>
             )}
             {contentState === SidebarContentState.PRODUCTS && (
-                <p>Displaying products...</p>
+                <div className="pauseshop-product-list">
+                    {/* Display a single mock product card for styling */}
+                    <ProductCard />
+                </div>
             )}
             {contentState === SidebarContentState.NO_PRODUCTS && (
-                <p>No products found.</p>
+                <p className="text-white">No products found.</p>
             )}
             {contentState === SidebarContentState.ERROR && (
-                <p>An error occurred. Check console for details.</p>
+                <p className="text-red-500">An error occurred. Check console for details.</p>
             )}
-            {/* Add more expanded sidebar specific components here */}
         </div>
     );
 };

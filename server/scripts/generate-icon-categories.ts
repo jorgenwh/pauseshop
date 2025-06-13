@@ -16,7 +16,7 @@ async function generateProductCategories() {
 // See server/scripts/generate-icon-categories.ts for source.
 
 export const ICON_CATEGORIES = [
-${categories.map((cat) => `  "${cat}",`).join("\n")}
+${categories.map((cat) => `    "${cat}",`).join("\n")}
 ];
 
 export type IconCategory = typeof ICON_CATEGORIES[number];

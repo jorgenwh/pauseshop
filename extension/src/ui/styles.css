@@ -3,7 +3,8 @@
 /* Root Variables for Theming and Spacing */
 :root {
     /* Theme and Spacing */
-    --sidebar-bg: rgba(255, 255, 255, 0.25); /* Adjusted to be a bit lighter */
+    --pauseshop-theme-trim-color: #30b3a4;
+    --sidebar-bg: rgba(0, 0, 0, 0.4); /* Adjusted to be a bit lighter */
     --sidebar-text-color: #a0a0a0; /* New icon/text gray */
     --sidebar-text-color-light: #a0a0a0; /* Consistent light text */
     --sidebar-border-color: rgba(255, 255, 255, 0.18); /* New border color */
@@ -17,7 +18,7 @@
     --sidebar-toggle-button-text: white;
     --arrow-icon-color: #a0a0a0; /* New arrow icon gray */
     --sidebar-title-color: #a0a0a0; /* New title text gray */
-    --shop-text-color: #5fb881; /* Keep as is */
+    --shop-text-color: var(--pauseshop-theme-trim-color);
     --spacing-sm: 8px;
     --spacing-md: 10px;
     --spacing-lg: 15px;
@@ -25,28 +26,87 @@
     --icon-count-offset: 8px;
 }
 
+
 /* Apply glassy effects to sidebar */
 .pauseshop-sidebar {
-    backdrop-filter: blur(10px); /* New blur effect */
+    backdrop-filter: blur(14px); /* New blur effect */
     border-radius: 16px; /* New border radius */
     border: 1px solid var(--sidebar-border-color); /* Use the new border color variable */
     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); /* New box shadow */
+}
+
+/* Product Card Glassy Effect */
+.pauseshop-product-card {
+    backdrop-filter: blur(10px);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    border-radius: 1rem; /* rounded-2xl */
+    background-color: var(--sidebar-bg); /* bg-[var(--sidebar-bg)] */
+    border: 1px solid var(--sidebar-border-color); /* border border-[var(--sidebar-border-color)] */
+    margin: 0.75rem; /* ml-3 mr-3 mb-3 */
+    padding: .25rem; /* p-4 */
+}
+
+/* Product List Styles */
+.pauseshop-product-list {
+    padding: 1rem; /* p-4 */
+    display: flex; /* flex */
+    flex-direction: column; /* flex-col */
+    gap: 0.75rem; /* gap-3 */
+}
+
+/* Product Card Header Styles */
+.pauseshop-product-card-header {
+    display: flex; /* flex */
+    align-items: center; /* items-center */
+    justify-content: space-between; /* justify-between */
+    padding: 0.75rem; /* p-3 - adjusted padding for better spacing */
+    cursor: pointer; /* cursor-pointer */
+}
+
+/* Product Card Title Styles */
+.pauseshop-product-card-title {
+    color: var(--pauseshop-theme-trim-color); /* text-white -> theme-trim-color */
+    font-size: 1.5rem; /* text-lg -> text-2xl (larger) */
+    font-weight: 600; /* font-semibold */
+}
+
+/* Product Card Arrow Styles */
+.pauseshop-product-card-arrow {
+    color: #9ca3af; /* text-gray-400 */
+}
+
+/* Product Card Price Range Styles */
+.pauseshop-product-card-price-range {
+    color: var(--sidebar-text-color);
+    font-size: 0.875rem; /* text-sm */
+    font-weight: 400;
+}
+
+/* Product Card Content Styles */
+.pauseshop-product-card-content {
+    padding: 1rem; /* p-4 */
+    border-top: 1px solid #374151; /* border-t border-gray-700 */
+}
+
+/* Product Card Text Styles */
+.pauseshop-product-card-text {
+    color: #9ca3af; /* text-gray-400 */
 }
 
 /* Main Sidebar Container Styles */
 .pauseshop-sidebar {
     position: fixed;
     top: 80px; /* Detach from top by 60px */
-    bottom: 200px; /* Detach from bottom by 100px */
     width: var(--sidebar-width);
-    /* height: 100vh; removed */
+    height: auto;
+    max-height: 80vh; /* Default max-height for expanded */
     z-index: 99999;
     transition:
         transform var(--sidebar-transition-speed) ease-in-out,
         width var(--sidebar-transition-speed) ease-in-out,
         left var(--sidebar-transition-speed) ease-in-out,
-        /* Added for position change */ right var(--sidebar-transition-speed)
-            ease-in-out; /* Added for position change */
+        right var(--sidebar-transition-speed) ease-in-out,
+        max-height var(--sidebar-transition-speed) ease-in-out;
     pointer-events: all;
     background-color: var(--sidebar-bg);
     overflow: visible; /* Reverted to visible */
@@ -54,6 +114,7 @@
 
 .pauseshop-sidebar.pauseshop-sidebar-compact {
     width: var(--sidebar-compact-width);
+    max-height: 70px; /* Initial small height */
 }
 
 .pauseshop-sidebar.position-left {
@@ -158,8 +219,8 @@
 .pauseshop-sidebar.pauseshop-sidebar-compact .pauseshop-sidebar-toggle-button {
     right: -35px; /* Position floating outside when compact, 5px closer to the sidebar */
     background-color: var(
-        --sidebar-bg
-    ); /* Use sidebar background for more opacity */
+        --sidebar-toggle-button-bg
+    ); /* Use sidebar toggle button background for consistency */
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5); /* More prominent shadow */
 }
 
@@ -180,8 +241,8 @@
     transition: transform 0.3s ease-in-out;
 }
 
-/* Styles for Collapsed Sidebar Content */
-.pauseshop-collapsed-sidebar-content {
+/* Styles for Compact Sidebar Content */
+.pauseshop-compact-sidebar-content {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -209,26 +270,30 @@
     /* Background color set via inline style in component */
 }
 
-.pauseshop-collapsed-icon-container {
+.pauseshop-compact-icon-container {
     position: relative;
-    width: 35px; /* Adjust size as needed */
-    height: 35px;
+    width: 27px; /* Slightly smaller size */
+    height: 27px; /* Slightly smaller size */
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-.pauseshop-collapsed-icon {
+.pauseshop-compact-icon-container:hover {
+    transform: scale(1.1); /* Slightly increase size on hover */
+}
+
+.pauseshop-compact-icon {
     width: 100%;
     height: 100%;
     object-fit: contain;
 }
 
-.pauseshop-collapsed-icon.icon {
-    filter: invert(0.8) grayscale(1) brightness(0.9);
+.pauseshop-compact-icon.icon {
+    filter: invert(0.9)
 }
 
-.pauseshop-collapsed-icon-count {
+.pauseshop-compact-icon-count {
     position: absolute;
     top: calc(
         -1 * var(--icon-count-offset)
@@ -236,7 +301,7 @@
     right: calc(
         -1 * var(--icon-count-offset)
     ); /* Adjust position for larger circle */
-    background-color: #fd0d00; /* Red color */
+    background-color: var(--pauseshop-theme-trim-color);
     color: white;
     border-radius: 50%;
     font-size: 1.2em; /* Adjusted font size */
@@ -255,8 +320,8 @@
 
 /* Adjust position of count overlay when sidebar is in right mode */
 .pauseshop-sidebar.position-right
-    .pauseshop-collapsed-icon-container
-    .pauseshop-collapsed-icon-count {
+    .pauseshop-compact-icon-container
+    .pauseshop-compact-icon-count {
     left: -3px; /* Adjust as needed for desired position in right mode */
     right: auto; /* Override default right position */
 }
@@ -291,3 +356,5 @@
     justify-content: center;
     height: 24px;
 }
+
+

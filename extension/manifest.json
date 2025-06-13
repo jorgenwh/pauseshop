@@ -33,7 +33,6 @@
                 "https://*.hbomax.com/*"
             ],
             "js": ["content/main-content.js"],
-            "css": ["ui/styles.css"],
             "run_at": "document_end"
         }
     ],
@@ -41,6 +40,7 @@
         {
             "resources": [
                 "ui/*",
+                "content/main-content.css",
                 "icons/icon-128.png",
                 "icons/products/*.png",
                 "fonts/*.ttf"

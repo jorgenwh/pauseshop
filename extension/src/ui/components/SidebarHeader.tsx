@@ -27,12 +27,14 @@ interface SidebarHeaderProps {
     compact: boolean;
     position: "right" | "left";
     onToggleCompact: () => void;
+    isLoading: boolean;
 }
 
 const SidebarHeader = ({
     compact,
     position,
     onToggleCompact,
+    isLoading,
 }: SidebarHeaderProps) => {
     const getToggleButtonIconClass = () => {
         if (compact) {
@@ -75,14 +77,30 @@ const SidebarHeader = ({
                     Shop
                 </motion.h1>
             </motion.div>
-            <button
-                className="pauseshop-sidebar-toggle-button"
-                onClick={onToggleCompact}
-            >
-                <span
-                    className={`arrow-icon ${getToggleButtonIconClass()}`}
-                ></span>
-            </button>
+            {!isLoading && (
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{
+                        duration: 0.4,
+                        scale: {
+                            type: "spring",
+                            stiffness: 260,
+                            damping: 20,
+                            bounce: 0.5,
+                        },
+                    }}
+                >
+                    <button
+                        className="pauseshop-sidebar-toggle-button"
+                        onClick={onToggleCompact}
+                    >
+                        <span
+                            className={`arrow-icon ${getToggleButtonIconClass()}`}
+                        ></span>
+                    </button>
+                </motion.div>
+            )}
         </div>
     );
 };

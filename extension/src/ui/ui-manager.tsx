@@ -23,7 +23,7 @@ import {
     AnalysisCompleteMessage,
     AnalysisErrorMessage,
     ProductGroupUpdateMessage,
-    AggregatedProductIcons,
+    ProductStorage
 } from "./types";
 
 export class UIManager {
@@ -36,7 +36,8 @@ export class UIManager {
         SidebarContentState.LOADING;
     private sidebarConfig: SidebarConfig;
     private sidebarEvents: SidebarEvents; // Events for UIManager to handle or pass to React component
-    private aggregatedProductIcons: AggregatedProductIcons = {};
+
+    private productStorage: ProductStorage = { pauseId: "", productGroups: [] };
 
     private isInitialized: boolean = false;
     private noProductsFoundTimeoutId: NodeJS.Timeout | null = null;
@@ -54,8 +55,8 @@ export class UIManager {
             },
             onHide: () => {
                 console.log("Sidebar hidden.");
-                this.aggregatedProductIcons = {}; // Clear icons AFTER sidebar is fully hidden
-                this.sidebarContentState = SidebarContentState.LOADING; // Reset content state for next show
+                this.productStorage = { pauseId: "", productGroups: [] };
+                this.sidebarContentState = SidebarContentState.LOADING;
             },
             onContentStateChange: (state: SidebarContentState) => {
                 console.log(`Sidebar content state changed to: ${state}`);
@@ -148,7 +149,7 @@ export class UIManager {
                         contentState={this.sidebarContentState}
                         position={this.sidebarConfig.position}
                         compact={this.sidebarConfig.compact}
-                        aggregatedProductIcons={this.aggregatedProductIcons} // Pass the new prop
+                        productStorage={this.productStorage}
                         onShow={this.sidebarEvents.onShow}
                         onHide={this.sidebarEvents.onHide}
                         onContentStateChange={
@@ -157,7 +158,6 @@ export class UIManager {
                         onProductClick={this.sidebarEvents.onProductClick}
                         onError={this.sidebarEvents.onError}
                         onToggleCompact={this.sidebarEvents.onToggleCompact}
-                        onTogglePosition={this.sidebarEvents.onTogglePosition}
                     />
                 </React.StrictMode>,
             );
@@ -178,7 +178,7 @@ export class UIManager {
         // only if not already in loading state from an analysis start
         if (this.sidebarContentState !== SidebarContentState.LOADING) {
             this.sidebarContentState = SidebarContentState.LOADING;
-            this.aggregatedProductIcons = {}; // Clear previous products immediately
+            this.productStorage = { pauseId: "", productGroups: [] };
         }
         this.renderSidebar();
         return true;
@@ -189,7 +189,6 @@ export class UIManager {
      */
     public async hideSidebar(): Promise<boolean> {
         this.sidebarVisible = false;
-        // Do NOT clear aggregatedProductIcons here, it's done in onHide callback after animation
         this.renderSidebar();
         return true;
     }
@@ -260,20 +259,19 @@ export class UIManager {
         console.info(
             `Received product_group_update for pauseId: ${message.pauseId} with ${message.scrapedProducts.length} products`,
         );
+
+        if (this.productStorage.pauseId !== message.pauseId) {
+            this.productStorage = { pauseId: message.pauseId, productGroups: [] };
+        }
+
+        this.productStorage.productGroups.push({
+            product: message.originalProduct,
+            scrapedProducts: message.scrapedProducts,
+        });
+
         this.sidebarContentState = SidebarContentState.PRODUCTS;
         this.sidebarVisible = true; // Make sure sidebar is visible to show products
 
-        // Aggregate product icons
-        const newAggregatedProductIcons: AggregatedProductIcons = {
-            ...this.aggregatedProductIcons,
-        };
-        if (message.originalProduct && message.originalProduct.iconCategory) {
-            const iconCategory = message.originalProduct.iconCategory;
-            newAggregatedProductIcons[iconCategory] =
-                (newAggregatedProductIcons[iconCategory] || 0) + 1;
-        }
-
-        this.aggregatedProductIcons = newAggregatedProductIcons;
         this.renderSidebar();
         return true;
     };
@@ -300,9 +298,14 @@ export class UIManager {
         case "product_group_update":
             result = this.handleProductGroupUpdate(message);
             break;
+        case "toggleSidebarPosition":
+            this.sidebarEvents.onTogglePosition();
+            result = true;
+            break;
         default:
             result = false;
-            console.warn("UI manager received bad background message");
+            // Cast message to BackgroundMessage to access 'type' property safely
+            console.warn("UI manager received unhandled background message:", (message as BackgroundMessage).type);
         }
         sendResponse(result);
     };

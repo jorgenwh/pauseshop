@@ -12,3 +12,9 @@ export interface ScreenshotResponse {
     error?: string;
     pauseId?: string;
 }
+
+export interface ToggleSidebarPositionMessage {
+    action: "toggleSidebarPosition";
+}
+
+export type BackgroundMessage = ScreenshotMessage | ToggleSidebarPositionMessage;
