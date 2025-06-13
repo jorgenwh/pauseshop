@@ -77,7 +77,7 @@ const ProductThumbnailsScroll: React.FC<ProductThumbnailsScrollProps> = ({ thumb
                     </li>
                 ))}
             </motion.ul>
-             {/* Styles for the scroll container */}
+            {/* Styles for the scroll container */}
             <style>{`
                 .pauseshop-thumbnails-scroll-container ul::-webkit-scrollbar {
                     height: 5px;

@@ -4,7 +4,7 @@
  */
 
 import { handleScreenshotAnalysis } from "./analysis-workflow";
-import type { BackgroundMessage, ScreenshotMessage, ScreenshotResponse } from "./types";
+import type { BackgroundMessage, ScreenshotResponse } from "./types";
 
 const activePorts = new Map<number, chrome.runtime.Port>();
 

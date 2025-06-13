@@ -1,7 +1,7 @@
 import { ProductStorage } from "./types";
 
 export const getUniqueIcons = (productStorage: ProductStorage): Set<string> => {
-    let uniqueIcons = new Set<string>();
+    const uniqueIcons = new Set<string>();
 
     for (const group of productStorage.productGroups) {
         const iconCategory = group.product.iconCategory;

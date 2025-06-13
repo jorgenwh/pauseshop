@@ -39,7 +39,7 @@ const Sidebar = ({
     productStorage,
     onShow,
     onHide,
-    onContentStateChange,
+    // onContentStateChange,
     onToggleCompact,
 }: SidebarProps) => {
     const [sidebarState, setSidebarState] = useState<SidebarState>(
@@ -169,7 +169,7 @@ const Sidebar = ({
             ) : (
                 <ExpandedSidebarContent
                     contentState={contentState}
-                    productStorage={productStorage} // Pass productStorage here
+                    // productStorage={productStorage} // Pass productStorage here
                 />
             )}
             <SidebarFooter />

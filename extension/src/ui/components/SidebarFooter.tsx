@@ -1,9 +1,7 @@
-interface SidebarFooterProps {
-}
-
-const SidebarFooter = ({}: SidebarFooterProps) => {
+const SidebarFooter = () => {
     return (
         <div className="pauseshop-sidebar-footer">
+            <p>Footer</p>
         </div>
     );
 };

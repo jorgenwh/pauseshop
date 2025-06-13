@@ -1,15 +1,12 @@
-import { ProductStorage, SidebarContentState } from "../types";
-import ProductCard from "./ProductCard"; // Import ProductCard
+import { /*ProductStorage,*/ SidebarContentState } from "../types";
+import ProductCard from "./ProductCard";
 
 interface ExpandedSidebarContentProps {
     contentState: SidebarContentState;
-    productStorage: ProductStorage; // Add productStorage prop
+    // productStorage: ProductStorage;
 }
 
-const ExpandedSidebarContent: React.FC<ExpandedSidebarContentProps> = ({
-    contentState,
-    productStorage,
-}) => {
+const ExpandedSidebarContent = ({contentState, /*productStorage*/ }: ExpandedSidebarContentProps) => {
     return (
         <div className="pauseshop-expanded-sidebar-content">
             {contentState === SidebarContentState.LOADING && (
