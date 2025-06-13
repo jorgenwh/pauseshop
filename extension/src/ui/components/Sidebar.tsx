@@ -26,7 +26,7 @@ interface SidebarProps {
     onShow: () => void;
     onHide: () => void;
     onContentStateChange: (state: SidebarContentState) => void;
-    onProductClick: (product: AmazonScrapedProduct) => void; // Keep for future, but not used now
+    onProductClick: (product: AmazonScrapedProduct) => void;
     onError: (error: Error) => void;
     onToggleCompact: () => void;
 }
@@ -169,7 +169,7 @@ const Sidebar = ({
             ) : (
                 <ExpandedSidebarContent
                     contentState={contentState}
-                    // productStorage={productStorage} // Pass productStorage here
+                    productStorage={productStorage}
                 />
             )}
             <SidebarFooter />

@@ -1,12 +1,12 @@
-import { /*ProductStorage,*/ SidebarContentState } from "../types";
-import ProductCard from "./ProductCard";
+import { ProductStorage, SidebarContentState } from "../types";
+import ProductGroupCard from "./ProductGroupCard";
 
 interface ExpandedSidebarContentProps {
     contentState: SidebarContentState;
-    // productStorage: ProductStorage;
+    productStorage: ProductStorage;
 }
 
-const ExpandedSidebarContent = ({contentState, /*productStorage*/ }: ExpandedSidebarContentProps) => {
+const ExpandedSidebarContent = ({contentState, productStorage }: ExpandedSidebarContentProps) => {
     return (
         <div className="pauseshop-expanded-sidebar-content">
             {contentState === SidebarContentState.LOADING && (
@@ -14,8 +14,9 @@ const ExpandedSidebarContent = ({contentState, /*productStorage*/ }: ExpandedSid
             )}
             {contentState === SidebarContentState.PRODUCTS && (
                 <div className="pauseshop-product-list">
-                    {/* Display a single mock product card for styling */}
-                    <ProductCard />
+                    {productStorage.productGroups.map((group) => (
+                        <ProductGroupCard key={group.product.name} groupName={group.product.name} />
+                    ))}
                 </div>
             )}
             {contentState === SidebarContentState.NO_PRODUCTS && (
