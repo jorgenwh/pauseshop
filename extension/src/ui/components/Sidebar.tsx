@@ -165,7 +165,10 @@ const Sidebar = ({
                     isLoading={contentState === SidebarContentState.LOADING}
                 />
             ) : (
-                <ExpandedSidebarContent contentState={contentState} />
+                <ExpandedSidebarContent
+                    contentState={contentState}
+                    productStorage={productStorage} // Pass productStorage here
+                />
             )}
             <SidebarFooter />
         </motion.div>
