@@ -4,7 +4,7 @@
 :root {
     /* Theme and Spacing */
     --pauseshop-theme-trim-color: #30b3a4;
-    --sidebar-bg: rgba(255, 255, 255, 0.15); /* Adjusted to be a bit lighter */
+    --sidebar-bg: rgba(0, 0, 0, 0.4); /* Adjusted to be a bit lighter */
     --sidebar-text-color: #a0a0a0; /* New icon/text gray */
     --sidebar-text-color-light: #a0a0a0; /* Consistent light text */
     --sidebar-border-color: rgba(255, 255, 255, 0.18); /* New border color */
@@ -29,7 +29,7 @@
 
 /* Apply glassy effects to sidebar */
 .pauseshop-sidebar {
-    backdrop-filter: blur(10px); /* New blur effect */
+    backdrop-filter: blur(14px); /* New blur effect */
     border-radius: 16px; /* New border radius */
     border: 1px solid var(--sidebar-border-color); /* Use the new border color variable */
     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); /* New box shadow */
@@ -290,7 +290,7 @@
 }
 
 .pauseshop-compact-icon.icon {
-    filter: invert(0.5)
+    filter: invert(0.9)
 }
 
 .pauseshop-compact-icon-count {
