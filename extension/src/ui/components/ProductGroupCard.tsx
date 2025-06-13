@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const ProductCard: React.FC = () => { // Removed props for simplification
+const ProductGroupCard: React.FC<{ groupName: string; }> = ({ groupName }) => {
     const [isExpanded, setIsExpanded] = useState(false);
 
     const toggleExpand = () => {
@@ -9,7 +9,7 @@ const ProductCard: React.FC = () => { // Removed props for simplification
 
     return (
         <div
-            className="pauseshop-product-card"
+            className={`pauseshop-product-card`}
         >
             {/* Header */}
             <div
@@ -17,8 +17,7 @@ const ProductCard: React.FC = () => { // Removed props for simplification
                 onClick={toggleExpand}
             >
                 <div className="flex items-center">
-                    <h3 className="pauseshop-product-card-title">Mock Product Name</h3>
-                    <div className="pauseshop-product-card-price-range">$50 - $80</div>
+                    <h3 className="pauseshop-product-card-title">{groupName}</h3>
                 </div>
                 <span className="pauseshop-product-card-arrow">{isExpanded ? "▲" : "▼"}</span>
             </div>
@@ -33,4 +32,4 @@ const ProductCard: React.FC = () => { // Removed props for simplification
     );
 };
 
-export default ProductCard;
+export default ProductGroupCard;
