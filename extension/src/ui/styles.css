@@ -4,7 +4,7 @@
 :root {
     /* Theme and Spacing */
     --pauseshop-theme-trim-color: #30b3a4;
-    --sidebar-bg: rgba(255, 255, 255, 0.25); /* Adjusted to be a bit lighter */
+    --sidebar-bg: rgba(255, 255, 255, 0.15); /* Adjusted to be a bit lighter */
     --sidebar-text-color: #a0a0a0; /* New icon/text gray */
     --sidebar-text-color-light: #a0a0a0; /* Consistent light text */
     --sidebar-border-color: rgba(255, 255, 255, 0.18); /* New border color */
@@ -26,6 +26,7 @@
     --icon-count-offset: 8px;
 }
 
+
 /* Apply glassy effects to sidebar */
 .pauseshop-sidebar {
     backdrop-filter: blur(10px); /* New blur effect */
@@ -42,7 +43,7 @@
     background-color: var(--sidebar-bg); /* bg-[var(--sidebar-bg)] */
     border: 1px solid var(--sidebar-border-color); /* border border-[var(--sidebar-border-color)] */
     margin: 0.75rem; /* ml-3 mr-3 mb-3 */
-    padding: 1rem; /* p-4 */
+    padding: .25rem; /* p-4 */
 }
 
 /* Product List Styles */
@@ -58,29 +59,27 @@
     display: flex; /* flex */
     align-items: center; /* items-center */
     justify-content: space-between; /* justify-between */
-    padding: 0.5rem; /* p-2 - much smaller padding */
+    padding: 0.75rem; /* p-3 - adjusted padding for better spacing */
     cursor: pointer; /* cursor-pointer */
-}
-
-/* Product Card Image Styles */
-.pauseshop-product-card-image {
-    width: 4rem; /* w-16 */
-    height: 4rem; /* h-16 */
-    border-radius: 0.375rem; /* rounded-md */
-    margin-right: 0.5rem; /* mr-2 - smaller margin */
-    object-fit: cover; /* object-cover */
 }
 
 /* Product Card Title Styles */
 .pauseshop-product-card-title {
-    color: white; /* text-white */
-    font-size: 1.125rem; /* text-lg */
+    color: var(--pauseshop-theme-trim-color); /* text-white -> theme-trim-color */
+    font-size: 1.5rem; /* text-lg -> text-2xl (larger) */
     font-weight: 600; /* font-semibold */
 }
 
 /* Product Card Arrow Styles */
 .pauseshop-product-card-arrow {
     color: #9ca3af; /* text-gray-400 */
+}
+
+/* Product Card Price Range Styles */
+.pauseshop-product-card-price-range {
+    color: var(--sidebar-text-color);
+    font-size: 0.875rem; /* text-sm */
+    font-weight: 400;
 }
 
 /* Product Card Content Styles */
@@ -291,7 +290,7 @@
 }
 
 .pauseshop-compact-icon.icon {
-    filter: invert(0.8) grayscale(1) brightness(0.9);
+    filter: invert(0.5)
 }
 
 .pauseshop-compact-icon-count {
@@ -357,4 +356,5 @@
     justify-content: center;
     height: 24px;
 }
+
 

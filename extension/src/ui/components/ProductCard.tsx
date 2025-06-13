@@ -17,12 +17,8 @@ const ProductCard: React.FC = () => { // Removed props for simplification
                 onClick={toggleExpand}
             >
                 <div className="flex items-center">
-                    <img
-                        src="https://m.media-amazon.com/images/I/91FJCIXf3bL._AC_SY110_.jpg"
-                        alt="Mock Product"
-                        className="pauseshop-product-card-image"
-                    />
                     <h3 className="pauseshop-product-card-title">Mock Product Name</h3>
+                    <div className="pauseshop-product-card-price-range">$50 - $80</div>
                 </div>
                 <span className="pauseshop-product-card-arrow">{isExpanded ? "▲" : "▼"}</span>
             </div>
