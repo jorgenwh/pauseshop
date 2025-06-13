@@ -128,19 +128,21 @@ const Sidebar = ({
         return `translateX(0)`;
     };
 
-    const getCompactHeight = () => {
-        if (!currentCompact) {
-            return {}; // Don't apply height styles if not compact
-        }
+    const iconCount = countUniqueIcons(productStorage);
+    const compactHeight =
+        contentState === SidebarContentState.LOADING || iconCount === 0
+            ? 200
+            : SIDEBAR_HEADER_HEIGHT + iconCount * (35 + 15) + 20;
 
-        const iconCount = countUniqueIcons(productStorage);
-        if (contentState === SidebarContentState.LOADING || iconCount === 0) {
-            return { maxHeight: "200px" };
-        }
-
-        // Calculate height: Header + (Icon Height + Gap) * Num Icons + Bottom Padding
-        const newHeight = SIDEBAR_HEADER_HEIGHT + iconCount * (35 + 15) + 20;
-        return { maxHeight: `${newHeight}px` };
+    const sidebarVariants = {
+        compact: {
+            maxHeight: `${compactHeight}px`,
+            transition: { duration: SIDEBAR_SLIDE_DURATION, ease: "easeOut" },
+        },
+        expanded: {
+            maxHeight: "100vh", // A sufficiently large value to allow content to expand
+            transition: { duration: SIDEBAR_SLIDE_DURATION, ease: "easeOut" },
+        },
     };
 
     return (
@@ -150,9 +152,9 @@ const Sidebar = ({
             style={{
                 transform: getSidebarTransform(),
                 pointerEvents: sidebarState === SidebarState.HIDDEN ? "none" : "auto",
-                ...getCompactHeight(),
             }}
-            animate={currentCompact ? "hidden" : "visible"}
+            variants={sidebarVariants}
+            animate={currentCompact ? "compact" : "expanded"}
         >
             <SidebarHeader
                 compact={currentCompact}
