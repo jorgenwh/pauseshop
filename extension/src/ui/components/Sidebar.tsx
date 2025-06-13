@@ -149,8 +149,7 @@ const Sidebar = ({
             className={`pauseshop-sidebar ${currentCompact ? "pauseshop-sidebar-compact" : ""} position-${position}`}
             style={{
                 transform: getSidebarTransform(),
-                pointerEvents:
-                    sidebarState === SidebarState.HIDDEN ? "none" : "auto",
+                pointerEvents: sidebarState === SidebarState.HIDDEN ? "none" : "auto",
                 ...getCompactHeight(),
             }}
             animate={currentCompact ? "hidden" : "visible"}

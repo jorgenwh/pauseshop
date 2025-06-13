@@ -1,4 +1,4 @@
-import { motion } from "motion/react";
+import { motion, AnimatePresence } from "motion/react";
 import { ProductStorage, SidebarContentState } from "../types";
 import ProductGroupCard from "./ProductGroupCard";
 
@@ -8,19 +8,30 @@ const cardContainerVariants = {
         opacity: 1,
         transition: {
             staggerChildren: 0.08,
+            delayChildren: 0.05,
         },
     },
 };
 
 const cardVariants = {
-    hidden: { y: 20, opacity: 0 },
+    hidden: {
+        y: 20,
+        opacity: 0,
+        height: 0,
+        marginBottom: 0,
+    },
     visible: {
         y: 0,
         opacity: 1,
+        height: "auto",
+        marginBottom: "0.25rem",
         transition: {
             type: "tween",
             ease: "easeOut",
             duration: 0.2,
+            height: {
+                duration: 0.2,
+            },
         },
     },
 };
@@ -41,12 +52,21 @@ const ExpandedSidebarContent = ({contentState, productStorage }: ExpandedSidebar
                     variants={cardContainerVariants}
                     initial="hidden"
                     animate="visible"
+                    layout
+                    style={{ overflow: "hidden" }}
                 >
-                    {productStorage.productGroups.map((group) => (
-                        <motion.div key={group.product.name} variants={cardVariants}>
-                            <ProductGroupCard groupName={group.product.name} />
-                        </motion.div>
-                    ))}
+                    <AnimatePresence mode="popLayout">
+                        {productStorage.productGroups.map((group) => (
+                            <motion.div
+                                key={group.product.name}
+                                variants={cardVariants}
+                                layout
+                                style={{ overflow: "hidden" }}
+                            >
+                                <ProductGroupCard groupName={group.product.name} />
+                            </motion.div>
+                        ))}
+                    </AnimatePresence>
                 </motion.div>
             )}
             {contentState === SidebarContentState.NO_PRODUCTS && (
