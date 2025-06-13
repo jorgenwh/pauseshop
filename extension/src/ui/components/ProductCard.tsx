@@ -9,14 +9,7 @@ const ProductCard: React.FC = () => { // Removed props for simplification
 
     return (
         <div
-            className="pauseshop-product-card shadow-md rounded-2xl" // External padding handled by style, removed mb-4
-            style={{
-                backgroundColor: 'var(--sidebar-bg)', // Slightly transparent background
-                border: '1px solid var(--sidebar-border-color)', // Border matching sidebar
-                marginLeft: '12px', // Custom 12px left margin
-                marginRight: '12px', // Custom 12px right margin
-                marginBottom: '12px', // Custom 12px bottom margin
-            }}
+            className="pauseshop-product-card shadow-md rounded-2xl bg-[var(--sidebar-bg)] border border-[var(--sidebar-border-color)] ml-3 mr-3 mb-3"
         >
             {/* Header */}
             <div

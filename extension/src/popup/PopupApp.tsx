@@ -13,14 +13,7 @@ const PopupApp: React.FC = () => {
 
     return (
         <div
-            style={{
-                padding: "20px",
-                textAlign: "center",
-                fontFamily: "Arial, sans-serif",
-                color: "purple",
-                backgroundColor: "lightyellow",
-                border: "2px solid purple",
-            }}
+            className="p-5 text-center font-sans text-white bg-blue-500 border-2 border-purple-700"
         >
             <h1>React is working!</h1>
             <p>This popup is now rendered with React.</p>
@@ -30,15 +23,7 @@ const PopupApp: React.FC = () => {
             </p>
             <button
                 onClick={handleToggleSidebarPosition}
-                style={{
-                    marginTop: "10px",
-                    padding: "10px 20px",
-                    backgroundColor: "purple",
-                    color: "white",
-                    border: "none",
-                    borderRadius: "5px",
-                    cursor: "pointer",
-                }}
+                className="mt-2.5 p-2.5 px-5 bg-purple-700 text-white border-none rounded-md cursor-pointer"
             >
                 Toggle Sidebar Position
             </button>
@@ -47,3 +32,4 @@ const PopupApp: React.FC = () => {
 };
 
 export default PopupApp;
+

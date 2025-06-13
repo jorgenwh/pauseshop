@@ -57,11 +57,6 @@ module.exports = {
                     noErrorOnMissing: true,
                 },
                 {
-                    from: "src/ui/styles.css",
-                    to: "ui/styles.css",
-                    noErrorOnMissing: true,
-                },
-                {
                     from: "icons",
                     to: "icons",
                 },

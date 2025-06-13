@@ -6,6 +6,18 @@ import {
 } from "./screenshot-capturer";
 import { UIManager } from "../ui/ui-manager";
 
+// Dynamically inject the content script's CSS
+const injectCss = () => {
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.type = "text/css";
+    const cssUrl = chrome.runtime.getURL("content/main-content.css");
+    link.href = cssUrl;
+    document.head.appendChild(link);
+};
+
+injectCss();
+
 // Establish a long-lived port connection with the background script
 const backgroundPort = chrome.runtime.connect({
     name: "pauseshop-content-script",
