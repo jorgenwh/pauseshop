@@ -1,5 +1,5 @@
 import { motion } from "motion/react";
-import LoadingThreeDotsJumping from "./LoadingThreeDotsJumping"; // Import the new component
+import LoadingThreeDotsJumping from "./LoadingThreeDotsJumping";
 import { ProductStorage } from "../types";
 import { getIconCounts, getUniqueIcons } from "../utils";
 

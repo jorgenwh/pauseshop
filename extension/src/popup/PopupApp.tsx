@@ -1,7 +1,6 @@
-import React from "react";
 import { ToggleSidebarPositionMessage } from "../background/types";
 
-const PopupApp: React.FC = () => {
+const PopupApp = () => {
     const handleToggleSidebarPosition = () => {
         const message: ToggleSidebarPositionMessage = {
             action: "toggleSidebarPosition",
