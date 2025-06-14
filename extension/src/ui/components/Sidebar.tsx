@@ -80,6 +80,11 @@ const Sidebar = ({
     }, [contentState, lastUserSelectedCompactState]);
 
     useEffect(() => {
+        // Reset expandedIconCategory when productStorage changes (new pause session)
+        setExpandedIconCategory(null);
+    }, [productStorage]);
+
+    useEffect(() => {
         if (isVisible) {
             onShow();
         } else {
