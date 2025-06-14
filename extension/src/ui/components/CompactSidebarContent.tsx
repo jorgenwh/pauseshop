@@ -6,11 +6,13 @@ import { getIconCounts, getUniqueIcons } from "../utils";
 interface CompactSidebarContentProps {
     productStorage: ProductStorage;
     isLoading: boolean;
+    onIconClick: (iconCategory: string) => void;
 }
 
 const CompactSidebarContent = ({
     productStorage,
     isLoading,
+    onIconClick,
 }: CompactSidebarContentProps) => {
     const buildLoadingContent = () => {
         return (
@@ -65,6 +67,7 @@ const CompactSidebarContent = ({
                         },
                         delay: index * 0.05,
                     }}
+                    onClick={() => onIconClick(iconCategory)}
                 >
                     <img
                         src={chrome.runtime.getURL(

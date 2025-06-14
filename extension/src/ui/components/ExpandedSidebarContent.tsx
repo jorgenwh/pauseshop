@@ -27,9 +27,10 @@ const cardVariants = {
 interface ExpandedSidebarContentProps {
     contentState: SidebarContentState;
     productStorage: ProductStorage;
+    expandedIconCategory: string | null;
 }
 
-const ExpandedSidebarContent = ({contentState, productStorage }: ExpandedSidebarContentProps) => {
+const ExpandedSidebarContent = ({contentState, productStorage, expandedIconCategory }: ExpandedSidebarContentProps) => {
     return (
         <div className="pauseshop-expanded-sidebar-content">
             {contentState === SidebarContentState.LOADING && (
@@ -47,7 +48,11 @@ const ExpandedSidebarContent = ({contentState, productStorage }: ExpandedSidebar
                             key={group.product.name}
                             variants={cardVariants}
                         >
-                            <ProductGroupCard groupName={group.product.name} thumbnails={group.scrapedProducts} />
+                            <ProductGroupCard
+                                groupName={group.product.name}
+                                thumbnails={group.scrapedProducts}
+                                initialExpanded={expandedIconCategory === group.product.iconCategory}
+                            />
                         </motion.div>
                     ))}
                 </motion.div>

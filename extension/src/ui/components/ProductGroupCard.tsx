@@ -6,10 +6,11 @@ import { AmazonScrapedProduct } from "../../types/amazon";
 interface ProductGroupCardProps {
     groupName: string;
     thumbnails: AmazonScrapedProduct[];
+    initialExpanded?: boolean;
 }
 
-const ProductGroupCard: React.FC<ProductGroupCardProps> = ({ groupName, thumbnails }) => {
-    const [isExpanded, setIsExpanded] = useState(false);
+const ProductGroupCard: React.FC<ProductGroupCardProps> = ({ groupName, thumbnails, initialExpanded = false }) => {
+    const [isExpanded, setIsExpanded] = useState(initialExpanded);
 
     const toggleExpand = () => {
         setIsExpanded(!isExpanded);

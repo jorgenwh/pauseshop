@@ -38,12 +38,15 @@ const Sidebar = ({
     productStorage,
     onShow,
     onHide,
-    // onContentStateChange,
+    onContentStateChange,
+    onProductClick,
+    onError,
     onToggleCompact,
 }: SidebarProps) => {
     const [currentCompact, setCurrentCompact] = useState<boolean>(compact);
     const [lastUserSelectedCompactState, setLastUserSelectedCompactState] =
         useState<boolean>(compact); // Store the last user-selected compact state
+    const [expandedIconCategory, setExpandedIconCategory] = useState<string | null>(null);
 
     useEffect(() => {
         document.documentElement.style.setProperty(
@@ -85,6 +88,12 @@ const Sidebar = ({
     }, [isVisible, onShow, onHide]);
 
     const toggleCompactMode = () => {
+        onToggleCompact();
+        setExpandedIconCategory(null); // Reset when toggling via button
+    };
+
+    const handleIconClick = (iconCategory: string) => {
+        setExpandedIconCategory(iconCategory);
         onToggleCompact();
     };
 
@@ -143,11 +152,13 @@ const Sidebar = ({
                         <CompactSidebarContent
                             productStorage={productStorage}
                             isLoading={contentState === SidebarContentState.LOADING}
+                            onIconClick={handleIconClick}
                         />
                     ) : (
                         <ExpandedSidebarContent
                             contentState={contentState}
                             productStorage={productStorage}
+                            expandedIconCategory={expandedIconCategory}
                         />
                     )}
                     <SidebarFooter />
