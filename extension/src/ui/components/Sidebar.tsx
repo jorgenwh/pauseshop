@@ -3,7 +3,7 @@ import "../styles.css";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 
-import { ProductStorage, SidebarContentState, SidebarState } from "../types";
+import { ProductStorage, SidebarContentState } from "../types";
 import { AmazonScrapedProduct } from "../../types/amazon";
 import {
     COMPACT_SIDEBAR_WIDTH,
@@ -41,9 +41,6 @@ const Sidebar = ({
     // onContentStateChange,
     onToggleCompact,
 }: SidebarProps) => {
-    const [sidebarState, setSidebarState] = useState<SidebarState>(
-        SidebarState.HIDDEN,
-    );
     const [currentCompact, setCurrentCompact] = useState<boolean>(compact);
     const [lastUserSelectedCompactState, setLastUserSelectedCompactState] =
         useState<boolean>(compact); // Store the last user-selected compact state
@@ -132,28 +129,28 @@ const Sidebar = ({
                         maxHeight: !currentCompact
                             ? "100vh"
                             : contentState === SidebarContentState.LOADING
-                              ? "200px"
-                              : `${calculatedContentCompactHeight}px`,
+                                ? "200px"
+                                : `${calculatedContentCompactHeight}px`,
                     }}
                 >
-            <SidebarHeader
-                compact={currentCompact}
-                position={position}
-                onToggleCompact={toggleCompactMode}
-                isLoading={contentState === SidebarContentState.LOADING}
-            />
-            {currentCompact ? (
-                <CompactSidebarContent
-                    productStorage={productStorage}
-                    isLoading={contentState === SidebarContentState.LOADING}
-                />
-            ) : (
-                <ExpandedSidebarContent
-                    contentState={contentState}
-                    productStorage={productStorage}
-                />
-            )}
-            <SidebarFooter />
+                    <SidebarHeader
+                        compact={currentCompact}
+                        position={position}
+                        onToggleCompact={toggleCompactMode}
+                        isLoading={contentState === SidebarContentState.LOADING}
+                    />
+                    {currentCompact ? (
+                        <CompactSidebarContent
+                            productStorage={productStorage}
+                            isLoading={contentState === SidebarContentState.LOADING}
+                        />
+                    ) : (
+                        <ExpandedSidebarContent
+                            contentState={contentState}
+                            productStorage={productStorage}
+                        />
+                    )}
+                    <SidebarFooter />
                 </motion.div>
             )}
         </AnimatePresence>

@@ -36,7 +36,7 @@ const ExpandedSidebarContent = ({contentState, productStorage }: ExpandedSidebar
                 <p className="text-white">Loading products...</p>
             )}
             {contentState === SidebarContentState.PRODUCTS && (
-                 <motion.div
+                <motion.div
                     className="pauseshop-product-list"
                     variants={cardContainerVariants}
                     initial="hidden"
