@@ -9,7 +9,7 @@ interface ProductGroupCardProps {
     initialExpanded?: boolean;
 }
 
-const ProductGroupCard: React.FC<ProductGroupCardProps> = ({ groupName, thumbnails, initialExpanded = false }) => {
+const ProductGroupCard = ({ groupName, thumbnails, initialExpanded = false }: ProductGroupCardProps) => {
     const [isExpanded, setIsExpanded] = useState(initialExpanded);
 
     const toggleExpand = () => {

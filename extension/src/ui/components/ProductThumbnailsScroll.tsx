@@ -15,7 +15,7 @@ interface ProductThumbnailsScrollProps {
     thumbnails: AmazonScrapedProduct[];
 }
 
-const ProductThumbnailsScroll: React.FC<ProductThumbnailsScrollProps> = ({ thumbnails }) => {
+const ProductThumbnailsScroll = ({ thumbnails }: ProductThumbnailsScrollProps) => {
     const ref = useRef<HTMLUListElement>(null);
     const { scrollXProgress } = useScroll({ container: ref });
 
