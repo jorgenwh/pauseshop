@@ -48,6 +48,7 @@ const Sidebar = ({
     const [currentCompact, setCurrentCompact] = useState<boolean>(compact);
     const [lastUserSelectedCompactState, setLastUserSelectedCompactState] =
         useState<boolean>(compact); // Store the last user-selected compact state
+    const [isHeightTransitionComplete, setIsHeightTransitionComplete] = useState<boolean>(false);
 
     useEffect(() => {
         document.documentElement.style.setProperty(
@@ -71,14 +72,20 @@ const Sidebar = ({
     }, [compact]);
 
     useEffect(() => {
+        console.log("Sidebar: contentState changed to", contentState);
         if (contentState === SidebarContentState.LOADING) {
             // When loading, always start in compact mode
             setCurrentCompact(true);
+            setIsHeightTransitionComplete(false); // Reset when loading starts
         } else {
             // Once loading completes, revert to the last user-selected state
             setCurrentCompact(lastUserSelectedCompactState);
         }
     }, [contentState, lastUserSelectedCompactState]);
+
+    useEffect(() => {
+        console.log("Sidebar: currentCompact changed to", currentCompact);
+    }, [currentCompact]);
 
     useEffect(() => {
         if (isVisible) {
@@ -133,7 +140,6 @@ const Sidebar = ({
         contentState === SidebarContentState.LOADING || iconCount === 0
             ? 200
             : SIDEBAR_HEADER_HEIGHT + iconCount * (35 + 15) + 20;
-
     const sidebarVariants = {
         compact: {
             maxHeight: `${compactHeight}px`,
@@ -155,6 +161,11 @@ const Sidebar = ({
             }}
             variants={sidebarVariants}
             animate={currentCompact ? "compact" : "expanded"}
+            onAnimationComplete={() => {
+                if (currentCompact) {
+                    setIsHeightTransitionComplete(true);
+                }
+            }}
         >
             <SidebarHeader
                 compact={currentCompact}
@@ -166,6 +177,7 @@ const Sidebar = ({
                 <CompactSidebarContent
                     productStorage={productStorage}
                     isLoading={contentState === SidebarContentState.LOADING}
+                    isHeightTransitionComplete={isHeightTransitionComplete}
                 />
             ) : (
                 <ExpandedSidebarContent

@@ -6,11 +6,13 @@ import { getIconCounts, getUniqueIcons } from "../utils";
 interface CompactSidebarContentProps {
     productStorage: ProductStorage;
     isLoading: boolean;
+    isHeightTransitionComplete: boolean;
 }
 
 const CompactSidebarContent = ({
     productStorage,
     isLoading,
+    isHeightTransitionComplete,
 }: CompactSidebarContentProps) => {
     const buildLoadingContent = () => {
         return (
@@ -94,7 +96,9 @@ const CompactSidebarContent = ({
                     buildLoadingContent() :
                     iconCategories.size === 0 ?
                         buildNoProductsContent() :
-                        buildContent()
+                        isHeightTransitionComplete ?
+                            buildContent() :
+                            null // Render nothing until height transition is complete
             }
         </div>
     );
