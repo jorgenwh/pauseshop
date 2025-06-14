@@ -94,8 +94,6 @@
     height: auto; /* Keep auto height for natural content flow */
     z-index: 99999;
     transition:
-        transform var(--sidebar-transition-speed) ease-in-out,
-        width var(--sidebar-transition-speed) ease-in-out,
         left var(--sidebar-transition-speed) ease-in-out,
         right var(--sidebar-transition-speed) ease-in-out; /* Remove max-height from CSS transition */
     pointer-events: all;

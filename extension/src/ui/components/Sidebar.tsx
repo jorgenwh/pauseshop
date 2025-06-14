@@ -1,6 +1,7 @@
 import "../../global.css";
 import "../styles.css";
 import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "motion/react";
 
 import { ProductStorage, SidebarContentState, SidebarState } from "../types";
 import { AmazonScrapedProduct } from "../../types/amazon";
@@ -108,19 +109,33 @@ const Sidebar = ({
         SIDEBAR_HEADER_HEIGHT + iconCount * (35 + 15) + 20;
 
     return (
-        <div
-            id="pauseshop-sidebar"
-            className={`pauseshop-sidebar ${currentCompact ? "pauseshop-sidebar-compact" : ""} position-${position}`}
-            style={{
-                transform: getSidebarTransform(),
-                pointerEvents: isVisible ? "auto" : "none",
-                maxHeight: !currentCompact
-                    ? "100vh"
-                    : contentState === SidebarContentState.LOADING
-                      ? "200px"
-                      : `${calculatedContentCompactHeight}px`,
-            }}
-        >
+        <AnimatePresence mode="sync">
+            {isVisible && (
+                <motion.div
+                    key={currentCompact ? "compact-sidebar" : "expanded-sidebar"}
+                    id="pauseshop-sidebar"
+                    className={`pauseshop-sidebar ${currentCompact ? "pauseshop-sidebar-compact" : ""} position-${position}`}
+                    initial={{ opacity: 0, scale: 0 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0 }}
+                    transition={{
+                        type: "spring",
+                        stiffness: 600,
+                        mass: .5,
+                        damping: 35,
+                        bounce: 0.4,
+                        duration: 0.1,
+                    }}
+                    style={{
+                        transform: getSidebarTransform(),
+                        pointerEvents: isVisible ? "auto" : "none",
+                        maxHeight: !currentCompact
+                            ? "100vh"
+                            : contentState === SidebarContentState.LOADING
+                              ? "200px"
+                              : `${calculatedContentCompactHeight}px`,
+                    }}
+                >
             <SidebarHeader
                 compact={currentCompact}
                 position={position}
@@ -139,8 +154,13 @@ const Sidebar = ({
                 />
             )}
             <SidebarFooter />
-        </div>
+                </motion.div>
+            )}
+        </AnimatePresence>
     );
 };
 
 export default Sidebar;
+
+
+
