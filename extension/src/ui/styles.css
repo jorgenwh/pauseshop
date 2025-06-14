@@ -38,7 +38,7 @@
     background-color: var(--pauseshop-bg);
     border: 1px solid var(--sidebar-border-color);
     margin: 0.25rem;
-    padding: .25rem;
+    padding: .25rem .25rem 0 .25rem;
 }
 
 .pauseshop-product-card:hover {
@@ -347,15 +347,15 @@
 
 .pauseshop-thumbnails-scroll-container {
     position: relative;
-    width: 100%; /* Ensure the container has a defined width */
-    overflow: hidden; /* This is crucial for clipping overflowing content */
+    width: 100%;
+    overflow: hidden;
 }
 
 .pauseshop-thumbnails-list {
     display: flex;
     gap: 10px;
-    overflow-x: scroll; /* Changed to scroll to always show scrollbar for debugging */
-    padding: 10px 0;
+    overflow-x: scroll;
+    padding: 4px 0;
     scroll-snap-type: x mandatory; /* Optional: for snapping behavior */
 
     /* The mask-image and -webkit-mask-image properties will be applied dynamically via JavaScript */
@@ -387,8 +387,8 @@
 }
 
 .pauseshop-thumbnail-image {
-    width: 120px; /* Fixed width for consistent sizing */
-    height: 120px; /* Fixed height for consistent sizing */
+    width: 120px;
+    height: 120px;
     object-fit: cover;
     border-radius: 0.375rem; /* rounded-md */
 }
