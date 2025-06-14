@@ -41,7 +41,7 @@
 }
 
 .pauseshop-product-card:hover {
-    transform: translateY(-2px);
+    transform: scale(1.02); /* Slightly increased scale for a subtle hover effect */
     box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.5);
     border-color: var(--pauseshop-theme-trim-color);
 }

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { motion } from "motion/react";
 
 const ProductGroupCard: React.FC<{ groupName: string; }> = ({ groupName }) => {
     const [isExpanded, setIsExpanded] = useState(false);
@@ -8,8 +9,15 @@ const ProductGroupCard: React.FC<{ groupName: string; }> = ({ groupName }) => {
     };
 
     return (
-        <div
+        <motion.div
             className={`pauseshop-product-card`}
+            whileHover={{ scale: 1.03 }}
+            transition={{
+                type: "spring",
+                stiffness: 260,
+                damping: 20,
+                bounce: 0.5,
+            }}
         >
             {/* Header */}
             <div
@@ -28,7 +36,7 @@ const ProductGroupCard: React.FC<{ groupName: string; }> = ({ groupName }) => {
                     <p className="pauseshop-product-card-text">Mock content for thumbnails section.</p>
                 </div>
             )}
-        </div>
+        </motion.div>
     );
 };
 
