@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 
 import { ProductStorage, SidebarContentState } from "../types";
-import { AmazonScrapedProduct } from "../../types/amazon";
 import {
     COMPACT_SIDEBAR_WIDTH,
     EXPANDED_SIDEBAR_WIDTH,
@@ -24,9 +23,6 @@ interface SidebarProps {
     productStorage: ProductStorage;
     onShow: () => void;
     onHide: () => void;
-    onContentStateChange: (state: SidebarContentState) => void;
-    onProductClick: (product: AmazonScrapedProduct) => void;
-    onError: (error: Error) => void;
     onToggleCompact: () => void;
 }
 
@@ -38,9 +34,6 @@ const Sidebar = ({
     productStorage,
     onShow,
     onHide,
-    onContentStateChange,
-    onProductClick,
-    onError,
     onToggleCompact,
 }: SidebarProps) => {
     const [currentCompact, setCurrentCompact] = useState<boolean>(compact);
@@ -174,6 +167,3 @@ const Sidebar = ({
 };
 
 export default Sidebar;
-
-
-

@@ -5,8 +5,7 @@ import { useRef, useEffect } from "react";
 import { AmazonScrapedProduct } from "../../types/amazon";
 
 // Constants for mask gradient
-const left = `0%`;
-const right = `100%`;
+
 const leftInset = `20%`; // Original 20%
 const rightInset = `80%`; // Original 80%
 const transparent = `#0000`; // Fully transparent
@@ -46,6 +45,8 @@ const ProductThumbnailsScroll: React.FC<ProductThumbnailsScrollProps> = ({ thumb
         }
         // Condition 3: Transitioning from an extreme end (0 or 1) to the middle, OR
         //               already in the middle and continuing to scroll
+        // This condition covers all states where the scroll is not at an extreme end,
+        // and ensures the full mask is applied.
         else if (prevValue === 0 || prevValue === 1 || (currentScrollPosition > 0 && currentScrollPosition < 1)) {
             animate(
                 maskImage,
@@ -108,7 +109,7 @@ const ProductThumbnailsScroll: React.FC<ProductThumbnailsScrollProps> = ({ thumb
                 resizeObserver.disconnect();
             };
         }
-    }, [thumbnails]); // Re-run effect if thumbnails change
+    }, [thumbnails, maskImage]); // Re-run effect if thumbnails change
 
 
     return (

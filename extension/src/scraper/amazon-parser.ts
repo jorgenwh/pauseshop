@@ -49,69 +49,6 @@ const extractThumbnailUrlFromHtml = (htmlContent: string): string | null => {
 };
 
 /**
- * Extracts product page URL from HTML content using regex
- */
-const extractProductUrlFromHtml = (
-    htmlContent: string,
-    baseUrl: string,
-): string | null => {
-    try {
-        // Primary patterns for Amazon's main product links (updated for current structure)
-        const primaryPatterns = [
-            // Pattern for links within h2 tags
-            /<h2[^>]*>[\s\S]*?<a[^>]*href="([^"]+)"[^>]*>/i,
-            // Pattern for a-link-normal class links
-            /<a[^>]*class="[^"]*a-link-normal[^"]*"[^>]*href="([^"]+)"/i,
-            // New patterns for current Amazon structure
-            /<a[^>]*class="a-link-normal s-line-clamp-2 s-link-style a-text-normal"[^>]*href="([^"]+)"/i,
-            /<a[^>]*class="a-link-normal s-no-outline"[^>]*href="([^"]+)"/i,
-        ];
-
-        for (const pattern of primaryPatterns) {
-            const match = htmlContent.match(pattern);
-            if (match && match[1]) {
-                let url = match[1];
-                // Handle relative URLs
-                if (url.startsWith("/")) {
-                    url = new URL(url, baseUrl).href;
-                }
-                if (isValidProductUrl(url)) {
-                    return url;
-                }
-            }
-        }
-
-        // Enhanced fallback patterns for any Amazon product link
-        const fallbackPatterns = [
-            /<a[^>]*href="([^"]*\/dp\/[^"]+)"/i,
-            /<a[^>]*href="([^"]*\/gp\/product\/[^"]+)"/i,
-            /<a[^>]*href="([^"]*\/sspa\/click[^"]*\/dp\/[^"]+)"/i,
-            // Pattern for sponsored product links
-            /<a[^>]*href="([^"]*\/sspa\/click[^"]+)"/i,
-        ];
-
-        for (const pattern of fallbackPatterns) {
-            const match = htmlContent.match(pattern);
-            if (match && match[1]) {
-                let url = match[1];
-                // Handle relative URLs
-                if (url.startsWith("/")) {
-                    url = new URL(url, baseUrl).href;
-                }
-                if (isValidProductUrl(url)) {
-                    return url;
-                }
-            }
-        }
-
-        return null;
-    } catch (error) {
-        console.warn("Error extracting product URL:", error);
-        return null;
-    }
-};
-
-/**
  * Validates if a URL is a valid image URL
  */
 const isValidImageUrl = (url: string): boolean => {
@@ -135,27 +72,6 @@ const isValidImageUrl = (url: string): boolean => {
         url.includes(".png") ||
         url.includes(".webp")
     );
-};
-
-/**
- * Validates if a URL is a valid Amazon product URL
- */
-const isValidProductUrl = (url: string): boolean => {
-    if (!url || url.length === 0) return false;
-
-    try {
-        const urlObj = new URL(url);
-        const isAmazonDomain = urlObj.hostname.includes("amazon");
-
-        // Check for various Amazon product URL patterns
-        const hasProductPath =
-            url.includes("/dp/") ||
-            url.includes("/gp/product/");
-
-        return isAmazonDomain && hasProductPath;
-    } catch {
-        return false;
-    }
 };
 
 /**
@@ -234,7 +150,7 @@ const parseAmazonSearchHtml = (
         // Updated patterns to handle both old and new Amazon HTML structures
         const searchResultPatterns = [
             // New Amazon structure: data-asin comes BEFORE data-component-type
-            /<div[^>]*data-asin="([^"]+)"[^>]*data-component-type="s-search-result"[^>]*>([\s\S]*?)(?=<div[^>]*role="listitem"[^>]*data-asin=|$)/gi,
+            /<div[^>]*data-asin="([^"]+)"[^>]*data-component-type="s-search-result"[^>]*>([\s\S]*?)(?=<div[^>]*role="listitem"|$)/gi,
             // Old Amazon structure: data-component-type comes BEFORE data-asin
             /<div[^>]*data-component-type="s-search-result"[^>]*data-asin="([^"]+)"[^>]*>([\s\S]*?)(?=<div[^>]*data-component-type="s-search-result"|$)/gi,
         ];
@@ -308,9 +224,6 @@ const parseAmazonSearchHtml = (
                         position++;
                     }
                 }
-
-                // If we found products with this pattern, no need to try others
-                if (scrapedProducts.length > 0) break;
             }
         }
 
