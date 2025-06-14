@@ -2,6 +2,7 @@ import "../../global.css";
 import "../styles.css";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
+import { AmazonScrapedProduct } from "../../types/amazon";
 
 import { ProductStorage, SidebarContentState } from "../types";
 import {
@@ -23,6 +24,9 @@ interface SidebarProps {
     productStorage: ProductStorage;
     onShow: () => void;
     onHide: () => void;
+    onContentStateChange: (state: SidebarContentState) => void;
+    onError: (error: Error) => void;
+    onProductClick: (product: AmazonScrapedProduct) => void;
     onToggleCompact: () => void;
 }
 
