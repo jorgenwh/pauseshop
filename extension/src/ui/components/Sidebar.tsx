@@ -1,13 +1,12 @@
 import "../../global.css";
 import "../styles.css";
 import { useState, useEffect } from "react";
-import { motion } from "motion/react";
+import { motion, AnimatePresence } from "motion/react";
 
-import { ProductStorage, SidebarContentState, SidebarState } from "../types";
+import { ProductStorage, SidebarContentState } from "../types";
 import { AmazonScrapedProduct } from "../../types/amazon";
 import {
     COMPACT_SIDEBAR_WIDTH,
-    SIDEBAR_SLIDE_DURATION,
     SIDEBAR_WIDTH,
     SIDEBAR_HEADER_HEIGHT,
 } from "../constants";
@@ -42,9 +41,6 @@ const Sidebar = ({
     // onContentStateChange,
     onToggleCompact,
 }: SidebarProps) => {
-    const [sidebarState, setSidebarState] = useState<SidebarState>(
-        SidebarState.HIDDEN,
-    );
     const [currentCompact, setCurrentCompact] = useState<boolean>(compact);
     const [lastUserSelectedCompactState, setLastUserSelectedCompactState] =
         useState<boolean>(compact); // Store the last user-selected compact state
@@ -60,7 +56,7 @@ const Sidebar = ({
         );
         document.documentElement.style.setProperty(
             "--sidebar-transition-speed",
-            `${SIDEBAR_SLIDE_DURATION}s`,
+            `0s`, // Set transition speed to 0 for snapping
         );
     }, []); // Run once on mount
 
@@ -82,31 +78,11 @@ const Sidebar = ({
 
     useEffect(() => {
         if (isVisible) {
-            if (
-                sidebarState === SidebarState.HIDDEN ||
-                sidebarState === SidebarState.SLIDING_OUT
-            ) {
-                setSidebarState(SidebarState.SLIDING_IN);
-                const timer = setTimeout(() => {
-                    setSidebarState(SidebarState.VISIBLE);
-                    onShow();
-                }, SIDEBAR_SLIDE_DURATION * 1000); // Convert seconds to milliseconds
-                return () => clearTimeout(timer);
-            }
+            onShow();
         } else {
-            if (
-                sidebarState === SidebarState.VISIBLE ||
-                sidebarState === SidebarState.SLIDING_IN
-            ) {
-                setSidebarState(SidebarState.SLIDING_OUT);
-                const timer = setTimeout(() => {
-                    setSidebarState(SidebarState.HIDDEN);
-                    onHide();
-                }, SIDEBAR_SLIDE_DURATION * 1000); // Convert seconds to milliseconds
-                return () => clearTimeout(timer);
-            }
+            onHide();
         }
-    }, [isVisible, sidebarState, onShow, onHide]);
+    }, [isVisible, onShow, onHide]);
 
     const toggleCompactMode = () => {
         onToggleCompact();
@@ -116,10 +92,7 @@ const Sidebar = ({
         const currentWidth = currentCompact
             ? COMPACT_SIDEBAR_WIDTH
             : SIDEBAR_WIDTH;
-        if (
-            sidebarState === SidebarState.HIDDEN ||
-            sidebarState === SidebarState.SLIDING_OUT
-        ) {
+        if (!isVisible) {
             // Adjust translation to account for the 20px floating offset and 35px button protrusion (increased to 60px for complete hiding)
             return position === "right"
                 ? `translateX(${currentWidth + 60}px)`
@@ -128,53 +101,63 @@ const Sidebar = ({
         return `translateX(0)`;
     };
 
-    const getCompactHeight = () => {
-        if (!currentCompact) {
-            return {}; // Don't apply height styles if not compact
-        }
-
-        const iconCount = countUniqueIcons(productStorage);
-        if (contentState === SidebarContentState.LOADING || iconCount === 0) {
-            return { maxHeight: "200px" };
-        }
-
-        // Calculate height: Header + (Icon Height + Gap) * Num Icons + Bottom Padding
-        const newHeight = SIDEBAR_HEADER_HEIGHT + iconCount * (35 + 15) + 20;
-        return { maxHeight: `${newHeight}px` };
-    };
+    const iconCount = countUniqueIcons(productStorage);
+    const calculatedContentCompactHeight =
+        SIDEBAR_HEADER_HEIGHT + iconCount * (35 + 15) + 20;
 
     return (
-        <motion.div
-            id="pauseshop-sidebar"
-            className={`pauseshop-sidebar ${currentCompact ? "pauseshop-sidebar-compact" : ""} position-${position}`}
-            style={{
-                transform: getSidebarTransform(),
-                pointerEvents:
-                    sidebarState === SidebarState.HIDDEN ? "none" : "auto",
-                ...getCompactHeight(),
-            }}
-            animate={currentCompact ? "hidden" : "visible"}
-        >
-            <SidebarHeader
-                compact={currentCompact}
-                position={position}
-                onToggleCompact={toggleCompactMode}
-                isLoading={contentState === SidebarContentState.LOADING}
-            />
-            {currentCompact ? (
-                <CompactSidebarContent
-                    productStorage={productStorage}
-                    isLoading={contentState === SidebarContentState.LOADING}
-                />
-            ) : (
-                <ExpandedSidebarContent
-                    contentState={contentState}
-                    productStorage={productStorage}
-                />
+        <AnimatePresence mode="sync">
+            {isVisible && (
+                <motion.div
+                    key={currentCompact ? "compact-sidebar" : "expanded-sidebar"}
+                    id="pauseshop-sidebar"
+                    className={`pauseshop-sidebar ${currentCompact ? "pauseshop-sidebar-compact" : ""} position-${position}`}
+                    initial={{ opacity: 0, scale: 0 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0 }}
+                    transition={{
+                        type: "spring",
+                        stiffness: 600,
+                        mass: .5,
+                        damping: 35,
+                        bounce: 0.4,
+                        duration: 0.1,
+                    }}
+                    style={{
+                        transform: getSidebarTransform(),
+                        pointerEvents: isVisible ? "auto" : "none",
+                        maxHeight: !currentCompact
+                            ? "100vh"
+                            : contentState === SidebarContentState.LOADING
+                                ? "200px"
+                                : `${calculatedContentCompactHeight}px`,
+                    }}
+                >
+                    <SidebarHeader
+                        compact={currentCompact}
+                        position={position}
+                        onToggleCompact={toggleCompactMode}
+                        isLoading={contentState === SidebarContentState.LOADING}
+                    />
+                    {currentCompact ? (
+                        <CompactSidebarContent
+                            productStorage={productStorage}
+                            isLoading={contentState === SidebarContentState.LOADING}
+                        />
+                    ) : (
+                        <ExpandedSidebarContent
+                            contentState={contentState}
+                            productStorage={productStorage}
+                        />
+                    )}
+                    <SidebarFooter />
+                </motion.div>
             )}
-            <SidebarFooter />
-        </motion.div>
+        </AnimatePresence>
     );
 };
 
 export default Sidebar;
+
+
+

@@ -40,6 +40,12 @@
     padding: .25rem;
 }
 
+.pauseshop-product-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.5);
+    border-color: var(--pauseshop-theme-trim-color);
+}
+
 /* Product List Styles */
 .pauseshop-product-list {
     padding: 1rem;
@@ -85,15 +91,11 @@
     position: fixed;
     top: 80px;
     width: var(--sidebar-width);
-    height: auto;
-    max-height: 80vh;
+    height: auto; /* Keep auto height for natural content flow */
     z-index: 99999;
     transition:
-        transform var(--sidebar-transition-speed) ease-in-out,
-        width var(--sidebar-transition-speed) ease-in-out,
         left var(--sidebar-transition-speed) ease-in-out,
-        right var(--sidebar-transition-speed) ease-in-out,
-        max-height var(--sidebar-transition-speed) ease-in-out;
+        right var(--sidebar-transition-speed) ease-in-out; /* Remove max-height from CSS transition */
     pointer-events: all;
     background-color: var(--pauseshop-bg);
     overflow: visible;
@@ -101,7 +103,6 @@
 
 .pauseshop-sidebar.pauseshop-sidebar-compact {
     width: var(--sidebar-compact-width);
-    max-height: 70px;
 }
 
 .pauseshop-sidebar.position-left {
@@ -191,7 +192,6 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.2s ease-in-out;
 }
 
 .pauseshop-sidebar-toggle-button:hover {
