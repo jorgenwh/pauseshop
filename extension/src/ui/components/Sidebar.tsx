@@ -7,7 +7,7 @@ import { ProductStorage, SidebarContentState } from "../types";
 import { AmazonScrapedProduct } from "../../types/amazon";
 import {
     COMPACT_SIDEBAR_WIDTH,
-    SIDEBAR_WIDTH,
+    EXPANDED_SIDEBAR_WIDTH,
     SIDEBAR_HEADER_HEIGHT,
 } from "../constants";
 import SidebarHeader from "./SidebarHeader";
@@ -48,7 +48,7 @@ const Sidebar = ({
     useEffect(() => {
         document.documentElement.style.setProperty(
             "--sidebar-width",
-            `${SIDEBAR_WIDTH}px`,
+            `${EXPANDED_SIDEBAR_WIDTH}px`,
         );
         document.documentElement.style.setProperty(
             "--sidebar-compact-width",
@@ -91,7 +91,7 @@ const Sidebar = ({
     const getSidebarTransform = () => {
         const currentWidth = currentCompact
             ? COMPACT_SIDEBAR_WIDTH
-            : SIDEBAR_WIDTH;
+            : EXPANDED_SIDEBAR_WIDTH;
         if (!isVisible) {
             // Adjust translation to account for the 20px floating offset and 35px button protrusion (increased to 60px for complete hiding)
             return position === "right"
