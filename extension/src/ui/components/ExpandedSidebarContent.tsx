@@ -43,18 +43,32 @@ const ExpandedSidebarContent = ({contentState, productStorage, expandedIconCateg
                     initial="hidden"
                     animate="visible"
                 >
-                    {productStorage.productGroups.map((group) => (
-                        <motion.div
-                            key={group.product.name}
-                            variants={cardVariants}
-                        >
-                            <ProductGroupCard
-                                groupName={group.product.name}
-                                thumbnails={group.scrapedProducts}
-                                initialExpanded={expandedIconCategory === group.product.iconCategory}
-                            />
-                        </motion.div>
-                    ))}
+                    {productStorage.productGroups
+                        .slice() // Create a shallow copy to avoid mutating the original prop
+                        .sort((a, b) => {
+                            const aMatches = expandedIconCategory === a.product.iconCategory;
+                            const bMatches = expandedIconCategory === b.product.iconCategory;
+
+                            if (aMatches && !bMatches) {
+                                return -1; // a comes before b
+                            }
+                            if (!aMatches && bMatches) {
+                                return 1; // b comes before a
+                            }
+                            return 0; // Preserve original order if both match or both don't match
+                        })
+                        .map((group) => (
+                            <motion.div
+                                key={group.product.name}
+                                variants={cardVariants}
+                            >
+                                <ProductGroupCard
+                                    groupName={group.product.name}
+                                    thumbnails={group.scrapedProducts}
+                                    initialExpanded={expandedIconCategory === group.product.iconCategory}
+                                />
+                            </motion.div>
+                        ))}
                 </motion.div>
             )}
             {contentState === SidebarContentState.NO_PRODUCTS && (
