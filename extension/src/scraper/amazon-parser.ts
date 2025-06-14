@@ -150,13 +150,23 @@ const isValidProductUrl = (url: string): boolean => {
         // Check for various Amazon product URL patterns
         const hasProductPath =
             url.includes("/dp/") ||
-            url.includes("/gp/product/") ||
-            url.includes("/sspa/click"); // Sponsored product links
+            url.includes("/gp/product/");
 
         return isAmazonDomain && hasProductPath;
     } catch {
         return false;
     }
+};
+
+/**
+ * Constructs a canonical Amazon product URL using the ASIN.
+ */
+const constructAmazonProductUrl = (asin: string, baseUrl: string): string => {
+    // Extract the domain from the baseUrl (e.g., "https://www.amazon.com")
+    const urlObj = new URL(baseUrl);
+    const origin = urlObj.origin;
+    // Construct the canonical URL using the ASIN
+    return `${origin}/dp/${asin}`;
 };
 
 /**
@@ -173,20 +183,24 @@ const extractProductDataFromHtml = (
 
         // Extract core data using regex patterns
         const thumbnailUrl = extractThumbnailUrlFromHtml(htmlContent);
-        const productUrl = extractProductUrlFromHtml(htmlContent, baseUrl);
+        // Prioritize constructing a stable product URL using the ASIN
+        const productUrl = constructAmazonProductUrl(asin, baseUrl);
+        // Fallback to extracted URL if ASIN-based construction is not desired or fails
+        // (though with this approach, the ASIN-based URL is robust)
+        // const scrapedProductUrl = extractProductUrlFromHtml(htmlContent, baseUrl);
+        // const finalProductUrl = scrapedProductUrl && isValidProductUrl(scrapedProductUrl) ? scrapedProductUrl : productUrl;
 
         if (!thumbnailUrl) {
             return null;
         }
-        if (!productUrl) {
+        if (!thumbnailUrl) {
             return null;
         }
         if (thumbnailUrl && !isValidImageUrl(thumbnailUrl)) {
             return null;
         }
-        if (!isValidProductUrl(productUrl)) {
-            return null;
-        }
+        // No need to validate productUrl here as it's constructed from ASIN, which is assumed valid.
+        // It's already the stable URL.
 
         const productData = {
             id,
