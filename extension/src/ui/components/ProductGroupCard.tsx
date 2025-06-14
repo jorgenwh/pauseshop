@@ -1,7 +1,14 @@
 import React, { useState } from "react";
 import { motion } from "motion/react";
+import ProductThumbnailsScroll from "./ProductThumbnailsScroll";
+import { AmazonScrapedProduct } from "../../types/amazon";
 
-const ProductGroupCard: React.FC<{ groupName: string; }> = ({ groupName }) => {
+interface ProductGroupCardProps {
+    groupName: string;
+    thumbnails: AmazonScrapedProduct[];
+}
+
+const ProductGroupCard: React.FC<ProductGroupCardProps> = ({ groupName, thumbnails }) => {
     const [isExpanded, setIsExpanded] = useState(false);
 
     const toggleExpand = () => {
@@ -33,7 +40,7 @@ const ProductGroupCard: React.FC<{ groupName: string; }> = ({ groupName }) => {
             {/* Collapsible Content */}
             {isExpanded && (
                 <div className="pauseshop-product-card-content"> {}
-                    <p className="pauseshop-product-card-text">Mock content for thumbnails section.</p>
+                    <ProductThumbnailsScroll thumbnails={thumbnails} />
                 </div>
             )}
         </motion.div>

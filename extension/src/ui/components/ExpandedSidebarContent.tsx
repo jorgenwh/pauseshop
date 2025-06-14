@@ -47,7 +47,7 @@ const ExpandedSidebarContent = ({contentState, productStorage }: ExpandedSidebar
                             key={group.product.name}
                             variants={cardVariants}
                         >
-                            <ProductGroupCard groupName={group.product.name} />
+                            <ProductGroupCard groupName={group.product.name} thumbnails={group.scrapedProducts} />
                         </motion.div>
                     ))}
                 </motion.div>

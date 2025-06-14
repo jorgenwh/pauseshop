@@ -8,7 +8,7 @@ import {
     useMotionValueEvent,
     useScroll,
 } from "motion/react"
-import { useRef } from "react"
+import { useRef, useEffect } from "react"
 import { AmazonScrapedProduct } from "../../types/amazon";
 
 // Utility function to generate the mask image for overflow scrolling
@@ -54,49 +54,65 @@ interface ProductThumbnailsScrollProps {
 }
 
 const ProductThumbnailsScroll: React.FC<ProductThumbnailsScrollProps> = ({ thumbnails }) => {
-    const ref = useRef(null);
+    const ref = useRef<HTMLUListElement>(null);
     const { scrollXProgress } = useScroll({ container: ref });
     const maskImage = useScrollOverflowMask(scrollXProgress);
 
+    const animatedScrollLeft = useMotionValue(0);
+
+    useEffect(() => {
+        if (ref.current) {
+            animatedScrollLeft.set(ref.current.scrollLeft);
+        }
+    }, [animatedScrollLeft]);
+
+    useMotionValueEvent(animatedScrollLeft, "change", (latest) => {
+        if (ref.current) {
+            if (ref.current.scrollLeft !== latest) {
+                ref.current.scrollLeft = latest;
+            }
+        }
+    });
+
     return (
-        <div className="pauseshop-thumbnails-scroll-container px-2">
+        <div className="pauseshop-thumbnails-scroll-container">
             <motion.ul
                 ref={ref}
                 style={{ maskImage }}
-                className="flex list-none p-0 m-0 overflow-x-scroll gap-4"
+                className="pauseshop-thumbnails-list"
+                onWheel={(e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    if (ref.current) {
+                        const currentScrollPos = ref.current.scrollLeft;
+                        const newTargetScrollPos = currentScrollPos + e.deltaY;
+                        animate(animatedScrollLeft, newTargetScrollPos, { type: "spring", stiffness: 200, damping: 30, mass: 1 });
+                    }
+                }}
+                onMouseEnter={() => {
+                    document.body.style.overflow = 'hidden';
+                }}
+                onMouseLeave={() => {
+                    document.body.style.overflow = '';
+                }}
             >
                 {thumbnails.map((thumb, index) => (
-                    <li key={thumb.id || index} className="shrink-0">
+                    <li key={thumb.id || index} className="pauseshop-thumbnail-list-item">
                         <a href={thumb.productUrl} target="_blank" rel="noopener noreferrer">
                             <img
                                 src={thumb.thumbnailUrl}
                                 alt={`Product thumbnail ${index + 1}`}
-                                className="w-24 h-24 object-cover rounded-md"
+                                className="pauseshop-thumbnail-image"
                             />
                         </a>
                     </li>
                 ))}
             </motion.ul>
-            {/* Styles for the scroll container */}
-            <style>{`
-                .pauseshop-thumbnails-scroll-container ul::-webkit-scrollbar {
-                    height: 5px;
-                    width: 5px;
-                    background: rgba(255, 255, 255, 0.1);
-                    border-radius: 1ex;
-                }
-
-                .pauseshop-thumbnails-scroll-container ul::-webkit-scrollbar-thumb {
-                    background: var(--pauseshop-theme-trim-color); /* Using PauseShop theme trim color */
-                    border-radius: 1ex;
-                }
-
-                .pauseshop-thumbnails-scroll-container ul::-webkit-scrollbar-corner {
-                    background: rgba(255, 255, 255, 0.1);
-                }
-            `}</style>
         </div>
     );
 };
 
 export default ProductThumbnailsScroll;
+
+
+
