@@ -49,69 +49,6 @@ const extractThumbnailUrlFromHtml = (htmlContent: string): string | null => {
 };
 
 /**
- * Extracts product page URL from HTML content using regex
- */
-const extractProductUrlFromHtml = (
-    htmlContent: string,
-    baseUrl: string,
-): string | null => {
-    try {
-        // Primary patterns for Amazon's main product links (updated for current structure)
-        const primaryPatterns = [
-            // Pattern for links within h2 tags
-            /<h2[^>]*>[\s\S]*?<a[^>]*href="([^"]+)"[^>]*>/i,
-            // Pattern for a-link-normal class links
-            /<a[^>]*class="[^"]*a-link-normal[^"]*"[^>]*href="([^"]+)"/i,
-            // New patterns for current Amazon structure
-            /<a[^>]*class="a-link-normal s-line-clamp-2 s-link-style a-text-normal"[^>]*href="([^"]+)"/i,
-            /<a[^>]*class="a-link-normal s-no-outline"[^>]*href="([^"]+)"/i,
-        ];
-
-        for (const pattern of primaryPatterns) {
-            const match = htmlContent.match(pattern);
-            if (match && match[1]) {
-                let url = match[1];
-                // Handle relative URLs
-                if (url.startsWith("/")) {
-                    url = new URL(url, baseUrl).href;
-                }
-                if (isValidProductUrl(url)) {
-                    return url;
-                }
-            }
-        }
-
-        // Enhanced fallback patterns for any Amazon product link
-        const fallbackPatterns = [
-            /<a[^>]*href="([^"]*\/dp\/[^"]+)"/i,
-            /<a[^>]*href="([^"]*\/gp\/product\/[^"]+)"/i,
-            /<a[^>]*href="([^"]*\/sspa\/click[^"]*\/dp\/[^"]+)"/i,
-            // Pattern for sponsored product links
-            /<a[^>]*href="([^"]*\/sspa\/click[^"]+)"/i,
-        ];
-
-        for (const pattern of fallbackPatterns) {
-            const match = htmlContent.match(pattern);
-            if (match && match[1]) {
-                let url = match[1];
-                // Handle relative URLs
-                if (url.startsWith("/")) {
-                    url = new URL(url, baseUrl).href;
-                }
-                if (isValidProductUrl(url)) {
-                    return url;
-                }
-            }
-        }
-
-        return null;
-    } catch (error) {
-        console.warn("Error extracting product URL:", error);
-        return null;
-    }
-};
-
-/**
  * Validates if a URL is a valid image URL
  */
 const isValidImageUrl = (url: string): boolean => {
@@ -138,25 +75,14 @@ const isValidImageUrl = (url: string): boolean => {
 };
 
 /**
- * Validates if a URL is a valid Amazon product URL
+ * Constructs a canonical Amazon product URL using the ASIN.
  */
-const isValidProductUrl = (url: string): boolean => {
-    if (!url || url.length === 0) return false;
-
-    try {
-        const urlObj = new URL(url);
-        const isAmazonDomain = urlObj.hostname.includes("amazon");
-
-        // Check for various Amazon product URL patterns
-        const hasProductPath =
-            url.includes("/dp/") ||
-            url.includes("/gp/product/") ||
-            url.includes("/sspa/click"); // Sponsored product links
-
-        return isAmazonDomain && hasProductPath;
-    } catch {
-        return false;
-    }
+const constructAmazonProductUrl = (asin: string, baseUrl: string): string => {
+    // Extract the domain from the baseUrl (e.g., "https://www.amazon.com")
+    const urlObj = new URL(baseUrl);
+    const origin = urlObj.origin;
+    // Construct the canonical URL using the ASIN
+    return `${origin}/dp/${asin}`;
 };
 
 /**
@@ -173,20 +99,24 @@ const extractProductDataFromHtml = (
 
         // Extract core data using regex patterns
         const thumbnailUrl = extractThumbnailUrlFromHtml(htmlContent);
-        const productUrl = extractProductUrlFromHtml(htmlContent, baseUrl);
+        // Prioritize constructing a stable product URL using the ASIN
+        const productUrl = constructAmazonProductUrl(asin, baseUrl);
+        // Fallback to extracted URL if ASIN-based construction is not desired or fails
+        // (though with this approach, the ASIN-based URL is robust)
+        // const scrapedProductUrl = extractProductUrlFromHtml(htmlContent, baseUrl);
+        // const finalProductUrl = scrapedProductUrl && isValidProductUrl(scrapedProductUrl) ? scrapedProductUrl : productUrl;
 
         if (!thumbnailUrl) {
             return null;
         }
-        if (!productUrl) {
+        if (!thumbnailUrl) {
             return null;
         }
         if (thumbnailUrl && !isValidImageUrl(thumbnailUrl)) {
             return null;
         }
-        if (!isValidProductUrl(productUrl)) {
-            return null;
-        }
+        // No need to validate productUrl here as it's constructed from ASIN, which is assumed valid.
+        // It's already the stable URL.
 
         const productData = {
             id,
@@ -220,7 +150,7 @@ const parseAmazonSearchHtml = (
         // Updated patterns to handle both old and new Amazon HTML structures
         const searchResultPatterns = [
             // New Amazon structure: data-asin comes BEFORE data-component-type
-            /<div[^>]*data-asin="([^"]+)"[^>]*data-component-type="s-search-result"[^>]*>([\s\S]*?)(?=<div[^>]*role="listitem"[^>]*data-asin=|$)/gi,
+            /<div[^>]*data-asin="([^"]+)"[^>]*data-component-type="s-search-result"[^>]*>([\s\S]*?)(?=<div[^>]*role="listitem"|$)/gi,
             // Old Amazon structure: data-component-type comes BEFORE data-asin
             /<div[^>]*data-component-type="s-search-result"[^>]*data-asin="([^"]+)"[^>]*>([\s\S]*?)(?=<div[^>]*data-component-type="s-search-result"|$)/gi,
         ];
@@ -294,9 +224,6 @@ const parseAmazonSearchHtml = (
                         position++;
                     }
                 }
-
-                // If we found products with this pattern, no need to try others
-                if (scrapedProducts.length > 0) break;
             }
         }
 

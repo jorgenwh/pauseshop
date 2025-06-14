@@ -27,9 +27,10 @@ const cardVariants = {
 interface ExpandedSidebarContentProps {
     contentState: SidebarContentState;
     productStorage: ProductStorage;
+    expandedIconCategory: string | null;
 }
 
-const ExpandedSidebarContent = ({contentState, productStorage }: ExpandedSidebarContentProps) => {
+const ExpandedSidebarContent = ({contentState, productStorage, expandedIconCategory }: ExpandedSidebarContentProps) => {
     return (
         <div className="pauseshop-expanded-sidebar-content">
             {contentState === SidebarContentState.LOADING && (
@@ -42,14 +43,32 @@ const ExpandedSidebarContent = ({contentState, productStorage }: ExpandedSidebar
                     initial="hidden"
                     animate="visible"
                 >
-                    {productStorage.productGroups.map((group) => (
-                        <motion.div
-                            key={group.product.name}
-                            variants={cardVariants}
-                        >
-                            <ProductGroupCard groupName={group.product.name} />
-                        </motion.div>
-                    ))}
+                    {productStorage.productGroups
+                        .slice() // Create a shallow copy to avoid mutating the original prop
+                        .sort((a, b) => {
+                            const aMatches = expandedIconCategory === a.product.iconCategory;
+                            const bMatches = expandedIconCategory === b.product.iconCategory;
+
+                            if (aMatches && !bMatches) {
+                                return -1; // a comes before b
+                            }
+                            if (!aMatches && bMatches) {
+                                return 1; // b comes before a
+                            }
+                            return 0; // Preserve original order if both match or both don't match
+                        })
+                        .map((group) => (
+                            <motion.div
+                                key={group.product.name}
+                                variants={cardVariants}
+                            >
+                                <ProductGroupCard
+                                    groupName={group.product.name}
+                                    thumbnails={group.scrapedProducts}
+                                    initialExpanded={expandedIconCategory === group.product.iconCategory}
+                                />
+                            </motion.div>
+                        ))}
                 </motion.div>
             )}
             {contentState === SidebarContentState.NO_PRODUCTS && (

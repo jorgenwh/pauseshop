@@ -1,15 +1,31 @@
 import React, { useState } from "react";
+import { motion } from "motion/react";
+import ProductThumbnailsScroll from "./ProductThumbnailsScroll";
+import { AmazonScrapedProduct } from "../../types/amazon";
 
-const ProductGroupCard: React.FC<{ groupName: string; }> = ({ groupName }) => {
-    const [isExpanded, setIsExpanded] = useState(false);
+interface ProductGroupCardProps {
+    groupName: string;
+    thumbnails: AmazonScrapedProduct[];
+    initialExpanded?: boolean;
+}
+
+const ProductGroupCard = ({ groupName, thumbnails, initialExpanded = false }: ProductGroupCardProps) => {
+    const [isExpanded, setIsExpanded] = useState(initialExpanded);
 
     const toggleExpand = () => {
         setIsExpanded(!isExpanded);
     };
 
     return (
-        <div
+        <motion.div
             className={`pauseshop-product-card`}
+            whileHover={{ scale: 1.03 }}
+            transition={{
+                type: "spring",
+                stiffness: 260,
+                damping: 20,
+                bounce: 0.5,
+            }}
         >
             {/* Header */}
             <div
@@ -25,10 +41,10 @@ const ProductGroupCard: React.FC<{ groupName: string; }> = ({ groupName }) => {
             {/* Collapsible Content */}
             {isExpanded && (
                 <div className="pauseshop-product-card-content"> {}
-                    <p className="pauseshop-product-card-text">Mock content for thumbnails section.</p>
+                    <ProductThumbnailsScroll thumbnails={thumbnails} />
                 </div>
             )}
-        </div>
+        </motion.div>
     );
 };
 

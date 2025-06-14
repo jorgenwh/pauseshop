@@ -2,12 +2,12 @@ import "../../global.css";
 import "../styles.css";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
+import { AmazonScrapedProduct } from "../../types/amazon";
 
 import { ProductStorage, SidebarContentState } from "../types";
-import { AmazonScrapedProduct } from "../../types/amazon";
 import {
     COMPACT_SIDEBAR_WIDTH,
-    SIDEBAR_WIDTH,
+    EXPANDED_SIDEBAR_WIDTH,
     SIDEBAR_HEADER_HEIGHT,
 } from "../constants";
 import SidebarHeader from "./SidebarHeader";
@@ -25,8 +25,8 @@ interface SidebarProps {
     onShow: () => void;
     onHide: () => void;
     onContentStateChange: (state: SidebarContentState) => void;
-    onProductClick: (product: AmazonScrapedProduct) => void;
     onError: (error: Error) => void;
+    onProductClick: (product: AmazonScrapedProduct) => void;
     onToggleCompact: () => void;
 }
 
@@ -38,17 +38,17 @@ const Sidebar = ({
     productStorage,
     onShow,
     onHide,
-    // onContentStateChange,
     onToggleCompact,
 }: SidebarProps) => {
     const [currentCompact, setCurrentCompact] = useState<boolean>(compact);
     const [lastUserSelectedCompactState, setLastUserSelectedCompactState] =
         useState<boolean>(compact); // Store the last user-selected compact state
+    const [expandedIconCategory, setExpandedIconCategory] = useState<string | null>(null);
 
     useEffect(() => {
         document.documentElement.style.setProperty(
             "--sidebar-width",
-            `${SIDEBAR_WIDTH}px`,
+            `${EXPANDED_SIDEBAR_WIDTH}px`,
         );
         document.documentElement.style.setProperty(
             "--sidebar-compact-width",
@@ -77,6 +77,11 @@ const Sidebar = ({
     }, [contentState, lastUserSelectedCompactState]);
 
     useEffect(() => {
+        // Reset expandedIconCategory when productStorage changes (new pause session)
+        setExpandedIconCategory(null);
+    }, [productStorage]);
+
+    useEffect(() => {
         if (isVisible) {
             onShow();
         } else {
@@ -86,12 +91,18 @@ const Sidebar = ({
 
     const toggleCompactMode = () => {
         onToggleCompact();
+        setExpandedIconCategory(null); // Reset when toggling via button
+    };
+
+    const handleIconClick = (iconCategory: string) => {
+        setExpandedIconCategory(iconCategory);
+        onToggleCompact();
     };
 
     const getSidebarTransform = () => {
         const currentWidth = currentCompact
             ? COMPACT_SIDEBAR_WIDTH
-            : SIDEBAR_WIDTH;
+            : EXPANDED_SIDEBAR_WIDTH;
         if (!isVisible) {
             // Adjust translation to account for the 20px floating offset and 35px button protrusion (increased to 60px for complete hiding)
             return position === "right"
@@ -143,11 +154,13 @@ const Sidebar = ({
                         <CompactSidebarContent
                             productStorage={productStorage}
                             isLoading={contentState === SidebarContentState.LOADING}
+                            onIconClick={handleIconClick}
                         />
                     ) : (
                         <ExpandedSidebarContent
                             contentState={contentState}
                             productStorage={productStorage}
+                            expandedIconCategory={expandedIconCategory}
                         />
                     )}
                     <SidebarFooter />
@@ -158,6 +171,3 @@ const Sidebar = ({
 };
 
 export default Sidebar;
-
-
-

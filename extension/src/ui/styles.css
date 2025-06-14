@@ -10,6 +10,7 @@
     --sidebar-text-color: var(--pauseshop-white);
     --sidebar-border-color: var(--pauseshop-white);
 
+
     --sidebar-toggle-button-bg: var(--pauseshop-bg);
     --sidebar-toggle-button-border: var(--pauseshop-white);
     --arrow-icon-color: var(--pauseshop-white);
@@ -37,11 +38,10 @@
     background-color: var(--pauseshop-bg);
     border: 1px solid var(--sidebar-border-color);
     margin: 0.25rem;
-    padding: .25rem;
+    padding: .25rem .25rem 0 .25rem;
 }
 
 .pauseshop-product-card:hover {
-    transform: translateY(-2px);
     box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.5);
     border-color: var(--pauseshop-theme-trim-color);
 }
@@ -342,4 +342,53 @@
     align-items: center;
     justify-content: center;
     height: 24px;
+}
+
+
+.pauseshop-thumbnails-scroll-container {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+}
+
+.pauseshop-thumbnails-list {
+    display: flex;
+    gap: 10px;
+    overflow-x: scroll;
+    padding: 4px 0;
+    scroll-snap-type: x mandatory; /* Optional: for snapping behavior */
+
+    /* The mask-image and -webkit-mask-image properties will be applied dynamically via JavaScript */
+    white-space: nowrap; /* Ensures items stay on a single line */
+    scroll-behavior: smooth;
+    /* Webkit scrollbar styles */
+    &::-webkit-scrollbar {
+        height: 6px; /* Make scrollbar thin */
+    }
+    &::-webkit-scrollbar-track {
+        background: transparent; /* Transparent track */
+    }
+    &::-webkit-scrollbar-thumb {
+        background: var(--pauseshop-white); /* Semi-transparent thumb */
+        border-radius: 3px;
+    }
+    &::-webkit-scrollbar-thumb:hover {
+        background: var(--pauseshop-white); /* Slightly more visible on hover */
+    }
+    /* Firefox scrollbar styles */
+    scrollbar-width: thin;
+    scrollbar-color: var(--pauseshop-white);
+}
+
+
+.pauseshop-thumbnail-list-item {
+    scroll-snap-align: start; /* Optional: for snapping behavior */
+    flex-shrink: 0;
+}
+
+.pauseshop-thumbnail-image {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 0.375rem; /* rounded-md */
 }
