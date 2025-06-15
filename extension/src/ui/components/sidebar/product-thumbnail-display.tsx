@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { useRef, useEffect } from "react";
-import { AmazonScrapedProduct } from "../../types/amazon";
+import { AmazonScrapedProduct } from "../../../types/amazon";
 
 interface ProductThumbnailsScrollProps {
     thumbnails: AmazonScrapedProduct[];

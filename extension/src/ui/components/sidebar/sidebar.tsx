@@ -1,20 +1,20 @@
-import "../../global.css";
-import "../styles.css";
+import "../../../global.css";
+import "../../styles.css";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { AmazonScrapedProduct } from "../../types/amazon";
+import { AmazonScrapedProduct } from "../../../types/amazon";
 
-import { ProductStorage, SidebarContentState } from "../types";
+import { ProductStorage, SidebarContentState } from "../../types";
 import {
     COMPACT_SIDEBAR_WIDTH,
     EXPANDED_SIDEBAR_WIDTH,
     SIDEBAR_HEADER_HEIGHT,
-} from "../constants";
-import SidebarHeader from "./SidebarHeader";
-import SidebarFooter from "./SidebarFooter";
-import ExpandedSidebarContent from "./ExpandedSidebarContent";
-import CompactSidebarContent from "./CompactSidebarContent";
-import { countUniqueIcons } from "../utils";
+} from "../../constants";
+import SidebarHeader from "./header";
+import SidebarFooter from "./footer";
+import ExpandedSidebarContent from "./expanded-content";
+import CompactSidebarContent from "./compact-content";
+import { countUniqueIcons } from "../../utils";
 
 interface SidebarProps {
     isVisible: boolean;

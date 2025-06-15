@@ -1,0 +1,22 @@
+@import url("https://fonts.googleapis.com/css2?family=Encode+Sans+SC:wght@100..900&family=Numans&family=Raleway:ital,wght@0,100..900;1,100..900&display=swap");
+
+/* Root Variables for Theming and Spacing */
+:root {
+    /* Theme and Spacing */
+    --pauseshop-bg: rgba(30, 30, 30, 1.0);
+    --pauseshop-theme-trim-color: #30b3a4;
+    --pauseshop-white: rgba(190, 190, 190, 1);
+
+    --sidebar-text-color: var(--pauseshop-white);
+    --sidebar-border-color: var(--pauseshop-white);
+
+    --sidebar-toggle-button-bg: var(--pauseshop-bg);
+    --sidebar-toggle-button-border: var(--pauseshop-white);
+    --arrow-icon-color: var(--pauseshop-white);
+    --toggle-button-size: 25px;
+
+    --spacing-sm: 8px;
+    --spacing-md: 10px;
+    --spacing-lg: 15px;
+    --icon-count-offset: 8px;
+}

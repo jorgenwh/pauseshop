@@ -5,7 +5,7 @@
 
 import React from "react";
 import ReactDOM from "react-dom/client";
-import Sidebar from "./components/Sidebar"; // New React component
+import Sidebar from "./components/sidebar/sidebar";
 import { AmazonScrapedProduct } from "../types/amazon";
 import {
     DEFAULT_SIDEBAR_POSITION,

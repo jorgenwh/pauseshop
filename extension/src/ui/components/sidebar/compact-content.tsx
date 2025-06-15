@@ -1,7 +1,7 @@
 import { motion } from "motion/react";
-import LoadingThreeDotsJumping from "./LoadingThreeDotsJumping";
-import { ProductStorage } from "../types";
-import { getIconCounts, getUniqueIcons } from "../utils";
+import LoadingThreeDotsJumping from "./loading-animation";
+import { ProductStorage } from "../../types";
+import { getIconCounts, getUniqueIcons } from "../../utils";
 
 interface CompactSidebarContentProps {
     productStorage: ProductStorage;

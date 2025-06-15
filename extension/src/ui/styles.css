@@ -1,30 +1,7 @@
-@import url("https://fonts.googleapis.com/css2?family=Encode+Sans+SC:wght@100..900&family=Numans&family=Raleway:ital,wght@0,100..900;1,100..900&display=swap");
-
-/* Root Variables for Theming and Spacing */
-:root {
-    /* Theme and Spacing */
-    --pauseshop-bg: rgba(30, 30, 30, 1.0);
-    --pauseshop-theme-trim-color: #30b3a4;
-    --pauseshop-white: rgba(190, 190, 190, 1);
-
-    --sidebar-text-color: var(--pauseshop-white);
-    --sidebar-border-color: var(--pauseshop-white);
-
-
-    --sidebar-toggle-button-bg: var(--pauseshop-bg);
-    --sidebar-toggle-button-border: var(--pauseshop-white);
-    --arrow-icon-color: var(--pauseshop-white);
-    --toggle-button-size: 25px;
-
-    --spacing-sm: 8px;
-    --spacing-md: 10px;
-    --spacing-lg: 15px;
-    --icon-count-offset: 8px;
-}
+@import "./css/base.css";
 
 /* Apply glassy effects to sidebar */
 .pauseshop-sidebar {
-    /* backdrop-filter: blur(14px); */
     border-radius: 16px;
     border: 1px solid var(--sidebar-border-color);
     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
@@ -91,11 +68,11 @@
     position: fixed;
     top: 80px;
     width: var(--sidebar-width);
-    height: auto; /* Keep auto height for natural content flow */
+    height: auto;
     z-index: 99999;
     transition:
         left var(--sidebar-transition-speed) ease-in-out,
-        right var(--sidebar-transition-speed) ease-in-out; /* Remove max-height from CSS transition */
+        right var(--sidebar-transition-speed) ease-in-out;
     pointer-events: all;
     background-color: var(--pauseshop-bg);
     overflow: visible;
