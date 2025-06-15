@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "../../css/components/sidebar/product-group-card.css";
 import { motion } from "motion/react";
-import ProductThumbnailsScroll from "./product-thumbnail-display";
+import ProductThumbnailCarousel from "./product-thumbnail-carousel";
 import { AmazonScrapedProduct } from "../../../types/amazon";
 
 interface ProductGroupCardProps {
@@ -42,7 +42,7 @@ const ProductGroupCard = ({ groupName, thumbnails, initialExpanded = false }: Pr
             {/* Collapsible Content */}
             {isExpanded && (
                 <div className="pauseshop-product-card-content"> {}
-                    <ProductThumbnailsScroll thumbnails={thumbnails} />
+                    <ProductThumbnailCarousel thumbnails={thumbnails} />
                 </div>
             )}
         </motion.div>
