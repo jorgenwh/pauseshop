@@ -19,7 +19,7 @@ export const handleScreenshotAnalysis = async (
     abortSignal?: AbortSignal,
 ): Promise<ScreenshotResponse> => {
     console.log(`[PauseShop:AnalysisWorkflow] Starting handleScreenshotAnalysis for pauseId: ${pauseId}`);
-    
+
     try {
         // Check if already aborted
         if (abortSignal?.aborted) {

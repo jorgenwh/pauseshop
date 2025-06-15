@@ -58,11 +58,11 @@ chrome.runtime.onMessage.addListener(
 
             // Get the abort signal for this pause
             const abortSignal = cancellationRegistry.getAbortSignal(message.pauseId);
-            
+
             console.log(
                 `[PauseShop:ServiceWorker] Starting screenshot analysis for pauseId: ${message.pauseId}, has abort signal: ${!!abortSignal}`,
             );
-            
+
             handleScreenshotAnalysis(windowId, message.pauseId, abortSignal)
                 .then(safeSendResponse)
                 .catch((error) => {
