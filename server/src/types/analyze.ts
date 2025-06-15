@@ -35,6 +35,7 @@ export interface Product {
     features: string[];
     targetGender: TargetGender;
     searchTerms: string;
+    confidence: number;
 }
 
 export enum TargetGender {

@@ -32,9 +32,10 @@ export class StreamingAnalysisService {
         try {
             await this.provider.analyzeImageStreaming(imageData, {
                 onProduct: (product: Product) => {
-                    const timestamp = new Date().toISOString();
+                    const now = new Date();
+                    const timestamp = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}.${now.getMilliseconds().toString().padStart(3, '0')}`;
                     console.info(
-                        `[${timestamp}] Product found: ${product.name} (category: ${product.category}, icon: ${product.iconCategory})`,
+                        `[${timestamp}] Product found: ${product.name} (category: ${product.category}, icon: ${product.iconCategory}, confidence: ${product.confidence})`,
                     );
                     products.push(product);
                     callbacks.onProduct(product);
