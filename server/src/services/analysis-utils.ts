@@ -22,7 +22,7 @@ export async function loadPrompt(): Promise<string> {
     try {
         const promptPath = resolve(
             __dirname,
-            "../prompts/product-analysis-v2.txt",
+            "../prompts/product-analysis-v3.txt",
         );
         let promptContent = await fs.readFile(promptPath, "utf-8");
 
@@ -81,7 +81,10 @@ function isValidProduct(product: any): boolean {
         Array.isArray(product.secondaryColors) &&
         Array.isArray(product.features) &&
         typeof product.targetGender === "string" &&
-        typeof product.searchTerms === "string"
+        typeof product.searchTerms === "string" &&
+        typeof product.confidence === "number" &&
+        product.confidence >= 1 &&
+        product.confidence <= 10
     );
 }
 
@@ -100,6 +103,7 @@ function sanitizeProduct(product: any): Product {
         features: sanitizeStringArray(product.features, 50, 5),
         targetGender: validateTargetGender(product.targetGender),
         searchTerms: String(product.searchTerms).substring(0, 200).trim(),
+        confidence: Math.max(1, Math.min(10, Math.round(Number(product.confidence) || 6))),
     };
 }
 
