@@ -1,7 +1,8 @@
 import React, { useState } from "react";
+import "../../css/components/sidebar/product-group-card.css";
 import { motion } from "motion/react";
-import ProductThumbnailsScroll from "./ProductThumbnailsScroll";
-import { AmazonScrapedProduct } from "../../types/amazon";
+import ProductThumbnailsScroll from "./product-thumbnail-display";
+import { AmazonScrapedProduct } from "../../../types/amazon";
 
 interface ProductGroupCardProps {
     groupName: string;

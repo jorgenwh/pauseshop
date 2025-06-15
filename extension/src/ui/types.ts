@@ -48,6 +48,7 @@ export interface SidebarEvents {
     onError: (error: Error) => void;
     onToggleCompact: () => void; // New event for toggling compact mode
     onTogglePosition: () => void;
+    onClose: () => void; // New event for closing the UI and stopping background processing
 }
 
 // Message types for communication with the background script

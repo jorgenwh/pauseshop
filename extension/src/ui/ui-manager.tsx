@@ -5,7 +5,7 @@
 
 import React from "react";
 import ReactDOM from "react-dom/client";
-import Sidebar from "./components/Sidebar"; // New React component
+import Sidebar from "./components/sidebar/sidebar";
 import { AmazonScrapedProduct } from "../types/amazon";
 import {
     DEFAULT_SIDEBAR_POSITION,
@@ -85,6 +85,18 @@ export class UIManager {
                     this.sidebarConfig.position === "right" ? "left" : "right";
                 this.renderSidebar();
             },
+            onClose: () => {
+                console.log("Sidebar close requested - cancelling analysis and hiding UI.");
+                // Send message to background script to cancel any ongoing analysis
+                if (this.productStorage.pauseId) {
+                    chrome.runtime.sendMessage({
+                        type: "cancel_analysis",
+                        pauseId: this.productStorage.pauseId
+                    });
+                }
+                // Hide the sidebar
+                this.hideSidebar();
+            },
         };
 
         // Add message listener for background script communication only once
@@ -159,6 +171,7 @@ export class UIManager {
                         onProductClick={this.sidebarEvents.onProductClick}
                         onError={this.sidebarEvents.onError}
                         onToggleCompact={this.sidebarEvents.onToggleCompact}
+                        onClose={this.sidebarEvents.onClose}
                     />
                 </React.StrictMode>,
             );

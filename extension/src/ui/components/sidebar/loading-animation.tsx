@@ -1,3 +1,4 @@
+import "../../css/components/sidebar/loading-animation.css";
 import { motion, Variants } from "motion/react";
 
 const LoadingThreeDotsJumping = () => {

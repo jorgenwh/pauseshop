@@ -1,5 +1,6 @@
 import { motion } from "motion/react";
-import { SIDEBAR_HEADER_HEIGHT, SIDEBAR_HEADER_ICON_SIZE } from "../constants";
+import { SIDEBAR_HEADER_HEIGHT, SIDEBAR_HEADER_HEIGHT_COMPACT, SIDEBAR_HEADER_ICON_SIZE } from "../../constants";
+import "../../css/components/sidebar/header.css";
 
 const textVariants = {
     hidden: { x: -20, opacity: 0 },
@@ -28,6 +29,7 @@ interface SidebarHeaderProps {
     position: "right" | "left";
     onToggleCompact: () => void;
     isLoading: boolean;
+    onClose: () => void;
 }
 
 const SidebarHeader = ({
@@ -35,20 +37,17 @@ const SidebarHeader = ({
     position,
     onToggleCompact,
     isLoading,
+    onClose,
 }: SidebarHeaderProps) => {
-    const getToggleButtonIconClass = () => {
-        if (compact) {
-            return position === "right" ? "arrow-left" : "arrow-right";
-        } else {
-            return position === "right" ? "arrow-right" : "arrow-left";
-        }
+    const getToggleButtonIcon = () => {
+        return compact ? "expand.png" : "collapse.png";
     };
 
     return (
         <div
             className="pauseshop-sidebar-header"
             style={{
-                height: `${SIDEBAR_HEADER_HEIGHT}px`,
+                height: `${compact ? SIDEBAR_HEADER_HEIGHT_COMPACT : SIDEBAR_HEADER_HEIGHT}px`,
             }}
         >
             <img
@@ -63,6 +62,14 @@ const SidebarHeader = ({
             <motion.div
                 className="pauseshop-sidebar-header-title-container"
                 variants={headerContainerVariants}
+                style={{
+                    position: 'absolute',
+                    top: '12px',
+                    left: position === 'right' ? 'auto' : '50%',
+                    right: position === 'right' ? '50%' : 'auto',
+                    transform: position === 'right' ? 'translateX(50%)' : 'translateX(-50%)',
+                    fontSize: '2.5rem'
+                }}
             >
                 <motion.h1
                     className="pauseshop-sidebar-header-title-pause"
@@ -79,6 +86,7 @@ const SidebarHeader = ({
             </motion.div>
             {!isLoading && (
                 <motion.div
+                    className="pauseshop-sidebar-button-container"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{
@@ -92,12 +100,25 @@ const SidebarHeader = ({
                     }}
                 >
                     <button
+                        className="pauseshop-sidebar-close-button"
+                        onClick={onClose}
+                        title="Close PauseShop"
+                    >
+                        <img
+                            src={chrome.runtime.getURL("icons/close.png")}
+                            alt="Close"
+                            className="pauseshop-button-icon"
+                        />
+                    </button>
+                    <button
                         className="pauseshop-sidebar-toggle-button"
                         onClick={onToggleCompact}
                     >
-                        <span
-                            className={`arrow-icon ${getToggleButtonIconClass()}`}
-                        ></span>
+                        <img
+                            src={chrome.runtime.getURL(`icons/${getToggleButtonIcon()}`)}
+                            alt={compact ? "Expand" : "Collapse"}
+                            className="pauseshop-button-icon"
+                        />
                     </button>
                 </motion.div>
             )}

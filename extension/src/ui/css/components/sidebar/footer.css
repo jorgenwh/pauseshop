@@ -1,0 +1,26 @@
+/* Sidebar Footer Styles */
+.pauseshop-sidebar-footer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: var(--spacing-sm);
+    gap: var(--spacing-sm);
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    box-sizing: border-box; /* Include padding in the width calculation */
+}
+
+.pauseshop-sidebar-button {
+    background: none;
+    border: 1px solid var(--sidebar-border-color);
+    border-radius: 4px;
+    cursor: pointer;
+    color: var(--sidebar-text-color);
+    font-size: 0.7rem;
+    padding: 3px 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 24px;
+}

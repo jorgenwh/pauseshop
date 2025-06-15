@@ -1,6 +1,6 @@
 import { motion } from "motion/react";
-import { ProductStorage, SidebarContentState } from "../types";
-import ProductGroupCard from "./ProductGroupCard";
+import { ProductStorage, SidebarContentState } from "../../types";
+import ProductGroupCard from "./product-group-card";
 
 const cardContainerVariants = {
     hidden: { opacity: 0 },
