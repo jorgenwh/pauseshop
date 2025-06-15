@@ -1,0 +1,174 @@
+Analyze this image and identify all visible purchasable products within the video frame or screenshot.
+
+**SCENE CONTEXT ANALYSIS**
+First, analyze the scene type to adjust identification approach:
+- E-commerce/product showcase: Focus on featured products with high confidence
+- Social media/lifestyle: Focus on worn/used items, apply moderate filtering
+- Tutorial/review: Focus on demonstrated products, include tools/equipment
+- Entertainment/casual: Apply stricter relevance filtering, higher confidence thresholds
+
+**PRODUCT ORDERING (VISUAL IMPORTANCE)**
+Return products in the following order of visual importance:
+1. PRIMARY FOCUS: Products that are centrally located, in sharp focus, well-lit, and clearly the main subject
+2. SECONDARY FOCUS: Products that are prominent but slightly off-center or in mid-ground
+3. BACKGROUND/PERIPHERAL: Products that are in background, partially obscured, or less prominent
+
+The JSON array order MUST reflect this visual importance: primary products first, then secondary, then background.
+Contextually related items must appear consecutively in the output array (e.g., items worn by same person, on same desk, or in same set).
+
+**PRODUCT IDENTIFICATION RULES**
+- Each distinct clothing item or accessory must be identified as a SEPARATE product.
+    - Examples:
+        - A blazer and shirt worn together = TWO separate products
+        - A suit jacket and pants = TWO separate products
+        - A dress and shoes = TWO separate products
+        - A watch and bracelet = TWO separate products
+- DO NOT split single items with multiple colors/patterns into separate products. Treat them as ONE product.
+    - Examples:
+        - A single tank top with green accents = ONE product
+        - A single striped shirt = ONE product
+        - A single color-blocked dress = ONE product
+- If multiple identical products are visible (e.g., three people wearing the same uniform), list the product only once.
+
+**CONFIDENCE ASSESSMENT**
+For each product, evaluate confidence (1-10) based on:
+- Visual clarity and focus (2-3 points)
+- Brand/model identifiability (2-3 points)
+- Purchasability likelihood (2-3 points)
+- Search term effectiveness (1-2 points)
+
+Only include products with confidence ≥ 6 unless scene has very few products (< 3 total).
+
+**AMBIGUITY RESOLUTION**
+For items that could be multiple products:
+- Generic containers → Only include if branded or distinctive
+- Multi-functional items → Choose the primary function
+- Sets/collections → List individual items if clearly separable
+- Custom/handmade items → Include only if commercially available equivalents exist
+
+**REQUIRED PRODUCT ATTRIBUTES**
+For each product, provide the following:
+1. Product name/description (include color if visible)
+2. Icon Category (MUST be one of the following: [LIST_OF_CATEGORIES_HERE])
+3. Category (MUST be one of the broad categories: 'clothing', 'electronics', 'furniture', 'accessories', 'footwear', 'home_decor', 'books_media', 'sports_fitness', 'beauty_personal_care', 'kitchen_dining', 'other')
+4. Brand (if visible/identifiable, include confidence level)
+5. Primary color (the main/dominant color using standardized color names)
+6. Secondary colors (if applicable)
+7. Key identifying features (style, material, pattern, etc.)
+8. Target gender/demographic (men, women, unisex, boy, girl)
+9. Optimized search terms for finding this product online
+10. Confidence score (6-10, products below 6 should be excluded)
+
+**JSON OUTPUT FORMAT**
+Format your response as a JSON array of objects with this structure:
+{
+    "products": [
+        {
+            "name": "product name with color",
+            "iconCategory": "icon category",
+            "category": "broad category",
+            "brand": "brand name or unknown",
+            "primaryColor": "main color",
+            "secondaryColors": ["color1", "color2"],
+            "features": ["style", "material", "pattern"],
+            "targetGender": "men" | "women" | "unisex" | "boy" | "girl",
+            "searchTerms": "optimized search terms for finding this product",
+            "confidence": 6-10
+        }
+    ]
+}
+
+**DETAILED GUIDELINES FOR ATTRIBUTES**
+
+**Product Name:** 
+- Max 25 characters. Be concise but descriptive.
+- Only include gender in the product name if there are multiple similar products where one is clearly for men and another for women, to differentiate them (e.g., "men's t-shirt", "women's t-shirt").
+- If only one gender-specific product is found, do not include gender in the name.
+
+**Colors:**
+- Use standardized color names: navy, burgundy, sage, coral, charcoal, cream, etc.
+- For patterns: "striped [colors]", "floral [base color]", "plaid [dominant colors]"
+- For gradients: "[primary] to [secondary] gradient"
+- For metallics: "rose gold", "brushed silver", "antique brass"
+- Always identify and include the primary color of items.
+- Include ALL visible colors in the search terms for multi-colored items.
+
+**Brand Identification:**
+- Look for logos, distinctive design patterns, recognizable silhouettes
+- Include partial brand matches ("appears to be [brand]")
+- Note when style suggests premium vs. budget tier
+- Use "unknown" when brand cannot be determined
+
+**Target Gender:**
+- For clothing: If you see a man wearing clothing, identify it as "men's" clothing.
+- For clothing: If you see a woman wearing clothing, identify it as "women's" clothing.
+- For clothing: If you see a child wearing clothing, identify it as "boy" or "girl" clothing.
+- Only mark as "unisex" if the item is truly gender-neutral.
+
+**Search Terms Strategy:**
+Optimize search terms for different product types:
+- Fashion: "[gender] [color] [type] [style/material]"
+- Electronics: "[brand] [model] [color] [type]" 
+- Home goods: "[material] [color] [type] [style]"
+- Generic items: Use broad, commonly searched terms
+
+Examples: 
+- "men's navy blue cotton shorts"
+- "women's black tank top with green accents"
+- "Apple iPhone red wireless headphones"
+- "wooden white desk lamp modern"
+
+**Product Specificity for Search Terms:**
+- For items where a generic description is useful for consumer search (e.g., clothing, general accessories), provide search terms even if the exact brand or model is unknown.
+- For items where a generic description is not useful for consumer search and requires high specificity for a meaningful result (e.g., specific electronics like laptops, beverages like wine bottles), do your best to determine the exact product type, brand, or model. Only provide search terms if you are highly confident in this specific identification.
+- If confidence is low, provide only very broad, non-specific terms or omit search terms entirely.
+
+**Size and Scale Context:**
+Consider relative sizing in the image:
+- Accessories vs. main clothing items
+- Furniture scale indicators  
+- Electronics size categories (phone vs. tablet vs. laptop)
+This helps with search term accuracy and product categorization.
+
+**Style and Trend Context:**
+Include relevant style descriptors:
+- Current fashion trends ("oversized", "cropped", "high-waisted")
+- Style categories ("minimalist", "bohemian", "athletic", "vintage")
+- Material descriptions ("denim", "leather", "cotton blend")
+
+**INCLUSION CRITERIA (FOCUS ON)**
+- Clothing and accessories (shirts, shoes, jewelry, bags, etc.)
+- Electronics (phones, laptops, headphones, etc.)
+- Furniture and home decor
+- Visible branded items
+- Items that are clearly the focus of the scene
+- Items with clear commercial availability
+
+**EXCLUSION CRITERIA (IGNORE)**
+- Generic backgrounds (walls, floors, ceilings)
+- Text/UI elements
+- Very small or unclear items (< 5% of image area)
+- Items that are clearly not purchasable products
+- Very high-value items like cars or buildings
+- Built-in fixtures (built-in cabinets, permanent installations)
+- Natural elements (plants, unless in decorative pots)
+- Food items (unless packaged/branded products)
+
+**COMMON MISTAKES TO AVOID**
+- Don't split patterned single items into multiple products
+- Don't include non-purchasable items (walls, floors, built-ins)
+- Don't over-specify when generic terms work better for search
+- Don't include items that are clearly props or decorative only
+- Don't include products with confidence below 6
+
+**SELF-VALIDATION CHECKLIST**
+Before finalizing output, verify:
+- Are products ordered by visual importance?
+- Do search terms actually help find the product?
+- Are colors accurate and specific using standardized names?
+- Is each item genuinely purchasable with confidence ≥ 6?
+- Are contextually related items grouped together?
+- Are all required fields properly filled?
+
+**FINAL OUTPUT INSTRUCTION**
+Provide only the JSON response, no additional text.
