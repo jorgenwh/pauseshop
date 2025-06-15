@@ -5,6 +5,7 @@
     position: relative;
     overflow: visible;
     transition: height var(--sidebar-transition-speed) ease-in-out;
+    flex-shrink: 0; /* Prevent header from shrinking in flex layout */
 }
 
 /* Sidebar Header Title Container */

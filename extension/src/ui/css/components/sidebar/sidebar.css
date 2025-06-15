@@ -19,6 +19,11 @@
     width: var(--sidebar-compact-width);
 }
 
+/* Hide overflow only when expanded to enable scrolling */
+.pauseshop-sidebar:not(.pauseshop-sidebar-compact) {
+    overflow: hidden;
+}
+
 .pauseshop-sidebar.position-left {
     left: 20px;
     right: auto;

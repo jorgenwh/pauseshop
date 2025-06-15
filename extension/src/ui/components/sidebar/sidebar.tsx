@@ -141,7 +141,7 @@ const Sidebar = ({
                         transform: getSidebarTransform(),
                         pointerEvents: isVisible ? "auto" : "none",
                         maxHeight: !currentCompact
-                            ? "100vh"
+                            ? "none" // Height controlled by CSS
                             : contentState === SidebarContentState.LOADING
                                 ? "200px"
                                 : `${calculatedContentCompactHeight}px`,
