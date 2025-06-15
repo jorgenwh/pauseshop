@@ -38,7 +38,7 @@ _Disclaimer: We are not responsible for your impulse purchases or explaining to 
 Clone the repository and install all dependencies:
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/jorgenwh/pauseshop
 cd pauseshop
 npm install
 ```
