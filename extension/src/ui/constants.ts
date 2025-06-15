@@ -1,9 +1,9 @@
-export const EXPANDED_SIDEBAR_WIDTH: number = 250;
+export const EXPANDED_SIDEBAR_WIDTH: number = 280;
 export const COMPACT_SIDEBAR_WIDTH: number = 47;
 export const SIDEBAR_SLIDE_DURATION: number = 0.2;
 
-export const SIDEBAR_HEADER_HEIGHT: number = 70;
-export const SIDEBAR_HEADER_HEIGHT_COMPACT: number = 50;
+export const SIDEBAR_HEADER_HEIGHT: number = 35;
+export const SIDEBAR_HEADER_HEIGHT_COMPACT: number = 35;
 export const SIDEBAR_HEADER_ICON_SIZE: number = 30;
 
 export const DEFAULT_SIDEBAR_POSITION = "left";
