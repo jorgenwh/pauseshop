@@ -63,11 +63,6 @@ const SidebarHeader = ({
                 className="pauseshop-sidebar-header-title-container"
                 variants={headerContainerVariants}
                 style={{
-                    position: 'absolute',
-                    top: '12px',
-                    left: position === 'right' ? 'auto' : '50%',
-                    right: position === 'right' ? '50%' : 'auto',
-                    transform: position === 'right' ? 'translateX(50%)' : 'translateX(-50%)',
                     fontSize: '2.5rem'
                 }}
             >
@@ -99,27 +94,55 @@ const SidebarHeader = ({
                         },
                     }}
                 >
-                    <button
-                        className="pauseshop-sidebar-close-button"
-                        onClick={onClose}
-                        title="Close PauseShop"
-                    >
-                        <img
-                            src={chrome.runtime.getURL("icons/close.png")}
-                            alt="Close"
-                            className="pauseshop-button-icon"
-                        />
-                    </button>
-                    <button
-                        className="pauseshop-sidebar-toggle-button"
-                        onClick={onToggleCompact}
-                    >
-                        <img
-                            src={chrome.runtime.getURL(`icons/${getToggleButtonIcon()}`)}
-                            alt={compact ? "Expand" : "Collapse"}
-                            className="pauseshop-button-icon"
-                        />
-                    </button>
+                    {position === "left" ? (
+                        <>
+                            <button
+                                className="pauseshop-sidebar-toggle-button"
+                                onClick={onToggleCompact}
+                            >
+                                <img
+                                    src={chrome.runtime.getURL(`icons/${getToggleButtonIcon()}`)}
+                                    alt={compact ? "Expand" : "Collapse"}
+                                    className="pauseshop-button-icon"
+                                />
+                            </button>
+                            <button
+                                className="pauseshop-sidebar-close-button"
+                                onClick={onClose}
+                                title="Close PauseShop"
+                            >
+                                <img
+                                    src={chrome.runtime.getURL("icons/close.png")}
+                                    alt="Close"
+                                    className="pauseshop-button-icon"
+                                />
+                            </button>
+                        </>
+                    ) : (
+                        <>
+                            <button
+                                className="pauseshop-sidebar-close-button"
+                                onClick={onClose}
+                                title="Close PauseShop"
+                            >
+                                <img
+                                    src={chrome.runtime.getURL("icons/close.png")}
+                                    alt="Close"
+                                    className="pauseshop-button-icon"
+                                />
+                            </button>
+                            <button
+                                className="pauseshop-sidebar-toggle-button"
+                                onClick={onToggleCompact}
+                            >
+                                <img
+                                    src={chrome.runtime.getURL(`icons/${getToggleButtonIcon()}`)}
+                                    alt={compact ? "Expand" : "Collapse"}
+                                    className="pauseshop-button-icon"
+                                />
+                            </button>
+                        </>
+                    )}
                 </motion.div>
             )}
         </div>

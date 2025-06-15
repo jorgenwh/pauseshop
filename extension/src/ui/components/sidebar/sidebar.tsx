@@ -107,10 +107,10 @@ const Sidebar = ({
             ? COMPACT_SIDEBAR_WIDTH
             : EXPANDED_SIDEBAR_WIDTH;
         if (!isVisible) {
-            // Adjust translation to account for the 20px floating offset and 35px button protrusion (increased to 60px for complete hiding)
+            // Adjust translation to account for the 20px floating offset and 75px button protrusion (increased to 100px for complete hiding)
             return position === "right"
-                ? `translateX(${currentWidth + 60}px)`
-                : `translateX(-${currentWidth + 60}px)`;
+                ? `translateX(${currentWidth + 100}px)`
+                : `translateX(-${currentWidth + 100}px)`;
         }
         return `translateX(0)`;
     };
