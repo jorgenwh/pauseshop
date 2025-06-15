@@ -1,4 +1,4 @@
-Analyze this image and identify all visible purchasable products within the video frame or screenshot.
+Analyze this image and identify all visible purchasable products within the video frame of the image.
 
 **SCENE CONTEXT ANALYSIS**
 First, analyze the scene type to adjust identification approach:
@@ -108,14 +108,14 @@ Format your response as a JSON array of objects with this structure:
 **Search Terms Strategy:**
 Optimize search terms for different product types:
 - Fashion: "[gender] [color] [type] [style/material]"
-- Electronics: "[brand] [model] [color] [type]" 
+- Electronics: "[brand] [model] [type]" 
 - Home goods: "[material] [color] [type] [style]"
 - Generic items: Use broad, commonly searched terms
 
 Examples: 
 - "men's navy blue cotton shorts"
 - "women's black tank top with green accents"
-- "Apple iPhone red wireless headphones"
+- "Apple iPhone"
 - "wooden white desk lamp modern"
 
 **Product Specificity for Search Terms:**
