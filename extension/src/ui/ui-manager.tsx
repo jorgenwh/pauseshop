@@ -23,7 +23,8 @@ import {
     AnalysisCompleteMessage,
     AnalysisErrorMessage,
     ProductGroupUpdateMessage,
-    ProductStorage
+    ProductStorage,
+    AnalysisCancelledMessage
 } from "./types";
 
 export class UIManager {
@@ -223,9 +224,17 @@ export class UIManager {
     private handleAnalysisStarted = (
         message: AnalysisStartedMessage,
     ): boolean => {
-        console.info(
-            `Received analysis_started for pauseId: ${message.pauseId}`,
+        console.log(
+            `[PauseShop:UIManager] Received analysis_started message for pauseId: ${message.pauseId}`,
         );
+        // Update the current pauseId when a new analysis starts
+        const previousPauseId = this.productStorage.pauseId;
+        if (previousPauseId && previousPauseId !== message.pauseId) {
+            console.log(
+                `[PauseShop:UIManager] Transitioning pauseId from ${previousPauseId} to ${message.pauseId}`,
+            );
+        }
+        this.productStorage = { pauseId: message.pauseId, productGroups: [] };
         this.sidebarContentState = SidebarContentState.LOADING;
         this.sidebarVisible = true; // Make sure sidebar is visible when analysis starts
         this.renderSidebar();
@@ -235,8 +244,8 @@ export class UIManager {
     private handleAnalysisComplete = (
         message: AnalysisCompleteMessage,
     ): boolean => {
-        console.info(
-            `Received analysis_complete for pauseId: ${message.pauseId}`,
+        console.log(
+            `[PauseShop:UIManager] Received analysis_complete message for pauseId: ${message.pauseId}`,
         );
         // Maybe hide sidebar or change content to "results" state
         // For now, no change needed for completion
@@ -245,7 +254,7 @@ export class UIManager {
 
     private handleAnalysisError = (message: AnalysisErrorMessage): boolean => {
         console.error(
-            `Received analysis_error for pauseId: ${message.pauseId}`,
+            `[PauseShop:UIManager] Received analysis_error message for pauseId: ${message.pauseId}`,
         );
         this.sidebarContentState = SidebarContentState.ERROR;
         this.sidebarVisible = true; // Make sure sidebar is visible to show error
@@ -256,12 +265,16 @@ export class UIManager {
     private handleProductGroupUpdate = (
         message: ProductGroupUpdateMessage,
     ): boolean => {
-        console.info(
-            `Received product_group_update for pauseId: ${message.pauseId} with ${message.scrapedProducts.length} products`,
+        console.log(
+            `[PauseShop:UIManager] Received product_group_update message for pauseId: ${message.pauseId} with ${message.scrapedProducts.length} products`,
         );
 
+        // Ignore updates from old pauseIds
         if (this.productStorage.pauseId !== message.pauseId) {
-            this.productStorage = { pauseId: message.pauseId, productGroups: [] };
+            console.warn(
+                `[PauseShop:UIManager] Ignoring product update from old pauseId: ${message.pauseId} (current pauseId: ${this.productStorage.pauseId})`,
+            );
+            return false;
         }
 
         this.productStorage.productGroups.push({
@@ -273,6 +286,26 @@ export class UIManager {
         this.sidebarVisible = true; // Make sure sidebar is visible to show products
 
         this.renderSidebar();
+        return true;
+    };
+
+    private handleAnalysisCancelled = (
+        message: AnalysisCancelledMessage,
+    ): boolean => {
+        console.log(
+            `[PauseShop:UIManager] Received analysis_cancelled message for pauseId: ${message.pauseId}`,
+        );
+        // Only hide sidebar if this is the current pauseId
+        if (this.productStorage.pauseId === message.pauseId) {
+            console.log(
+                `[PauseShop:UIManager] Hiding sidebar for cancelled pauseId: ${message.pauseId}`,
+            );
+            this.hideSidebar();
+        } else {
+            console.log(
+                `[PauseShop:UIManager] Ignoring cancellation for old pauseId: ${message.pauseId} (current pauseId: ${this.productStorage.pauseId})`,
+            );
+        }
         return true;
     };
 
@@ -298,6 +331,9 @@ export class UIManager {
         case "product_group_update":
             result = this.handleProductGroupUpdate(message);
             break;
+        case "analysis_cancelled":
+            result = this.handleAnalysisCancelled(message);
+            break;
         case "toggleSidebarPosition":
             this.sidebarEvents.onTogglePosition();
             result = true;
@@ -305,7 +341,7 @@ export class UIManager {
         default:
             result = false;
             // Cast message to BackgroundMessage to access 'type' property safely
-            console.warn("UI manager received unhandled background message:", (message as BackgroundMessage).type);
+            console.warn("[PauseShop:UIManager] Received unhandled background message:", (message as BackgroundMessage).type);
         }
         sendResponse(result);
     };
@@ -343,7 +379,7 @@ export class UIManager {
             }
             return null;
         } catch (error) {
-            console.error("PauseShop: Failed to create UI Manager:", error);
+            console.error("[PauseShop:UIManager] Failed to create UI Manager:", error);
             return null;
         }
     }

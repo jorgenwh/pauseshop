@@ -26,6 +26,7 @@ export interface StreamingCallbacks {
 export const analyzeImageStreaming = async (
     imageData: string,
     callbacks: StreamingCallbacks,
+    signal?: AbortSignal,
 ): Promise<void> => {
     const url = `${SERVER_BASE_URL}/analyze/stream`;
 
@@ -35,6 +36,8 @@ export const analyzeImageStreaming = async (
             timestamp: new Date().toISOString(),
         },
     };
+
+    console.log(`[PauseShop:ApiClient] Starting streaming analysis`);
 
     try {
         // Since EventSource only supports GET, we need to use fetch with streaming response
@@ -46,6 +49,7 @@ export const analyzeImageStreaming = async (
                 "Cache-Control": "no-cache",
             },
             body: JSON.stringify(request),
+            signal: signal,
         });
 
         if (!response.ok) {
@@ -64,6 +68,13 @@ export const analyzeImageStreaming = async (
             try {
                 let done = false;
                 do {
+                    // Check if aborted
+                    if (signal?.aborted) {
+                        console.log(`[PauseShop:ApiClient] Streaming aborted - cancelling reader`);
+                        reader.cancel();
+                        throw new DOMException('Operation aborted', 'AbortError');
+                    }
+
                     const { done: currentDone, value } = await reader.read();
                     done = currentDone;
 
@@ -115,7 +126,7 @@ export const analyzeImageStreaming = async (
                                     }
                                 } catch (parseError) {
                                     console.error(
-                                        "[API Client] Error parsing streaming data:",
+                                        "[PauseShop:ApiClient] Error parsing streaming data:",
                                         parseError,
                                         "Data:",
                                         data,
@@ -126,15 +137,25 @@ export const analyzeImageStreaming = async (
                     }
                 } while (!done);
             } catch (error) {
-                console.error("[API Client] Error reading stream:", error);
+                // Re-throw AbortError
+                if (error instanceof Error && error.name === 'AbortError') {
+                    console.warn(`[PauseShop:ApiClient] Stream reading aborted`);
+                    throw error;
+                }
+                console.error("[PauseShop:ApiClient] Error reading stream:", error);
                 callbacks.onError(new Event("stream_error"));
             }
         };
 
-        processStream();
+        await processStream();
     } catch (error) {
+        // Re-throw AbortError to be handled by the caller
+        if (error instanceof Error && error.name === 'AbortError') {
+            console.warn(`[PauseShop:ApiClient] Streaming analysis aborted during initialization`);
+            throw error;
+        }
         console.error(
-            "[API Client] Failed to start streaming analysis:",
+            "[PauseShop:ApiClient] Failed to start streaming analysis:",
             error,
         );
         callbacks.onError(new Event("connection_error"));

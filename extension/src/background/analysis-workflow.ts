@@ -16,9 +16,24 @@ import type { ScreenshotResponse } from "./types";
 export const handleScreenshotAnalysis = async (
     windowId: number,
     pauseId: string,
+    abortSignal?: AbortSignal,
 ): Promise<ScreenshotResponse> => {
+    console.log(`[PauseShop:AnalysisWorkflow] Starting handleScreenshotAnalysis for pauseId: ${pauseId}`);
+    
     try {
+        // Check if already aborted
+        if (abortSignal?.aborted) {
+            console.log(`[PauseShop:AnalysisWorkflow] Already aborted at start for pauseId: ${pauseId}`);
+            throw new DOMException('Operation aborted', 'AbortError');
+        }
+
         const imageData = await captureScreenshot(windowId);
+
+        // Check again after screenshot capture
+        if (abortSignal?.aborted) {
+            console.log(`[PauseShop:AnalysisWorkflow] Aborted after screenshot capture for pauseId: ${pauseId}`);
+            throw new DOMException('Operation aborted', 'AbortError');
+        }
 
         // Track all async operations from onProduct callbacks
         const pendingOperations: Promise<void>[] = [];
@@ -39,29 +54,43 @@ export const handleScreenshotAnalysis = async (
                     })
                     .catch((e) =>
                         console.error(
-                            `[Analysis Workflow] Error sending analysis_started to tab ${tabId}: ${e.message}`,
+                            `[PauseShop:AnalysisWorkflow] Error sending analysis_started to tab ${tabId}: ${e.message}`,
                         ),
                     );
             }
 
             await analyzeImageStreaming(imageData, {
                 onProduct: async (product: Product) => {
+                    // Check if aborted before processing product
+                    if (abortSignal?.aborted) {
+                        console.log(`[PauseShop:AnalysisWorkflow] Product processing aborted for pauseId: ${pauseId}, product: ${product.name}`);
+                        return;
+                    }
+
+                    console.log(`[PauseShop:AnalysisWorkflow] Starting product processing for pauseId: ${pauseId}, product: ${product.name}`);
+
                     // Create a promise for this product's async processing
                     const productProcessingPromise = (async () => {
                         try {
                             const amazonSearch = constructAmazonSearch(product);
                             if (!amazonSearch) {
                                 console.warn(
-                                    "[Analysis Workflow] Failed to construct Amazon search - skipping",
+                                    `[PauseShop:AnalysisWorkflow] Failed to construct Amazon search for pauseId: ${pauseId} - skipping`,
                                 );
                                 return;
                             }
 
+                            // Check if aborted before Amazon search
+                            if (abortSignal?.aborted) {
+                                console.log(`[PauseShop:AnalysisWorkflow] Product processing aborted before Amazon search for pauseId: ${pauseId}`);
+                                return;
+                            }
+
                             const amazonSearchResult =
-                                await executeAmazonSearch(amazonSearch);
+                                await executeAmazonSearch(amazonSearch, abortSignal);
                             if (!amazonSearchResult) {
                                 console.warn(
-                                    "[Analysis Workflow] Failed to construct Amazon search result - skipping",
+                                    `[PauseShop:AnalysisWorkflow] Failed to construct Amazon search result for pauseId: ${pauseId} - skipping`,
                                 );
                                 return;
                             }
@@ -73,7 +102,7 @@ export const handleScreenshotAnalysis = async (
                                 amazonScrapedResult.products.length === 0
                             ) {
                                 console.warn(
-                                    "[Analysis Workflow] Failed to construct Amazon search result - skipping",
+                                    `[PauseShop:AnalysisWorkflow] Failed to construct Amazon search result for pauseId: ${pauseId} - skipping`,
                                 );
                                 return;
                             }
@@ -99,12 +128,12 @@ export const handleScreenshotAnalysis = async (
                                     })
                                     .catch((e) =>
                                         console.error(
-                                            `[Analysis Workflow] Error sending product group update to tab ${tabId}: ${e.message}`,
+                                            `[PauseShop:AnalysisWorkflow] Error sending product group update to tab ${tabId} for pauseId: ${pauseId}: ${e.message}`,
                                         ),
                                     );
                             } else {
                                 console.warn(
-                                    "[Analysis Workflow] Could not find active tab to send product group update.",
+                                    `[PauseShop:AnalysisWorkflow] Could not find active tab to send product group update for pauseId: ${pauseId}`,
                                 );
                             }
                         } catch (error) {
@@ -113,7 +142,7 @@ export const handleScreenshotAnalysis = async (
                                     ? error.message
                                     : "Unknown Amazon search/scraping error";
                             console.error(
-                                `[Analysis Workflow] Amazon search/scraping failed for streamed product: ${errorMessage}`,
+                                `[PauseShop:AnalysisWorkflow] Amazon search/scraping failed for pauseId: ${pauseId}, product: ${product.name}: ${errorMessage}`,
                             );
                         }
                     })();
@@ -125,7 +154,7 @@ export const handleScreenshotAnalysis = async (
                         await Promise.allSettled(pendingOperations);
                     } catch (error) {
                         console.error(
-                            `[Analysis Workflow] Error waiting for product processing: ${error instanceof Error ? error.message : "Unknown error"}`,
+                            `[PauseShop:AnalysisWorkflow] Error waiting for product processing for pauseId: ${pauseId}: ${error instanceof Error ? error.message : "Unknown error"}`,
                         );
                     }
 
@@ -143,7 +172,7 @@ export const handleScreenshotAnalysis = async (
                             })
                             .catch((e) =>
                                 console.error(
-                                    `[Analysis Workflow] Error sending analysis complete to tab ${tabId}: ${e.message}`,
+                                    `[PauseShop:AnalysisWorkflow] Error sending analysis complete to tab ${tabId} for pauseId: ${pauseId}: ${e.message}`,
                                 ),
                             );
                     }
@@ -151,7 +180,7 @@ export const handleScreenshotAnalysis = async (
                 },
                 onError: async (error: Event) => {
                     const errorMessage = `Streaming analysis failed: ${error.type || "Unknown error"}`;
-                    console.error(`[Analysis Workflow] ${errorMessage}`);
+                    console.error(`[PauseShop:AnalysisWorkflow] ${errorMessage} for pauseId: ${pauseId}`);
                     const tabId = (
                         await chrome.tabs.query({
                             active: true,
@@ -167,7 +196,7 @@ export const handleScreenshotAnalysis = async (
                             })
                             .catch((e) =>
                                 console.error(
-                                    `[Analysis Workflow] Error sending analysis error to tab ${tabId}: ${e.message}`,
+                                    `[PauseShop:AnalysisWorkflow] Error sending analysis error to tab ${tabId} for pauseId: ${pauseId}: ${e.message}`,
                                 ),
                             );
                     }
@@ -177,14 +206,38 @@ export const handleScreenshotAnalysis = async (
                         pauseId: pauseId,
                     };
                 },
-            });
+            }, abortSignal);
             return { success: true, pauseId: pauseId };
         } catch (error) {
+            // Handle AbortError
+            if (error instanceof Error && error.name === 'AbortError') {
+                console.warn(`[PauseShop:AnalysisWorkflow] Analysis aborted for pauseId: ${pauseId}`);
+                const tabId = (
+                    await chrome.tabs.query({
+                        active: true,
+                        currentWindow: true,
+                    })
+                )[0]?.id;
+                if (tabId) {
+                    chrome.tabs
+                        .sendMessage(tabId, {
+                            type: "analysis_cancelled",
+                            pauseId: pauseId,
+                        })
+                        .catch((e) =>
+                            console.error(
+                                `[PauseShop:AnalysisWorkflow] Error sending analysis cancelled to tab ${tabId} for pauseId: ${pauseId}: ${e.message}`,
+                            ),
+                        );
+                }
+                throw error; // Re-throw to be caught by service worker
+            }
+
             const errorMessage =
                 error instanceof Error
                     ? error.message
                     : "Failed to start streaming analysis";
-            console.error(`[Analysis Workflow] ${errorMessage}`);
+            console.error(`[PauseShop:AnalysisWorkflow] ${errorMessage} for pauseId: ${pauseId}`);
             const tabId = (
                 await chrome.tabs.query({
                     active: true,
@@ -200,7 +253,7 @@ export const handleScreenshotAnalysis = async (
                     })
                     .catch((e) =>
                         console.error(
-                            `[Analysis Workflow] Error sending analysis error to tab ${tabId}: ${e.message}`,
+                            `[PauseShop:AnalysisWorkflow] Error sending analysis error to tab ${tabId} for pauseId: ${pauseId}: ${e.message}`,
                         ),
                     );
             }
@@ -211,10 +264,15 @@ export const handleScreenshotAnalysis = async (
             };
         }
     } catch (error) {
+        // Re-throw AbortError to be handled by service worker
+        if (error instanceof Error && error.name === 'AbortError') {
+            throw error;
+        }
+        
         const errorMessage =
             error instanceof Error ? error.message : "Unknown error";
         console.error(
-            `[Analysis Workflow] Screenshot workflow failed: ${errorMessage}`,
+            `[PauseShop:AnalysisWorkflow] Screenshot workflow failed for pauseId: ${pauseId}: ${errorMessage}`,
         );
         return { success: false, error: errorMessage, pauseId };
     }

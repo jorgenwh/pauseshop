@@ -4,6 +4,7 @@
  */
 
 import { handleScreenshotAnalysis } from "./analysis-workflow";
+import { cancellationRegistry } from "./cancellation-registry";
 import type { BackgroundMessage, ScreenshotResponse } from "./types";
 
 const activePorts = new Map<number, chrome.runtime.Port>();
@@ -37,34 +38,63 @@ chrome.runtime.onMessage.addListener(
                 // Check for lastError after sending to detect if the receiving end exists
                 if (chrome.runtime.lastError) {
                     console.error(
-                        `[Service Worker] Message port closed, unable to send response: ${chrome.runtime.lastError.message}`,
+                        `[PauseShop:ServiceWorker] Message port closed, unable to send response: ${chrome.runtime.lastError.message}`,
                     );
                 }
             } catch (error) {
                 // Catch any synchronous errors when calling sendResponse
                 console.error(
-                    `[Service Worker] Failed to send response - receiving end may not exist: ${error}`,
+                    `[PauseShop:ServiceWorker] Failed to send response - receiving end may not exist: ${error}`,
                 );
             }
         };
 
         if (message.action === "captureScreenshot") {
             console.log(
-                `[Service Worker] Received screenshot capture request for pauseId: ${message.pauseId || "N/A"}`,
+                `[PauseShop:ServiceWorker] Received screenshot capture request for pauseId: ${message.pauseId || "N/A"}`,
             );
             const windowId =
                 sender.tab?.windowId || chrome.windows.WINDOW_ID_CURRENT;
 
-            handleScreenshotAnalysis(windowId, message.pauseId)
+            // Get the abort signal for this pause
+            const abortSignal = cancellationRegistry.getAbortSignal(message.pauseId);
+            
+            console.log(
+                `[PauseShop:ServiceWorker] Starting screenshot analysis for pauseId: ${message.pauseId}, has abort signal: ${!!abortSignal}`,
+            );
+            
+            handleScreenshotAnalysis(windowId, message.pauseId, abortSignal)
                 .then(safeSendResponse)
                 .catch((error) => {
-                    console.error("Screenshot analysis error:", error);
-                    safeSendResponse({
-                        success: false,
-                        error: error.message || "Unknown error",
-                        pauseId: message.pauseId,
-                    });
+                    // Handle AbortError separately
+                    if (error.name === 'AbortError') {
+                        console.warn(`[PauseShop:ServiceWorker] Analysis cancelled due to AbortError for pauseId: ${message.pauseId}`);
+                        safeSendResponse({
+                            success: false,
+                            error: "Analysis cancelled",
+                            pauseId: message.pauseId,
+                        });
+                    } else {
+                        console.error(`[PauseShop:ServiceWorker] Screenshot analysis error for pauseId: ${message.pauseId}:`, error);
+                        safeSendResponse({
+                            success: false,
+                            error: error.message || "Unknown error",
+                            pauseId: message.pauseId,
+                        });
+                    }
                 });
+        } else if (message.action === "registerPause") {
+            console.log(
+                `[PauseShop:ServiceWorker] Received registerPause message for pauseId: ${message.pauseId}`,
+            );
+            cancellationRegistry.registerPause(message.pauseId);
+            safeSendResponse({ success: true });
+        } else if (message.action === "cancelPause") {
+            console.log(
+                `[PauseShop:ServiceWorker] Received cancelPause message for pauseId: ${message.pauseId}`,
+            );
+            cancellationRegistry.cancelPause(message.pauseId);
+            safeSendResponse({ success: true });
         } else if (message.action === "toggleSidebarPosition") {
             // Find the active tab to send the message to its content script
             chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {

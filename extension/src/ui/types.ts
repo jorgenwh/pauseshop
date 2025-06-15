@@ -74,6 +74,11 @@ export interface AnalysisErrorMessage {
     pauseId: string;
 }
 
+export interface AnalysisCancelledMessage {
+    type: "analysis_cancelled";
+    pauseId: string;
+}
+
 export interface ToggleSidebarPositionMessage {
     type: "toggleSidebarPosition";
 }
@@ -83,4 +88,5 @@ export type BackgroundMessage =
     | ProductGroupUpdateMessage
     | AnalysisCompleteMessage
     | AnalysisErrorMessage
+    | AnalysisCancelledMessage
     | ToggleSidebarPositionMessage;

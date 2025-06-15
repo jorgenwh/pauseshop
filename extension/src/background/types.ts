@@ -17,4 +17,18 @@ export interface ToggleSidebarPositionMessage {
     action: "toggleSidebarPosition";
 }
 
-export type BackgroundMessage = ScreenshotMessage | ToggleSidebarPositionMessage;
+export interface RegisterPauseMessage {
+    action: "registerPause";
+    pauseId: string;
+}
+
+export interface CancelPauseMessage {
+    action: "cancelPause";
+    pauseId: string;
+}
+
+export type BackgroundMessage =
+    | ScreenshotMessage
+    | ToggleSidebarPositionMessage
+    | RegisterPauseMessage
+    | CancelPauseMessage;

@@ -26,6 +26,7 @@ interface QueuedRequest {
     resolve: (result: AmazonSearchResult | null) => void;
     reject: (error: Error) => void;
     retryCount: number;
+    signal?: AbortSignal;
 }
 
 class AmazonHttpClient {
@@ -74,8 +75,13 @@ class AmazonHttpClient {
     private async executeAmazonSearchWithRetry(
         search: AmazonSearch,
         retryCount = 0,
+        signal?: AbortSignal,
     ): Promise<AmazonSearchResult | null> {
         try {
+            // Check if already aborted
+            if (signal?.aborted) {
+                throw new DOMException('Operation aborted', 'AbortError');
+            }
             if (this.activeRequests > 0) {
                 await this.handleRateLimit();
             }
@@ -90,11 +96,16 @@ class AmazonHttpClient {
                 AMAZON_TIMEOUT_MS,
             );
 
+            // Combine timeout signal with provided signal
+            const combinedSignal = signal
+                ? AbortSignal.any([controller.signal, signal])
+                : controller.signal;
+
             try {
                 const response = await fetch(search.searchUrl, {
                     method: "GET",
                     headers,
-                    signal: controller.signal,
+                    signal: combinedSignal,
                 });
 
                 clearTimeout(timeoutId);
@@ -136,6 +147,10 @@ class AmazonHttpClient {
                     fetchError instanceof Error &&
                     fetchError.name === "AbortError"
                 ) {
+                    // Check if it was our timeout or external abort
+                    if (signal?.aborted) {
+                        throw fetchError; // Re-throw external abort
+                    }
                     throw new Error(
                         `Request timeout after ${AMAZON_TIMEOUT_MS}ms`,
                     );
@@ -146,6 +161,11 @@ class AmazonHttpClient {
         } catch (error) {
             const errorMessage =
                 error instanceof Error ? error.message : "Unknown error";
+
+            // Don't retry on abort
+            if (error instanceof Error && error.name === 'AbortError') {
+                throw error;
+            }
 
             // Retry logic
             if (retryCount < AMAZON_MAX_RETRIES) {
@@ -163,6 +183,7 @@ class AmazonHttpClient {
                 return this.executeAmazonSearchWithRetry(
                     search,
                     retryCount + 1,
+                    signal,
                 );
             }
             return null;
@@ -186,6 +207,7 @@ class AmazonHttpClient {
             this.executeAmazonSearchWithRetry(
                 queuedRequest.search,
                 queuedRequest.retryCount,
+                queuedRequest.signal,
             )
                 .then(queuedRequest.resolve)
                 .catch(queuedRequest.reject);
@@ -197,13 +219,21 @@ class AmazonHttpClient {
      */
     async executeAmazonSearch(
         search: AmazonSearch,
+        signal?: AbortSignal,
     ): Promise<AmazonSearchResult | null> {
         return new Promise<AmazonSearchResult | null>((resolve, reject) => {
+            // If already aborted, reject immediately
+            if (signal?.aborted) {
+                reject(new DOMException('Operation aborted', 'AbortError'));
+                return;
+            }
+
             this.requestQueue.push({
                 search,
                 resolve,
                 reject,
                 retryCount: 0,
+                signal,
             });
 
             this.processQueue();
@@ -216,7 +246,8 @@ class AmazonHttpClient {
  */
 export const executeAmazonSearch = async (
     search: AmazonSearch,
+    signal?: AbortSignal,
 ): Promise<AmazonSearchResult | null> => {
     const client = new AmazonHttpClient();
-    return client.executeAmazonSearch(search);
+    return client.executeAmazonSearch(search, signal);
 };
