@@ -28,6 +28,7 @@ interface SidebarProps {
     onError: (error: Error) => void;
     onProductClick: (product: AmazonScrapedProduct) => void;
     onToggleCompact: () => void;
+    onClose: () => void;
 }
 
 const Sidebar = ({
@@ -39,6 +40,7 @@ const Sidebar = ({
     onShow,
     onHide,
     onToggleCompact,
+    onClose,
 }: SidebarProps) => {
     const [currentCompact, setCurrentCompact] = useState<boolean>(compact);
     const [lastUserSelectedCompactState, setLastUserSelectedCompactState] =
@@ -149,6 +151,7 @@ const Sidebar = ({
                         position={position}
                         onToggleCompact={toggleCompactMode}
                         isLoading={contentState === SidebarContentState.LOADING}
+                        onClose={onClose}
                     />
                     {currentCompact ? (
                         <CompactSidebarContent
