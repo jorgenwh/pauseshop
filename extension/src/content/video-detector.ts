@@ -25,6 +25,16 @@ const handlePause =
 
             const newPauseId = Date.now().toString();
             seekingState.currentPauseId = newPauseId;
+            console.log(`[PauseShop:VideoDetector] Pause detected with pauseId: ${newPauseId}`);
+
+            // Register the new pause with the background service worker
+            console.log(`[PauseShop:VideoDetector] Sending registerPause message for pauseId: ${newPauseId}`);
+            chrome.runtime.sendMessage({
+                action: "registerPause",
+                pauseId: newPauseId
+            }).catch((error) => {
+                console.error(`[PauseShop:VideoDetector] Failed to register pause for pauseId: ${newPauseId}`, error);
+            });
 
             if (siteHandlerRegistry.shouldIgnorePause(seekingState)) {
                 return;
@@ -64,6 +74,17 @@ const handlePlay =
     (seekingState: SeekingState) =>
         (_event: Event): void => {
             if (seekingState.currentPauseId !== null) {
+                const pauseIdToCancel = seekingState.currentPauseId;
+                console.log(`[PauseShop:VideoDetector] Play detected, cancelling pauseId: ${pauseIdToCancel}`);
+                
+                // Cancel the current pause analysis
+                console.log(`[PauseShop:VideoDetector] Sending cancelPause message for pauseId: ${pauseIdToCancel}`);
+                chrome.runtime.sendMessage({
+                    action: "cancelPause",
+                    pauseId: pauseIdToCancel
+                }).catch((error) => {
+                    console.error(`[PauseShop:VideoDetector] Failed to cancel pause for pauseId: ${pauseIdToCancel}`, error);
+                });
                 seekingState.currentPauseId = null;
             }
             if (seekingState.pauseDebounceTimeoutId !== null) {
@@ -224,7 +245,7 @@ const scanForVideos = (): HTMLVideoElement | null => {
 
     if (targetVideo) {
         console.log(
-            `[PauseShop Video Detector] Found video element: ${targetVideo}`,
+            `[PauseShop:VideoDetector] Found video element: ${targetVideo}`,
         );
     }
 
