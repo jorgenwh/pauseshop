@@ -1,3 +1,4 @@
+import "../../css/components/sidebar/compact-content.css";
 import { motion } from "motion/react";
 import LoadingThreeDotsJumping from "./loading-animation";
 import { ProductStorage } from "../../types";

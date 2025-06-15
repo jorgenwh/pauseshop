@@ -1,0 +1,148 @@
+/* Sidebar Header Styles */
+.pauseshop-sidebar-header {
+    height: var(--sidebar-header-height);
+    display: flex;
+    align-items: flex-start;
+    position: relative;
+    overflow: visible;
+    padding-top: var(--spacing-sm);
+    transition: height var(--sidebar-transition-speed) ease-in-out;
+}
+
+/* Sidebar Header Title Container */
+.pauseshop-sidebar-header-title-container {
+    color: var(--sidebar-text-color);
+    transition:
+        opacity var(--sidebar-transition-speed) ease-in-out,
+        transform var(--sidebar-transition-speed) ease-in-out;
+    align-self: flex-start; /* Override flex alignment to move to top */
+}
+
+.pauseshop-sidebar.pauseshop-sidebar-compact
+    .pauseshop-sidebar-header-title-container {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.pauseshop-sidebar-header-icon {
+    margin-left: var(--spacing-sm);
+    margin-top: 0;
+}
+
+.pauseshop-sidebar.position-right .pauseshop-sidebar-header-icon {
+    margin-left: auto;
+    margin-right: var(--spacing-sm);
+    margin-top: 0;
+}
+
+.pauseshop-sidebar-header-title-container {
+    position: absolute;
+    left: 50%;
+    top: 3px; /* Move title up more explicitly */
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: row;
+    font-size: 1.2rem;
+    font-family: "Encode Sans SC", sans-serif;
+}
+
+.pauseshop-sidebar.position-right .pauseshop-sidebar-header-title-container {
+    left: auto;
+    right: 50%;
+    top: 3px; /* Move title up more explicitly */
+    transform: translateX(50%);
+}
+
+.pauseshop-sidebar-header-title-pause {
+    font-weight: 900;
+    font-size: 2.25rem;
+    margin: 0; /* Remove default h1 margins */
+    line-height: 1; /* Reduce line height to make it more compact */
+}
+
+.pauseshop-sidebar-header-title-shop {
+    font-weight: 400;
+    font-size: 2.25rem;
+    color: var(--pauseshop-theme-trim-color);
+    margin: 0; /* Remove default h1 margins */
+    line-height: 1; /* Reduce line height to make it more compact */
+}
+
+/* Button Container Styles */
+.pauseshop-sidebar-button-container {
+    position: absolute;
+    top: var(--spacing-sm); /* Revert back to original position */
+    right: var(--spacing-sm);
+    z-index: 100001;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    background-color: var(--sidebar-toggle-button-bg);
+    /* border: 1px solid var(--sidebar-toggle-button-border); */
+    border-radius: 8px;
+    padding: 2px;
+    /* box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); */
+}
+
+.pauseshop-sidebar.position-right .pauseshop-sidebar-button-container {
+    left: var(--spacing-sm);
+    right: auto;
+    top: var(--spacing-sm); /* Revert back to original position */
+}
+
+.pauseshop-sidebar.pauseshop-sidebar-compact .pauseshop-sidebar-button-container {
+    right: -35px; /* Back to original value since we're stacking vertically */
+    background-color: var(--sidebar-toggle-button-bg);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+}
+
+.pauseshop-sidebar.pauseshop-sidebar-compact.position-right
+    .pauseshop-sidebar-button-container {
+    left: -35px; /* Back to original value since we're stacking vertically */
+    right: auto;
+}
+
+/* Sidebar Toggle Button Styles */
+.pauseshop-sidebar-toggle-button {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    color: var(--sidebar-toggle-button-text);
+    width: var(--toggle-button-size);
+    height: var(--toggle-button-size);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease-in-out;
+}
+
+.pauseshop-sidebar-toggle-button:hover {
+    transform: scale(1.2);
+}
+
+/* Sidebar Close Button Styles */
+.pauseshop-sidebar-close-button {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    color: var(--sidebar-toggle-button-text);
+    width: var(--toggle-button-size);
+    height: var(--toggle-button-size);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease-in-out;
+}
+
+.pauseshop-sidebar-close-button:hover {
+    transform: scale(1.2);
+}
+
+
+/* Button Icon Styles */
+.pauseshop-button-icon {
+    width: 20px;
+    height: 20px;
+    filter: invert(0.9); /* Make icons light colored to match theme */
+    transition: transform 0.2s ease-in-out;
+}

@@ -1,5 +1,6 @@
+import "../../css/components/sidebar/sidebar.css";
 import "../../../global.css";
-import "../../styles.css";
+import "../../css/base.css";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { AmazonScrapedProduct } from "../../../types/amazon";

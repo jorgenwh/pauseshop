@@ -1,5 +1,6 @@
 import { motion } from "motion/react";
 import { SIDEBAR_HEADER_HEIGHT, SIDEBAR_HEADER_HEIGHT_COMPACT, SIDEBAR_HEADER_ICON_SIZE } from "../../constants";
+import "../../css/components/sidebar/header.css";
 
 const textVariants = {
     hidden: { x: -20, opacity: 0 },

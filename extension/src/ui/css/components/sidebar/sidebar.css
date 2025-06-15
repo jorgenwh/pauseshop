@@ -1,0 +1,30 @@
+.pauseshop-sidebar {
+    border-radius: 16px;
+    border: 1px solid var(--sidebar-border-color);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    position: fixed;
+    top: 80px;
+    width: var(--sidebar-width);
+    height: auto;
+    z-index: 99999;
+    transition:
+        left var(--sidebar-transition-speed) ease-in-out,
+        right var(--sidebar-transition-speed) ease-in-out;
+    pointer-events: all;
+    background-color: var(--pauseshop-bg);
+    overflow: visible;
+}
+
+.pauseshop-sidebar.pauseshop-sidebar-compact {
+    width: var(--sidebar-compact-width);
+}
+
+.pauseshop-sidebar.position-left {
+    left: 20px;
+    right: auto;
+}
+
+.pauseshop-sidebar.position-right {
+    right: 20px;
+    left: auto;
+}
