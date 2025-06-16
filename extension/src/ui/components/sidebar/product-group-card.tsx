@@ -19,7 +19,7 @@ const ProductGroupCard = ({ groupName, thumbnails, initialExpanded = false }: Pr
 
     return (
         <motion.div
-            className={`product-card`}
+            className="product-card"
             whileHover={{ scale: 1.03 }}
             transition={{
                 type: "spring",
@@ -33,7 +33,7 @@ const ProductGroupCard = ({ groupName, thumbnails, initialExpanded = false }: Pr
                 className="product-card-header"
                 onClick={toggleExpand}
             >
-                <div className="flex items-center">
+                <div className="product-card-header-content">
                     <h3 className="product-card-title">{groupName}</h3>
                 </div>
                 <span className="product-card-arrow">{isExpanded ? "▲" : "▼"}</span>

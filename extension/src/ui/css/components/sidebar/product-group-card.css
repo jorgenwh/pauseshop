@@ -25,6 +25,12 @@
     padding-bottom: calc(0.75rem - 2px);
 }
 
+/* Product Card Header Content Styles */
+.product-card-header-content {
+    display: flex;
+    align-items: center;
+}
+
 /* Product Card Title Styles */
 .product-card-title {
     color: var(--pauseshop-white);
