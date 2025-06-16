@@ -1,16 +1,16 @@
 /* Styles for Compact Sidebar Content */
-.pauseshop-compact-sidebar-content {
+.compact-content {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: calc(var(--spacing-md) + 5px) 0;
-    gap: var(--spacing-lg);
+    padding: calc(10px + 5px) 0;
+    gap: 15px;
     overflow-y: auto;
     flex-grow: 1;
 }
 
-.pauseshop-compact-icon-container {
+.compact-icon-container {
     position: relative;
     width: 27px;
     height: 27px;
@@ -19,28 +19,24 @@
     align-items: center;
 }
 
-.pauseshop-compact-icon-container:hover {
+.compact-icon-container:hover {
     transform: scale(1.1);
 }
 
-.pauseshop-compact-icon {
+.compact-icon {
     width: 100%;
     height: 100%;
     object-fit: contain;
 }
 
-.pauseshop-compact-icon.icon {
+.compact-icon.icon {
     filter: invert(0.9)
 }
 
-.pauseshop-compact-icon-count {
+.compact-icon-count {
     position: absolute;
-    top: calc(
-        -1 * var(--icon-count-offset)
-    );
-    right: calc(
-        -1 * var(--icon-count-offset)
-    );
+    top: -8px;
+    right: -8px;
     background-color: var(--pauseshop-theme-trim-color);
     color: white;
     border-radius: 50%;
@@ -58,10 +54,8 @@
     font-weight: bold;
 }
 
-/* Adjust position of count overlay when sidebar is in right mode */
-.pauseshop-sidebar.position-right
-    .pauseshop-compact-icon-container
-    .pauseshop-compact-icon-count {
+/* Adjust position of count overlay when positioned on right */
+.compact-content.position-right .compact-icon-count {
     left: -3px;
     right: auto;
 }

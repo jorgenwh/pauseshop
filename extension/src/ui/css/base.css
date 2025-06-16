@@ -13,10 +13,4 @@
     --sidebar-toggle-button-bg: var(--pauseshop-bg);
     --sidebar-toggle-button-border: var(--pauseshop-white);
     --arrow-icon-color: var(--pauseshop-white);
-    --toggle-button-size: 25px;
-
-    --spacing-sm: 8px;
-    --spacing-md: 10px;
-    --spacing-lg: 15px;
-    --icon-count-offset: 8px;
 }

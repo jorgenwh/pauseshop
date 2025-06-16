@@ -1,23 +1,25 @@
 import "../../css/components/sidebar/compact-content.css";
 import { motion } from "motion/react";
-import LoadingThreeDotsJumping from "./loading-animation";
+import LoadingAnimation from "./loading-animation";
 import { ProductStorage } from "../../types";
 import { getIconCounts, getUniqueIcons } from "../../utils";
 
-interface CompactSidebarContentProps {
+interface CompactContentProps {
     productStorage: ProductStorage;
     isLoading: boolean;
     onIconClick: (iconCategory: string) => void;
+    position: "right" | "left";
 }
 
-const CompactSidebarContent = ({
+const CompactContent = ({
     productStorage,
     isLoading,
     onIconClick,
-}: CompactSidebarContentProps) => {
+    position,
+}: CompactContentProps) => {
     const buildLoadingContent = () => {
         return (
-            <LoadingThreeDotsJumping />
+            <LoadingAnimation />
         );
     }
 
@@ -32,7 +34,7 @@ const CompactSidebarContent = ({
         return (
             <motion.span
                 key={iconCounts[iconCategory]}
-                className="pauseshop-compact-icon-count"
+                className="compact-icon-count"
                 initial={{ scale: 0, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{
@@ -52,7 +54,7 @@ const CompactSidebarContent = ({
             Array.from(iconCategories.values()).map((iconCategory, index) => (
                 <motion.div
                     key={iconCategory}
-                    className="pauseshop-compact-icon-container"
+                    className="compact-icon-container"
                     initial={{ opacity: 0, scale: 0 }}
                     animate={{ opacity: 1, scale: 1 }}
                     whileHover={{
@@ -75,7 +77,7 @@ const CompactSidebarContent = ({
                             `icons/products/${iconCategory}.png`,
                         )}
                         alt={iconCategory}
-                        className={`pauseshop-compact-icon icon`}
+                        className={`compact-icon icon`}
                     />
                     {buildCategoryCounter(iconCategory)}
                 </motion.div>
@@ -85,14 +87,19 @@ const CompactSidebarContent = ({
 
     const buildNoProductsContent = () => {
         return (
-            <div className="pauseshop-compact-sidebar-content">
+            <div className="compact-content">
                 <p>No products to display.</p>
             </div>
         );
     }
 
+    const compactContentClasses = [
+        "compact-content",
+        `position-${position}`
+    ].join(" ");
+
     return (
-        <div className="pauseshop-compact-sidebar-content">
+        <div className={compactContentClasses}>
             {
                 isLoading ?
                     buildLoadingContent() :
@@ -104,4 +111,4 @@ const CompactSidebarContent = ({
     );
 };
 
-export default CompactSidebarContent;
+export default CompactContent;

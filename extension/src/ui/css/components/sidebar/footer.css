@@ -1,17 +1,17 @@
 /* Sidebar Footer Styles */
-.pauseshop-sidebar-footer {
+.footer {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: var(--spacing-sm);
-    gap: var(--spacing-sm);
+    padding: 8px;
+    gap: 8px;
     position: absolute;
     bottom: 0;
     width: 100%;
     box-sizing: border-box; /* Include padding in the width calculation */
 }
 
-.pauseshop-sidebar-button {
+.footer-button {
     background: none;
     border: 1px solid var(--sidebar-border-color);
     border-radius: 4px;

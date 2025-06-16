@@ -11,10 +11,10 @@ import {
     EXPANDED_SIDEBAR_WIDTH,
     SIDEBAR_HEADER_HEIGHT,
 } from "../../constants";
-import SidebarHeader from "./header";
-import SidebarFooter from "./footer";
-import ExpandedSidebarContent from "./expanded-content";
-import CompactSidebarContent from "./compact-content";
+import Header from "./header";
+import Footer from "./footer";
+import ExpandedContent from "./expanded-content";
+import CompactContent from "./compact-content";
 import { countUniqueIcons } from "../../utils";
 
 interface SidebarProps {
@@ -48,20 +48,6 @@ const Sidebar = ({
         useState<boolean>(compact); // Store the last user-selected compact state
     const [expandedIconCategory, setExpandedIconCategory] = useState<string | null>(null);
 
-    useEffect(() => {
-        document.documentElement.style.setProperty(
-            "--sidebar-width",
-            `${EXPANDED_SIDEBAR_WIDTH}px`,
-        );
-        document.documentElement.style.setProperty(
-            "--sidebar-compact-width",
-            `${COMPACT_SIDEBAR_WIDTH}px`,
-        );
-        document.documentElement.style.setProperty(
-            "--sidebar-transition-speed",
-            `0s`, // Set transition speed to 0 for snapping
-        );
-    }, []); // Run once on mount
 
     useEffect(() => {
         // Update currentCompact when the prop changes, and store it as the last user-selected state
@@ -119,13 +105,19 @@ const Sidebar = ({
     const calculatedContentCompactHeight =
         SIDEBAR_HEADER_HEIGHT + iconCount * (35 + 15) + 20;
 
+    const sidebarClasses = [
+        "sidebar",
+        currentCompact && "compact",
+        `position-${position}`
+    ].filter(Boolean).join(" ");
+
     return (
         <AnimatePresence mode="sync">
             {isVisible && (
                 <motion.div
                     key={currentCompact ? "compact-sidebar" : "expanded-sidebar"}
                     id="pauseshop-sidebar"
-                    className={`pauseshop-sidebar ${currentCompact ? "pauseshop-sidebar-compact" : ""} position-${position}`}
+                    className={sidebarClasses}
                     initial={{ opacity: 0, scale: 0 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0 }}
@@ -147,7 +139,7 @@ const Sidebar = ({
                                 : `${calculatedContentCompactHeight}px`,
                     }}
                 >
-                    <SidebarHeader
+                    <Header
                         compact={currentCompact}
                         position={position}
                         onToggleCompact={toggleCompactMode}
@@ -155,19 +147,20 @@ const Sidebar = ({
                         onClose={onClose}
                     />
                     {currentCompact ? (
-                        <CompactSidebarContent
+                        <CompactContent
                             productStorage={productStorage}
                             isLoading={contentState === SidebarContentState.LOADING}
                             onIconClick={handleIconClick}
+                            position={position}
                         />
                     ) : (
-                        <ExpandedSidebarContent
+                        <ExpandedContent
                             contentState={contentState}
                             productStorage={productStorage}
                             expandedIconCategory={expandedIconCategory}
                         />
                     )}
-                    <SidebarFooter />
+                    <Footer />
                 </motion.div>
             )}
         </AnimatePresence>

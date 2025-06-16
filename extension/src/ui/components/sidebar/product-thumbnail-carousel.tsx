@@ -16,8 +16,8 @@ const ProductThumbnailCarousel = ({ thumbnails }: ProductThumbnailCarouselProps)
     // Handle empty thumbnails array
     if (!thumbnails || thumbnails.length === 0) {
         return (
-            <div className="pauseshop-carousel-container">
-                <div className="pauseshop-carousel-empty">
+            <div className="carousel-container">
+                <div className="carousel-empty">
                     No products available
                 </div>
             </div>
@@ -28,13 +28,13 @@ const ProductThumbnailCarousel = ({ thumbnails }: ProductThumbnailCarouselProps)
     if (thumbnails.length === 1) {
         const thumbnail = thumbnails[0];
         return (
-            <div className="pauseshop-carousel-container">
-                <div className="pauseshop-carousel-single">
+            <div className="carousel-container">
+                <div className="carousel-single">
                     <a href={thumbnail.productUrl} target="_blank" rel="noopener noreferrer">
                         <img
                             src={thumbnail.thumbnailUrl}
                             alt="Product thumbnail"
-                            className="pauseshop-carousel-image"
+                            className="carousel-image"
                         />
                     </a>
                 </div>
@@ -55,12 +55,12 @@ const ProductThumbnailCarousel = ({ thumbnails }: ProductThumbnailCarouselProps)
     const isLastItem = selectedIndex === thumbnails.length - 1;
 
     return (
-        <div className="pauseshop-carousel-container">
+        <div className="carousel-container">
             <AnimatePresence>
                 {!isFirstItem && (
                     <motion.button
                         key="prev-button"
-                        className="pauseshop-carousel-button pauseshop-carousel-button-prev"
+                        className="carousel-button carousel-button-prev"
                         aria-label="Previous product"
                         onClick={() => navigate(-1)}
                         whileFocus={{ outline: "2px solid var(--pauseshop-theme-trim-color)" }}
@@ -79,7 +79,7 @@ const ProductThumbnailCarousel = ({ thumbnails }: ProductThumbnailCarouselProps)
                 )}
             </AnimatePresence>
 
-            <div className="pauseshop-carousel-content">
+            <div className="carousel-content">
                 <AnimatePresence
                     custom={direction}
                     initial={false}
@@ -97,7 +97,7 @@ const ProductThumbnailCarousel = ({ thumbnails }: ProductThumbnailCarouselProps)
                 {!isLastItem && (
                     <motion.button
                         key="next-button"
-                        className="pauseshop-carousel-button pauseshop-carousel-button-next"
+                        className="carousel-button carousel-button-next"
                         aria-label="Next product"
                         onClick={() => navigate(1)}
                         whileFocus={{ outline: "2px solid var(--pauseshop-theme-trim-color)" }}
@@ -126,7 +126,7 @@ const ThumbnailSlide = forwardRef<
     return (
         <motion.div
             ref={ref}
-            className="pauseshop-carousel-slide"
+            className="carousel-slide"
             initial={{ opacity: 0, x: direction * 50 }}
             animate={{
                 opacity: 1,
@@ -144,7 +144,7 @@ const ThumbnailSlide = forwardRef<
                 <img
                     src={thumbnail.thumbnailUrl}
                     alt="Product thumbnail"
-                    className="pauseshop-carousel-image"
+                    className="carousel-image"
                 />
             </a>
         </motion.div>

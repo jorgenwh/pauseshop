@@ -1,10 +1,10 @@
 import "../../css/components/sidebar/footer.css";
 
-const SidebarFooter = () => {
+const Footer = () => {
     return (
-        <div className="pauseshop-sidebar-footer">
+        <div className="footer">
         </div>
     );
 };
 
-export default SidebarFooter;
+export default Footer;

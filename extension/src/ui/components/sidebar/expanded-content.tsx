@@ -25,21 +25,21 @@ const cardVariants = {
         },
     },
 };
-interface ExpandedSidebarContentProps {
+interface ExpandedContentProps {
     contentState: SidebarContentState;
     productStorage: ProductStorage;
     expandedIconCategory: string | null;
 }
 
-const ExpandedSidebarContent = ({contentState, productStorage, expandedIconCategory }: ExpandedSidebarContentProps) => {
+const ExpandedContent = ({contentState, productStorage, expandedIconCategory }: ExpandedContentProps) => {
     return (
-        <div className="pauseshop-expanded-sidebar-content">
+        <div className="expanded-content">
             {contentState === SidebarContentState.LOADING && (
                 <p className="text-white">Loading products...</p>
             )}
             {contentState === SidebarContentState.PRODUCTS && (
                 <motion.div
-                    className="pauseshop-product-list"
+                    className="product-list"
                     variants={cardContainerVariants}
                     initial="hidden"
                     animate="visible"
@@ -82,4 +82,4 @@ const ExpandedSidebarContent = ({contentState, productStorage, expandedIconCateg
     );
 };
 
-export default ExpandedSidebarContent;
+export default ExpandedContent;

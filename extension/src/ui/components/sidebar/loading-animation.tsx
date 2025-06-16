@@ -1,7 +1,7 @@
 import "../../css/components/sidebar/loading-animation.css";
 import { motion, Variants } from "motion/react";
 
-const LoadingThreeDotsJumping = () => {
+const LoadingAnimation = () => {
     const dotVariants: Variants = {
         jump: {
             y: -30,
@@ -14,31 +14,26 @@ const LoadingThreeDotsJumping = () => {
         },
     };
 
-    const dotColor = "rgba(230, 230, 230, 1)";
-
     return (
         <motion.div
             animate="jump"
             transition={{ staggerChildren: -0.2, staggerDirection: -1 }}
-            className="pauseshop-loading-container"
+            className="loading-container"
         >
             <motion.div
-                className="pauseshop-loading-dot"
+                className="loading-dot"
                 variants={dotVariants}
-                style={{ backgroundColor: dotColor }}
             />
             <motion.div
-                className="pauseshop-loading-dot"
+                className="loading-dot"
                 variants={dotVariants}
-                style={{ backgroundColor: dotColor }}
             />
             <motion.div
-                className="pauseshop-loading-dot"
+                className="loading-dot"
                 variants={dotVariants}
-                style={{ backgroundColor: dotColor }}
             />
         </motion.div>
     );
 };
 
-export default LoadingThreeDotsJumping;
+export default LoadingAnimation;

@@ -1,5 +1,5 @@
-/* Styles for LoadingThreeDotsJumping component */
-.pauseshop-loading-container {
+/* Styles for LoadingAnimation component */
+.loading-container {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -8,8 +8,9 @@
     margin-top: 25px;
 }
 
-.pauseshop-loading-dot {
+.loading-dot {
     width: 8px;
     height: 8px;
     border-radius: 50%;
+    background-color: var(--pauseshop-white);
 }
