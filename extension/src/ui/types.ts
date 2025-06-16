@@ -49,6 +49,7 @@ export interface SidebarEvents {
     onToggleCompact: () => void; // New event for toggling compact mode
     onTogglePosition: () => void;
     onClose: () => void; // New event for closing the UI and stopping background processing
+    onRetryAnalysis: () => void;
 }
 
 // Message types for communication with the background script
@@ -84,10 +85,15 @@ export interface ToggleSidebarPositionMessage {
     type: "toggleSidebarPosition";
 }
 
+export interface RetryAnalysisMessage {
+    type: "retry_analysis";
+}
+
 export type BackgroundMessage =
     | AnalysisStartedMessage
     | ProductGroupUpdateMessage
     | AnalysisCompleteMessage
     | AnalysisErrorMessage
     | AnalysisCancelledMessage
-    | ToggleSidebarPositionMessage;
+    | ToggleSidebarPositionMessage
+    | RetryAnalysisMessage;

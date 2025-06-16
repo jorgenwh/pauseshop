@@ -95,6 +95,9 @@ export class UIManager {
                 // Hide the sidebar
                 this.hideSidebar();
             },
+            onRetryAnalysis: () => {
+                chrome.runtime.sendMessage({ action: "retryAnalysis" });
+            }
         };
 
         // Add message listener for background script communication only once
@@ -170,6 +173,7 @@ export class UIManager {
                         onError={this.sidebarEvents.onError}
                         onToggleCompact={this.sidebarEvents.onToggleCompact}
                         onClose={this.sidebarEvents.onClose}
+                        onRetryAnalysis={this.sidebarEvents.onRetryAnalysis}
                     />
                 </React.StrictMode>,
             );
@@ -351,6 +355,10 @@ export class UIManager {
             break;
         case "toggleSidebarPosition":
             this.sidebarEvents.onTogglePosition();
+            result = true;
+            break;
+        case "retry_analysis":
+            this.sidebarEvents.onRetryAnalysis();
             result = true;
             break;
         default:

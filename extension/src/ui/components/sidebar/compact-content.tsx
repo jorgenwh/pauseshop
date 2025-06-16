@@ -10,6 +10,7 @@ interface CompactContentProps {
     contentState: SidebarContentState;
     onIconClick: (iconCategory: string) => void;
     position: "right" | "left";
+    onRetryAnalysis: () => void;
 }
 
 const CompactContent = ({
@@ -17,6 +18,7 @@ const CompactContent = ({
     contentState,
     onIconClick,
     position,
+    onRetryAnalysis,
 }: CompactContentProps) => {
     const buildLoadingContent = () => {
         return (
@@ -91,12 +93,16 @@ const CompactContent = ({
             <motion.div
                 initial={{ opacity: 0, scale: 0 }}
                 animate={{ opacity: 1, scale: 1 }}
+                whileHover={{
+                    scale: 1.3
+                }}
                 transition={{
                     type: "spring",
                     stiffness: 260,
                     damping: 20,
                     bounce: 0.5,
                 }}
+                onClick={onRetryAnalysis}
             >
                 <img
                     src={chrome.runtime.getURL("icons/nothing-found.png")}

@@ -31,6 +31,7 @@ interface SidebarProps {
     onProductClick: (product: AmazonScrapedProduct) => void;
     onToggleCompact: () => void;
     onClose: () => void;
+    onRetryAnalysis: () => void;
 }
 
 const Sidebar = ({
@@ -43,6 +44,7 @@ const Sidebar = ({
     onHide,
     onToggleCompact,
     onClose,
+    onRetryAnalysis,
 }: SidebarProps) => {
     const [currentCompact, setCurrentCompact] = useState<boolean>(compact);
     const [lastUserSelectedCompactState, setLastUserSelectedCompactState] =
@@ -165,6 +167,7 @@ const Sidebar = ({
                             onIconClick={handleIconClick}
                             contentState={contentState}
                             position={position}
+                            onRetryAnalysis={onRetryAnalysis}
                         />
                     ) : (
                         <ExpandedContent
