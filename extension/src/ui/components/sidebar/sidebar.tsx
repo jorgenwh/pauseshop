@@ -134,15 +134,15 @@ const Sidebar = ({
                         transform: getSidebarTransform(),
                         pointerEvents: isVisible ? "auto" : "none",
                         height:
-                        !currentCompact ||
-                        contentState === SidebarContentState.PRODUCTS
-                            ? "auto"
-                            : "95px",
-                    maxHeight:
-                        !currentCompact ||
-                        contentState !== SidebarContentState.PRODUCTS
-                            ? "none"
-                            : `${calculatedContentCompactHeight}px`,
+                            !currentCompact ||
+                            contentState === SidebarContentState.PRODUCTS
+                                ? "auto"
+                                : "95px",
+                        maxHeight:
+                            !currentCompact ||
+                            contentState !== SidebarContentState.PRODUCTS
+                                ? "none"
+                                : `${calculatedContentCompactHeight}px`,
                     }}
                 >
                     <Header
@@ -150,9 +150,9 @@ const Sidebar = ({
                         position={position}
                         onToggleCompact={toggleCompactMode}
                         isLoading={
-    contentState === SidebarContentState.LOADING ||
-    contentState === SidebarContentState.NO_PRODUCTS
-}
+                            contentState === SidebarContentState.LOADING ||
+                            contentState === SidebarContentState.NO_PRODUCTS
+                        }
                         onClose={onClose}
                     />
                     <Divider compact={currentCompact} />
@@ -160,9 +160,9 @@ const Sidebar = ({
                         <CompactContent
                             productStorage={productStorage}
                             isLoading={
-    contentState === SidebarContentState.LOADING ||
-    contentState === SidebarContentState.NO_PRODUCTS
-}
+                                contentState === SidebarContentState.LOADING ||
+                                contentState === SidebarContentState.NO_PRODUCTS
+                            }
                             onIconClick={handleIconClick}
                             contentState={contentState}
                             position={position}
