@@ -1,4 +1,4 @@
-.sidebar {
+.pauseshop-sidebar {
     border-radius: 16px;
     border: 1px solid var(--sidebar-border-color);
     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
@@ -15,21 +15,21 @@
     overflow: visible;
 }
 
-.sidebar.compact {
+.pauseshop-sidebar.pauseshop-sidebar-compact {
     width: 47px;
 }
 
 /* Hide overflow only when expanded to enable scrolling */
-.sidebar:not(.compact) {
+.pauseshop-sidebar:not(.pauseshop-sidebar-compact) {
     overflow: hidden;
 }
 
-.sidebar.position-left {
+.pauseshop-sidebar.position-left {
     left: 20px;
     right: auto;
 }
 
-.sidebar.position-right {
+.pauseshop-sidebar.position-right {
     right: 20px;
     left: auto;
 }

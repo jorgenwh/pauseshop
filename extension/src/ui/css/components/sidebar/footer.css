@@ -1,5 +1,5 @@
 /* Sidebar Footer Styles */
-.footer {
+.pauseshop-sidebar-footer {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -11,7 +11,7 @@
     box-sizing: border-box; /* Include padding in the width calculation */
 }
 
-.footer-button {
+.pauseshop-sidebar-button {
     background: none;
     border: 1px solid var(--sidebar-border-color);
     border-radius: 4px;
