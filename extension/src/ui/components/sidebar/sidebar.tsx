@@ -57,7 +57,10 @@ const Sidebar = ({
     }, [compact]);
 
     useEffect(() => {
-        if (contentState === SidebarContentState.LOADING) {
+        if (
+            contentState === SidebarContentState.LOADING ||
+            contentState === SidebarContentState.NO_PRODUCTS
+        ) {
             // When loading, always start in compact mode
             setCurrentCompact(true);
         } else {
@@ -149,10 +152,7 @@ const Sidebar = ({
                         compact={currentCompact}
                         position={position}
                         onToggleCompact={toggleCompactMode}
-                        isLoading={
-                            contentState === SidebarContentState.LOADING ||
-                            contentState === SidebarContentState.NO_PRODUCTS
-                        }
+                        contentState={contentState}
                         onClose={onClose}
                     />
                     <Divider compact={currentCompact} />
@@ -160,8 +160,7 @@ const Sidebar = ({
                         <CompactContent
                             productStorage={productStorage}
                             isLoading={
-                                contentState === SidebarContentState.LOADING ||
-                                contentState === SidebarContentState.NO_PRODUCTS
+                                contentState === SidebarContentState.LOADING
                             }
                             onIconClick={handleIconClick}
                             contentState={contentState}
