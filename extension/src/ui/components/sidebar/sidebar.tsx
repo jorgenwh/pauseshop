@@ -15,6 +15,7 @@ import Header from "./header";
 import Footer from "./footer";
 import ExpandedContent from "./expanded-content";
 import CompactContent from "./compact-content";
+import Divider from "./divider";
 import { countUniqueIcons } from "../../utils";
 
 interface SidebarProps {
@@ -146,6 +147,7 @@ const Sidebar = ({
                         isLoading={contentState === SidebarContentState.LOADING}
                         onClose={onClose}
                     />
+                    <Divider compact={currentCompact} />
                     {currentCompact ? (
                         <CompactContent
                             productStorage={productStorage}
