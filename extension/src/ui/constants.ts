@@ -4,7 +4,8 @@ export const SIDEBAR_SLIDE_DURATION: number = 0.2;
 
 export const SIDEBAR_HEADER_HEIGHT: number = 35;
 export const SIDEBAR_HEADER_HEIGHT_COMPACT: number = 35;
-export const SIDEBAR_HEADER_ICON_SIZE: number = 30;
+export const SIDEBAR_HEADER_COMPACT_ICON_SIZE: number = 30;
+export const SIDEBAR_HEADER_EXPANDED_ICON_SIZE: number = 33;
 
 export const DEFAULT_SIDEBAR_POSITION = "left";
 export const DEFAULT_COMPACT: boolean = true;
