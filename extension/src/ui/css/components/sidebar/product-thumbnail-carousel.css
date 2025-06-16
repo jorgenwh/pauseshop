@@ -1,4 +1,4 @@
-.pauseshop-carousel-container {
+.carousel-container {
     display: grid;
     grid-template-columns: 36px 1fr 36px;
     align-items: center;
@@ -8,7 +8,7 @@
     position: relative;
 }
 
-.pauseshop-carousel-content {
+.carousel-content {
     position: relative;
     display: flex;
     justify-content: center;
@@ -16,13 +16,13 @@
     grid-column: 2;
 }
 
-.pauseshop-carousel-slide {
+.carousel-slide {
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-.pauseshop-carousel-image {
+.carousel-image {
     width: 140px;
     height: 140px;
     object-fit: cover;
@@ -30,11 +30,11 @@
     transition: transform 0.2s ease;
 }
 
-.pauseshop-carousel-image:hover {
+.carousel-image:hover {
     transform: scale(1.05);
 }
 
-.pauseshop-carousel-button {
+.carousel-button {
     background: var(--pauseshop-theme-trim-color, #30b3a4);
     color: var(--pauseshop-white, #ffffff);
     width: 36px;
@@ -52,34 +52,34 @@
     flex-shrink: 0;
 }
 
-.pauseshop-carousel-button:hover {
+.carousel-button:hover {
     background: var(--pauseshop-theme-trim-color, #30b3a4);
     opacity: 0.8;
 }
 
-.pauseshop-carousel-button:disabled {
+.carousel-button:disabled {
     opacity: 0.5;
     cursor: not-allowed;
 }
 
-.pauseshop-carousel-button-prev {
+.carousel-button-prev {
     grid-column: 1;
     justify-self: center;
 }
 
-.pauseshop-carousel-button-next {
+.carousel-button-next {
     grid-column: 3;
     justify-self: center;
 }
 
-.pauseshop-carousel-single {
+.carousel-single {
     display: flex;
     justify-content: center;
     align-items: center;
     width: 100%;
 }
 
-.pauseshop-carousel-empty {
+.carousel-empty {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -94,17 +94,17 @@
 
 /* Responsive adjustments */
 @media (max-width: 480px) {
-    .pauseshop-carousel-container {
+    .carousel-container {
         grid-template-columns: 32px 1fr 32px;
         gap: 8px;
     }
     
-    .pauseshop-carousel-button {
+    .carousel-button {
         width: 32px;
         height: 32px;
     }
     
-    .pauseshop-carousel-image {
+    .carousel-image {
         width: 120px;
         height: 120px;
     }

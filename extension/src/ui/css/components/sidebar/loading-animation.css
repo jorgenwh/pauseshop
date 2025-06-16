@@ -1,5 +1,5 @@
 /* Styles for LoadingAnimation component */
-.pauseshop-loading-container {
+.loading-container {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -8,7 +8,7 @@
     margin-top: 25px;
 }
 
-.pauseshop-loading-dot {
+.loading-dot {
     width: 8px;
     height: 8px;
     border-radius: 50%;
