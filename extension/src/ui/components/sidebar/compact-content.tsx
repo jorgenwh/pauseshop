@@ -8,12 +8,14 @@ interface CompactContentProps {
     productStorage: ProductStorage;
     isLoading: boolean;
     onIconClick: (iconCategory: string) => void;
+    position: "right" | "left";
 }
 
 const CompactContent = ({
     productStorage,
     isLoading,
     onIconClick,
+    position,
 }: CompactContentProps) => {
     const buildLoadingContent = () => {
         return (
@@ -91,8 +93,13 @@ const CompactContent = ({
         );
     }
 
+    const compactContentClasses = [
+        "compact-content",
+        `position-${position}`
+    ].join(" ");
+
     return (
-        <div className="compact-content">
+        <div className={compactContentClasses}>
             {
                 isLoading ?
                     buildLoadingContent() :

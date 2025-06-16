@@ -58,10 +58,8 @@
     font-weight: bold;
 }
 
-/* Adjust position of count overlay when sidebar is in right mode */
-.pauseshop-sidebar.position-right
-    .compact-icon-container
-    .compact-icon-count {
+/* Adjust position of count overlay when positioned on right */
+.compact-content.position-right .compact-icon-count {
     left: -3px;
     right: auto;
 }

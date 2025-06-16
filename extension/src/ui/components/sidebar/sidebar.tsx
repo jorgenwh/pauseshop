@@ -119,13 +119,19 @@ const Sidebar = ({
     const calculatedContentCompactHeight =
         SIDEBAR_HEADER_HEIGHT + iconCount * (35 + 15) + 20;
 
+    const sidebarClasses = [
+        "sidebar",
+        currentCompact && "compact",
+        `position-${position}`
+    ].filter(Boolean).join(" ");
+
     return (
         <AnimatePresence mode="sync">
             {isVisible && (
                 <motion.div
                     key={currentCompact ? "compact-sidebar" : "expanded-sidebar"}
                     id="pauseshop-sidebar"
-                    className={`pauseshop-sidebar ${currentCompact ? "pauseshop-sidebar-compact" : ""} position-${position}`}
+                    className={sidebarClasses}
                     initial={{ opacity: 0, scale: 0 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0 }}
@@ -159,6 +165,7 @@ const Sidebar = ({
                             productStorage={productStorage}
                             isLoading={contentState === SidebarContentState.LOADING}
                             onIconClick={handleIconClick}
+                            position={position}
                         />
                     ) : (
                         <ExpandedContent
