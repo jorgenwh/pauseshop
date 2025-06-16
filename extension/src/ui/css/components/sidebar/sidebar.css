@@ -4,19 +4,19 @@
     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
     position: fixed;
     top: 80px;
-    width: var(--sidebar-width);
+    width: 280px;
     height: auto;
     z-index: 99999;
     transition:
-        left var(--sidebar-transition-speed) ease-in-out,
-        right var(--sidebar-transition-speed) ease-in-out;
+        left 0s ease-in-out,
+        right 0s ease-in-out;
     pointer-events: all;
     background-color: var(--pauseshop-bg);
     overflow: visible;
 }
 
 .sidebar.compact {
-    width: var(--sidebar-compact-width);
+    width: 47px;
 }
 
 /* Hide overflow only when expanded to enable scrolling */

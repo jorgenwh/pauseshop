@@ -48,20 +48,6 @@ const Sidebar = ({
         useState<boolean>(compact); // Store the last user-selected compact state
     const [expandedIconCategory, setExpandedIconCategory] = useState<string | null>(null);
 
-    useEffect(() => {
-        document.documentElement.style.setProperty(
-            "--sidebar-width",
-            `${EXPANDED_SIDEBAR_WIDTH}px`,
-        );
-        document.documentElement.style.setProperty(
-            "--sidebar-compact-width",
-            `${COMPACT_SIDEBAR_WIDTH}px`,
-        );
-        document.documentElement.style.setProperty(
-            "--sidebar-transition-speed",
-            `0s`, // Set transition speed to 0 for snapping
-        );
-    }, []); // Run once on mount
 
     useEffect(() => {
         // Update currentCompact when the prop changes, and store it as the last user-selected state

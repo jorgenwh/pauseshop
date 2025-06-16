@@ -6,7 +6,6 @@
     max-height: calc(100vh - 400px); /* Conservative height with generous bottom buffer */
     
     /* Define scrollbar width as CSS custom property for dynamic calculations */
-    --scrollbar-width: 8px;
     
     /* Custom scrollbar styling */
     scrollbar-width: thin;
@@ -18,7 +17,7 @@
 
 /* Webkit scrollbar styling for Chrome/Safari */
 .expanded-content::-webkit-scrollbar {
-    width: var(--scrollbar-width);
+    width: 8px;
 }
 
 .expanded-content::-webkit-scrollbar-track {
@@ -38,7 +37,7 @@
 
 /* Product List Styles */
 .product-list {
-    padding: 1rem calc(1.625rem - var(--scrollbar-width, 8px)) 1rem 1.625rem; /* Dynamic right padding that subtracts scrollbar gutter space */
+    padding: 1rem calc(1.625rem - 8px) 1rem 1.625rem; /* Dynamic right padding that subtracts scrollbar gutter space */
     display: flex;
     flex-direction: column;
     gap: 1rem;

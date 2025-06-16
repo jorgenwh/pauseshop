@@ -3,8 +3,8 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: var(--spacing-sm);
-    gap: var(--spacing-sm);
+    padding: 8px;
+    gap: 8px;
     position: absolute;
     bottom: 0;
     width: 100%;

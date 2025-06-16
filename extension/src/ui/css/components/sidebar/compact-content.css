@@ -4,8 +4,8 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: calc(var(--spacing-md) + 5px) 0;
-    gap: var(--spacing-lg);
+    padding: calc(10px + 5px) 0;
+    gap: 15px;
     overflow-y: auto;
     flex-grow: 1;
 }
@@ -35,12 +35,8 @@
 
 .compact-icon-count {
     position: absolute;
-    top: calc(
-        -1 * var(--icon-count-offset)
-    );
-    right: calc(
-        -1 * var(--icon-count-offset)
-    );
+    top: -8px;
+    right: -8px;
     background-color: var(--pauseshop-theme-trim-color);
     color: white;
     border-radius: 50%;
