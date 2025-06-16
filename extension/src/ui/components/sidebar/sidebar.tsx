@@ -11,10 +11,10 @@ import {
     EXPANDED_SIDEBAR_WIDTH,
     SIDEBAR_HEADER_HEIGHT,
 } from "../../constants";
-import SidebarHeader from "./header";
-import SidebarFooter from "./footer";
-import ExpandedSidebarContent from "./expanded-content";
-import CompactSidebarContent from "./compact-content";
+import Header from "./header";
+import Footer from "./footer";
+import ExpandedContent from "./expanded-content";
+import CompactContent from "./compact-content";
 import { countUniqueIcons } from "../../utils";
 
 interface SidebarProps {
@@ -147,7 +147,7 @@ const Sidebar = ({
                                 : `${calculatedContentCompactHeight}px`,
                     }}
                 >
-                    <SidebarHeader
+                    <Header
                         compact={currentCompact}
                         position={position}
                         onToggleCompact={toggleCompactMode}
@@ -155,19 +155,19 @@ const Sidebar = ({
                         onClose={onClose}
                     />
                     {currentCompact ? (
-                        <CompactSidebarContent
+                        <CompactContent
                             productStorage={productStorage}
                             isLoading={contentState === SidebarContentState.LOADING}
                             onIconClick={handleIconClick}
                         />
                     ) : (
-                        <ExpandedSidebarContent
+                        <ExpandedContent
                             contentState={contentState}
                             productStorage={productStorage}
                             expandedIconCategory={expandedIconCategory}
                         />
                     )}
-                    <SidebarFooter />
+                    <Footer />
                 </motion.div>
             )}
         </AnimatePresence>

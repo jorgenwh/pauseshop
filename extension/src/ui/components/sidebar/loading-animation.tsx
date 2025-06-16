@@ -1,7 +1,7 @@
 import "../../css/components/sidebar/loading-animation.css";
 import { motion, Variants } from "motion/react";
 
-const LoadingThreeDotsJumping = () => {
+const LoadingAnimation = () => {
     const dotVariants: Variants = {
         jump: {
             y: -30,
@@ -41,4 +41,4 @@ const LoadingThreeDotsJumping = () => {
     );
 };
 
-export default LoadingThreeDotsJumping;
+export default LoadingAnimation;

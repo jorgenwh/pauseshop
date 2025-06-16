@@ -1,23 +1,23 @@
 import "../../css/components/sidebar/compact-content.css";
 import { motion } from "motion/react";
-import LoadingThreeDotsJumping from "./loading-animation";
+import LoadingAnimation from "./loading-animation";
 import { ProductStorage } from "../../types";
 import { getIconCounts, getUniqueIcons } from "../../utils";
 
-interface CompactSidebarContentProps {
+interface CompactContentProps {
     productStorage: ProductStorage;
     isLoading: boolean;
     onIconClick: (iconCategory: string) => void;
 }
 
-const CompactSidebarContent = ({
+const CompactContent = ({
     productStorage,
     isLoading,
     onIconClick,
-}: CompactSidebarContentProps) => {
+}: CompactContentProps) => {
     const buildLoadingContent = () => {
         return (
-            <LoadingThreeDotsJumping />
+            <LoadingAnimation />
         );
     }
 
@@ -104,4 +104,4 @@ const CompactSidebarContent = ({
     );
 };
 
-export default CompactSidebarContent;
+export default CompactContent;

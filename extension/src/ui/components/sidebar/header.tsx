@@ -24,7 +24,7 @@ const headerContainerVariants = {
     },
 };
 
-interface SidebarHeaderProps {
+interface HeaderProps {
     compact: boolean;
     position: "right" | "left";
     onToggleCompact: () => void;
@@ -32,13 +32,13 @@ interface SidebarHeaderProps {
     onClose: () => void;
 }
 
-const SidebarHeader = ({
+const Header = ({
     compact,
     position,
     onToggleCompact,
     isLoading,
     onClose,
-}: SidebarHeaderProps) => {
+}: HeaderProps) => {
     const getToggleButtonIcon = () => {
         return compact ? "expand.png" : "collapse.png";
     };
@@ -149,4 +149,4 @@ const SidebarHeader = ({
     );
 };
 
-export default SidebarHeader;
+export default Header;
