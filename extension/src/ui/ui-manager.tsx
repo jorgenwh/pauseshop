@@ -10,7 +10,6 @@ import { AmazonScrapedProduct } from "../types/amazon";
 import {
     DEFAULT_SIDEBAR_POSITION,
     DEFAULT_COMPACT,
-    NO_PRODUCTS_TIMEOUT_MS,
     UI_CONTAINER_CLASS_NAME,
 } from "./constants";
 import {
@@ -41,7 +40,6 @@ export class UIManager {
     private productStorage: ProductStorage = { pauseId: "", productGroups: [] };
 
     private isInitialized: boolean = false;
-    private noProductsFoundTimeoutId: NodeJS.Timeout | null = null;
 
     constructor() {
         this.sidebarConfig = {
@@ -97,6 +95,9 @@ export class UIManager {
                 // Hide the sidebar
                 this.hideSidebar();
             },
+            onRetryAnalysis: () => {
+                chrome.runtime.sendMessage({ action: "retryAnalysis" });
+            }
         };
 
         // Add message listener for background script communication only once
@@ -172,6 +173,7 @@ export class UIManager {
                         onError={this.sidebarEvents.onError}
                         onToggleCompact={this.sidebarEvents.onToggleCompact}
                         onClose={this.sidebarEvents.onClose}
+                        onRetryAnalysis={this.sidebarEvents.onRetryAnalysis}
                     />
                 </React.StrictMode>,
             );
@@ -208,7 +210,7 @@ export class UIManager {
     }
 
     /**
-     * Show "no products found" state and auto-hide after timeout
+     * Show "no products found" state
      */
     public async showNoProductsFound(): Promise<boolean> {
         if (!this.isInitialized) {
@@ -216,20 +218,9 @@ export class UIManager {
                 return false;
             }
         }
-        // Clear any existing timeout
-        if (this.noProductsFoundTimeoutId) {
-            clearTimeout(this.noProductsFoundTimeoutId);
-            this.noProductsFoundTimeoutId = null;
-        }
 
         this.sidebarContentState = SidebarContentState.NO_PRODUCTS;
         this.renderSidebar();
-
-        // Auto-hide after timeout
-        this.noProductsFoundTimeoutId = setTimeout(async () => {
-            this.noProductsFoundTimeoutId = null;
-            await this.hideSidebar();
-        }, NO_PRODUCTS_TIMEOUT_MS);
 
         return true;
     }
@@ -258,10 +249,25 @@ export class UIManager {
         message: AnalysisCompleteMessage,
     ): boolean => {
         console.log(
-            `[PauseShop:UIManager] Received analysis_complete message for pauseId: ${message.pauseId}`,
+            `[PauseShop:UIManager] Received analysis_complete for pauseId: ${message.pauseId}`,
         );
-        // Maybe hide sidebar or change content to "results" state
-        // For now, no change needed for completion
+
+        if (this.productStorage.pauseId !== message.pauseId) {
+            console.warn(
+                `[PauseShop:UIManager] Ignoring analysis_complete from old pauseId: ${message.pauseId}`,
+            );
+            return false;
+        }
+
+        // If analysis is complete and no products have been found, update state
+        if (this.productStorage.productGroups.length === 0) {
+            console.log(
+                `[PauseShop:UIManager] No products found for pauseId: ${message.pauseId}. Setting state to NO_PRODUCTS.`,
+            );
+            this.sidebarContentState = SidebarContentState.NO_PRODUCTS;
+            this.renderSidebar();
+        }
+
         return true;
     };
 
@@ -351,6 +357,10 @@ export class UIManager {
             this.sidebarEvents.onTogglePosition();
             result = true;
             break;
+        case "retry_analysis":
+            this.sidebarEvents.onRetryAnalysis();
+            result = true;
+            break;
         default:
             result = false;
             // Cast message to BackgroundMessage to access 'type' property safely
@@ -360,12 +370,6 @@ export class UIManager {
     };
 
     public cleanup(): void {
-        // Clear any pending no products found timeout
-        if (this.noProductsFoundTimeoutId) {
-            clearTimeout(this.noProductsFoundTimeoutId);
-            this.noProductsFoundTimeoutId = null;
-        }
-
         // Unmount React component
         if (this.reactRoot) {
             this.reactRoot.unmount();

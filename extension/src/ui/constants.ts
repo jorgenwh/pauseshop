@@ -13,3 +13,6 @@ export const DEFAULT_COMPACT: boolean = true;
 export const UI_CONTAINER_CLASS_NAME: string = "pauseshop-ui-container";
 
 export const NO_PRODUCTS_TIMEOUT_MS: number = 8000;
+
+// Fixed height for compact sidebar when in static states (loading, no products found)
+export const COMPACT_SIDEBAR_STATIC_HEIGHT: number = 95;

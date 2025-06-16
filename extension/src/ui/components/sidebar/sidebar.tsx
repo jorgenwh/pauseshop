@@ -31,6 +31,7 @@ interface SidebarProps {
     onProductClick: (product: AmazonScrapedProduct) => void;
     onToggleCompact: () => void;
     onClose: () => void;
+    onRetryAnalysis: () => void;
 }
 
 const Sidebar = ({
@@ -43,6 +44,7 @@ const Sidebar = ({
     onHide,
     onToggleCompact,
     onClose,
+    onRetryAnalysis,
 }: SidebarProps) => {
     const [currentCompact, setCurrentCompact] = useState<boolean>(compact);
     const [lastUserSelectedCompactState, setLastUserSelectedCompactState] =
@@ -57,7 +59,10 @@ const Sidebar = ({
     }, [compact]);
 
     useEffect(() => {
-        if (contentState === SidebarContentState.LOADING) {
+        if (
+            contentState === SidebarContentState.LOADING ||
+            contentState === SidebarContentState.NO_PRODUCTS
+        ) {
             // When loading, always start in compact mode
             setCurrentCompact(true);
         } else {
@@ -133,10 +138,15 @@ const Sidebar = ({
                     style={{
                         transform: getSidebarTransform(),
                         pointerEvents: isVisible ? "auto" : "none",
-                        maxHeight: !currentCompact
-                            ? "none" // Height controlled by CSS
-                            : contentState === SidebarContentState.LOADING
-                                ? "200px"
+                        height:
+                            !currentCompact ||
+                            contentState === SidebarContentState.PRODUCTS
+                                ? "auto"
+                                : "95px",
+                        maxHeight:
+                            !currentCompact ||
+                            contentState !== SidebarContentState.PRODUCTS
+                                ? "none"
                                 : `${calculatedContentCompactHeight}px`,
                     }}
                 >
@@ -144,16 +154,20 @@ const Sidebar = ({
                         compact={currentCompact}
                         position={position}
                         onToggleCompact={toggleCompactMode}
-                        isLoading={contentState === SidebarContentState.LOADING}
+                        contentState={contentState}
                         onClose={onClose}
                     />
                     <Divider compact={currentCompact} />
                     {currentCompact ? (
                         <CompactContent
                             productStorage={productStorage}
-                            isLoading={contentState === SidebarContentState.LOADING}
+                            isLoading={
+                                contentState === SidebarContentState.LOADING
+                            }
                             onIconClick={handleIconClick}
+                            contentState={contentState}
                             position={position}
+                            onRetryAnalysis={onRetryAnalysis}
                         />
                     ) : (
                         <ExpandedContent

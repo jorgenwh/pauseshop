@@ -6,12 +6,13 @@ import {
     SIDEBAR_HEADER_EXPANDED_ICON_SIZE
 } from "../../constants";
 import "../../css/components/sidebar/header.css";
+import { SidebarContentState } from "../../types";
 
 interface HeaderProps {
     compact: boolean;
     position: "right" | "left";
     onToggleCompact: () => void;
-    isLoading: boolean;
+    contentState: SidebarContentState;
     onClose: () => void;
 }
 
@@ -19,7 +20,7 @@ const Header = ({
     compact,
     position,
     onToggleCompact,
-    isLoading,
+    contentState,
     onClose,
 }: HeaderProps) => {
     const getToggleButtonIcon = () => {
@@ -31,6 +32,110 @@ const Header = ({
         compact && "pauseshop-sidebar-compact",
         `position-${position}`
     ].filter(Boolean).join(" ");
+
+    const renderButtons = () => {
+        if (contentState === SidebarContentState.LOADING) {
+            return null;
+        }
+
+        if (contentState === SidebarContentState.NO_PRODUCTS) {
+            return (
+                <motion.div
+                    className="pauseshop-sidebar-button-container no-products"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{
+                        duration: 0.4,
+                        scale: {
+                            type: "spring",
+                            stiffness: 260,
+                            damping: 20,
+                            bounce: 0.5,
+                        },
+                    }}
+                >
+                    <button
+                        className="pauseshop-sidebar-close-button"
+                        onClick={onClose}
+                        title="Close PauseShop"
+                    >
+                        <img
+                            src={chrome.runtime.getURL("icons/close.png")}
+                            alt="Close"
+                            className="pauseshop-button-icon"
+                        />
+                    </button>
+                </motion.div>
+            );
+        }
+
+        return (
+            <motion.div
+                className="pauseshop-sidebar-button-container"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{
+                    duration: 0.4,
+                    scale: {
+                        type: "spring",
+                        stiffness: 260,
+                        damping: 20,
+                        bounce: 0.5,
+                    },
+                }}
+            >
+                {position === "left" ? (
+                    <>
+                        <button
+                            className="pauseshop-sidebar-toggle-button"
+                            onClick={onToggleCompact}
+                        >
+                            <img
+                                src={chrome.runtime.getURL(`icons/${getToggleButtonIcon()}`)}
+                                alt={compact ? "Expand" : "Collapse"}
+                                className="pauseshop-button-icon"
+                            />
+                        </button>
+                        <button
+                            className="pauseshop-sidebar-close-button"
+                            onClick={onClose}
+                            title="Close PauseShop"
+                        >
+                            <img
+                                src={chrome.runtime.getURL("icons/close.png")}
+                                alt="Close"
+                                className="pauseshop-button-icon"
+                            />
+                        </button>
+                    </>
+                ) : (
+                    <>
+                        <button
+                            className="pauseshop-sidebar-close-button"
+                            onClick={onClose}
+                            title="Close PauseShop"
+                        >
+                            <img
+                                src={chrome.runtime.getURL("icons/close.png")}
+                                alt="Close"
+                                className="pauseshop-button-icon"
+                            />
+                        </button>
+                        <button
+                            className="pauseshop-sidebar-toggle-button"
+                            onClick={onToggleCompact}
+                        >
+                            <img
+                                src={chrome.runtime.getURL(`icons/${getToggleButtonIcon()}`)}
+                                alt={compact ? "Expand" : "Collapse"}
+                                className="pauseshop-button-icon"
+                            />
+                        </button>
+                    </>
+                )}
+            </motion.div>
+        );
+    }
 
     return (
         <div
@@ -56,72 +161,7 @@ const Header = ({
                     Shop
                 </h1>
             </div>
-            {!isLoading && (
-                <motion.div
-                    className="pauseshop-sidebar-button-container"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{
-                        duration: 0.4,
-                        scale: {
-                            type: "spring",
-                            stiffness: 260,
-                            damping: 20,
-                            bounce: 0.5,
-                        },
-                    }}
-                >
-                    {position === "left" ? (
-                        <>
-                            <button
-                                className="pauseshop-sidebar-toggle-button"
-                                onClick={onToggleCompact}
-                            >
-                                <img
-                                    src={chrome.runtime.getURL(`icons/${getToggleButtonIcon()}`)}
-                                    alt={compact ? "Expand" : "Collapse"}
-                                    className="pauseshop-button-icon"
-                                />
-                            </button>
-                            <button
-                                className="pauseshop-sidebar-close-button"
-                                onClick={onClose}
-                                title="Close PauseShop"
-                            >
-                                <img
-                                    src={chrome.runtime.getURL("icons/close.png")}
-                                    alt="Close"
-                                    className="pauseshop-button-icon"
-                                />
-                            </button>
-                        </>
-                    ) : (
-                        <>
-                            <button
-                                className="pauseshop-sidebar-close-button"
-                                onClick={onClose}
-                                title="Close PauseShop"
-                            >
-                                <img
-                                    src={chrome.runtime.getURL("icons/close.png")}
-                                    alt="Close"
-                                    className="pauseshop-button-icon"
-                                />
-                            </button>
-                            <button
-                                className="pauseshop-sidebar-toggle-button"
-                                onClick={onToggleCompact}
-                            >
-                                <img
-                                    src={chrome.runtime.getURL(`icons/${getToggleButtonIcon()}`)}
-                                    alt={compact ? "Expand" : "Collapse"}
-                                    className="pauseshop-button-icon"
-                                />
-                            </button>
-                        </>
-                    )}
-                </motion.div>
-            )}
+            {renderButtons()}
         </div>
     );
 };

@@ -27,8 +27,13 @@ export interface CancelPauseMessage {
     pauseId: string;
 }
 
+export interface RetryAnalysisMessage {
+    action: "retryAnalysis";
+}
+
 export type BackgroundMessage =
     | ScreenshotMessage
     | ToggleSidebarPositionMessage
     | RegisterPauseMessage
-    | CancelPauseMessage;
+    | CancelPauseMessage
+    | RetryAnalysisMessage;

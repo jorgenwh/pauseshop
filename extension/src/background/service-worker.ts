@@ -106,6 +106,29 @@ chrome.runtime.onMessage.addListener(
                 }
             });
             safeSendResponse({ success: true });
+        } else if (message.action === "retryAnalysis") {
+            const pauseId = `pause-${Date.now()}`;
+            const windowId = sender.tab?.windowId || chrome.windows.WINDOW_ID_CURRENT;
+            const abortSignal = cancellationRegistry.getAbortSignal(pauseId);
+            handleScreenshotAnalysis(windowId, pauseId, abortSignal)
+                .then(safeSendResponse)
+                .catch((error) => {
+                    if (error.name === 'AbortError') {
+                        console.warn(`[PauseShop:ServiceWorker] Analysis cancelled due to AbortError for pauseId: ${pauseId}`);
+                        safeSendResponse({
+                            success: false,
+                            error: "Analysis cancelled",
+                            pauseId: pauseId,
+                        });
+                    } else {
+                        console.error(`[PauseShop:ServiceWorker] Screenshot analysis error for pauseId: ${pauseId}:`, error);
+                        safeSendResponse({
+                            success: false,
+                            error: error.message || "Unknown error",
+                            pauseId: pauseId,
+                        });
+                    }
+                });
         }
 
         return true; // Keep message channel open for async response

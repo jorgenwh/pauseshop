@@ -59,3 +59,9 @@
     left: -3px;
     right: auto;
 }
+.pauseshop-nothing-found-icon {
+    width: 30px;
+    height: 30px;
+    position: relative;
+    top: -1px;
+}

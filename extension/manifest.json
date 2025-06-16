@@ -41,11 +41,7 @@
             "resources": [
                 "ui/*",
                 "content/main-content.css",
-                "icons/icon-128.png",
-                "icons/close.png",
-                "icons/expand.png",
-                "icons/collapse.png",
-                "icons/products/*.png",
+                "icons/*",
                 "fonts/*.ttf"
             ],
             "matches": [
