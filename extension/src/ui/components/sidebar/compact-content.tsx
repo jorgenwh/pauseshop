@@ -32,7 +32,7 @@ const CompactContent = ({
         return (
             <motion.span
                 key={iconCounts[iconCategory]}
-                className="pauseshop-compact-icon-count"
+                className="compact-icon-count"
                 initial={{ scale: 0, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{
@@ -52,7 +52,7 @@ const CompactContent = ({
             Array.from(iconCategories.values()).map((iconCategory, index) => (
                 <motion.div
                     key={iconCategory}
-                    className="pauseshop-compact-icon-container"
+                    className="compact-icon-container"
                     initial={{ opacity: 0, scale: 0 }}
                     animate={{ opacity: 1, scale: 1 }}
                     whileHover={{
@@ -75,7 +75,7 @@ const CompactContent = ({
                             `icons/products/${iconCategory}.png`,
                         )}
                         alt={iconCategory}
-                        className={`pauseshop-compact-icon icon`}
+                        className={`compact-icon icon`}
                     />
                     {buildCategoryCounter(iconCategory)}
                 </motion.div>
@@ -85,14 +85,14 @@ const CompactContent = ({
 
     const buildNoProductsContent = () => {
         return (
-            <div className="pauseshop-compact-sidebar-content">
+            <div className="compact-content">
                 <p>No products to display.</p>
             </div>
         );
     }
 
     return (
-        <div className="pauseshop-compact-sidebar-content">
+        <div className="compact-content">
             {
                 isLoading ?
                     buildLoadingContent() :

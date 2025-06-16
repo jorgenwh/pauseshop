@@ -1,107 +1,97 @@
-/* Sidebar Header Styles */
-.pauseshop-sidebar-header {
+/* Header Styles */
+.header {
     display: flex;
     align-items: flex-end;
     position: relative;
     overflow: visible;
     transition: height var(--sidebar-transition-speed) ease-in-out;
-    flex-shrink: 0; /* Prevent header from shrinking in flex layout */
+    flex-shrink: 0;
 }
 
-/* Sidebar Header Title Container */
-.pauseshop-sidebar-header-title-container {
-    color: var(--sidebar-text-color);
-    transition:
-        opacity var(--sidebar-transition-speed) ease-in-out,
-        transform var(--sidebar-transition-speed) ease-in-out;
-    align-self: flex-end; /* Align to bottom of header */
-}
-
-.pauseshop-sidebar.pauseshop-sidebar-compact
-    .pauseshop-sidebar-header-title-container {
-    opacity: 0;
-    pointer-events: none;
-}
-
-.pauseshop-sidebar-header-icon {
+.header-icon {
     margin-left: var(--spacing-sm);
 }
 
-.pauseshop-sidebar.position-right .pauseshop-sidebar-header-icon {
+.header.position-right .header-icon {
     margin-left: auto;
     margin-right: var(--spacing-sm);
 }
 
-.pauseshop-sidebar-header-title-container {
+.header-title-container {
     position: absolute;
     left: 50%;
-    bottom: 5px; /* 5px padding under the text */
+    bottom: 5px;
     transform: translateX(-50%);
     display: flex;
     flex-direction: row;
     font-size: 1.2rem;
     font-family: "Encode Sans SC", sans-serif;
+    color: var(--sidebar-text-color);
+    transition:
+        opacity var(--sidebar-transition-speed) ease-in-out,
+        transform var(--sidebar-transition-speed) ease-in-out;
+    align-self: flex-end;
 }
 
-.pauseshop-sidebar.position-right .pauseshop-sidebar-header-title-container {
+.header.position-right .header-title-container {
     left: auto;
     right: 50%;
-    bottom: 5px; /* 5px padding under the text */
     transform: translateX(50%);
 }
 
-.pauseshop-sidebar-header-title-pause {
-    font-weight: 900;
-    font-size: 2.25rem;
-    margin: 0; /* Remove default h1 margins */
-    line-height: 1; /* Reduce line height to make it more compact */
+.header.compact .header-title-container {
+    opacity: 0;
+    pointer-events: none;
 }
 
-.pauseshop-sidebar-header-title-shop {
+.header-title-pause {
+    font-weight: 900;
+    font-size: 2.25rem;
+    margin: 0;
+    line-height: 1;
+}
+
+.header-title-shop {
     font-weight: 400;
     font-size: 2.25rem;
     color: var(--pauseshop-theme-trim-color);
-    margin: 0; /* Remove default h1 margins */
-    line-height: 1; /* Reduce line height to make it more compact */
+    margin: 0;
+    line-height: 1;
 }
 
-/* Button Container Styles */
-.pauseshop-sidebar-button-container {
+/* Button Container */
+.button-container {
     position: absolute;
-    bottom: 0; /* Touch the bottom edge */
+    bottom: 0;
     right: var(--spacing-sm);
     z-index: 100001;
     display: flex;
     flex-direction: row;
     gap: 6px;
     background-color: var(--sidebar-toggle-button-bg);
-    /* border: 1px solid var(--sidebar-toggle-button-border); */
     border-radius: 8px;
     padding: 2px;
-    /* box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); */
 }
 
-.pauseshop-sidebar.position-right .pauseshop-sidebar-button-container {
+.header.position-right .button-container {
     left: var(--spacing-sm);
     right: auto;
-    bottom: 0; /* Touch the bottom edge */
 }
 
-.pauseshop-sidebar.pauseshop-sidebar-compact .pauseshop-sidebar-button-container {
-    right: -75px; /* Position further to the right when compact (40px more) */
+.header.compact .button-container {
+    right: -75px;
     background-color: var(--sidebar-toggle-button-bg);
     border: 1px solid var(--sidebar-border-color);
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
 }
 
-.pauseshop-sidebar.pauseshop-sidebar-compact.position-right
-    .pauseshop-sidebar-button-container {
-    left: -75px; /* Position further to the left when compact (40px more) */
+.header.compact.position-right .button-container {
+    left: -75px;
     right: auto;
 }
 
-/* Sidebar Toggle Button Styles */
-.pauseshop-sidebar-toggle-button {
+/* Buttons */
+.toggle-button {
     background-color: transparent;
     border: none;
     cursor: pointer;
@@ -114,13 +104,12 @@
     transition: transform 0.2s ease-in-out;
 }
 
-.pauseshop-sidebar-toggle-button:hover {
+.toggle-button:hover {
     transform: scale(1.2);
 }
 
-/* Sidebar Close Button Styles */
-.pauseshop-sidebar-close-button {
-    background-color: #dc3545; /* Red background */
+.close-button {
+    background-color: #dc3545;
     border: none;
     cursor: pointer;
     color: white;
@@ -133,21 +122,19 @@
     transition: transform 0.2s ease-in-out, background-color 0.2s ease-in-out;
 }
 
-.pauseshop-sidebar-close-button:hover {
+.close-button:hover {
     transform: scale(1.2);
-    background-color: #c82333; /* Darker red on hover */
+    background-color: #c82333;
 }
 
-
-/* Button Icon Styles */
-.pauseshop-button-icon {
+/* Button Icons */
+.button-icon {
     width: 20px;
     height: 20px;
-    filter: invert(0.9); /* Make icons light colored to match theme */
+    filter: invert(0.9);
     transition: transform 0.2s ease-in-out;
 }
 
-/* Close Button Icon - White icon for red background */
-.pauseshop-sidebar-close-button .pauseshop-button-icon {
-    filter: invert(1) brightness(100%); /* Make icon white */
+.close-button .button-icon {
+    filter: invert(1) brightness(100%);
 }

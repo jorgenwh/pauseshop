@@ -43,9 +43,15 @@ const Header = ({
         return compact ? "expand.png" : "collapse.png";
     };
 
+    const headerClasses = [
+        "header",
+        compact && "compact",
+        `position-${position}`
+    ].filter(Boolean).join(" ");
+
     return (
         <div
-            className="pauseshop-sidebar-header"
+            className={headerClasses}
             style={{
                 height: `${compact ? SIDEBAR_HEADER_HEIGHT_COMPACT : SIDEBAR_HEADER_HEIGHT}px`,
             }}
@@ -53,27 +59,27 @@ const Header = ({
             <img
                 src={chrome.runtime.getURL("icons/icon-128.png")}
                 alt="PauseShop Icon"
-                className={`pauseshop-sidebar-header-icon icon`}
+                className="header-icon icon"
                 style={{
                     width: `${SIDEBAR_HEADER_ICON_SIZE}px`,
                     height: `${SIDEBAR_HEADER_ICON_SIZE}px`,
                 }}
             />
             <motion.div
-                className="pauseshop-sidebar-header-title-container"
+                className="header-title-container"
                 variants={headerContainerVariants}
                 style={{
                     fontSize: '2.5rem'
                 }}
             >
                 <motion.h1
-                    className="pauseshop-sidebar-header-title-pause"
+                    className="header-title-pause"
                     variants={textVariants}
                 >
                     Pause
                 </motion.h1>
                 <motion.h1
-                    className="pauseshop-sidebar-header-title-shop"
+                    className="header-title-shop"
                     variants={textVariants}
                 >
                     Shop
@@ -81,7 +87,7 @@ const Header = ({
             </motion.div>
             {!isLoading && (
                 <motion.div
-                    className="pauseshop-sidebar-button-container"
+                    className="button-container"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{
@@ -97,48 +103,48 @@ const Header = ({
                     {position === "left" ? (
                         <>
                             <button
-                                className="pauseshop-sidebar-toggle-button"
+                                className="toggle-button"
                                 onClick={onToggleCompact}
                             >
                                 <img
                                     src={chrome.runtime.getURL(`icons/${getToggleButtonIcon()}`)}
                                     alt={compact ? "Expand" : "Collapse"}
-                                    className="pauseshop-button-icon"
+                                    className="button-icon"
                                 />
                             </button>
                             <button
-                                className="pauseshop-sidebar-close-button"
+                                className="close-button"
                                 onClick={onClose}
                                 title="Close PauseShop"
                             >
                                 <img
                                     src={chrome.runtime.getURL("icons/close.png")}
                                     alt="Close"
-                                    className="pauseshop-button-icon"
+                                    className="button-icon"
                                 />
                             </button>
                         </>
                     ) : (
                         <>
                             <button
-                                className="pauseshop-sidebar-close-button"
+                                className="close-button"
                                 onClick={onClose}
                                 title="Close PauseShop"
                             >
                                 <img
                                     src={chrome.runtime.getURL("icons/close.png")}
                                     alt="Close"
-                                    className="pauseshop-button-icon"
+                                    className="button-icon"
                                 />
                             </button>
                             <button
-                                className="pauseshop-sidebar-toggle-button"
+                                className="toggle-button"
                                 onClick={onToggleCompact}
                             >
                                 <img
                                     src={chrome.runtime.getURL(`icons/${getToggleButtonIcon()}`)}
                                     alt={compact ? "Expand" : "Collapse"}
-                                    className="pauseshop-button-icon"
+                                    className="button-icon"
                                 />
                             </button>
                         </>
