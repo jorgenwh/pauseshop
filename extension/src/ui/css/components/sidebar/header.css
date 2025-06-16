@@ -9,12 +9,19 @@
 }
 
 .pauseshop-sidebar-header-icon {
+    margin-left: 22px;
+    filter: invert(0.9);
+}
+
+.pauseshop-sidebar-header-icon.compact {
     margin-left: 8px;
+    filter: invert(0.9);
 }
 
 .pauseshop-sidebar.position-right .pauseshop-sidebar-header-icon {
     margin-left: auto;
     margin-right: 8px;
+    filter: invert(0.9);
 }
 
 .pauseshop-sidebar-header-title-container {
