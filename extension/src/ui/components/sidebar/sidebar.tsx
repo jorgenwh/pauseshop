@@ -106,8 +106,8 @@ const Sidebar = ({
         SIDEBAR_HEADER_HEIGHT + iconCount * (35 + 15) + 20;
 
     const sidebarClasses = [
-        "sidebar",
-        currentCompact && "compact",
+        "pauseshop-sidebar",
+        currentCompact && "pauseshop-sidebar-compact",
         `position-${position}`
     ].filter(Boolean).join(" ");
 

@@ -1,5 +1,5 @@
 /* Expanded Sidebar Content Container */
-.expanded-content {
+.pauseshop-expanded-sidebar-content {
     /* Set up scrollable container */
     overflow-y: auto;
     /* Responsive max-height based on viewport */
@@ -16,27 +16,27 @@
 }
 
 /* Webkit scrollbar styling for Chrome/Safari */
-.expanded-content::-webkit-scrollbar {
+.pauseshop-expanded-sidebar-content::-webkit-scrollbar {
     width: 8px;
 }
 
-.expanded-content::-webkit-scrollbar-track {
+.pauseshop-expanded-sidebar-content::-webkit-scrollbar-track {
     background: transparent;
     border-radius: 4px;
 }
 
-.expanded-content::-webkit-scrollbar-thumb {
+.pauseshop-expanded-sidebar-content::-webkit-scrollbar-thumb {
     background-color: var(--pauseshop-theme-trim-color);
     border-radius: 4px;
     border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.expanded-content::-webkit-scrollbar-thumb:hover {
+.pauseshop-expanded-sidebar-content::-webkit-scrollbar-thumb:hover {
     background-color: #3cc4b4;
 }
 
 /* Product List Styles */
-.product-list {
+.pauseshop-product-list {
     padding: 1rem calc(1.625rem - 8px) 1rem 1.625rem; /* Dynamic right padding that subtracts scrollbar gutter space */
     display: flex;
     flex-direction: column;

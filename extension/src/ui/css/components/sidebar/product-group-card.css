@@ -1,5 +1,5 @@
 /* Product Card Glassy Effect */
-.product-card {
+.pauseshop-product-card {
     backdrop-filter: blur(10px);
     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
     border-radius: 1rem;
@@ -9,13 +9,13 @@
     padding: .25rem .25rem 0.4375rem .25rem;
 }
 
-.product-card:hover {
+.pauseshop-product-card:hover {
     box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.5);
     border-color: var(--pauseshop-theme-trim-color);
 }
 
 /* Product Card Header Styles */
-.product-card-header {
+.pauseshop-product-card-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -26,13 +26,13 @@
 }
 
 /* Product Card Header Content Styles */
-.product-card-header-content {
+.pauseshop-product-card-header-content {
     display: flex;
     align-items: center;
 }
 
 /* Product Card Title Styles */
-.product-card-title {
+.pauseshop-product-card-title {
     color: var(--pauseshop-white);
     font-size: 1.5rem;
     font-weight: 600;
@@ -42,17 +42,17 @@
 }
 
 /* Product Card Arrow Styles */
-.product-card-arrow {
+.pauseshop-product-card-arrow {
     color: var(--pauseshop-white);
 }
 
 /* Product Card Content Styles */
-.product-card-content {
+.pauseshop-product-card-content {
     padding: 1rem;
     border-top: 1px solid #374151;
 }
 
 /* Product Card Text Styles */
-.product-card-text {
+.pauseshop-product-card-text {
     color: #9ca3af;
 }

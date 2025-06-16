@@ -1,5 +1,5 @@
 /* Header Styles */
-.header {
+.pauseshop-sidebar-header {
     display: flex;
     align-items: flex-end;
     position: relative;
@@ -8,16 +8,16 @@
     flex-shrink: 0;
 }
 
-.header-icon {
+.pauseshop-sidebar-header-icon {
     margin-left: 8px;
 }
 
-.header.position-right .header-icon {
+.pauseshop-sidebar.position-right .pauseshop-sidebar-header-icon {
     margin-left: auto;
     margin-right: 8px;
 }
 
-.header-title-container {
+.pauseshop-sidebar-header-title-container {
     position: absolute;
     left: 50%;
     bottom: 5px;
@@ -33,25 +33,25 @@
     align-self: flex-end;
 }
 
-.header.position-right .header-title-container {
+.pauseshop-sidebar.position-right .pauseshop-sidebar-header-title-container {
     left: auto;
     right: 50%;
     transform: translateX(50%);
 }
 
-.header.compact .header-title-container {
+.pauseshop-sidebar.pauseshop-sidebar-compact .pauseshop-sidebar-header-title-container {
     opacity: 0;
     pointer-events: none;
 }
 
-.header-title-pause {
+.pauseshop-sidebar-header-title-pause {
     font-weight: 900;
     font-size: 2.25rem;
     margin: 0;
     line-height: 1;
 }
 
-.header-title-shop {
+.pauseshop-sidebar-header-title-shop {
     font-weight: 400;
     font-size: 2.25rem;
     color: var(--pauseshop-theme-trim-color);
@@ -60,7 +60,7 @@
 }
 
 /* Button Container */
-.button-container {
+.pauseshop-sidebar-button-container {
     position: absolute;
     bottom: 0;
     right: 8px;
@@ -73,25 +73,25 @@
     padding: 2px;
 }
 
-.header.position-right .button-container {
+.pauseshop-sidebar.position-right .pauseshop-sidebar-button-container {
     left: 8px;
     right: auto;
 }
 
-.header.compact .button-container {
+.pauseshop-sidebar.pauseshop-sidebar-compact .pauseshop-sidebar-button-container {
     right: -75px;
     background-color: var(--sidebar-toggle-button-bg);
     border: 1px solid var(--sidebar-border-color);
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
 }
 
-.header.compact.position-right .button-container {
+.pauseshop-sidebar.pauseshop-sidebar-compact.position-right .pauseshop-sidebar-button-container {
     left: -75px;
     right: auto;
 }
 
 /* Buttons */
-.toggle-button {
+.pauseshop-sidebar-toggle-button {
     background-color: transparent;
     border: none;
     cursor: pointer;
@@ -104,11 +104,11 @@
     transition: transform 0.2s ease-in-out;
 }
 
-.toggle-button:hover {
+.pauseshop-sidebar-toggle-button:hover {
     transform: scale(1.2);
 }
 
-.close-button {
+.pauseshop-sidebar-close-button {
     background-color: #dc3545;
     border: none;
     cursor: pointer;
@@ -122,19 +122,19 @@
     transition: transform 0.2s ease-in-out, background-color 0.2s ease-in-out;
 }
 
-.close-button:hover {
+.pauseshop-sidebar-close-button:hover {
     transform: scale(1.2);
     background-color: #c82333;
 }
 
 /* Button Icons */
-.button-icon {
+.pauseshop-button-icon {
     width: 20px;
     height: 20px;
     filter: invert(0.9);
     transition: transform 0.2s ease-in-out;
 }
 
-.close-button .button-icon {
+.pauseshop-sidebar-close-button .pauseshop-button-icon {
     filter: invert(1) brightness(100%);
 }

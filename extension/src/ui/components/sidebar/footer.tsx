@@ -2,7 +2,7 @@ import "../../css/components/sidebar/footer.css";
 
 const Footer = () => {
     return (
-        <div className="footer">
+        <div className="pauseshop-sidebar-footer">
         </div>
     );
 };
