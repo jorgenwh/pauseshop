@@ -2,28 +2,6 @@ import { motion } from "motion/react";
 import { SIDEBAR_HEADER_HEIGHT, SIDEBAR_HEADER_HEIGHT_COMPACT, SIDEBAR_HEADER_ICON_SIZE } from "../../constants";
 import "../../css/components/sidebar/header.css";
 
-const textVariants = {
-    hidden: { x: -20, opacity: 0 },
-    visible: {
-        x: 0,
-        opacity: 1,
-        transition: {
-            type: "tween",
-            ease: "easeOut",
-            duration: 0.2,
-        },
-    },
-};
-
-const headerContainerVariants = {
-    visible: {
-        transition: {
-            staggerChildren: 0.05,
-            delayChildren: 0.05,
-        },
-    },
-};
-
 interface HeaderProps {
     compact: boolean;
     position: "right" | "left";
@@ -65,26 +43,19 @@ const Header = ({
                     height: `${SIDEBAR_HEADER_ICON_SIZE}px`,
                 }}
             />
-            <motion.div
+            <div
                 className="header-title-container"
-                variants={headerContainerVariants}
                 style={{
                     fontSize: '2.5rem'
                 }}
             >
-                <motion.h1
-                    className="header-title-pause"
-                    variants={textVariants}
-                >
+                <h1 className="header-title-pause">
                     Pause
-                </motion.h1>
-                <motion.h1
-                    className="header-title-shop"
-                    variants={textVariants}
-                >
+                </h1>
+                <h1 className="header-title-shop">
                     Shop
-                </motion.h1>
-            </motion.div>
+                </h1>
+            </div>
             {!isLoading && (
                 <motion.div
                     className="button-container"
