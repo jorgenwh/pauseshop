@@ -14,8 +14,6 @@ const LoadingAnimation = () => {
         },
     };
 
-    const dotColor = "rgba(230, 230, 230, 1)";
-
     return (
         <motion.div
             animate="jump"
@@ -25,17 +23,14 @@ const LoadingAnimation = () => {
             <motion.div
                 className="loading-dot"
                 variants={dotVariants}
-                style={{ backgroundColor: dotColor }}
             />
             <motion.div
                 className="loading-dot"
                 variants={dotVariants}
-                style={{ backgroundColor: dotColor }}
             />
             <motion.div
                 className="loading-dot"
                 variants={dotVariants}
-                style={{ backgroundColor: dotColor }}
             />
         </motion.div>
     );
