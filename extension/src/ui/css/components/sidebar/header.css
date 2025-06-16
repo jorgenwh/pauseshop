@@ -8,14 +8,22 @@
     flex-shrink: 0;
 }
 
+/* Only add padding-bottom in expanded mode */
+.pauseshop-sidebar:not(.pauseshop-sidebar-compact) .pauseshop-sidebar-header {
+    padding-bottom: 5px;
+}
+
+/* Hide icon in expanded mode */
+.pauseshop-sidebar:not(.pauseshop-sidebar-compact) .pauseshop-sidebar-header-icon {
+    display: none;
+}
+
 .pauseshop-sidebar-header-icon {
     margin-left: 22px;
-    filter: invert(0.9);
 }
 
 .pauseshop-sidebar-header-icon.compact {
     margin-left: 8px;
-    filter: invert(0.9);
 }
 
 .pauseshop-sidebar.position-right .pauseshop-sidebar-header-icon {
@@ -27,7 +35,7 @@
 .pauseshop-sidebar-header-title-container {
     position: absolute;
     left: 50%;
-    bottom: 5px;
+    bottom: 10px;
     transform: translateX(-50%);
     display: flex;
     flex-direction: row;
@@ -80,21 +88,36 @@
     padding: 2px;
 }
 
-.pauseshop-sidebar.position-right .pauseshop-sidebar-button-container {
+/* Only move buttons up in expanded mode */
+.pauseshop-sidebar:not(.pauseshop-sidebar-compact) .pauseshop-sidebar-button-container {
+    bottom: 15px;
+}
+
+/* In expanded mode, keep buttons on right side for both positions */
+.pauseshop-sidebar.position-right:not(.pauseshop-sidebar-compact) .pauseshop-sidebar-button-container {
+    left: auto;
+    right: 8px;
+    flex-direction: row-reverse;
+}
+
+/* Only move to left side in compact mode */
+.pauseshop-sidebar.position-right.pauseshop-sidebar-compact .pauseshop-sidebar-button-container {
     left: 8px;
     right: auto;
 }
 
 .pauseshop-sidebar.pauseshop-sidebar-compact .pauseshop-sidebar-button-container {
-    right: -75px;
+    right: -58px;
+    bottom: 12px;
     background-color: var(--sidebar-toggle-button-bg);
     border: 1px solid var(--sidebar-border-color);
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
 }
 
 .pauseshop-sidebar.pauseshop-sidebar-compact.position-right .pauseshop-sidebar-button-container {
-    left: -75px;
+    left: -58px;
     right: auto;
+    bottom: 12px;
 }
 
 /* Buttons */
@@ -103,8 +126,8 @@
     border: none;
     cursor: pointer;
     color: var(--sidebar-toggle-button-text);
-    width: 25px;
-    height: 25px;
+    width: 18px;
+    height: 18px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -112,7 +135,7 @@
 }
 
 .pauseshop-sidebar-toggle-button:hover {
-    transform: scale(1.2);
+    transform: scale(1.4);
 }
 
 .pauseshop-sidebar-close-button {
@@ -120,24 +143,24 @@
     border: none;
     cursor: pointer;
     color: white;
-    width: 25px;
-    height: 25px;
+    width: 18px;
+    height: 18px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 4px;
+    border-radius: 3px;
     transition: transform 0.2s ease-in-out, background-color 0.2s ease-in-out;
 }
 
 .pauseshop-sidebar-close-button:hover {
-    transform: scale(1.2);
+    transform: scale(1.4);
     background-color: #c82333;
 }
 
 /* Button Icons */
 .pauseshop-button-icon {
-    width: 20px;
-    height: 20px;
+    width: 14px;
+    height: 14px;
     filter: invert(0.9);
     transition: transform 0.2s ease-in-out;
 }

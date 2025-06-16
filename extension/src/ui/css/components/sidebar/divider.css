@@ -1,0 +1,50 @@
+/* Modern dividing bar between header and content */
+.pauseshop-sidebar-divider {
+    width: calc(100% - 32px);
+    height: 1px;
+    margin: 8px 16px;
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(255, 255, 255, 0.2) 20%,
+        rgba(255, 255, 255, 0.4) 50%,
+        rgba(255, 255, 255, 0.2) 80%,
+        transparent 100%
+    );
+    position: relative;
+    flex-shrink: 0;
+}
+
+/* Add a subtle glow effect */
+.pauseshop-sidebar-divider::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        var(--pauseshop-theme-trim-color) 50%,
+        transparent 100%
+    );
+    opacity: 0.3;
+    filter: blur(0.5px);
+}
+
+/* Compact mode styling */
+.pauseshop-sidebar-divider.compact {
+    width: calc(100% - 12px);
+    margin: 6px 6px;
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(255, 255, 255, 0.3) 50%,
+        transparent 100%
+    );
+}
+
+.pauseshop-sidebar-divider.compact::after {
+    opacity: 0.4;
+}
