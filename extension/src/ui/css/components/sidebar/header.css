@@ -24,7 +24,7 @@
     transform: translateX(-50%);
     display: flex;
     flex-direction: row;
-    font-size: 1.2rem;
+    font-size: 2.5rem;
     font-family: "Encode Sans SC", sans-serif;
     color: var(--sidebar-text-color);
     transition:

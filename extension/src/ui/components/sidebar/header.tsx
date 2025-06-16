@@ -43,12 +43,7 @@ const Header = ({
                     height: `${SIDEBAR_HEADER_ICON_SIZE}px`,
                 }}
             />
-            <div
-                className="header-title-container"
-                style={{
-                    fontSize: '2.5rem'
-                }}
-            >
+            <div className="header-title-container">
                 <h1 className="header-title-pause">
                     Pause
                 </h1>
