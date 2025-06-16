@@ -1,19 +1,20 @@
 import "../../css/components/sidebar/compact-content.css";
 import { motion } from "motion/react";
 import LoadingAnimation from "./loading-animation";
-import { ProductStorage } from "../../types";
+import { ProductStorage, SidebarContentState } from "../../types";
 import { getIconCounts, getUniqueIcons } from "../../utils";
 
 interface CompactContentProps {
     productStorage: ProductStorage;
     isLoading: boolean;
+    contentState: SidebarContentState;
     onIconClick: (iconCategory: string) => void;
     position: "right" | "left";
 }
 
 const CompactContent = ({
     productStorage,
-    isLoading,
+    contentState,
     onIconClick,
     position,
 }: CompactContentProps) => {
@@ -87,10 +88,36 @@ const CompactContent = ({
 
     const buildNoProductsContent = () => {
         return (
-            <div className="pauseshop-compact-sidebar-content">
-                <p>No products to display.</p>
-            </div>
+            <motion.div
+                initial={{ opacity: 0, scale: 0 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{
+                    type: "spring",
+                    stiffness: 260,
+                    damping: 20,
+                    bounce: 0.5,
+                }}
+            >
+                <img
+                    src={chrome.runtime.getURL("icons/nothing-found.png")}
+                    alt="No products found"
+                    className="pauseshop-nothing-found-icon"
+                />
+            </motion.div>
         );
+    }
+
+    const renderContent = () => {
+        switch (contentState) {
+            case SidebarContentState.LOADING:
+                return buildLoadingContent();
+            case SidebarContentState.NO_PRODUCTS:
+                return buildNoProductsContent();
+            case SidebarContentState.PRODUCTS:
+                return buildContent();
+            default:
+                return null;
+        }
     }
 
     const compactContentClasses = [
@@ -100,13 +127,7 @@ const CompactContent = ({
 
     return (
         <div className={compactContentClasses}>
-            {
-                isLoading ?
-                    buildLoadingContent() :
-                    iconCategories.size === 0 ?
-                        buildNoProductsContent() :
-                        buildContent()
-            }
+            {renderContent()}
         </div>
     );
 };

@@ -133,26 +133,38 @@ const Sidebar = ({
                     style={{
                         transform: getSidebarTransform(),
                         pointerEvents: isVisible ? "auto" : "none",
-                        maxHeight: !currentCompact
-                            ? "none" // Height controlled by CSS
-                            : contentState === SidebarContentState.LOADING
-                                ? "200px"
-                                : `${calculatedContentCompactHeight}px`,
+                        height:
+                        !currentCompact ||
+                        contentState === SidebarContentState.PRODUCTS
+                            ? "auto"
+                            : "95px",
+                    maxHeight:
+                        !currentCompact ||
+                        contentState !== SidebarContentState.PRODUCTS
+                            ? "none"
+                            : `${calculatedContentCompactHeight}px`,
                     }}
                 >
                     <Header
                         compact={currentCompact}
                         position={position}
                         onToggleCompact={toggleCompactMode}
-                        isLoading={contentState === SidebarContentState.LOADING}
+                        isLoading={
+    contentState === SidebarContentState.LOADING ||
+    contentState === SidebarContentState.NO_PRODUCTS
+}
                         onClose={onClose}
                     />
                     <Divider compact={currentCompact} />
                     {currentCompact ? (
                         <CompactContent
                             productStorage={productStorage}
-                            isLoading={contentState === SidebarContentState.LOADING}
+                            isLoading={
+    contentState === SidebarContentState.LOADING ||
+    contentState === SidebarContentState.NO_PRODUCTS
+}
                             onIconClick={handleIconClick}
+                            contentState={contentState}
                             position={position}
                         />
                     ) : (
