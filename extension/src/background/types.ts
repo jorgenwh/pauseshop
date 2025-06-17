@@ -5,6 +5,17 @@
 export interface ScreenshotMessage {
     action: "captureScreenshot";
     pauseId: string;
+    videoBounds?: VideoBounds;
+}
+
+export interface VideoBounds {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+    scrollX: number;
+    scrollY: number;
+    devicePixelRatio: number;
 }
 
 export interface ScreenshotResponse {
@@ -30,6 +41,7 @@ export interface CancelPauseMessage {
 export interface RetryAnalysisMessage {
     action: "retryAnalysis";
 }
+
 
 export type BackgroundMessage =
     | ScreenshotMessage

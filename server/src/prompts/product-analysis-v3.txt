@@ -16,19 +16,6 @@ Return products in the following order of visual importance:
 The JSON array order MUST reflect this visual importance: primary products first, then secondary, then background.
 Contextually related items must appear consecutively in the output array (e.g., items worn by same person, on same desk, or in same set).
 
-**PRODUCT IDENTIFICATION RULES**
-- Each distinct clothing item or accessory must be identified as a SEPARATE product.
-    - Examples:
-        - A blazer and shirt worn together = TWO separate products
-        - A suit jacket and pants = TWO separate products
-        - A dress and shoes = TWO separate products
-        - A watch and bracelet = TWO separate products
-- DO NOT split single items with multiple colors/patterns into separate products. Treat them as ONE product.
-    - Examples:
-        - A single tank top with green accents = ONE product
-        - A single striped shirt = ONE product
-        - A single color-blocked dress = ONE product
-- If multiple identical products are visible (e.g., three people wearing the same uniform), list the product only once.
 
 **CONFIDENCE ASSESSMENT**
 For each product, evaluate confidence (1-10) based on:
@@ -84,6 +71,7 @@ Format your response as a JSON array of objects with this structure:
 - Max 25 characters. Be concise but descriptive.
 - Only include gender in the product name if there are multiple similar products where one is clearly for men and another for women, to differentiate them (e.g., "men's t-shirt", "women's t-shirt").
 - If only one gender-specific product is found, do not include gender in the name.
+- For electronics use [brand] [model] format if known, otherwise use generic terms.
 
 **Colors:**
 - Use standardized color names: navy, burgundy, sage, coral, charcoal, cream, etc.
@@ -98,6 +86,7 @@ Format your response as a JSON array of objects with this structure:
 - Include partial brand matches ("appears to be [brand]")
 - Note when style suggests premium vs. budget tier
 - Use "unknown" when brand cannot be determined
+- Do your best to always identify the brand for electronics especially, as this is crucial for searchability.
 
 **Target Gender:**
 - For clothing: If you see a man wearing clothing, identify it as "men's" clothing.
@@ -149,13 +138,15 @@ Include relevant style descriptors:
 - Text/UI elements
 - Very small or unclear items (< 5% of image area)
 - Items that are clearly not purchasable products
-- Very high-value items like cars or buildings
+- Very high-value items like vehicles or buildings
 - Built-in fixtures (built-in cabinets, permanent installations)
 - Natural elements (plants, unless in decorative pots)
 - Food items (unless packaged/branded products)
 
 **COMMON MISTAKES TO AVOID**
-- Don't split patterned single items into multiple products
+- Don't split single items with multiple colors/patterns into separate products (e.g., a tank top with green accents is ONE product)
+- Don't combine distinct clothing items or accessories into one product (e.g., a blazer and shirt worn together are TWO separate products)
+- Don't list multiple identical products if several are visible (e.g., three people wearing the same uniform should be listed as one product)
 - Don't include non-purchasable items (walls, floors, built-ins)
 - Don't over-specify when generic terms work better for search
 - Don't include items that are clearly props or decorative only

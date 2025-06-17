@@ -7,8 +7,9 @@ import { Product } from "../types/common";
 import { constructAmazonSearch } from "../scraper/amazon-search";
 import { executeAmazonSearch } from "../scraper/amazon-http-client";
 import { scrapeAmazonSearchResult } from "../scraper/amazon-parser";
-import { captureScreenshot } from "./screenshot-capturer";
-import type { ScreenshotResponse } from "./types";
+import { captureAndCropScreenshot } from "./screenshot-capturer";
+import { openScreenshotForValidation } from "./screenshot-debug";
+import type { ScreenshotResponse, VideoBounds } from "./types";
 
 /**
  * Handles the complete screenshot and streaming analysis workflow
@@ -17,6 +18,8 @@ export const handleScreenshotAnalysis = async (
     windowId: number,
     pauseId: string,
     abortSignal?: AbortSignal,
+    enableScreenshotValidation: boolean = false,
+    videoBounds?: VideoBounds,
 ): Promise<ScreenshotResponse> => {
     console.log(`[PauseShop:AnalysisWorkflow] Starting handleScreenshotAnalysis for pauseId: ${pauseId}`);
 
@@ -27,7 +30,13 @@ export const handleScreenshotAnalysis = async (
             throw new DOMException('Operation aborted', 'AbortError');
         }
 
-        const imageData = await captureScreenshot(windowId);
+        const imageData = await captureAndCropScreenshot(windowId, videoBounds);
+
+        // Optionally open screenshot in new tab for validation
+        if (enableScreenshotValidation) {
+            console.log(`[PauseShop:AnalysisWorkflow] Opening screenshot for validation (pauseId: ${pauseId})`);
+            await openScreenshotForValidation(imageData);
+        }
 
         // Check again after screenshot capture
         if (abortSignal?.aborted) {

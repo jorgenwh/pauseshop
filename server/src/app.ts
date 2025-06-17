@@ -67,7 +67,7 @@ const createApp = (): express.Application => {
     console.log(
         `Provider Config: ${validation.isValid ? "✅ Valid" : "❌ Invalid - " + validation.error}`,
     );
-    console.log("=================================");
+    console.log("============================================================================");
 
     // Set app locals
     app.locals.startTime = new Date();

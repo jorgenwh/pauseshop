@@ -21,8 +21,8 @@
     justify-content: space-between;
     padding: 0.75rem;
     cursor: pointer;
-    padding-top: calc(0.75rem + 2px);
-    padding-bottom: calc(0.75rem - 2px);
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
 }
 
 /* Product Card Header Content Styles */

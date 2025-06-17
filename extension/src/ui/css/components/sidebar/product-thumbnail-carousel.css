@@ -35,12 +35,12 @@
 }
 
 .pauseshop-carousel-button {
-    background: var(--pauseshop-theme-trim-color, #30b3a4);
+    background: var(--pauseshop-bg, #30b3a4);
     color: var(--pauseshop-white, #ffffff);
-    width: 36px;
-    height: 36px;
+    width: 26px;
+    height: 26px;
     border: none;
-    border-radius: 50%;
+    border-radius: 15%;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -53,7 +53,7 @@
 }
 
 .pauseshop-carousel-button:hover {
-    background: var(--pauseshop-theme-trim-color, #30b3a4);
+    background: color-mix(in srgb, var(--pauseshop-theme-trim-color) 75%, black);
     opacity: 0.8;
 }
 
@@ -98,12 +98,12 @@
         grid-template-columns: 32px 1fr 32px;
         gap: 8px;
     }
-    
+
     .pauseshop-carousel-button {
         width: 32px;
         height: 32px;
     }
-    
+
     .pauseshop-carousel-image {
         width: 120px;
         height: 120px;

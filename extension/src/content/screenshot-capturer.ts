@@ -1,14 +1,34 @@
 import { UIManager } from "../ui/ui-manager";
+import type { VideoBounds } from "../background/types";
 
 interface ScreenshotMessage {
     action: "captureScreenshot";
     pauseId: string;
+    videoBounds?: VideoBounds;
 }
 
 export let uiManager: UIManager | null = null;
 
 export const setUIManager = (manager: UIManager): void => {
     uiManager = manager;
+};
+
+const getVideoBounds = (): VideoBounds | null => {
+    const video = document.querySelector('video') as HTMLVideoElement;
+    if (!video) {
+        return null;
+    }
+
+    const bounds = video.getBoundingClientRect();
+    return {
+        x: bounds.x,
+        y: bounds.y,
+        width: bounds.width,
+        height: bounds.height,
+        scrollX: window.scrollX,
+        scrollY: window.scrollY,
+        devicePixelRatio: window.devicePixelRatio,
+    };
 };
 
 export const captureScreenshot = async (pauseId: string): Promise<void> => {
@@ -20,9 +40,11 @@ export const captureScreenshot = async (pauseId: string): Promise<void> => {
     await uiManager.showSidebar();
 
     try {
+        const videoBounds = getVideoBounds();
         const message: ScreenshotMessage = {
             action: "captureScreenshot",
             pauseId: pauseId,
+            videoBounds: videoBounds || undefined,
         };
         const response = await chrome.runtime.sendMessage(message);
         if (!response.success) {

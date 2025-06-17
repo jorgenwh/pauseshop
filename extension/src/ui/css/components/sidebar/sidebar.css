@@ -13,6 +13,8 @@
     pointer-events: all;
     background-color: var(--pauseshop-bg);
     overflow: visible;
+    padding-top: 4px;
+    padding-bottom: 8px;
 }
 
 .pauseshop-sidebar.pauseshop-sidebar-compact {

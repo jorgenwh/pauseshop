@@ -5,6 +5,7 @@
 
 import { handleScreenshotAnalysis } from "./analysis-workflow";
 import { cancellationRegistry } from "./cancellation-registry";
+import { ENABLE_SCREENSHOT_VALIDATION } from "./screenshot-debug";
 import type { BackgroundMessage, ScreenshotResponse } from "./types";
 
 const activePorts = new Map<number, chrome.runtime.Port>();
@@ -63,7 +64,7 @@ chrome.runtime.onMessage.addListener(
                 `[PauseShop:ServiceWorker] Starting screenshot analysis for pauseId: ${message.pauseId}, has abort signal: ${!!abortSignal}`,
             );
 
-            handleScreenshotAnalysis(windowId, message.pauseId, abortSignal)
+            handleScreenshotAnalysis(windowId, message.pauseId, abortSignal, ENABLE_SCREENSHOT_VALIDATION, message.videoBounds)
                 .then(safeSendResponse)
                 .catch((error) => {
                     // Handle AbortError separately
@@ -110,7 +111,7 @@ chrome.runtime.onMessage.addListener(
             const pauseId = `pause-${Date.now()}`;
             const windowId = sender.tab?.windowId || chrome.windows.WINDOW_ID_CURRENT;
             const abortSignal = cancellationRegistry.getAbortSignal(pauseId);
-            handleScreenshotAnalysis(windowId, pauseId, abortSignal)
+            handleScreenshotAnalysis(windowId, pauseId, abortSignal, ENABLE_SCREENSHOT_VALIDATION, undefined)
                 .then(safeSendResponse)
                 .catch((error) => {
                     if (error.name === 'AbortError') {

@@ -3,14 +3,12 @@
     /* Set up scrollable container */
     overflow-y: auto;
     /* Responsive max-height based on viewport */
-    max-height: calc(100vh - 400px); /* Conservative height with generous bottom buffer */
-    
-    /* Define scrollbar width as CSS custom property for dynamic calculations */
-    
+    max-height: 60vh;
+
     /* Custom scrollbar styling */
     scrollbar-width: thin;
     scrollbar-color: var(--pauseshop-theme-trim-color) transparent;
-    
+
     /* Use scrollbar-gutter to reserve space even when scrollbar isn't visible */
     scrollbar-gutter: stable;
 }

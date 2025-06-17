@@ -9,14 +9,13 @@ import { ProductStorage, SidebarContentState } from "../../types";
 import {
     COMPACT_SIDEBAR_WIDTH,
     EXPANDED_SIDEBAR_WIDTH,
-    SIDEBAR_HEADER_HEIGHT,
 } from "../../constants";
 import Header from "./header";
 import Footer from "./footer";
 import ExpandedContent from "./expanded-content";
 import CompactContent from "./compact-content";
 import Divider from "./divider";
-import { countUniqueIcons, getIconCounts, getUniqueIcons } from "../../utils";
+import { getIconCounts, getUniqueIcons } from "../../utils";
 
 interface SidebarProps {
     isVisible: boolean;
@@ -46,15 +45,15 @@ const Sidebar = ({
     onClose,
     onRetryAnalysis,
 }: SidebarProps) => {
-    const [currentCompact, setCurrentCompact] = useState<boolean>(compact);
+    const [isCompact, setIsCompact] = useState<boolean>(compact);
     const [lastUserSelectedCompactState, setLastUserSelectedCompactState] =
         useState<boolean>(compact); // Store the last user-selected compact state
     const [expandedIconCategory, setExpandedIconCategory] = useState<string | null>(null);
 
 
     useEffect(() => {
-        // Update currentCompact when the prop changes, and store it as the last user-selected state
-        setCurrentCompact(compact);
+        // Update isCompact when the prop changes, and store it as the last user-selected state
+        setIsCompact(compact);
         setLastUserSelectedCompactState(compact);
     }, [compact]);
 
@@ -64,10 +63,10 @@ const Sidebar = ({
             contentState === SidebarContentState.NO_PRODUCTS
         ) {
             // When loading, always start in compact mode
-            setCurrentCompact(true);
+            setIsCompact(true);
         } else {
             // Once loading completes, revert to the last user-selected state
-            setCurrentCompact(lastUserSelectedCompactState);
+            setIsCompact(lastUserSelectedCompactState);
         }
     }, [contentState, lastUserSelectedCompactState]);
 
@@ -95,7 +94,7 @@ const Sidebar = ({
     };
 
     const getSidebarTransform = () => {
-        const currentWidth = currentCompact
+        const currentWidth = isCompact
             ? COMPACT_SIDEBAR_WIDTH
             : EXPANDED_SIDEBAR_WIDTH;
         if (!isVisible) {
@@ -112,24 +111,19 @@ const Sidebar = ({
     const firstIconCategory = iconCategories.values().next().value;
     const firstIconHasCounter = !!(firstIconCategory && iconCounts[firstIconCategory] > 1);
 
-    const iconCount = countUniqueIcons(productStorage);
-    let calculatedContentCompactHeight =
-        SIDEBAR_HEADER_HEIGHT + iconCount * (35 + 15) + 20;
-    if (firstIconHasCounter) {
-        calculatedContentCompactHeight += 7;
-    }
-
     const sidebarClasses = [
         "pauseshop-sidebar",
-        currentCompact && "pauseshop-sidebar-compact",
+        isCompact && "pauseshop-sidebar-compact",
         `position-${position}`
     ].filter(Boolean).join(" ");
 
+    const sidebarHeight = !isCompact || contentState === SidebarContentState.PRODUCTS ? "auto" : "102px";
+ 
     return (
         <AnimatePresence mode="sync">
             {isVisible && (
                 <motion.div
-                    key={currentCompact ? "compact-sidebar" : "expanded-sidebar"}
+                    key={isCompact ? "compact-sidebar" : "expanded-sidebar"}
                     id="pauseshop-sidebar"
                     className={sidebarClasses}
                     initial={{ opacity: 0, scale: 0 }}
@@ -146,27 +140,18 @@ const Sidebar = ({
                     style={{
                         transform: getSidebarTransform(),
                         pointerEvents: isVisible ? "auto" : "none",
-                        height:
-                            !currentCompact ||
-                            contentState === SidebarContentState.PRODUCTS
-                                ? "auto"
-                                : "95px",
-                        maxHeight:
-                            !currentCompact ||
-                            contentState !== SidebarContentState.PRODUCTS
-                                ? "none"
-                                : `${calculatedContentCompactHeight}px`,
+                        height: sidebarHeight,
                     }}
                 >
                     <Header
-                        compact={currentCompact}
+                        compact={isCompact}
                         position={position}
                         onToggleCompact={toggleCompactMode}
                         contentState={contentState}
                         onClose={onClose}
                     />
-                    <Divider compact={currentCompact} />
-                    {currentCompact ? (
+                    <Divider compact={isCompact} />
+                    {isCompact ? (
                         <CompactContent
                             productStorage={productStorage}
                             isLoading={

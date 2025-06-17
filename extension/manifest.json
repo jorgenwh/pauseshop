@@ -3,6 +3,9 @@
     "name": "PauseShop",
     "version": "0.0.0",
     "description": "Discover products from paused videos and find them on Amazon",
+    "permissions": [
+        "tabs"
+    ],
     "icons": {
         "16": "icons/icon-128.png",
         "32": "icons/icon-128.png",
