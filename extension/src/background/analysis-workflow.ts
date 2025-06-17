@@ -20,6 +20,7 @@ export const handleScreenshotAnalysis = async (
     abortSignal?: AbortSignal,
     enableScreenshotValidation: boolean = false,
     videoBounds?: VideoBounds,
+    originTabId?: number,
 ): Promise<ScreenshotResponse> => {
     console.log(`[PauseShop:AnalysisWorkflow] Starting handleScreenshotAnalysis for pauseId: ${pauseId}`);
 
@@ -47,14 +48,18 @@ export const handleScreenshotAnalysis = async (
         // Track all async operations from onProduct callbacks
         const pendingOperations: Promise<void>[] = [];
 
-        try {
-            // Get current tab ID
-            const tabId = (
+        // Use the origin tab ID if provided, otherwise fall back to querying for active tab
+        let tabId = originTabId;
+        if (!tabId) {
+            tabId = (
                 await chrome.tabs.query({
                     active: true,
                     currentWindow: true,
                 })
             )[0]?.id;
+        }
+
+        try {
             if (tabId) {
                 chrome.tabs
                     .sendMessage(tabId, {
@@ -120,12 +125,7 @@ export const handleScreenshotAnalysis = async (
                                 amazonScrapedResult.products;
 
                             // Send a single message with the original product and all scraped products
-                            const tabId = (
-                                await chrome.tabs.query({
-                                    active: true,
-                                    currentWindow: true,
-                                })
-                            )[0]?.id;
+                            // Use the same tabId from the start of the analysis
                             if (tabId) {
                                 console.log("tabId:", tabId);
                                 chrome.tabs
@@ -167,12 +167,7 @@ export const handleScreenshotAnalysis = async (
                         );
                     }
 
-                    const tabId = (
-                        await chrome.tabs.query({
-                            active: true,
-                            currentWindow: true,
-                        })
-                    )[0]?.id;
+                    // Use the same tabId from the start of the analysis
                     if (tabId) {
                         chrome.tabs
                             .sendMessage(tabId, {
@@ -190,12 +185,7 @@ export const handleScreenshotAnalysis = async (
                 onError: async (error: Event) => {
                     const errorMessage = `Streaming analysis failed: ${error.type || "Unknown error"}`;
                     console.error(`[PauseShop:AnalysisWorkflow] ${errorMessage} for pauseId: ${pauseId}`);
-                    const tabId = (
-                        await chrome.tabs.query({
-                            active: true,
-                            currentWindow: true,
-                        })
-                    )[0]?.id;
+                    // Use the same tabId from the start of the analysis
                     if (tabId) {
                         chrome.tabs
                             .sendMessage(tabId, {
@@ -221,12 +211,7 @@ export const handleScreenshotAnalysis = async (
             // Handle AbortError
             if (error instanceof Error && error.name === 'AbortError') {
                 console.warn(`[PauseShop:AnalysisWorkflow] Analysis aborted for pauseId: ${pauseId}`);
-                const tabId = (
-                    await chrome.tabs.query({
-                        active: true,
-                        currentWindow: true,
-                    })
-                )[0]?.id;
+                // Use the same tabId from the start of the analysis
                 if (tabId) {
                     chrome.tabs
                         .sendMessage(tabId, {
@@ -247,12 +232,7 @@ export const handleScreenshotAnalysis = async (
                     ? error.message
                     : "Failed to start streaming analysis";
             console.error(`[PauseShop:AnalysisWorkflow] ${errorMessage} for pauseId: ${pauseId}`);
-            const tabId = (
-                await chrome.tabs.query({
-                    active: true,
-                    currentWindow: true,
-                })
-            )[0]?.id;
+            // Use the same tabId from the start of the analysis
             if (tabId) {
                 chrome.tabs
                     .sendMessage(tabId, {
