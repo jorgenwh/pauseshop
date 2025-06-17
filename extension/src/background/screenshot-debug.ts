@@ -5,7 +5,8 @@
 // Debug flag to enable screenshot validation globally
 // Note: In service worker context, we don't have access to window or process.env at runtime
 // For now, set this to true to enable validation, or false to disable
-export const ENABLE_SCREENSHOT_VALIDATION = true;
+// Set to true to open screenshots in new tabs for debugging/validation
+export const ENABLE_SCREENSHOT_VALIDATION = false;
 
 /**
  * Opens a screenshot in a new tab for validation/debugging purposes
@@ -28,9 +29,9 @@ export const openScreenshotForValidation = async (imageData: string): Promise<vo
 export const captureAndValidateScreenshot = async (windowId: number): Promise<string> => {
     const { captureScreenshot } = await import("./screenshot-capturer");
     const imageData = await captureScreenshot(windowId);
-    
+
     // Open in new tab for validation
     await openScreenshotForValidation(imageData);
-    
+
     return imageData;
 };
