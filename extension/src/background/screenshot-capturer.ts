@@ -13,7 +13,7 @@ export const captureScreenshot = async (windowId: number): Promise<string> => {
 
 export const captureAndCropScreenshot = async (windowId: number, videoBounds?: VideoBounds): Promise<string> => {
     const fullScreenshot = await captureScreenshot(windowId);
-    
+
     if (!videoBounds) {
         console.log("[PauseShop:ScreenshotCapturer] No video bounds provided, returning full screenshot");
         return fullScreenshot;
@@ -28,11 +28,11 @@ const cropScreenshot = async (dataUrl: string, bounds: VideoBounds): Promise<str
         const response = await fetch(dataUrl);
         const blob = await response.blob();
         const imageBitmap = await createImageBitmap(blob);
-        
+
         // Create OffscreenCanvas for cropping
         const canvas = new OffscreenCanvas(bounds.width, bounds.height);
         const ctx = canvas.getContext('2d');
-        
+
         if (!ctx) {
             throw new Error('Failed to get canvas context');
         }
@@ -54,7 +54,7 @@ const cropScreenshot = async (dataUrl: string, bounds: VideoBounds): Promise<str
 
         // Convert to blob and then to data URL
         const croppedBlob = await canvas.convertToBlob({ type: 'image/png' });
-        
+
         // Convert blob to data URL
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
@@ -62,7 +62,7 @@ const cropScreenshot = async (dataUrl: string, bounds: VideoBounds): Promise<str
             reader.onerror = () => reject(new Error('Failed to convert blob to data URL'));
             reader.readAsDataURL(croppedBlob);
         });
-        
+
     } catch (error) {
         console.error('[PauseShop:ScreenshotCapturer] Error cropping screenshot:', error);
         throw error;

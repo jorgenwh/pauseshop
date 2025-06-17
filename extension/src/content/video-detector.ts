@@ -18,8 +18,22 @@ const createInitialSeekingState = (): SeekingState => ({
 
 const handlePause =
     (seekingState: SeekingState, siteHandlerRegistry: SiteHandlerRegistry) =>
-        (_event: Event): void => {
+        (event: Event): void => {
             if (seekingState.isSeeking) {
+                return;
+            }
+
+            // Don't trigger extension if video has ended
+            const videoElement = event.target as HTMLVideoElement;
+            console.log("ended=", videoElement.ended);
+            if (videoElement && videoElement.ended) {
+                console.log(`[PauseShop:VideoDetector] Ignoring pause because video has ended`);
+                return;
+            }
+
+            // Don't trigger extension if video is near the end
+            if (videoElement && videoElement.duration - videoElement.currentTime < 0.25) {
+                console.log(`[PauseShop:VideoDetector] Ignoring pause because video is near the end`);
                 return;
             }
 
