@@ -31,9 +31,15 @@ export interface RetryAnalysisMessage {
     action: "retryAnalysis";
 }
 
+export interface OpenScreenshotMessage {
+    action: "openScreenshot";
+    imageData: string;
+}
+
 export type BackgroundMessage =
     | ScreenshotMessage
     | ToggleSidebarPositionMessage
     | RegisterPauseMessage
     | CancelPauseMessage
-    | RetryAnalysisMessage;
+    | RetryAnalysisMessage
+    | OpenScreenshotMessage;

@@ -5,6 +5,8 @@
 
 import { handleScreenshotAnalysis } from "./analysis-workflow";
 import { cancellationRegistry } from "./cancellation-registry";
+import { openScreenshotInNewTab } from "./debug-utils";
+import { ENABLE_SCREENSHOT_VALIDATION } from "./screenshot-debug";
 import type { BackgroundMessage, ScreenshotResponse } from "./types";
 
 const activePorts = new Map<number, chrome.runtime.Port>();
@@ -63,7 +65,7 @@ chrome.runtime.onMessage.addListener(
                 `[PauseShop:ServiceWorker] Starting screenshot analysis for pauseId: ${message.pauseId}, has abort signal: ${!!abortSignal}`,
             );
 
-            handleScreenshotAnalysis(windowId, message.pauseId, abortSignal)
+            handleScreenshotAnalysis(windowId, message.pauseId, abortSignal, ENABLE_SCREENSHOT_VALIDATION)
                 .then(safeSendResponse)
                 .catch((error) => {
                     // Handle AbortError separately
@@ -110,7 +112,7 @@ chrome.runtime.onMessage.addListener(
             const pauseId = `pause-${Date.now()}`;
             const windowId = sender.tab?.windowId || chrome.windows.WINDOW_ID_CURRENT;
             const abortSignal = cancellationRegistry.getAbortSignal(pauseId);
-            handleScreenshotAnalysis(windowId, pauseId, abortSignal)
+            handleScreenshotAnalysis(windowId, pauseId, abortSignal, ENABLE_SCREENSHOT_VALIDATION)
                 .then(safeSendResponse)
                 .catch((error) => {
                     if (error.name === 'AbortError') {
@@ -128,6 +130,19 @@ chrome.runtime.onMessage.addListener(
                             pauseId: pauseId,
                         });
                     }
+                });
+        } else if (message.action === "openScreenshot") {
+            console.log(`[PauseShop:ServiceWorker] Opening screenshot in new tab`);
+            openScreenshotInNewTab(message.imageData)
+                .then(() => {
+                    safeSendResponse({ success: true });
+                })
+                .catch((error) => {
+                    console.error(`[PauseShop:ServiceWorker] Failed to open screenshot in new tab:`, error);
+                    safeSendResponse({
+                        success: false,
+                        error: error.message || "Failed to open screenshot",
+                    });
                 });
         }
 

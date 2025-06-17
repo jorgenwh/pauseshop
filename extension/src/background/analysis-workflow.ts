@@ -8,6 +8,7 @@ import { constructAmazonSearch } from "../scraper/amazon-search";
 import { executeAmazonSearch } from "../scraper/amazon-http-client";
 import { scrapeAmazonSearchResult } from "../scraper/amazon-parser";
 import { captureScreenshot } from "./screenshot-capturer";
+import { openScreenshotForValidation } from "./screenshot-debug";
 import type { ScreenshotResponse } from "./types";
 
 /**
@@ -17,6 +18,7 @@ export const handleScreenshotAnalysis = async (
     windowId: number,
     pauseId: string,
     abortSignal?: AbortSignal,
+    enableScreenshotValidation: boolean = false,
 ): Promise<ScreenshotResponse> => {
     console.log(`[PauseShop:AnalysisWorkflow] Starting handleScreenshotAnalysis for pauseId: ${pauseId}`);
 
@@ -28,6 +30,12 @@ export const handleScreenshotAnalysis = async (
         }
 
         const imageData = await captureScreenshot(windowId);
+
+        // Optionally open screenshot in new tab for validation
+        if (enableScreenshotValidation) {
+            console.log(`[PauseShop:AnalysisWorkflow] Opening screenshot for validation (pauseId: ${pauseId})`);
+            await openScreenshotForValidation(imageData);
+        }
 
         // Check again after screenshot capture
         if (abortSignal?.aborted) {
