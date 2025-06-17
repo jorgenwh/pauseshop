@@ -138,7 +138,7 @@ Include relevant style descriptors:
 - Text/UI elements
 - Very small or unclear items (< 5% of image area)
 - Items that are clearly not purchasable products
-- Very high-value items like cars or buildings
+- Very high-value items like vehicles or buildings
 - Built-in fixtures (built-in cabinets, permanent installations)
 - Natural elements (plants, unless in decorative pots)
 - Food items (unless packaged/branded products)
