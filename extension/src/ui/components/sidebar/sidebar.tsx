@@ -9,14 +9,13 @@ import { ProductStorage, SidebarContentState } from "../../types";
 import {
     COMPACT_SIDEBAR_WIDTH,
     EXPANDED_SIDEBAR_WIDTH,
-    SIDEBAR_HEADER_HEIGHT,
 } from "../../constants";
 import Header from "./header";
 import Footer from "./footer";
 import ExpandedContent from "./expanded-content";
 import CompactContent from "./compact-content";
 import Divider from "./divider";
-import { countUniqueIcons, getIconCounts, getUniqueIcons } from "../../utils";
+import { getIconCounts, getUniqueIcons } from "../../utils";
 
 interface SidebarProps {
     isVisible: boolean;
@@ -111,13 +110,6 @@ const Sidebar = ({
     const iconCategories = getUniqueIcons(productStorage);
     const firstIconCategory = iconCategories.values().next().value;
     const firstIconHasCounter = !!(firstIconCategory && iconCounts[firstIconCategory] > 1);
-
-    const iconCount = countUniqueIcons(productStorage);
-    let calculatedContentCompactHeight =
-        SIDEBAR_HEADER_HEIGHT + iconCount * (35 + 15) + 20;
-    if (firstIconHasCounter) {
-        calculatedContentCompactHeight += 7;
-    }
 
     const sidebarClasses = [
         "pauseshop-sidebar",
