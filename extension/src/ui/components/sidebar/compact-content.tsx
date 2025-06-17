@@ -11,6 +11,7 @@ interface CompactContentProps {
     onIconClick: (iconCategory: string) => void;
     position: "right" | "left";
     onRetryAnalysis: () => void;
+    firstIconHasCounter?: boolean;
 }
 
 const CompactContent = ({
@@ -19,6 +20,7 @@ const CompactContent = ({
     onIconClick,
     position,
     onRetryAnalysis,
+    firstIconHasCounter
 }: CompactContentProps) => {
     const buildLoadingContent = () => {
         return (
@@ -57,11 +59,12 @@ const CompactContent = ({
             Array.from(iconCategories.values()).map((iconCategory, index) => (
                 <motion.div
                     key={iconCategory}
+                    style={{ marginTop: index === 0 && firstIconHasCounter ? '7px' : '0' }}
                     className="pauseshop-compact-icon-container"
                     initial={{ opacity: 0, scale: 0 }}
                     animate={{ opacity: 1, scale: 1 }}
                     whileHover={{
-                        scale: 1.3
+                        scale: 1.2
                     }}
                     transition={{
                         duration: 0.4,
@@ -94,7 +97,7 @@ const CompactContent = ({
                 initial={{ opacity: 0, scale: 0 }}
                 animate={{ opacity: 1, scale: 1 }}
                 whileHover={{
-                    scale: 1.3
+                    scale: 1.2
                 }}
                 transition={{
                     type: "spring",
@@ -115,14 +118,14 @@ const CompactContent = ({
 
     const renderContent = () => {
         switch (contentState) {
-        case SidebarContentState.LOADING:
-            return buildLoadingContent();
-        case SidebarContentState.NO_PRODUCTS:
-            return buildNoProductsContent();
-        case SidebarContentState.PRODUCTS:
-            return buildContent();
-        default:
-            return null;
+            case SidebarContentState.LOADING:
+                return buildLoadingContent();
+            case SidebarContentState.NO_PRODUCTS:
+                return buildNoProductsContent();
+            case SidebarContentState.PRODUCTS:
+                return buildContent();
+            default:
+                return null;
         }
     }
 

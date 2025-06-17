@@ -24,12 +24,12 @@
     "content_scripts": [
         {
             "matches": [
-                "https://*.netflix.com/watch/*",
-                "https://*.hulu.com/watch/*",
+                "https://*.netflix.com/*",
+                "https://*.hulu.com/*",
                 "https://*.youtube.com/*",
-                "https://*.primevideo.com/detail/*",
-                "https://*.disneyplus.com/video/*",
-                "https://play.hbomax.com/"
+                "https://*.primevideo.com/*",
+                "https://*.disneyplus.com/*",
+                "https://*.hbomax.com/*"
             ],
             "js": [
                 "content/main-content.js"

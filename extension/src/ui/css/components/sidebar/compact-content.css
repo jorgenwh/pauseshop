@@ -19,10 +19,6 @@
     align-items: center;
 }
 
-.pauseshop-compact-icon-container:hover {
-    transform: scale(1.1);
-}
-
 .pauseshop-compact-icon {
     width: 100%;
     height: 100%;

@@ -31,31 +31,19 @@ let cleanupVideoDetector: (() => void) | null = null;
 let uiManagerInstance: UIManager | null = null;
 
 const shouldActivateExtension = (): boolean => {
-    const url = window.location.href;
-    const hostname = window.location.hostname;
-    
-    // Check if we're on a supported video page
-    if (hostname.includes("youtube.com")) {
-        return url.includes("/watch?") || url.includes("/shorts/");
-    }
-    
-    // Add other site checks here as needed
-    return (
-        url.includes("netflix.com/watch/") ||
-        url.includes("hulu.com/watch/") ||
-        url.includes("primevideo.com/detail/") ||
-        url.includes("disneyplus.com/video/") ||
-        url.includes("play.hbomax.com/")
-    );
+    // Simply check if there's a video element on the page
+    // This works for any website with video content
+    const videoElement = document.querySelector("video");
+    return !!videoElement;
 };
 
 const initializeExtension = (): void => {
     if (!shouldActivateExtension()) {
-        console.log("[PauseShop] Not on a supported video page, skipping initialization");
+        console.log("[PauseShop] No video element found, skipping initialization");
         return;
     }
     
-    console.log("[PauseShop] Initializing extension on supported video page:", window.location.href);
+    console.log("[PauseShop] Initializing extension on page with video:", window.location.href);
     
     initializeScreenshotCapturer();
     cleanupVideoDetector = initializeVideoDetector();
@@ -69,11 +57,6 @@ const initializeExtension = (): void => {
 };
 
 const initializeExtensionWithRetry = (retryCount = 0, maxRetries = 10): void => {
-    if (!shouldActivateExtension()) {
-        console.log("[PauseShop] Not on a supported video page, skipping initialization");
-        return;
-    }
-    
     const videoElement = document.querySelector("video");
     
     if (videoElement) {
@@ -83,7 +66,9 @@ const initializeExtensionWithRetry = (retryCount = 0, maxRetries = 10): void => 
             initializeExtensionWithRetry(retryCount + 1, maxRetries);
         }, 500);
     } else {
-        initializeExtension();
+        // Even if no video found after retries, still try to initialize
+        // The video might be added dynamically later
+        console.log("[PauseShop] No video found after retries, but will monitor for dynamic video elements");
     }
 };
 
@@ -115,23 +100,36 @@ const checkForUrlChange = (): void => {
         }
         
         // Reinitialize if we're now on a supported page
-        // Use a longer delay and retry mechanism for YouTube's dynamic loading
+        // Use a delay and retry mechanism for SPA content loading
         setTimeout(() => {
             initializeExtensionWithRetry();
-        }, 500); // Longer delay for YouTube's content to load
+        }, 500); // Delay for SPA content to load
     }
 };
 
-// YouTube-specific navigation detection
-// Listen for YouTube's custom navigation events
-const handleYouTubeNavigation = () => {
+// Generic SPA navigation detection
+// Listen for common navigation events that various frameworks might use
+const COMMON_SPA_EVENTS = [
+    // YouTube
+    'yt-navigate-start', 'yt-navigate-finish', 'yt-page-data-updated',
+    // React Router
+    'routeChangeStart', 'routeChangeComplete',
+    // Vue Router  
+    'route-changed',
+    // Angular Router
+    'navigationStart', 'navigationEnd',
+    // Generic events
+    'spa-navigate', 'page-transition', 'navigation-change'
+];
+
+const handleSpaNavigation = () => {
     checkForUrlChange();
 };
 
-// YouTube fires these events on navigation
-window.addEventListener('yt-navigate-start', handleYouTubeNavigation);
-window.addEventListener('yt-navigate-finish', handleYouTubeNavigation);
-window.addEventListener('yt-page-data-updated', handleYouTubeNavigation);
+// Listen for all potential SPA navigation events
+COMMON_SPA_EVENTS.forEach(eventName => {
+    window.addEventListener(eventName, handleSpaNavigation);
+});
 
 // Use multiple methods to detect URL changes
 const observer = new MutationObserver(checkForUrlChange);
@@ -151,10 +149,10 @@ window.addEventListener("beforeunload", () => {
     cleanupUI();
     observer.disconnect();
     clearInterval(urlCheckInterval);
-    // Clean up YouTube event listeners
-    window.removeEventListener('yt-navigate-start', handleYouTubeNavigation);
-    window.removeEventListener('yt-navigate-finish', handleYouTubeNavigation);
-    window.removeEventListener('yt-page-data-updated', handleYouTubeNavigation);
+    // Clean up SPA navigation event listeners
+    COMMON_SPA_EVENTS.forEach(eventName => {
+        window.removeEventListener(eventName, handleSpaNavigation);
+    });
 });
 
 // Cleanup when the content script is about to be destroyed
@@ -165,8 +163,8 @@ window.addEventListener("pagehide", () => {
     cleanupUI();
     observer.disconnect();
     clearInterval(urlCheckInterval);
-    // Clean up YouTube event listeners
-    window.removeEventListener('yt-navigate-start', handleYouTubeNavigation);
-    window.removeEventListener('yt-navigate-finish', handleYouTubeNavigation);
-    window.removeEventListener('yt-page-data-updated', handleYouTubeNavigation);
+    // Clean up SPA navigation event listeners
+    COMMON_SPA_EVENTS.forEach(eventName => {
+        window.removeEventListener(eventName, handleSpaNavigation);
+    });
 });

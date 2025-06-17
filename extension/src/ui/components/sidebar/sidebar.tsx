@@ -16,7 +16,7 @@ import Footer from "./footer";
 import ExpandedContent from "./expanded-content";
 import CompactContent from "./compact-content";
 import Divider from "./divider";
-import { countUniqueIcons } from "../../utils";
+import { countUniqueIcons, getIconCounts, getUniqueIcons } from "../../utils";
 
 interface SidebarProps {
     isVisible: boolean;
@@ -107,9 +107,17 @@ const Sidebar = ({
         return `translateX(0)`;
     };
 
+    const iconCounts = getIconCounts(productStorage);
+    const iconCategories = getUniqueIcons(productStorage);
+    const firstIconCategory = iconCategories.values().next().value;
+    const firstIconHasCounter = !!(firstIconCategory && iconCounts[firstIconCategory] > 1);
+
     const iconCount = countUniqueIcons(productStorage);
-    const calculatedContentCompactHeight =
+    let calculatedContentCompactHeight =
         SIDEBAR_HEADER_HEIGHT + iconCount * (35 + 15) + 20;
+    if (firstIconHasCounter) {
+        calculatedContentCompactHeight += 7;
+    }
 
     const sidebarClasses = [
         "pauseshop-sidebar",
@@ -168,6 +176,7 @@ const Sidebar = ({
                             contentState={contentState}
                             position={position}
                             onRetryAnalysis={onRetryAnalysis}
+                            firstIconHasCounter={firstIconHasCounter}
                         />
                     ) : (
                         <ExpandedContent
