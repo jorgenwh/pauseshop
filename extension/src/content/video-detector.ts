@@ -50,20 +50,11 @@ const handlePause =
                 const videoElement = document.querySelector(
                     "video",
                 ) as HTMLVideoElement;
-                if (videoElement && videoElement.paused) {
-                    const videoElement = document.querySelector(
-                        "video",
-                    ) as HTMLVideoElement;
-                    if (
-                        videoElement &&
-                    videoElement.paused &&
-                    seekingState.currentPauseId === newPauseId
-                    ) {
-                        if (!seekingState.isSeeking) {
-                            captureScreenshot(newPauseId).catch((_error) => {
-                            // Error logging is handled within captureScreenshot
-                            });
-                        }
+                if (videoElement && videoElement.paused && seekingState.currentPauseId === newPauseId) {
+                    if (!seekingState.isSeeking) {
+                        captureScreenshot(newPauseId).catch((_error) => {
+                        // Error logging is handled within captureScreenshot
+                        });
                     }
                 }
                 seekingState.pauseDebounceTimeoutId = null;
@@ -76,7 +67,7 @@ const handlePlay =
             if (seekingState.currentPauseId !== null) {
                 const pauseIdToCancel = seekingState.currentPauseId;
                 console.log(`[PauseShop:VideoDetector] Play detected, cancelling pauseId: ${pauseIdToCancel}`);
-                
+
                 // Cancel the current pause analysis
                 console.log(`[PauseShop:VideoDetector] Sending cancelPause message for pauseId: ${pauseIdToCancel}`);
                 chrome.runtime.sendMessage({
