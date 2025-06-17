@@ -9,7 +9,6 @@
         "64": "icons/icon-128.png",
         "128": "icons/icon-128.png"
     },
-    "permissions": ["activeTab", "storage", "scripting", "tabs", "tabCapture"],
     "host_permissions": [
         "https://*.netflix.com/*",
         "https://*.hulu.com/*",
@@ -25,14 +24,16 @@
     "content_scripts": [
         {
             "matches": [
-                "https://*.netflix.com/*",
-                "https://*.hulu.com/*",
+                "https://*.netflix.com/watch/*",
+                "https://*.hulu.com/watch/*",
                 "https://*.youtube.com/*",
-                "https://*.primevideo.com/*",
-                "https://*.disneyplus.com/*",
-                "https://*.hbomax.com/*"
+                "https://*.primevideo.com/detail/*",
+                "https://*.disneyplus.com/video/*",
+                "https://play.hbomax.com/"
             ],
-            "js": ["content/main-content.js"],
+            "js": [
+                "content/main-content.js"
+            ],
             "run_at": "document_end"
         }
     ],
