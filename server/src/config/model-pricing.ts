@@ -16,6 +16,10 @@ export const GEMINI_MODEL_PRICING: { [key: string]: ModelPricing } = {
         promptCostPerMillionTokens: 0.30,
         completionCostPerMillionTokens: 2.50,
     },
+    "gemini-2.5-flash-lite-preview-06-17": {
+        promptCostPerMillionTokens: 0.10,
+        completionCostPerMillionTokens: 0.40,
+    },
     // Add other Gemini models here
 };
 
