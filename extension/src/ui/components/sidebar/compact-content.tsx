@@ -118,14 +118,14 @@ const CompactContent = ({
 
     const renderContent = () => {
         switch (contentState) {
-            case SidebarContentState.LOADING:
-                return buildLoadingContent();
-            case SidebarContentState.NO_PRODUCTS:
-                return buildNoProductsContent();
-            case SidebarContentState.PRODUCTS:
-                return buildContent();
-            default:
-                return null;
+        case SidebarContentState.LOADING:
+            return buildLoadingContent();
+        case SidebarContentState.NO_PRODUCTS:
+            return buildNoProductsContent();
+        case SidebarContentState.PRODUCTS:
+            return buildContent();
+        default:
+            return null;
         }
     }
 
