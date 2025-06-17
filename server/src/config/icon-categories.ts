@@ -69,7 +69,7 @@ export const ICON_CATEGORIES = [
     "smartphone",
     "socks",
     "sofa",
-    "soft-drink",
+    "soft-drink-or-bottle",
     "sports",
     "stationery",
     "suit-jacket",
