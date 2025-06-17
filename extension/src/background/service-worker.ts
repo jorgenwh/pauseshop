@@ -64,7 +64,7 @@ chrome.runtime.onMessage.addListener(
                 `[PauseShop:ServiceWorker] Starting screenshot analysis for pauseId: ${message.pauseId}, has abort signal: ${!!abortSignal}`,
             );
 
-            handleScreenshotAnalysis(windowId, message.pauseId, abortSignal, ENABLE_SCREENSHOT_VALIDATION, message.videoBounds)
+            handleScreenshotAnalysis(windowId, message.pauseId, abortSignal, ENABLE_SCREENSHOT_VALIDATION, message.videoBounds, sender.tab?.id)
                 .then(safeSendResponse)
                 .catch((error) => {
                     // Handle AbortError separately
@@ -111,7 +111,7 @@ chrome.runtime.onMessage.addListener(
             const pauseId = `pause-${Date.now()}`;
             const windowId = sender.tab?.windowId || chrome.windows.WINDOW_ID_CURRENT;
             const abortSignal = cancellationRegistry.getAbortSignal(pauseId);
-            handleScreenshotAnalysis(windowId, pauseId, abortSignal, ENABLE_SCREENSHOT_VALIDATION, undefined)
+            handleScreenshotAnalysis(windowId, pauseId, abortSignal, ENABLE_SCREENSHOT_VALIDATION, undefined, sender.tab?.id)
                 .then(safeSendResponse)
                 .catch((error) => {
                     if (error.name === 'AbortError') {
