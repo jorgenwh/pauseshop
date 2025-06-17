@@ -9,7 +9,6 @@
         "64": "icons/icon-128.png",
         "128": "icons/icon-128.png"
     },
-    "permissions": ["activeTab", "storage", "scripting", "tabs", "tabCapture"],
     "host_permissions": [
         "https://*.netflix.com/*",
         "https://*.hulu.com/*",
@@ -32,7 +31,9 @@
                 "https://*.disneyplus.com/*",
                 "https://*.hbomax.com/*"
             ],
-            "js": ["content/main-content.js"],
+            "js": [
+                "content/main-content.js"
+            ],
             "run_at": "document_end"
         }
     ],
