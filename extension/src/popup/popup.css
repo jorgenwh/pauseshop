@@ -1,0 +1,13 @@
+@import "../global.css";
+
+@layer base {
+    html,
+    body {
+        background-color: transparent;
+    }
+
+    body {
+        border-radius: 16px;
+        overflow: hidden;
+    }
+}

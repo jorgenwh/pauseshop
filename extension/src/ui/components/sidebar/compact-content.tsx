@@ -6,12 +6,11 @@ import { getIconCounts, getUniqueIcons } from "../../utils";
 
 interface CompactContentProps {
     productStorage: ProductStorage;
-    isLoading: boolean;
     contentState: SidebarContentState;
     onIconClick: (iconCategory: string) => void;
     position: "right" | "left";
-    onRetryAnalysis: () => void;
     firstIconHasCounter?: boolean;
+    onRetryAnalysis: () => void;
 }
 
 const CompactContent = ({
@@ -19,14 +18,9 @@ const CompactContent = ({
     contentState,
     onIconClick,
     position,
+    firstIconHasCounter,
     onRetryAnalysis,
-    firstIconHasCounter
 }: CompactContentProps) => {
-    const buildLoadingContent = () => {
-        return (
-            <LoadingAnimation />
-        );
-    }
 
     const iconCounts = getIconCounts(productStorage);
     const iconCategories = getUniqueIcons(productStorage);
@@ -119,7 +113,7 @@ const CompactContent = ({
     const renderContent = () => {
         switch (contentState) {
         case SidebarContentState.LOADING:
-            return buildLoadingContent();
+            return <LoadingAnimation />;
         case SidebarContentState.NO_PRODUCTS:
             return buildNoProductsContent();
         case SidebarContentState.PRODUCTS:

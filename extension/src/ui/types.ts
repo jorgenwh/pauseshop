@@ -3,13 +3,7 @@
  */
 
 import { AmazonScrapedProduct } from "../types/amazon";
-import { Category, Product } from "../types/common";
-
-export interface ProductDisplayData {
-    name: string;
-    products: AmazonScrapedProduct[];
-    category: Category;
-}
+import { Product } from "../types/common";
 
 export interface ProductGroup {
     product: Product;
@@ -21,13 +15,6 @@ export interface ProductStorage {
     productGroups: ProductGroup[];
 }
 
-export enum SidebarState {
-    HIDDEN = "hidden",
-    VISIBLE = "visible",
-    SLIDING_IN = "sliding-in",
-    SLIDING_OUT = "sliding-out",
-}
-
 export enum SidebarContentState {
     LOADING = "loading",
     PRODUCTS = "products",
@@ -35,19 +22,16 @@ export enum SidebarContentState {
     ERROR = "error",
 }
 
+export type SidebarPosition = "left" | "right";
+
 export interface SidebarConfig {
-    position: "right" | "left";
-    compact: boolean;
+    position: SidebarPosition;
 }
 
 export interface SidebarEvents {
     onShow: () => void;
     onHide: () => void;
-    onContentStateChange: (state: SidebarContentState) => void;
     onProductClick: (product: AmazonScrapedProduct) => void;
-    onError: (error: Error) => void;
-    onToggleCompact: () => void; // New event for toggling compact mode
-    onTogglePosition: () => void;
     onClose: () => void; // New event for closing the UI and stopping background processing
     onRetryAnalysis: () => void;
 }
@@ -86,7 +70,12 @@ export interface ToggleSidebarPositionMessage {
 }
 
 export interface RetryAnalysisMessage {
-    type: "retry_analysis";
+    type: "retryAnalysis";
+}
+
+export interface CancelAnalysisMessage {
+    type: "cancel_analysis";
+    pauseId: string;
 }
 
 export type BackgroundMessage =
@@ -96,4 +85,5 @@ export type BackgroundMessage =
     | AnalysisErrorMessage
     | AnalysisCancelledMessage
     | ToggleSidebarPositionMessage
-    | RetryAnalysisMessage;
+    | RetryAnalysisMessage
+    | CancelAnalysisMessage;

@@ -1,10 +1,4 @@
 import { motion } from "motion/react";
-import { 
-    SIDEBAR_HEADER_HEIGHT, 
-    SIDEBAR_HEADER_HEIGHT_COMPACT, 
-    SIDEBAR_HEADER_COMPACT_ICON_SIZE,
-    SIDEBAR_HEADER_EXPANDED_ICON_SIZE
-} from "../../constants";
 import "../../css/components/sidebar/header.css";
 import { SidebarContentState } from "../../types";
 
@@ -141,7 +135,7 @@ const Header = ({
         <div
             className={headerClasses}
             style={{
-                height: `${compact ? SIDEBAR_HEADER_HEIGHT_COMPACT : SIDEBAR_HEADER_HEIGHT}px`,
+                height: `${compact ? 35 : 45}px`,
             }}
         >
             <img
@@ -149,8 +143,8 @@ const Header = ({
                 alt="PauseShop Icon"
                 className={"pauseshop-sidebar-header-icon icon" + (compact ? " compact" : "")}
                 style={{
-                    width: `${compact ? SIDEBAR_HEADER_COMPACT_ICON_SIZE : SIDEBAR_HEADER_EXPANDED_ICON_SIZE}px`,
-                    height: `${compact ? SIDEBAR_HEADER_COMPACT_ICON_SIZE : SIDEBAR_HEADER_EXPANDED_ICON_SIZE}px`,
+                    width: "30px",
+                    height: "30px",
                 }}
             />
             <div className="pauseshop-sidebar-header-title-container">
