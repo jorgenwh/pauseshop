@@ -8,7 +8,6 @@ import ReactDOM from "react-dom/client";
 import Sidebar from "./components/sidebar/sidebar";
 import { AmazonScrapedProduct } from "../types/amazon";
 import {
-    DEFAULT_SIDEBAR_POSITION,
     DEFAULT_COMPACT,
     UI_CONTAINER_CLASS_NAME,
 } from "./constants";
@@ -23,8 +22,9 @@ import {
     AnalysisErrorMessage,
     ProductGroupUpdateMessage,
     ProductStorage,
-    AnalysisCancelledMessage
+    AnalysisCancelledMessage,
 } from "./types";
+import { getSidebarPosition, setSidebarPosition } from "../storage";
 
 export class UIManager {
     private container: HTMLElement | null = null;
@@ -43,11 +43,10 @@ export class UIManager {
 
     constructor() {
         this.sidebarConfig = {
-            position: DEFAULT_SIDEBAR_POSITION,
+            position: "left", // Default value, will be updated from storage
             compact: DEFAULT_COMPACT,
         };
 
-        // Initialize with actual event handlers
         this.sidebarEvents = {
             onShow: () => { },
             onHide: () => {
@@ -73,28 +72,26 @@ export class UIManager {
                 this.sidebarConfig.compact = !this.sidebarConfig.compact;
                 this.renderSidebar();
             },
-            onTogglePosition: () => {
-                this.sidebarConfig.position =
-                    this.sidebarConfig.position === "right" ? "left" : "right";
-                this.renderSidebar();
-            },
             onClose: () => {
-                // Send message to background script to cancel any ongoing analysis
                 if (this.productStorage.pauseId) {
                     chrome.runtime.sendMessage({
                         type: "cancel_analysis",
-                        pauseId: this.productStorage.pauseId
+                        pauseId: this.productStorage.pauseId,
                     });
                 }
-                // Hide the sidebar
                 this.hideSidebar();
             },
             onRetryAnalysis: () => {
                 chrome.runtime.sendMessage({ action: "retryAnalysis" });
-            }
+            },
         };
 
-        // Add message listener for background script communication only once
+        // Load sidebar position from storage
+        getSidebarPosition().then((position) => {
+            this.sidebarConfig.position = position;
+            this.renderSidebar();
+        });
+
         chrome.runtime.onMessage.addListener(this.handleBackgroundMessages);
     }
 
@@ -314,7 +311,7 @@ export class UIManager {
             result = this.handleAnalysisCancelled(message);
             break;
         case "toggleSidebarPosition":
-            this.sidebarEvents.onTogglePosition();
+            this.toggleSidebarPosition();
             result = true;
             break;
         case "retry_analysis":
@@ -329,14 +326,20 @@ export class UIManager {
         sendResponse(result);
     };
 
+    private async toggleSidebarPosition(): Promise<void> {
+        const newPosition =
+            this.sidebarConfig.position === "left" ? "right" : "left";
+        this.sidebarConfig.position = newPosition;
+        await setSidebarPosition(newPosition);
+        this.renderSidebar();
+    }
+
     public cleanup(): void {
-        // Unmount React component
         if (this.reactRoot) {
             this.reactRoot.unmount();
             this.reactRoot = null;
         }
 
-        // Remove container from DOM if it exists and has a parent
         if (this.container && this.container.parentNode) {
             this.container.parentNode.removeChild(this.container);
         }
@@ -344,7 +347,6 @@ export class UIManager {
 
         this.isInitialized = false;
 
-        // Remove message listener for background script communication
         chrome.runtime.onMessage.removeListener(this.handleBackgroundMessages);
     }
 

@@ -2,7 +2,7 @@ import { UIManager } from "../ui/ui-manager";
 import type { VideoBounds } from "../background/types";
 
 interface ScreenshotMessage {
-    action: "captureScreenshot";
+    type: "captureScreenshot";
     pauseId: string;
     videoBounds?: VideoBounds;
 }
@@ -42,7 +42,7 @@ export const captureScreenshot = async (pauseId: string): Promise<void> => {
     try {
         const videoBounds = getVideoBounds();
         const message: ScreenshotMessage = {
-            action: "captureScreenshot",
+            type: "captureScreenshot",
             pauseId: pauseId,
             videoBounds: videoBounds || undefined,
         };

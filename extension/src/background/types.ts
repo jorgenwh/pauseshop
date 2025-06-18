@@ -3,7 +3,7 @@
  */
 
 export interface ScreenshotMessage {
-    action: "captureScreenshot";
+    type: "captureScreenshot";
     pauseId: string;
     videoBounds?: VideoBounds;
 }
@@ -25,21 +25,21 @@ export interface ScreenshotResponse {
 }
 
 export interface ToggleSidebarPositionMessage {
-    action: "toggleSidebarPosition";
+    type: "toggleSidebarPosition";
 }
 
 export interface RegisterPauseMessage {
-    action: "registerPause";
+    type: "registerPause";
     pauseId: string;
 }
 
 export interface CancelPauseMessage {
-    action: "cancelPause";
+    type: "cancelPause";
     pauseId: string;
 }
 
 export interface RetryAnalysisMessage {
-    action: "retryAnalysis";
+    type: "retryAnalysis";
 }
 
 
