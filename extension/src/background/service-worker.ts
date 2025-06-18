@@ -51,18 +51,11 @@ chrome.runtime.onMessage.addListener(
         };
 
         if (message.action === "captureScreenshot") {
-            console.log(
-                `[PauseShop:ServiceWorker] Received screenshot capture request for pauseId: ${message.pauseId || "N/A"}`,
-            );
             const windowId =
                 sender.tab?.windowId || chrome.windows.WINDOW_ID_CURRENT;
 
             // Get the abort signal for this pause
             const abortSignal = cancellationRegistry.getAbortSignal(message.pauseId);
-
-            console.log(
-                `[PauseShop:ServiceWorker] Starting screenshot analysis for pauseId: ${message.pauseId}, has abort signal: ${!!abortSignal}`,
-            );
 
             handleScreenshotAnalysis(windowId, message.pauseId, abortSignal, ENABLE_SCREENSHOT_VALIDATION, message.videoBounds, sender.tab?.id)
                 .then(safeSendResponse)
@@ -85,15 +78,9 @@ chrome.runtime.onMessage.addListener(
                     }
                 });
         } else if (message.action === "registerPause") {
-            console.log(
-                `[PauseShop:ServiceWorker] Received registerPause message for pauseId: ${message.pauseId}`,
-            );
             cancellationRegistry.registerPause(message.pauseId);
             safeSendResponse({ success: true });
         } else if (message.action === "cancelPause") {
-            console.log(
-                `[PauseShop:ServiceWorker] Received cancelPause message for pauseId: ${message.pauseId}`,
-            );
             cancellationRegistry.cancelPause(message.pauseId);
             safeSendResponse({ success: true });
         } else if (message.action === "toggleSidebarPosition") {

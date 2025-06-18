@@ -18,14 +18,6 @@ const injectCss = () => {
 
 injectCss();
 
-// Establish a long-lived port connection with the background script
-const backgroundPort = chrome.runtime.connect({
-    name: "pauseshop-content-script",
-});
-backgroundPort.onDisconnect.addListener(() => {
-    console.log("[Content Script] Disconnected from background script.");
-});
-
 // Initialize components based on current URL
 let cleanupVideoDetector: (() => void) | null = null;
 let uiManagerInstance: UIManager | null = null;
@@ -39,15 +31,13 @@ const shouldActivateExtension = (): boolean => {
 
 const initializeExtension = (): void => {
     if (!shouldActivateExtension()) {
-        console.log("[PauseShop] No video element found, skipping initialization");
+        console.warn("[PauseShop] No video element found, skipping initialization");
         return;
     }
-    
-    console.log("[PauseShop] Initializing extension on page with video:", window.location.href);
-    
+
     initializeScreenshotCapturer();
     cleanupVideoDetector = initializeVideoDetector();
-    
+
     uiManagerInstance = UIManager.create();
     if (uiManagerInstance) {
         setUIManager(uiManagerInstance);
@@ -58,7 +48,7 @@ const initializeExtension = (): void => {
 
 const initializeExtensionWithRetry = (retryCount = 0, maxRetries = 10): void => {
     const videoElement = document.querySelector("video");
-    
+
     if (videoElement) {
         initializeExtension();
     } else if (retryCount < maxRetries) {
@@ -68,13 +58,11 @@ const initializeExtensionWithRetry = (retryCount = 0, maxRetries = 10): void => 
     } else {
         // Even if no video found after retries, still try to initialize
         // The video might be added dynamically later
-        console.log("[PauseShop] No video found after retries, but will monitor for dynamic video elements");
+        console.warn("[PauseShop] No video found after retries, but will monitor for dynamic video elements");
     }
 };
 
 const cleanupExtension = (): void => {
-    console.log("[PauseShop] Cleaning up extension");
-    
     if (cleanupVideoDetector) {
         cleanupVideoDetector();
         cleanupVideoDetector = null;
@@ -91,14 +79,13 @@ let lastUrl = window.location.href;
 const checkForUrlChange = (): void => {
     const currentUrl = window.location.href;
     if (currentUrl !== lastUrl) {
-        console.log(`[PauseShop] URL changed from ${lastUrl} to ${currentUrl}`);
         lastUrl = currentUrl;
-        
+
         // Clean up existing extension if active
         if (cleanupVideoDetector) {
             cleanupExtension();
         }
-        
+
         // Reinitialize if we're now on a supported page
         // Use a delay and retry mechanism for SPA content loading
         setTimeout(() => {

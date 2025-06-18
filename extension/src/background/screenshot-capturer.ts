@@ -15,7 +15,7 @@ export const captureAndCropScreenshot = async (windowId: number, videoBounds?: V
     const fullScreenshot = await captureScreenshot(windowId);
 
     if (!videoBounds) {
-        console.log("[PauseShop:ScreenshotCapturer] No video bounds provided, returning full screenshot");
+        console.warn("[PauseShop:ScreenshotCapturer] No video bounds provided, returning full screenshot");
         return fullScreenshot;
     }
 
@@ -65,7 +65,7 @@ const cropScreenshot = async (dataUrl: string, bounds: VideoBounds): Promise<str
 
     } catch (error) {
         console.error('[PauseShop:ScreenshotCapturer] Error cropping screenshot:', error);
-        console.log('[PauseShop:ScreenshotCapturer] Returning full screenshot as fallback');
+        console.warn('[PauseShop:ScreenshotCapturer] Returning full screenshot as fallback');
         return dataUrl;
     }
 };
