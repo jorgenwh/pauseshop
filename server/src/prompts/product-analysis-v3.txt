@@ -68,7 +68,7 @@ Format your response as a JSON array of objects with this structure:
 **DETAILED GUIDELINES FOR ATTRIBUTES**
 
 **Product Name:** 
-- Max 25 characters. Be concise but descriptive.
+- Be concise but descriptive, try to keep it to 3-4 words.
 - Only include gender in the product name if there are multiple similar products where one is clearly for men and another for women, to differentiate them (e.g., "men's t-shirt", "women's t-shirt").
 - If only one gender-specific product is found, do not include gender in the name.
 - For electronics use [brand] [model] format if known, otherwise use generic terms.
@@ -112,13 +112,6 @@ Examples:
 - For items where a generic description is not useful for consumer search and requires high specificity for a meaningful result (e.g., specific electronics like laptops, beverages like wine bottles), do your best to determine the exact product type, brand, or model. Only provide search terms if you are highly confident in this specific identification.
 - If confidence is low, provide only very broad, non-specific terms or omit search terms entirely.
 
-**Size and Scale Context:**
-Consider relative sizing in the image:
-- Accessories vs. main clothing items
-- Furniture scale indicators  
-- Electronics size categories (phone vs. tablet vs. laptop)
-This helps with search term accuracy and product categorization.
-
 **Style and Trend Context:**
 Include relevant style descriptors:
 - Current fashion trends ("oversized", "cropped", "high-waisted")
@@ -135,7 +128,7 @@ Include relevant style descriptors:
 
 **EXCLUSION CRITERIA (IGNORE)**
 - Generic backgrounds (walls, floors, ceilings)
-- Text/UI elements
+- Text/UI elements/logos that are not part of a product
 - Very small or unclear items (< 5% of image area)
 - Items that are clearly not purchasable products
 - Very high-value items like vehicles or buildings
