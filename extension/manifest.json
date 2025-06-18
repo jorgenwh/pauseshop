@@ -24,7 +24,8 @@
             "matches": [
                 "https://*.netflix.com/*",
                 "https://*.hulu.com/*",
-                "https://*.youtube.com/*",
+                "https://*.youtube.com/watch*",
+                "https://*.youtube.com/shorts*",
                 "https://*.primevideo.com/*",
                 "https://*.disneyplus.com/*",
                 "https://*.hbomax.com/*"
@@ -41,12 +42,13 @@
                 "ui/*",
                 "content/main-content.css",
                 "icons/*",
-                "fonts/*.ttf"
+                "fonts/*"
             ],
             "matches": [
                 "https://*.netflix.com/*",
                 "https://*.hulu.com/*",
-                "https://*.youtube.com/*",
+                "https://*.youtube.com/watch*",
+                "https://*.youtube.com/shorts*",
                 "https://*.primevideo.com/*",
                 "https://*.disneyplus.com/*",
                 "https://*.hbomax.com/*"
