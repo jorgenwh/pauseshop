@@ -1,11 +1,13 @@
-html,
-body {
-    background-color: transparent;
-}
+@import "../global.css";
 
-body {
-    border-radius: 16px;
-    overflow: hidden;
-    width: 250px;
-    height: 125px;
+@layer base {
+    html,
+    body {
+        background-color: transparent;
+    }
+
+    body {
+        border-radius: 16px;
+        overflow: hidden;
+    }
 }

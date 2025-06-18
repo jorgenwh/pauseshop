@@ -26,10 +26,8 @@ const PopupApp = () => {
 
     return (
         <div
-            className="p-4 text-center font-sans h-full"
-            style={{
-                backgroundColor: "var(--pauseshop-bg)",
-            }}
+            className="p-4 text-center font-sans"
+            style={{ backgroundColor: "var(--pauseshop-bg)" }}
         >
             <h1 className="text-lg font-bold mb-2" style={{ color: "white" }}>
                 PauseShop Settings
@@ -40,7 +38,7 @@ const PopupApp = () => {
                 </span>
                 <button
                     onClick={handleToggleSidebarPosition}
-                    className="px-4 py-2 text-white rounded-md"
+                    className="px-4 py-2 text-white rounded-md w-20"
                     style={{ backgroundColor: "var(--pauseshop-theme-trim-color)" }}
                 >
                     {position === "left" ? "Left" : "Right"}
