@@ -1,11 +1,5 @@
 import { UIManager } from "../ui/ui-manager";
-import type { VideoBounds } from "../background/types";
-
-interface ScreenshotMessage {
-    type: "captureScreenshot";
-    pauseId: string;
-    videoBounds?: VideoBounds;
-}
+import type { VideoBounds, ScreenshotMessage } from "../background/types";
 
 export let uiManager: UIManager | null = null;
 

@@ -9,7 +9,6 @@ import Sidebar from "./components/sidebar/sidebar";
 import { AmazonScrapedProduct } from "../types/amazon";
 import { UI_CONTAINER_CLASS_NAME } from "./constants";
 import {
-    // ProductDisplayData,
     SidebarContentState,
     SidebarConfig,
     SidebarEvents,
@@ -49,7 +48,6 @@ export class UIManager {
                 this.productStorage = { pauseId: "", productGroups: [] };
                 this.sidebarContentState = SidebarContentState.LOADING;
             },
-            onContentStateChange: (_state: SidebarContentState) => { },
             onProductClick: (product: AmazonScrapedProduct) => {
                 if (product.amazonAsin) {
                     window.open(
@@ -60,9 +58,6 @@ export class UIManager {
                     const decodedUrl = product.productUrl.replace(/&/g, "&");
                     window.open(decodedUrl, "_blank");
                 }
-            },
-            onError: (error: Error) => {
-                console.error(`Sidebar error: ${error.message}`);
             },
             onClose: () => {
                 if (this.productStorage.pauseId) {
@@ -147,11 +142,7 @@ export class UIManager {
                         productStorage={this.productStorage}
                         onShow={this.sidebarEvents.onShow}
                         onHide={this.sidebarEvents.onHide}
-                        onContentStateChange={
-                            this.sidebarEvents.onContentStateChange
-                        }
                         onProductClick={this.sidebarEvents.onProductClick}
-                        onError={this.sidebarEvents.onError}
                         onClose={this.sidebarEvents.onClose}
                         onRetryAnalysis={this.sidebarEvents.onRetryAnalysis}
                     />
@@ -304,8 +295,8 @@ export class UIManager {
             this.toggleSidebarPosition();
             result = true;
             break;
-        case "retry_analysis":
-            this.sidebarEvents.onRetryAnalysis();
+        case "cancel_analysis":
+            this.hideSidebar();
             result = true;
             break;
         default:

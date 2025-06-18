@@ -5,12 +5,6 @@
 import { AmazonScrapedProduct } from "../types/amazon";
 import { Category, Product } from "../types/common";
 
-export interface ProductDisplayData {
-    name: string;
-    products: AmazonScrapedProduct[];
-    category: Category;
-}
-
 export interface ProductGroup {
     product: Product;
     scrapedProducts: AmazonScrapedProduct[];
@@ -19,13 +13,6 @@ export interface ProductGroup {
 export interface ProductStorage {
     pauseId: string;
     productGroups: ProductGroup[];
-}
-
-export enum SidebarState {
-    HIDDEN = "hidden",
-    VISIBLE = "visible",
-    SLIDING_IN = "sliding-in",
-    SLIDING_OUT = "sliding-out",
 }
 
 export enum SidebarContentState {
@@ -44,9 +31,7 @@ export interface SidebarConfig {
 export interface SidebarEvents {
     onShow: () => void;
     onHide: () => void;
-    onContentStateChange: (state: SidebarContentState) => void;
     onProductClick: (product: AmazonScrapedProduct) => void;
-    onError: (error: Error) => void;
     onClose: () => void; // New event for closing the UI and stopping background processing
     onRetryAnalysis: () => void;
 }
@@ -85,7 +70,12 @@ export interface ToggleSidebarPositionMessage {
 }
 
 export interface RetryAnalysisMessage {
-    type: "retry_analysis";
+    type: "retryAnalysis";
+}
+
+export interface CancelAnalysisMessage {
+    type: "cancel_analysis";
+    pauseId: string;
 }
 
 export type BackgroundMessage =
@@ -95,4 +85,5 @@ export type BackgroundMessage =
     | AnalysisErrorMessage
     | AnalysisCancelledMessage
     | ToggleSidebarPositionMessage
-    | RetryAnalysisMessage;
+    | RetryAnalysisMessage
+    | CancelAnalysisMessage;

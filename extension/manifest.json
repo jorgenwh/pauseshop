@@ -14,12 +14,6 @@
         "128": "icons/icon-128-trim-color.png"
     },
     "host_permissions": [
-        "https://*.netflix.com/*",
-        "https://*.hulu.com/*",
-        "https://*.amazon.com/*",
-        "https://*.primevideo.com/*",
-        "https://*.disneyplus.com/*",
-        "https://*.hbomax.com/*",
         "<all_urls>"
     ],
     "background": {

@@ -1,7 +1,7 @@
 import { motion } from "motion/react";
-import { 
-    SIDEBAR_HEADER_HEIGHT, 
-    SIDEBAR_HEADER_HEIGHT_COMPACT, 
+import {
+    SIDEBAR_HEADER_HEIGHT,
+    SIDEBAR_HEADER_HEIGHT_COMPACT,
     SIDEBAR_HEADER_COMPACT_ICON_SIZE,
     SIDEBAR_HEADER_EXPANDED_ICON_SIZE
 } from "../../constants";

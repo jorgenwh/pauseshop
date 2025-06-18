@@ -8,21 +8,6 @@ import { cancellationRegistry } from "./cancellation-registry";
 import { ENABLE_SCREENSHOT_VALIDATION } from "./screenshot-debug";
 import type { BackgroundMessage, ScreenshotResponse } from "./types";
 
-const activePorts = new Map<number, chrome.runtime.Port>();
-
-chrome.runtime.onConnect.addListener((port) => {
-    if (port.name === "pauseshop-content-script") {
-        if (port.sender?.tab?.id) {
-            const tabId = port.sender.tab.id;
-            activePorts.set(tabId, port);
-
-            port.onDisconnect.addListener(() => {
-                activePorts.delete(tabId);
-            });
-        }
-    }
-});
-
 chrome.runtime.onMessage.addListener(
     (
         message: BackgroundMessage,

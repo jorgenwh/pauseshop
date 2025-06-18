@@ -13,6 +13,7 @@ import { ProductStorage, SidebarContentState } from "../../types";
 import {
     COMPACT_SIDEBAR_WIDTH,
     EXPANDED_SIDEBAR_WIDTH,
+    COMPACT_SIDEBAR_STATIC_HEIGHT,
 } from "../../constants";
 import Header from "./header";
 import Footer from "./footer";
@@ -28,8 +29,6 @@ interface SidebarProps {
     productStorage: ProductStorage;
     onShow: () => void;
     onHide: () => void;
-    onContentStateChange: (state: SidebarContentState) => void;
-    onError: (error: Error) => void;
     onProductClick: (product: AmazonScrapedProduct) => void;
     onClose: () => void;
     onRetryAnalysis: () => void;
@@ -124,7 +123,7 @@ const Sidebar = ({
         `position-${position}`
     ].filter(Boolean).join(" ");
 
-    const sidebarHeight = !isCompact || contentState === SidebarContentState.PRODUCTS ? "auto" : "102px";
+    const sidebarHeight = !isCompact || contentState === SidebarContentState.PRODUCTS ? "auto" : `${COMPACT_SIDEBAR_STATIC_HEIGHT}px`;
  
     return (
         <AnimatePresence mode="sync">
@@ -161,9 +160,6 @@ const Sidebar = ({
                     {isCompact ? (
                         <CompactContent
                             productStorage={productStorage}
-                            isLoading={
-                                contentState === SidebarContentState.LOADING
-                            }
                             onIconClick={handleIconClick}
                             contentState={contentState}
                             position={position}
