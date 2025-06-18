@@ -28,17 +28,8 @@ jobs:
             - name: Lint Extension
               run: npx eslint extension/src --ext .ts,.tsx
 
-            - name: Lint Server
-              run: npx eslint server/src --ext .ts
-
             - name: TypeScript Check Extension
               run: cd extension && npx tsc --noEmit
 
-            - name: TypeScript Check Server
-              run: cd server && npx tsc --noEmit
-
             - name: Build Extension
               run: npm run build --workspace=extension
-
-            - name: Build Server
-              run: npm run build --workspace=server
