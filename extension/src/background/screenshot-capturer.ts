@@ -15,7 +15,7 @@ export const captureAndCropScreenshot = async (windowId: number, videoBounds?: V
     const fullScreenshot = await captureScreenshot(windowId);
 
     if (!videoBounds) {
-        console.log("[PauseShop:ScreenshotCapturer] No video bounds provided, returning full screenshot");
+        console.warn("[PauseShop:ScreenshotCapturer] No video bounds provided, returning full screenshot");
         return fullScreenshot;
     }
 

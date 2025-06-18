@@ -37,8 +37,6 @@ export const analyzeImageStreaming = async (
         },
     };
 
-    console.log(`[PauseShop:ApiClient] Starting streaming analysis`);
-
     try {
         // Since EventSource only supports GET, we need to use fetch with streaming response
         const response = await fetch(url, {
@@ -108,7 +106,7 @@ export const analyzeImageStreaming = async (
                                         callbacks.onProduct(parsedData);
                                     } else if (
                                         parsedData.totalProducts !==
-                                            undefined ||
+                                        undefined ||
                                         parsedData.processingTime !== undefined
                                     ) {
                                         // This is a complete event

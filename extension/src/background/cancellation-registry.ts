@@ -12,17 +12,12 @@ export class CancellationRegistry {
      */
     registerPause(pauseId: string): AbortController {
         // Cancel existing operation if it exists
-        const hadExisting = this.controllers.has(pauseId);
-        if (hadExisting) {
-            console.log(`[PauseShop:CancellationRegistry] Cancelling previous pause before registering new one for pauseId: ${pauseId}`);
-        }
         this.cancelPause(pauseId);
 
         // Create new AbortController
         const controller = new AbortController();
         this.controllers.set(pauseId, controller);
 
-        console.log(`[PauseShop:CancellationRegistry] Registered pause for pauseId: ${pauseId}`);
         return controller;
     }
 
@@ -55,7 +50,6 @@ export class CancellationRegistry {
      */
     getAbortSignal(pauseId: string): AbortSignal | undefined {
         const controller = this.controllers.get(pauseId);
-        console.log(`[PauseShop:CancellationRegistry] Getting abort signal for pauseId: ${pauseId}, exists: ${!!controller}`);
         return controller?.signal;
     }
 
@@ -73,7 +67,6 @@ export class CancellationRegistry {
         const controller = this.controllers.get(pauseId);
         if (controller && !controller.signal.aborted) {
             this.controllers.delete(pauseId);
-            console.log(`[PauseShop:CancellationRegistry] Cleaned up completed pause for pauseId: ${pauseId}`);
         }
     }
 }

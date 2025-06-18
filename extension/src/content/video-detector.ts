@@ -25,24 +25,20 @@ const handlePause =
 
             // Don't trigger extension if video has ended
             const videoElement = event.target as HTMLVideoElement;
-            console.log("ended=", videoElement.ended);
             if (videoElement && videoElement.ended) {
-                console.log(`[PauseShop:VideoDetector] Ignoring pause because video has ended`);
                 return;
             }
 
             // Don't trigger extension if video is near the end
             if (videoElement && videoElement.duration - videoElement.currentTime < 0.25) {
-                console.log(`[PauseShop:VideoDetector] Ignoring pause because video is near the end`);
+                console.warn(`[PauseShop:VideoDetector] Ignoring pause because video is near the end`);
                 return;
             }
 
             const newPauseId = Date.now().toString();
             seekingState.currentPauseId = newPauseId;
-            console.log(`[PauseShop:VideoDetector] Pause detected with pauseId: ${newPauseId}`);
 
             // Register the new pause with the background service worker
-            console.log(`[PauseShop:VideoDetector] Sending registerPause message for pauseId: ${newPauseId}`);
             chrome.runtime.sendMessage({
                 action: "registerPause",
                 pauseId: newPauseId
@@ -67,7 +63,7 @@ const handlePause =
                 if (videoElement && videoElement.paused && seekingState.currentPauseId === newPauseId) {
                     if (!seekingState.isSeeking) {
                         captureScreenshot(newPauseId).catch((_error) => {
-                        // Error logging is handled within captureScreenshot
+                            // Error logging is handled within captureScreenshot
                         });
                     }
                 }
@@ -80,10 +76,8 @@ const handlePlay =
         (_event: Event): void => {
             if (seekingState.currentPauseId !== null) {
                 const pauseIdToCancel = seekingState.currentPauseId;
-                console.log(`[PauseShop:VideoDetector] Play detected, cancelling pauseId: ${pauseIdToCancel}`);
 
                 // Cancel the current pause analysis
-                console.log(`[PauseShop:VideoDetector] Sending cancelPause message for pauseId: ${pauseIdToCancel}`);
                 chrome.runtime.sendMessage({
                     action: "cancelPause",
                     pauseId: pauseIdToCancel
@@ -166,7 +160,7 @@ const handleTimeUpdate =
 
             if (
                 timeDifference > timeJumpThreshold &&
-            seekingState.previousCurrentTime > 0
+                seekingState.previousCurrentTime > 0
             ) {
                 if (!seekingState.isSeeking) {
                     handleSeeking(seekingState)(event);
@@ -247,12 +241,6 @@ const scanForVideos = (): HTMLVideoElement | null => {
             }
         }
     });
-
-    if (targetVideo) {
-        console.log(
-            `[PauseShop:VideoDetector] Found video element: ${targetVideo}`,
-        );
-    }
 
     return targetVideo;
 };

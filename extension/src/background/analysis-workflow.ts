@@ -22,12 +22,10 @@ export const handleScreenshotAnalysis = async (
     videoBounds?: VideoBounds,
     originTabId?: number,
 ): Promise<ScreenshotResponse> => {
-    console.log(`[PauseShop:AnalysisWorkflow] Starting handleScreenshotAnalysis for pauseId: ${pauseId}`);
-
     try {
         // Check if already aborted
         if (abortSignal?.aborted) {
-            console.log(`[PauseShop:AnalysisWorkflow] Already aborted at start for pauseId: ${pauseId}`);
+            console.warn(`[PauseShop:AnalysisWorkflow] Already aborted at start for pauseId: ${pauseId}`);
             throw new DOMException('Operation aborted', 'AbortError');
         }
 
@@ -35,7 +33,6 @@ export const handleScreenshotAnalysis = async (
 
         // Optionally open screenshot in new tab for validation
         if (enableScreenshotValidation) {
-            console.log(`[PauseShop:AnalysisWorkflow] Opening screenshot for validation (pauseId: ${pauseId})`);
             await openScreenshotForValidation(imageData);
         }
 
@@ -77,11 +74,8 @@ export const handleScreenshotAnalysis = async (
                 onProduct: async (product: Product) => {
                     // Check if aborted before processing product
                     if (abortSignal?.aborted) {
-                        console.log(`[PauseShop:AnalysisWorkflow] Product processing aborted for pauseId: ${pauseId}, product: ${product.name}`);
                         return;
                     }
-
-                    console.log(`[PauseShop:AnalysisWorkflow] Starting product processing for pauseId: ${pauseId}, product: ${product.name}`);
 
                     // Create a promise for this product's async processing
                     const productProcessingPromise = (async () => {
@@ -127,7 +121,6 @@ export const handleScreenshotAnalysis = async (
                             // Send a single message with the original product and all scraped products
                             // Use the same tabId from the start of the analysis
                             if (tabId) {
-                                console.log("tabId:", tabId);
                                 chrome.tabs
                                     .sendMessage(tabId, {
                                         type: "product_group_update",
@@ -257,7 +250,7 @@ export const handleScreenshotAnalysis = async (
         if (error instanceof Error && error.name === 'AbortError') {
             throw error;
         }
-        
+
         const errorMessage =
             error instanceof Error ? error.message : "Unknown error";
         console.error(

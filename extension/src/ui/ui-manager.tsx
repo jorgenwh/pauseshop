@@ -49,17 +49,12 @@ export class UIManager {
 
         // Initialize with actual event handlers
         this.sidebarEvents = {
-            onShow: () => {
-                console.log("Sidebar shown.");
-            },
+            onShow: () => { },
             onHide: () => {
-                console.log("Sidebar hidden.");
                 this.productStorage = { pauseId: "", productGroups: [] };
                 this.sidebarContentState = SidebarContentState.LOADING;
             },
-            onContentStateChange: (state: SidebarContentState) => {
-                console.log(`Sidebar content state changed to: ${state}`);
-            },
+            onContentStateChange: (_state: SidebarContentState) => { },
             onProductClick: (product: AmazonScrapedProduct) => {
                 if (product.amazonAsin) {
                     window.open(
@@ -84,7 +79,6 @@ export class UIManager {
                 this.renderSidebar();
             },
             onClose: () => {
-                console.log("Sidebar close requested - cancelling analysis and hiding UI.");
                 // Send message to background script to cancel any ongoing analysis
                 if (this.productStorage.pauseId) {
                     chrome.runtime.sendMessage({
@@ -145,7 +139,6 @@ export class UIManager {
             this.renderSidebar(); // Initial render of the React sidebar
 
             this.isInitialized = true;
-            console.log("UIManager initialized successfully.");
             return true;
         } catch (error) {
             console.error(`Failed to initialize UI Manager: ${error}`);
@@ -228,16 +221,7 @@ export class UIManager {
     private handleAnalysisStarted = (
         message: AnalysisStartedMessage,
     ): boolean => {
-        console.log(
-            `[PauseShop:UIManager] Received analysis_started message for pauseId: ${message.pauseId}`,
-        );
         // Update the current pauseId when a new analysis starts
-        const previousPauseId = this.productStorage.pauseId;
-        if (previousPauseId && previousPauseId !== message.pauseId) {
-            console.log(
-                `[PauseShop:UIManager] Transitioning pauseId from ${previousPauseId} to ${message.pauseId}`,
-            );
-        }
         this.productStorage = { pauseId: message.pauseId, productGroups: [] };
         this.sidebarContentState = SidebarContentState.LOADING;
         this.sidebarVisible = true; // Make sure sidebar is visible when analysis starts
@@ -248,10 +232,6 @@ export class UIManager {
     private handleAnalysisComplete = (
         message: AnalysisCompleteMessage,
     ): boolean => {
-        console.log(
-            `[PauseShop:UIManager] Received analysis_complete for pauseId: ${message.pauseId}`,
-        );
-
         if (this.productStorage.pauseId !== message.pauseId) {
             console.warn(
                 `[PauseShop:UIManager] Ignoring analysis_complete from old pauseId: ${message.pauseId}`,
@@ -261,9 +241,6 @@ export class UIManager {
 
         // If analysis is complete and no products have been found, update state
         if (this.productStorage.productGroups.length === 0) {
-            console.log(
-                `[PauseShop:UIManager] No products found for pauseId: ${message.pauseId}. Setting state to NO_PRODUCTS.`,
-            );
             this.sidebarContentState = SidebarContentState.NO_PRODUCTS;
             this.renderSidebar();
         }
@@ -284,15 +261,8 @@ export class UIManager {
     private handleProductGroupUpdate = (
         message: ProductGroupUpdateMessage,
     ): boolean => {
-        console.log(
-            `[PauseShop:UIManager] Received product_group_update message for pauseId: ${message.pauseId} with ${message.scrapedProducts.length} products`,
-        );
-
         // Ignore updates from old pauseIds
         if (this.productStorage.pauseId !== message.pauseId) {
-            console.warn(
-                `[PauseShop:UIManager] Ignoring product update from old pauseId: ${message.pauseId} (current pauseId: ${this.productStorage.pauseId})`,
-            );
             return false;
         }
 
@@ -311,19 +281,9 @@ export class UIManager {
     private handleAnalysisCancelled = (
         message: AnalysisCancelledMessage,
     ): boolean => {
-        console.log(
-            `[PauseShop:UIManager] Received analysis_cancelled message for pauseId: ${message.pauseId}`,
-        );
         // Only hide sidebar if this is the current pauseId
         if (this.productStorage.pauseId === message.pauseId) {
-            console.log(
-                `[PauseShop:UIManager] Hiding sidebar for cancelled pauseId: ${message.pauseId}`,
-            );
             this.hideSidebar();
-        } else {
-            console.log(
-                `[PauseShop:UIManager] Ignoring cancellation for old pauseId: ${message.pauseId} (current pauseId: ${this.productStorage.pauseId})`,
-            );
         }
         return true;
     };
