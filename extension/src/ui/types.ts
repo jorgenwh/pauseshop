@@ -39,7 +39,6 @@ export type SidebarPosition = "left" | "right";
 
 export interface SidebarConfig {
     position: SidebarPosition;
-    compact: boolean;
 }
 
 export interface SidebarEvents {
@@ -48,7 +47,6 @@ export interface SidebarEvents {
     onContentStateChange: (state: SidebarContentState) => void;
     onProductClick: (product: AmazonScrapedProduct) => void;
     onError: (error: Error) => void;
-    onToggleCompact: () => void; // New event for toggling compact mode
     onClose: () => void; // New event for closing the UI and stopping background processing
     onRetryAnalysis: () => void;
 }

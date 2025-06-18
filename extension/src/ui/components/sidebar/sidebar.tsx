@@ -4,6 +4,10 @@ import "../../css/base.css";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { AmazonScrapedProduct } from "../../../types/amazon";
+import {
+    getSidebarCompactState,
+    setSidebarCompactState,
+} from "../../../storage";
 
 import { ProductStorage, SidebarContentState } from "../../types";
 import {
@@ -21,14 +25,12 @@ interface SidebarProps {
     isVisible: boolean;
     contentState: SidebarContentState;
     position: "right" | "left";
-    compact: boolean;
     productStorage: ProductStorage;
     onShow: () => void;
     onHide: () => void;
     onContentStateChange: (state: SidebarContentState) => void;
     onError: (error: Error) => void;
     onProductClick: (product: AmazonScrapedProduct) => void;
-    onToggleCompact: () => void;
     onClose: () => void;
     onRetryAnalysis: () => void;
 }
@@ -37,41 +39,40 @@ const Sidebar = ({
     isVisible,
     contentState,
     position,
-    compact,
     productStorage,
     onShow,
     onHide,
-    onToggleCompact,
     onClose,
     onRetryAnalysis,
 }: SidebarProps) => {
-    const [isCompact, setIsCompact] = useState<boolean>(compact);
-    const [lastUserSelectedCompactState, setLastUserSelectedCompactState] =
-        useState<boolean>(compact); // Store the last user-selected compact state
-    const [expandedIconCategory, setExpandedIconCategory] = useState<string | null>(null);
-
+    const [isCompact, setIsCompact] = useState<boolean>(true);
+    const [
+        lastUserSelectedCompactState,
+        setLastUserSelectedCompactState,
+    ] = useState<boolean>(true);
+    const [expandedIconCategory, setExpandedIconCategory] = useState<
+        string | null
+    >(null);
 
     useEffect(() => {
-        // Update isCompact when the prop changes, and store it as the last user-selected state
-        setIsCompact(compact);
-        setLastUserSelectedCompactState(compact);
-    }, [compact]);
+        getSidebarCompactState().then((compact) => {
+            setIsCompact(compact);
+            setLastUserSelectedCompactState(compact);
+        });
+    }, []);
 
     useEffect(() => {
         if (
             contentState === SidebarContentState.LOADING ||
             contentState === SidebarContentState.NO_PRODUCTS
         ) {
-            // When loading, always start in compact mode
             setIsCompact(true);
         } else {
-            // Once loading completes, revert to the last user-selected state
             setIsCompact(lastUserSelectedCompactState);
         }
     }, [contentState, lastUserSelectedCompactState]);
 
     useEffect(() => {
-        // Reset expandedIconCategory when productStorage changes (new pause session)
         setExpandedIconCategory(null);
     }, [productStorage]);
 
@@ -83,14 +84,20 @@ const Sidebar = ({
         }
     }, [isVisible, onShow, onHide]);
 
-    const toggleCompactMode = () => {
-        onToggleCompact();
-        setExpandedIconCategory(null); // Reset when toggling via button
+    const toggleCompactMode = (iconCategory?: string) => {
+        const newCompactState = !isCompact;
+        setIsCompact(newCompactState);
+        setLastUserSelectedCompactState(newCompactState);
+        setSidebarCompactState(newCompactState);
+        setExpandedIconCategory(iconCategory || null);
     };
 
     const handleIconClick = (iconCategory: string) => {
-        setExpandedIconCategory(iconCategory);
-        onToggleCompact();
+        if (contentState === SidebarContentState.NO_PRODUCTS) {
+            onRetryAnalysis();
+        } else {
+            toggleCompactMode(iconCategory);
+        }
     };
 
     const getSidebarTransform = () => {

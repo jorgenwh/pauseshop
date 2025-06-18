@@ -7,10 +7,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import Sidebar from "./components/sidebar/sidebar";
 import { AmazonScrapedProduct } from "../types/amazon";
-import {
-    DEFAULT_COMPACT,
-    UI_CONTAINER_CLASS_NAME,
-} from "./constants";
+import { UI_CONTAINER_CLASS_NAME } from "./constants";
 import {
     // ProductDisplayData,
     SidebarContentState,
@@ -44,7 +41,6 @@ export class UIManager {
     constructor() {
         this.sidebarConfig = {
             position: "left", // Default value, will be updated from storage
-            compact: DEFAULT_COMPACT,
         };
 
         this.sidebarEvents = {
@@ -68,10 +64,6 @@ export class UIManager {
             onError: (error: Error) => {
                 console.error(`Sidebar error: ${error.message}`);
             },
-            onToggleCompact: () => {
-                this.sidebarConfig.compact = !this.sidebarConfig.compact;
-                this.renderSidebar();
-            },
             onClose: () => {
                 if (this.productStorage.pauseId) {
                     chrome.runtime.sendMessage({
@@ -82,7 +74,7 @@ export class UIManager {
                 this.hideSidebar();
             },
             onRetryAnalysis: () => {
-                chrome.runtime.sendMessage({ action: "retryAnalysis" });
+                chrome.runtime.sendMessage({ type: "retryAnalysis" });
             },
         };
 
@@ -152,7 +144,6 @@ export class UIManager {
                         isVisible={this.sidebarVisible}
                         contentState={this.sidebarContentState}
                         position={this.sidebarConfig.position}
-                        compact={this.sidebarConfig.compact}
                         productStorage={this.productStorage}
                         onShow={this.sidebarEvents.onShow}
                         onHide={this.sidebarEvents.onHide}
@@ -161,7 +152,6 @@ export class UIManager {
                         }
                         onProductClick={this.sidebarEvents.onProductClick}
                         onError={this.sidebarEvents.onError}
-                        onToggleCompact={this.sidebarEvents.onToggleCompact}
                         onClose={this.sidebarEvents.onClose}
                         onRetryAnalysis={this.sidebarEvents.onRetryAnalysis}
                     />

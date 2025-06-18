@@ -7,8 +7,6 @@ export const SIDEBAR_HEADER_HEIGHT_COMPACT: number = 35;
 export const SIDEBAR_HEADER_COMPACT_ICON_SIZE: number = 30;
 export const SIDEBAR_HEADER_EXPANDED_ICON_SIZE: number = 33;
 
-export const DEFAULT_COMPACT: boolean = true;
-
 export const UI_CONTAINER_CLASS_NAME: string = "pauseshop-ui-container";
 
 export const NO_PRODUCTS_TIMEOUT_MS: number = 8000;

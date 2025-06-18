@@ -10,8 +10,8 @@ interface CompactContentProps {
     contentState: SidebarContentState;
     onIconClick: (iconCategory: string) => void;
     position: "right" | "left";
-    onRetryAnalysis: () => void;
     firstIconHasCounter?: boolean;
+    onRetryAnalysis: () => void;
 }
 
 const CompactContent = ({
@@ -19,8 +19,8 @@ const CompactContent = ({
     contentState,
     onIconClick,
     position,
+    firstIconHasCounter,
     onRetryAnalysis,
-    firstIconHasCounter
 }: CompactContentProps) => {
     const buildLoadingContent = () => {
         return (
