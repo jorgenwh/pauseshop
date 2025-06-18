@@ -1,9 +1,9 @@
-import { motion } from "motion/react";
+import { motion, Variants } from "motion/react";
 import { ProductStorage, SidebarContentState } from "../../types";
 import ProductGroupCard from "./product-group-card";
 import "../../css/components/sidebar/expanded-content.css";
 
-const cardContainerVariants = {
+const cardContainerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
         opacity: 1,
@@ -13,13 +13,13 @@ const cardContainerVariants = {
     },
 };
 
-const cardVariants = {
+const cardVariants: Variants = {
     hidden: {y: 20, opacity: 0 },
     visible: {
         y: 0,
         opacity: 1,
         transition: {
-            type: "tween",
+            type: "tween" as const,
             ease: "easeOut",
             duration: 0.2,
         },
