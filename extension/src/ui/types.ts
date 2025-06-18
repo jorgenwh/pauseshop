@@ -3,7 +3,7 @@
  */
 
 import { AmazonScrapedProduct } from "../types/amazon";
-import { Category, Product } from "../types/common";
+import { Product } from "../types/common";
 
 export interface ProductGroup {
     product: Product;
