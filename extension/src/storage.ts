@@ -15,7 +15,7 @@ export const getSidebarPosition = (): Promise<SidebarPosition> => {
         chrome.storage.sync.get(SIDEBAR_POSITION_KEY, (result) => {
             resolve(
                 (result[SIDEBAR_POSITION_KEY] as SidebarPosition) ||
-                    DEFAULT_SIDEBAR_POSITION,
+                DEFAULT_SIDEBAR_POSITION,
             );
         });
     });
@@ -26,7 +26,7 @@ export const getSidebarCompactState = (): Promise<boolean> => {
         chrome.storage.sync.get(SIDEBAR_COMPACT_STATE_KEY, (result) => {
             resolve(
                 (result[SIDEBAR_COMPACT_STATE_KEY] as boolean) ??
-                    DEFAULT_SIDEBAR_COMPACT_STATE,
+                DEFAULT_SIDEBAR_COMPACT_STATE,
             );
         });
     });

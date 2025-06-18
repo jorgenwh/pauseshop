@@ -7,7 +7,6 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import Sidebar from "./components/sidebar/sidebar";
 import { AmazonScrapedProduct } from "../types/amazon";
-import { UI_CONTAINER_CLASS_NAME } from "./constants";
 import {
     SidebarContentState,
     SidebarConfig,
@@ -84,14 +83,14 @@ export class UIManager {
 
     private createContainer(): void {
         const existingContainer = document.querySelector(
-            `.${UI_CONTAINER_CLASS_NAME}`,
+            ".pauseshop-ui-container",
         );
         if (existingContainer) {
             existingContainer.remove();
         }
 
         this.container = document.createElement("div");
-        this.container.className = UI_CONTAINER_CLASS_NAME;
+        this.container.className = "pauseshop-ui-container";
 
         const containerStyles = {
             position: "fixed" as const,
