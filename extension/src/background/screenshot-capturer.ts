@@ -65,6 +65,7 @@ const cropScreenshot = async (dataUrl: string, bounds: VideoBounds): Promise<str
 
     } catch (error) {
         console.error('[PauseShop:ScreenshotCapturer] Error cropping screenshot:', error);
-        throw error;
+        console.log('[PauseShop:ScreenshotCapturer] Returning full screenshot as fallback');
+        return dataUrl;
     }
 };
