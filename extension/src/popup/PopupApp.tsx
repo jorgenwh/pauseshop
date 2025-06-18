@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { getSidebarPosition, setSidebarPosition } from "../storage";
 import { SidebarPosition } from "../ui/types";
 import { ToggleSidebarPositionMessage } from "../background/types";
+import "../ui/css/base.css";
 
 const PopupApp = () => {
     const [position, setPosition] = useState<SidebarPosition>("left");
@@ -24,13 +25,23 @@ const PopupApp = () => {
     };
 
     return (
-        <div className="p-4 text-center font-sans">
-            <h1 className="text-lg font-bold mb-2">PauseShop Settings</h1>
+        <div
+            className="p-4 text-center font-sans h-full"
+            style={{
+                backgroundColor: "var(--pauseshop-bg)",
+            }}
+        >
+            <h1 className="text-lg font-bold mb-2" style={{ color: "white" }}>
+                PauseShop Settings
+            </h1>
             <div className="flex items-center justify-center">
-                <span className="mr-2">Sidebar Position:</span>
+                <span className="mr-2" style={{ color: "white" }}>
+                    Sidebar Position:
+                </span>
                 <button
                     onClick={handleToggleSidebarPosition}
-                    className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                    className="px-4 py-2 text-white rounded-md"
+                    style={{ backgroundColor: "var(--pauseshop-theme-trim-color)" }}
                 >
                     {position === "left" ? "Left" : "Right"}
                 </button>
