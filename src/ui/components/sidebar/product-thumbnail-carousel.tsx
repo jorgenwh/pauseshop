@@ -30,7 +30,7 @@ const ProductThumbnailCarousel = ({ thumbnails }: ProductThumbnailCarouselProps)
         return (
             <div className="pauseshop-carousel-container">
                 <div className="pauseshop-carousel-single">
-                    <a href={thumbnail.productUrl} target="_blank" rel="noopener noreferrer">
+                    <a href={thumbnail.productUrl} target="_blank" rel="noopener noreferrer" style={{ width: '100%', display: 'block' }}>
                         <img
                             src={thumbnail.thumbnailUrl}
                             alt="Product thumbnail"
@@ -140,7 +140,7 @@ const ThumbnailSlide = forwardRef<
             }}
             exit={{ opacity: 0, x: direction * -50 }}
         >
-            <a href={thumbnail.productUrl} target="_blank" rel="noopener noreferrer">
+            <a href={thumbnail.productUrl} target="_blank" rel="noopener noreferrer" style={{ width: '100%', display: 'block' }}>
                 <img
                     src={thumbnail.thumbnailUrl}
                     alt="Product thumbnail"
