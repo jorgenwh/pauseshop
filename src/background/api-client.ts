@@ -3,7 +3,6 @@
  * Handles HTTP requests to the PauseShop backend server
  */
 
-import { SERVER_BASE_URL } from "./constants";
 import { Product } from "../types/common";
 
 interface AnalyzeRequest {
@@ -28,7 +27,16 @@ export const analyzeImageStreaming = async (
     callbacks: StreamingCallbacks,
     signal?: AbortSignal,
 ): Promise<void> => {
-    const url = `${SERVER_BASE_URL}/analyze/stream`;
+    let serverConfig = process.env.SERVER_CONFIG || "prod";
+    if (serverConfig !== "prod" && serverConfig !== "dev") {
+        console.warn(
+            `[PauseShop:ApiClient] Invalid SERVER_CONFIG value: ${serverConfig}. Defaulting to "prod".`,
+        );
+        serverConfig = "prod";
+    }
+    const url = serverConfig === "prod"
+        ? `${process.env.PROD_SERVER_URL}/analyze/stream`
+        : `${process.env.DEV_SERVER_URL}/analyze/stream`;
 
     const request: AnalyzeRequest = {
         image: imageData,

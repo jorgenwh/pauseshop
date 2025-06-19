@@ -1,6 +1,8 @@
 const path = require("path");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const webpack = require("webpack");
+require('dotenv').config();
 
 module.exports = {
     entry: {
@@ -61,6 +63,11 @@ module.exports = {
                     to: "icons",
                 },
             ],
+        }),
+        new webpack.DefinePlugin({
+            'process.env.SERVER_CONFIG': JSON.stringify(process.env.SERVER_CONFIG || 'prod'),
+            'process.env.PROD_SERVER_URL': JSON.stringify(process.env.PROD_SERVER_URL || ''),
+            'process.env.DEV_SERVER_URL': JSON.stringify(process.env.DEV_SERVER_URL || 'http://localhost:3000'),
         }),
     ],
     optimization: {
