@@ -13,7 +13,6 @@
 
 .pauseshop-sidebar-button {
     background: none;
-    border: 1px solid var(--sidebar-border-color);
     border-radius: 4px;
     cursor: pointer;
     color: var(--sidebar-text-color);

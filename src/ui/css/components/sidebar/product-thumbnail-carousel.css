@@ -1,75 +1,80 @@
 .pauseshop-carousel-container {
-    display: grid;
-    grid-template-columns: 36px 1fr 36px;
+    display: flex;
     align-items: center;
-    gap: 12px;
+    justify-content: center;
     width: 100%;
-    padding: 0.5rem 0;
+    padding: 0;
     position: relative;
 }
 
 .pauseshop-carousel-content {
     position: relative;
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
-    grid-column: 2;
+    width: 100%;
+    overflow: hidden; /* Ensure content stays within borders */
+}
+
+.pauseshop-carousel-strip {
+    display: flex;
+    width: 100%;
+    flex-direction: row;
+    flex-wrap: nowrap;
 }
 
 .pauseshop-carousel-slide {
     display: flex;
     justify-content: center;
     align-items: center;
+    width: 100%;
+    flex: 0 0 100%;
 }
 
 .pauseshop-carousel-image {
-    width: 140px;
-    height: 140px;
+    width: 100%;
+    height: 200px;
     object-fit: cover;
-    border-radius: 0.375rem; /* rounded-md */
-    transition: transform 0.2s ease;
-}
-
-.pauseshop-carousel-image:hover {
-    transform: scale(1.05);
+    border-radius: 0 0 1rem 1rem; /* Match bottom corners of card */
 }
 
 .pauseshop-carousel-button {
-    background: var(--pauseshop-bg, #30b3a4);
+    background: rgba(40, 40, 40, 1); /* Semi-transparent background */
     color: var(--pauseshop-white, #ffffff);
-    width: 26px;
-    height: 26px;
+    width: 40px; /* Increased from 32px (25% larger) */
+    height: 40px; /* Increased from 32px (25% larger) */
     border: none;
-    border-radius: 15%;
+    border-radius: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
     cursor: pointer;
-    position: relative;
-    z-index: 1;
+    position: absolute;
+    z-index: 10;
     outline-offset: 2px;
     transition: background-color 0.2s ease;
-    flex-shrink: 0;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
 }
 
-.pauseshop-carousel-button:hover {
+.pauseshop-carousel-button:not(:disabled):hover {
     background: color-mix(in srgb, var(--pauseshop-theme-trim-color) 75%, black);
     opacity: 0.8;
 }
 
 .pauseshop-carousel-button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
+    /* Removed cursor: not-allowed to keep default cursor */
 }
 
 .pauseshop-carousel-button-prev {
-    grid-column: 1;
-    justify-self: center;
+    left: 10px;
+    top: calc(50% - 20px); /* Adjust for any potential offset */
+    transform: translateY(-50%);
 }
 
 .pauseshop-carousel-button-next {
-    grid-column: 3;
-    justify-self: center;
+    right: 10px;
+    top: calc(50% - 20px); /* Adjust for any potential offset */
+    transform: translateY(-50%);
 }
 
 .pauseshop-carousel-single {
@@ -84,28 +89,31 @@
     justify-content: center;
     align-items: center;
     width: 100%;
-    height: 140px;
+    height: 160px;
     color: var(--pauseshop-white, #bebebe);
     font-style: italic;
-    border: 2px dashed var(--pauseshop-white, #bebebe);
-    border-radius: 0.375rem;
+    background-color: rgba(45, 45, 45, 1.0); /* Slightly lighter than the card background */
+    border-radius: 0 0 1rem 1rem; /* Match bottom corners of card */
     opacity: 0.6;
 }
 
 /* Responsive adjustments */
 @media (max-width: 480px) {
-    .pauseshop-carousel-container {
-        grid-template-columns: 32px 1fr 32px;
-        gap: 8px;
+    .pauseshop-carousel-button {
+        width: 36px; /* Increased from 28px (~29% larger) */
+        height: 36px; /* Increased from 28px (~29% larger) */
     }
 
-    .pauseshop-carousel-button {
-        width: 32px;
-        height: 32px;
+    .pauseshop-carousel-button-prev {
+        left: 5px;
+    }
+
+    .pauseshop-carousel-button-next {
+        right: 5px;
     }
 
     .pauseshop-carousel-image {
-        width: 120px;
-        height: 120px;
+        width: 100%;
+        height: 140px;
     }
 }

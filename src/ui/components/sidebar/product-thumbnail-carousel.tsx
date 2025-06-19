@@ -1,7 +1,7 @@
 "use client"
 
-import { AnimatePresence, motion } from "motion/react";
-import { useState, forwardRef, SVGProps } from "react";
+import { motion } from "motion/react";
+import { useState, SVGProps } from "react";
 import { AmazonScrapedProduct } from "../../../types/amazon";
 import "../../css/components/sidebar/product-thumbnail-carousel.css";
 
@@ -11,7 +11,6 @@ interface ProductThumbnailCarouselProps {
 
 const ProductThumbnailCarousel = ({ thumbnails }: ProductThumbnailCarouselProps) => {
     const [selectedIndex, setSelectedIndex] = useState(0);
-    const [direction, setDirection] = useState<1 | -1>(1);
 
     // Handle empty thumbnails array
     if (!thumbnails || thumbnails.length === 0) {
@@ -30,7 +29,7 @@ const ProductThumbnailCarousel = ({ thumbnails }: ProductThumbnailCarouselProps)
         return (
             <div className="pauseshop-carousel-container">
                 <div className="pauseshop-carousel-single">
-                    <a href={thumbnail.productUrl} target="_blank" rel="noopener noreferrer">
+                    <a href={thumbnail.productUrl} target="_blank" rel="noopener noreferrer" style={{ width: '100%', display: 'block' }}>
                         <img
                             src={thumbnail.thumbnailUrl}
                             alt="Product thumbnail"
@@ -46,118 +45,94 @@ const ProductThumbnailCarousel = ({ thumbnails }: ProductThumbnailCarouselProps)
         const nextIndex = selectedIndex + newDirection;
         if (nextIndex >= 0 && nextIndex < thumbnails.length) {
             setSelectedIndex(nextIndex);
-            setDirection(newDirection);
         }
     }
 
-    const currentThumbnail = thumbnails[selectedIndex];
     const isFirstItem = selectedIndex === 0;
     const isLastItem = selectedIndex === thumbnails.length - 1;
 
     return (
         <div className="pauseshop-carousel-container">
-            <AnimatePresence>
-                {!isFirstItem && (
-                    <motion.button
-                        key="prev-button"
-                        className="pauseshop-carousel-button pauseshop-carousel-button-prev"
-                        aria-label="Previous product"
-                        onClick={() => navigate(-1)}
-                        whileFocus={{ outline: "2px solid var(--pauseshop-theme-trim-color)" }}
-                        whileTap={{ scale: 0.9 }}
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.8 }}
-                        transition={{
-                            type: "spring",
-                            visualDuration: 0.2,
-                            bounce: 0.4,
-                        }}
-                    >
-                        <ArrowLeft />
-                    </motion.button>
-                )}
-            </AnimatePresence>
+            <motion.button
+                key="prev-button"
+                className="pauseshop-carousel-button pauseshop-carousel-button-prev"
+                aria-label="Previous product"
+                onClick={() => navigate(-1)}
+                disabled={isFirstItem}
+                whileFocus={!isFirstItem ? { outline: "2px solid var(--pauseshop-theme-trim-color)" } : {}}
+                whileTap={!isFirstItem ? { scale: 0.9 } : {}}
+                animate={{ 
+                    opacity: isFirstItem ? 0.6 : 1,
+                    scale: 1 
+                }}
+                transition={{
+                    type: "spring",
+                    visualDuration: 0.2,
+                    bounce: 0.4,
+                }}
+            >
+                <ArrowLeft />
+            </motion.button>
 
             <div className="pauseshop-carousel-content">
-                <AnimatePresence
-                    custom={direction}
-                    initial={false}
-                    mode="popLayout"
+                <motion.div
+                    className="pauseshop-carousel-strip"
+                    animate={{ 
+                        x: `-${selectedIndex * 100}%` 
+                    }}
+                    transition={{
+                        duration: 0.6, // 0.6 seconds for a smooth animation
+                        ease: [0.16, 1, 0.3, 1], // Custom cubic-bezier curve with strong deceleration
+                        type: "tween"
+                    }}
                 >
-                    <ThumbnailSlide
-                        key={selectedIndex}
-                        thumbnail={currentThumbnail}
-                        direction={direction}
-                    />
-                </AnimatePresence>
+                    {thumbnails.map((thumbnail, index) => (
+                        <div key={index} className="pauseshop-carousel-slide">
+                            <a href={thumbnail.productUrl} target="_blank" rel="noopener noreferrer" style={{ width: '100%', display: 'block' }}>
+                                <img
+                                    src={thumbnail.thumbnailUrl}
+                                    alt="Product thumbnail"
+                                    className="pauseshop-carousel-image"
+                                />
+                            </a>
+                        </div>
+                    ))}
+                </motion.div>
             </div>
 
-            <AnimatePresence>
-                {!isLastItem && (
-                    <motion.button
-                        key="next-button"
-                        className="pauseshop-carousel-button pauseshop-carousel-button-next"
-                        aria-label="Next product"
-                        onClick={() => navigate(1)}
-                        whileFocus={{ outline: "2px solid var(--pauseshop-theme-trim-color)" }}
-                        whileTap={{ scale: 0.9 }}
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.8 }}
-                        transition={{
-                            type: "spring",
-                            visualDuration: 0.2,
-                            bounce: 0.4,
-                        }}
-                    >
-                        <ArrowRight />
-                    </motion.button>
-                )}
-            </AnimatePresence>
+            <motion.button
+                key="next-button"
+                className="pauseshop-carousel-button pauseshop-carousel-button-next"
+                aria-label="Next product"
+                onClick={() => navigate(1)}
+                disabled={isLastItem}
+                whileFocus={!isLastItem ? { outline: "2px solid var(--pauseshop-theme-trim-color)" } : {}}
+                whileTap={!isLastItem ? { scale: 0.9 } : {}}
+                animate={{ 
+                    opacity: isLastItem ? 0.6 : 1,
+                    scale: 1 
+                }}
+                transition={{
+                    type: "spring",
+                    visualDuration: 0.2,
+                    bounce: 0.4,
+                }}
+            >
+                <ArrowRight />
+            </motion.button>
         </div>
     );
 };
 
-const ThumbnailSlide = forwardRef<
-    HTMLDivElement,
-    { thumbnail: AmazonScrapedProduct; direction: number }
->(function ThumbnailSlide({ thumbnail, direction }, ref) {
-    return (
-        <motion.div
-            ref={ref}
-            className="pauseshop-carousel-slide"
-            initial={{ opacity: 0, x: direction * 50 }}
-            animate={{
-                opacity: 1,
-                x: 0,
-                transition: {
-                    delay: 0.1,
-                    type: "spring",
-                    visualDuration: 0.3,
-                    bounce: 0.4,
-                },
-            }}
-            exit={{ opacity: 0, x: direction * -50 }}
-        >
-            <a href={thumbnail.productUrl} target="_blank" rel="noopener noreferrer">
-                <img
-                    src={thumbnail.thumbnailUrl}
-                    alt="Product thumbnail"
-                    className="pauseshop-carousel-image"
-                />
-            </a>
-        </motion.div>
-    );
-});
+// ThumbnailSlide component removed as we now use a strip-based approach
 
 /**
  * ==============   Icons   ================
  */
 const iconsProps: SVGProps<SVGSVGElement> = {
     xmlns: "http://www.w3.org/2000/svg",
-    width: "20",
-    height: "20",
+    width: "24", // Increased from 20 (20% larger)
+    height: "24", // Increased from 20 (20% larger)
     viewBox: "0 0 24 24",
     fill: "none",
     stroke: "currentColor",

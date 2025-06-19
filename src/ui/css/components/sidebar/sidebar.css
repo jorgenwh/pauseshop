@@ -1,6 +1,5 @@
 .pauseshop-sidebar {
     border-radius: 16px;
-    border: 1px solid var(--sidebar-border-color);
     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
     position: fixed;
     top: 80px;
