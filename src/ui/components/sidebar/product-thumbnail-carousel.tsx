@@ -1,6 +1,6 @@
 "use client"
 
-import { AnimatePresence, motion } from "motion/react";
+import { motion } from "motion/react";
 import { useState, SVGProps } from "react";
 import { AmazonScrapedProduct } from "../../../types/amazon";
 import "../../css/components/sidebar/product-thumbnail-carousel.css";
@@ -11,7 +11,6 @@ interface ProductThumbnailCarouselProps {
 
 const ProductThumbnailCarousel = ({ thumbnails }: ProductThumbnailCarouselProps) => {
     const [selectedIndex, setSelectedIndex] = useState(0);
-    const [direction, setDirection] = useState<1 | -1>(1);
 
     // Handle empty thumbnails array
     if (!thumbnails || thumbnails.length === 0) {
@@ -46,11 +45,9 @@ const ProductThumbnailCarousel = ({ thumbnails }: ProductThumbnailCarouselProps)
         const nextIndex = selectedIndex + newDirection;
         if (nextIndex >= 0 && nextIndex < thumbnails.length) {
             setSelectedIndex(nextIndex);
-            setDirection(newDirection);
         }
     }
 
-    const currentThumbnail = thumbnails[selectedIndex];
     const isFirstItem = selectedIndex === 0;
     const isLastItem = selectedIndex === thumbnails.length - 1;
 
@@ -84,7 +81,7 @@ const ProductThumbnailCarousel = ({ thumbnails }: ProductThumbnailCarouselProps)
                         x: `-${selectedIndex * 100}%` 
                     }}
                     transition={{
-                        duration: 0.6, // Increased from 0.4 to 0.6 seconds for a slower animation
+                        duration: 0.6, // 0.6 seconds for a smooth animation
                         ease: [0.16, 1, 0.3, 1], // Custom cubic-bezier curve with strong deceleration
                         type: "tween"
                     }}
