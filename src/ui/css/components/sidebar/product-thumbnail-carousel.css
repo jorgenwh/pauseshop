@@ -10,9 +10,17 @@
 .pauseshop-carousel-content {
     position: relative;
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
     width: 100%;
+    overflow: hidden; /* Ensure content stays within borders */
+}
+
+.pauseshop-carousel-strip {
+    display: flex;
+    width: 100%;
+    flex-direction: row;
+    flex-wrap: nowrap;
 }
 
 .pauseshop-carousel-slide {
@@ -20,6 +28,7 @@
     justify-content: center;
     align-items: center;
     width: 100%;
+    flex: 0 0 100%;
 }
 
 .pauseshop-carousel-image {
@@ -30,10 +39,10 @@
 }
 
 .pauseshop-carousel-button {
-    background: rgba(40, 40, 40, 0.7); /* Semi-transparent background */
+    background: rgba(40, 40, 40, 1); /* Semi-transparent background */
     color: var(--pauseshop-white, #ffffff);
-    width: 32px;
-    height: 32px;
+    width: 40px; /* Increased from 32px (25% larger) */
+    height: 40px; /* Increased from 32px (25% larger) */
     border: none;
     border-radius: 50%;
     display: flex;
@@ -47,25 +56,24 @@
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
 }
 
-.pauseshop-carousel-button:hover {
+.pauseshop-carousel-button:not(:disabled):hover {
     background: color-mix(in srgb, var(--pauseshop-theme-trim-color) 75%, black);
     opacity: 0.8;
 }
 
 .pauseshop-carousel-button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
+    /* Removed cursor: not-allowed to keep default cursor */
 }
 
 .pauseshop-carousel-button-prev {
     left: 10px;
-    top: calc(50% - 8px); /* Adjust for any potential offset */
+    top: calc(50% - 20px); /* Adjust for any potential offset */
     transform: translateY(-50%);
 }
 
 .pauseshop-carousel-button-next {
     right: 10px;
-    top: calc(50% - 8px); /* Adjust for any potential offset */
+    top: calc(50% - 20px); /* Adjust for any potential offset */
     transform: translateY(-50%);
 }
 
@@ -92,8 +100,8 @@
 /* Responsive adjustments */
 @media (max-width: 480px) {
     .pauseshop-carousel-button {
-        width: 28px;
-        height: 28px;
+        width: 36px; /* Increased from 28px (~29% larger) */
+        height: 36px; /* Increased from 28px (~29% larger) */
     }
 
     .pauseshop-carousel-button-prev {
