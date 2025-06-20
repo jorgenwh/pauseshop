@@ -86,6 +86,80 @@ const constructAmazonProductUrl = (asin: string, baseUrl: string): string => {
 };
 
 /**
+ * Extracts and logs the price from an HTML string using primary and fallback patterns.
+ */
+/**
+ * Strategy 1: The most reliable "a-offscreen" method.
+ * It targets the screen-reader-friendly price, which is usually the cleanest.
+ */
+const extractPriceFromOffscreen = (htmlContent: string): number | null => {
+    // The regex now looks for the substring "a-offscreen" to handle variations like "aok-offscreen".
+    const pattern = /<span[^>]*class="[^"]*a-offscreen[^"]*"[^>]*>([\s\S]*?)<\/span>/gi;
+    let match;
+    while ((match = pattern.exec(htmlContent)) !== null) {
+        if (match[1]) {
+            // A more precise regex to find a decimal number, avoiding incorrect matches on things like version numbers.
+            const pricePattern = /[$€£¥]?\s*(\d+(?:[.,]\d{1,2})?)/;
+            const priceMatch = match[1].match(pricePattern);
+
+            if (priceMatch && priceMatch[1]) {
+                const priceText = priceMatch[1].replace(",", "."); // Normalize comma decimal separators
+                const price = parseFloat(priceText);
+                if (!isNaN(price)) {
+                    console.log(`[PauseShop Scraper] Success with Offscreen strategy.`);
+                    return price;
+                }
+            }
+        }
+    }
+    return null;
+};
+
+/**
+ * Strategy 2: The fallback method combining whole and fractional parts.
+ * This is for cases where the offscreen price is not available.
+ */
+const extractPriceFromWholeAndFraction = (htmlContent: string): number | null => {
+    // This regex is now more robust, global, and handles complex class attributes and newlines.
+    const pattern = /<span[^>]*class="[^"]*a-price-whole[^"]*"[^>]*>(\d+)[\s\S]*?<\/span>[\s\S]*?<span[^>]*class="[^"]*a-price-fraction[^"]*"[^>]*>(\d+)<\/span>/gi;
+    let match;
+    
+    while ((match = pattern.exec(htmlContent)) !== null) {
+        if (match[1] && match[2]) {
+            const priceText = `${match[1]}.${match[2]}`;
+            const price = parseFloat(priceText);
+            if (!isNaN(price)) {
+                console.log(`[PauseShop Scraper] Success with Whole/Fraction strategy.`);
+                return price;
+            }
+        }
+    }
+    return null;
+};
+
+/**
+ * An array of all strategies, ordered by priority.
+ */
+const priceExtractionStrategies = [
+    extractPriceFromOffscreen,
+    extractPriceFromWholeAndFraction,
+    // New strategies can be easily added here in the future
+];
+
+/**
+ * Iterates through price extraction strategies to find a valid price.
+ */
+const extractPriceFromHtml = (htmlContent: string): number | null => {
+    for (const strategy of priceExtractionStrategies) {
+        const price = strategy(htmlContent);
+        if (price !== null) {
+            return price; // Return the first valid price found
+        }
+    }
+    return null; // Return null if all strategies fail
+};
+
+/**
  * Extracts product data from HTML content using regex patterns
  */
 const extractProductDataFromHtml = (
@@ -101,6 +175,15 @@ const extractProductDataFromHtml = (
         const thumbnailUrl = extractThumbnailUrlFromHtml(htmlContent);
         // Prioritize constructing a stable product URL using the ASIN
         const productUrl = constructAmazonProductUrl(asin, baseUrl);
+        const price = extractPriceFromHtml(htmlContent);
+
+        // Log the outcome for the specific product
+        if (price !== null) {
+            console.log(`[PauseShop Scraper] Associated price ${price} with ASIN ${asin}.`);
+        } else {
+            console.log(`[PauseShop Scraper] No price found for ASIN ${asin} at ${productUrl}.`);
+        }
+        
         // Fallback to extracted URL if ASIN-based construction is not desired or fails
         // (though with this approach, the ASIN-based URL is robust)
         // const scrapedProductUrl = extractProductUrlFromHtml(htmlContent, baseUrl);
@@ -124,6 +207,7 @@ const extractProductDataFromHtml = (
             thumbnailUrl: thumbnailUrl || "",
             productUrl,
             position,
+            price: price ?? undefined,
         };
 
         return productData;

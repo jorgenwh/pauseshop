@@ -35,6 +35,7 @@ export interface AmazonScrapedProduct {
     thumbnailUrl: string;
     productUrl: string;
     position: number;
+    price?: number;
 }
 
 export interface AmazonScrapedResult {
