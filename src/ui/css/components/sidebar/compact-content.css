@@ -8,6 +8,7 @@
     gap: 15px;
     overflow-y: auto;
     flex-grow: 1;
+    position: relative; /* Ensure proper positioning context for tooltips */
 }
 
 .pauseshop-compact-icon-container {
@@ -17,6 +18,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    cursor: pointer;
 }
 
 .pauseshop-compact-icon {
