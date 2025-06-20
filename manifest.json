@@ -32,7 +32,8 @@
                 "https://*.youtube.com/*",
                 "https://*.primevideo.com/*",
                 "https://*.disneyplus.com/*",
-                "https://*.hbomax.com/*"
+                "https://*.hbomax.com/*",
+                "https://*.max.com/*"
             ],
             "js": [
                 "content/main-content.js"
@@ -54,7 +55,8 @@
                 "https://*.youtube.com/*",
                 "https://*.primevideo.com/*",
                 "https://*.disneyplus.com/*",
-                "https://*.hbomax.com/*"
+                "https://*.hbomax.com/*",
+                "https://*.max.com/*"
             ]
         }
     ],

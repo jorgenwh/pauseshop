@@ -5,5 +5,6 @@ export const allowedSites: string[] = [
     "youtube.com/shorts",
     "primevideo.com",
     "disneyplus.com",
-    "hbomax.com"
+    "hbomax.com",
+    "max.com"
 ];
