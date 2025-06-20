@@ -149,7 +149,7 @@ const getCategoryNode = (category: Category): string | null => {
 export const constructAmazonSearch = (
     product: Product,
 ): AmazonSearch | null => {
-    const id = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    const id = `${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
 
     const rawSearchTerms = optimizeSearchTerms(product);
     const validation = validateSearchTerms(
