@@ -129,7 +129,7 @@ const extractProductDataFromHtml = (
         }
 
         if (price !== null) {
-            console.log(`[PauseShop Scraper] Associated price ${price} with ASIN ${asin}.`);
+            console.log(`[PauseShop Scraper] Associated price ${price.toFixed(2)} with ASIN ${asin}.`);
         } else {
             console.log(`[PauseShop Scraper] No price found for ASIN ${asin} (position ${position}) on search page: ${searchUrl}`);
         }
@@ -165,6 +165,11 @@ const parseAmazonSearchHtml = (
 
         while ((match = searchResultPattern.exec(htmlContent)) !== null) {
             if (position > AMAZON_MAX_PRODUCTS_PER_SEARCH) break;
+
+            // Log the search URL every 5 products for easier verification
+            if ((position - 1) % 5 === 0) {
+                console.log(`[PauseShop Scraper] Checking products on page: ${searchUrl}`);
+            }
 
             const asin = match[1];
             const containerHtml = match[2];

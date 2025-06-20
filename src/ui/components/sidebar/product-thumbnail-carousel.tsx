@@ -30,6 +30,11 @@ const ProductThumbnailCarousel = ({ thumbnails }: ProductThumbnailCarouselProps)
             <div className="pauseshop-carousel-container">
                 <div className="pauseshop-carousel-single">
                     <a href={thumbnail.productUrl} target="_blank" rel="noopener noreferrer" style={{ width: '100%', display: 'block' }}>
+                        {thumbnail.price && (
+                            <div className="pauseshop-price-pill">
+                                ${thumbnail.price.toFixed(2)}
+                            </div>
+                        )}
                         <img
                             src={thumbnail.thumbnailUrl}
                             alt="Product thumbnail"
@@ -89,6 +94,11 @@ const ProductThumbnailCarousel = ({ thumbnails }: ProductThumbnailCarouselProps)
                     {thumbnails.map((thumbnail, index) => (
                         <div key={index} className="pauseshop-carousel-slide">
                             <a href={thumbnail.productUrl} target="_blank" rel="noopener noreferrer" style={{ width: '100%', display: 'block' }}>
+                                {thumbnail.price && (
+                                    <div className="pauseshop-price-pill">
+                                        ${thumbnail.price.toFixed(2)}
+                                    </div>
+                                )}
                                 <img
                                     src={thumbnail.thumbnailUrl}
                                     alt="Product thumbnail"
