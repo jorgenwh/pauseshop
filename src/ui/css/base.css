@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Encode+Sans+SC:wght@100..900&family=Numans&family=Raleway:ital,wght@0,100..900;1,100..900&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
 
 /* Root Variables for Theming and Spacing */
 :root {
@@ -14,4 +14,16 @@
     --sidebar-toggle-button-bg: var(--pauseshop-bg);
     --sidebar-toggle-button-border: var(--pauseshop-white);
     --arrow-icon-color: var(--pauseshop-white);
+
+    /* Font Family */
+    --font-family-base: 'Roboto', sans-serif;
+}
+
+/* Apply Roboto font globally */
+html, body, input, textarea, button, select {
+   font-family: var(--font-family-base);
+}
+
+.tui-play-slate {
+   background-color: rgba(0, 0, 0, 0) !important;
 }

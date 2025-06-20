@@ -16,4 +16,14 @@
     ::file-selector-button {
         border-color: var(--color-gray-200, currentcolor);
     }
+    
+    /* Import font variables from base.css */
+    :root {
+        --font-family-base: 'Roboto', sans-serif;
+    }
+    
+    /* Apply font family to all elements */
+    html, body, input, textarea, button, select {
+        font-family: var(--font-family-base);
+    }
 }

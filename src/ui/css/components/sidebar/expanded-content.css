@@ -35,8 +35,8 @@
 
 /* Product List Styles */
 .pauseshop-product-list {
-    padding: 1rem calc(1.625rem - 8px) 1rem 1.625rem; /* Dynamic right padding that subtracts scrollbar gutter space */
+    padding: 10px 8.25px 10px 16.25px; /* Dynamic right padding that subtracts scrollbar gutter space */
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 10px;
 }

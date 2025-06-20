@@ -34,8 +34,7 @@
     transform: translateX(-50%);
     display: flex;
     flex-direction: row;
-    font-size: 2.5rem;
-    font-family: "Encode Sans SC", sans-serif;
+    font-size: 25px;
     color: var(--sidebar-text-color);
     transition:
         opacity 0s ease-in-out,
@@ -56,14 +55,14 @@
 
 .pauseshop-sidebar-header-title-pause {
     font-weight: 900;
-    font-size: 2.25rem;
+    font-size: 25px;
     margin: 0;
     line-height: 1;
 }
 
 .pauseshop-sidebar-header-title-shop {
     font-weight: 400;
-    font-size: 2.25rem;
+    font-size: 25px;
     color: var(--pauseshop-theme-trim-color);
     margin: 0;
     line-height: 1;
