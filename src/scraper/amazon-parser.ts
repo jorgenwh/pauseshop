@@ -118,7 +118,7 @@ const extractProductDataFromHtml = (
     searchUrl: string,
 ): AmazonScrapedProduct | null => {
     try {
-        const id = `scraped-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+        const id = `scraped-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
 
         const thumbnailUrl = extractThumbnailUrlFromHtml(htmlContent);
         const productUrl = constructAmazonProductUrl(asin, baseUrl);
