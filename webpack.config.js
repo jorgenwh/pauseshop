@@ -4,7 +4,20 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const webpack = require("webpack");
 require('dotenv').config();
 
-module.exports = {
+// Get server environment from command line arguments
+// Example: webpack --env server=prod or webpack --env server=dev or webpack --env server=local
+const getServerEnvironment = (env) => {
+    if (!env || !env.server) {
+        return process.env.NODE_ENV === "production" ? "prod" : "local";
+    }
+    return env.server;
+};
+
+module.exports = (env) => {
+    const serverEnv = getServerEnvironment(env);
+    console.log(`Building with server environment: ${serverEnv}`);
+    
+    return {
     entry: {
         "background/service-worker": "./src/background/service-worker.ts",
         "content/main-content": "./src/content/main-content.ts",
@@ -65,9 +78,7 @@ module.exports = {
             ],
         }),
         new webpack.DefinePlugin({
-            'process.env.SERVER_CONFIG': JSON.stringify(process.env.SERVER_CONFIG || 'prod'),
-            'process.env.PROD_SERVER_URL': JSON.stringify(process.env.PROD_SERVER_URL || ''),
-            'process.env.DEV_SERVER_URL': JSON.stringify(process.env.DEV_SERVER_URL || 'http://localhost:3000'),
+            'process.env.SERVER_ENV': JSON.stringify(serverEnv),
         }),
     ],
     optimization: {
@@ -76,4 +87,5 @@ module.exports = {
     devtool:
         process.env.NODE_ENV === "development" ? "inline-source-map" : false,
     mode: process.env.NODE_ENV || "development",
+    };
 };

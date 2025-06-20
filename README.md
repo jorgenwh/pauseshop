@@ -43,10 +43,26 @@ cd pauseshop
 npm install
 ```
 
-Build the Chrome extension for production:
+Build the Chrome extension:
 
 ```bash
+# Production build with production server
 npm run build
+
+# Production build with development server
+npm run build:dev
+
+# Production build with local server
+npm run build:local
+
+# Development build with local server (with watch mode)
+npm run dev
+
+# Development build with production server (with watch mode)
+npm run dev:prod
+
+# Development build with development server (with watch mode)
+npm run dev:dev
 ```
 
 ### 5. Load the Extension in Chrome
