@@ -4,6 +4,7 @@
  */
 
 import { Product } from "../types/common";
+import { getEndpointUrl } from "./server-config";
 
 interface AnalyzeRequest {
     image: string;
@@ -27,16 +28,8 @@ export const analyzeImageStreaming = async (
     callbacks: StreamingCallbacks,
     signal?: AbortSignal,
 ): Promise<void> => {
-    let serverConfig = process.env.SERVER_CONFIG || "prod";
-    if (serverConfig !== "prod" && serverConfig !== "dev") {
-        console.warn(
-            `[PauseShop:ApiClient] Invalid SERVER_CONFIG value: ${serverConfig}. Defaulting to "prod".`,
-        );
-        serverConfig = "prod";
-    }
-    const url = serverConfig === "prod"
-        ? `${process.env.PROD_SERVER_URL}/analyze/stream`
-        : `${process.env.DEV_SERVER_URL}/analyze/stream`;
+    // Get the endpoint URL using the server-config helper
+    const url = getEndpointUrl('/analyze/stream');
 
     const request: AnalyzeRequest = {
         image: imageData,
