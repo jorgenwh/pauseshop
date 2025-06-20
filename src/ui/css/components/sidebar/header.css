@@ -85,7 +85,7 @@
 
 /* Only move buttons up in expanded mode */
 .pauseshop-sidebar:not(.pauseshop-sidebar-compact) .pauseshop-sidebar-button-container {
-    bottom: 15px;
+    bottom: 18px;
 }
 
 /* In expanded mode, keep buttons on right side for both positions */
@@ -102,16 +102,16 @@
 }
 
 .pauseshop-sidebar.pauseshop-sidebar-compact .pauseshop-sidebar-button-container {
-    right: -58px;
-    bottom: 12px;
+    right: -55px;
+    bottom: 17px;
     background-color: var(--sidebar-toggle-button-bg);
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
 }
 
 .pauseshop-sidebar.pauseshop-sidebar-compact.position-right .pauseshop-sidebar-button-container {
-    left: -58px;
+    left: -55px;
     right: auto;
-    bottom: 12px;
+    bottom: 17px;
 }
 
 /* Buttons */
@@ -164,8 +164,8 @@
 }
 
 .pauseshop-sidebar.pauseshop-sidebar-compact .pauseshop-sidebar-button-container.no-products {
-    right: -31px;
-    bottom: 13px;
+    right: -28px;
+    bottom: 18px;
     width: 22px;
     height: 22px;
     justify-content: center;
@@ -174,7 +174,7 @@
 }
 
 .pauseshop-sidebar.pauseshop-sidebar-compact.position-right .pauseshop-sidebar-button-container.no-products {
-    left: -31px;
+    left: -28px;
     right: auto;
-    bottom: 13px;
+    bottom: 18px;
 }
