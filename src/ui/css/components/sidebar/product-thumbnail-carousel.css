@@ -36,7 +36,7 @@
     width: 100%;
     height: 200px;
     object-fit: cover;
-    border-radius: 0 0 1rem 1rem; /* Match bottom corners of card */
+    border-radius: 0 0 10px 10px; /* Match bottom corners of card */
 }
 
 .pauseshop-carousel-button {
@@ -95,7 +95,7 @@
     color: var(--pauseshop-white, #bebebe);
     font-style: italic;
     background-color: rgba(45, 45, 45, 1.0); /* Slightly lighter than the card background */
-    border-radius: 0 0 1rem 1rem; /* Match bottom corners of card */
+    border-radius: 0 0 10px 10px; /* Match bottom corners of card */
     opacity: 0.6;
 }
 
