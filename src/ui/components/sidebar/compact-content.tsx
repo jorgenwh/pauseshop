@@ -11,6 +11,7 @@ interface CompactContentProps {
     position: "right" | "left";
     firstIconHasCounter?: boolean;
     onRetryAnalysis: () => void;
+    onIconHover?: (iconCategory: string | null, element?: HTMLElement | null) => void;
 }
 
 const CompactContent = ({
@@ -20,6 +21,7 @@ const CompactContent = ({
     position,
     firstIconHasCounter,
     onRetryAnalysis,
+    onIconHover,
 }: CompactContentProps) => {
 
     const iconCounts = getIconCounts(productStorage);
@@ -53,7 +55,10 @@ const CompactContent = ({
             Array.from(iconCategories.values()).map((iconCategory, index) => (
                 <motion.div
                     key={iconCategory}
-                    style={{ marginTop: index === 0 && firstIconHasCounter ? '7px' : '0' }}
+                    style={{ 
+                        marginTop: index === 0 && firstIconHasCounter ? '7px' : '0',
+                        position: 'relative' // Ensure proper positioning context for tooltip
+                    }}
                     className="pauseshop-compact-icon-container"
                     initial={{ opacity: 0, scale: 0 }}
                     animate={{ opacity: 1, scale: 1 }}
@@ -71,6 +76,8 @@ const CompactContent = ({
                         delay: index * 0.05,
                     }}
                     onClick={() => onIconClick(iconCategory)}
+                    onMouseEnter={(e) => onIconHover && onIconHover(iconCategory, e.currentTarget)}
+                    onMouseLeave={() => onIconHover && onIconHover(null, null)}
                 >
                     <img
                         src={chrome.runtime.getURL(
@@ -80,6 +87,7 @@ const CompactContent = ({
                         className={`pauseshop-compact-icon icon`}
                     />
                     {buildCategoryCounter(iconCategory)}
+                    {/* Tooltip is rendered outside the icon container for proper positioning */}
                 </motion.div>
             )) || null
         );
@@ -127,6 +135,7 @@ const CompactContent = ({
         "pauseshop-compact-sidebar-content",
         `position-${position}`
     ].join(" ");
+
 
     return (
         <div className={compactContentClasses}>

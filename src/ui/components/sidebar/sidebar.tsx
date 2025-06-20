@@ -20,7 +20,16 @@ import Footer from "./footer";
 import ExpandedContent from "./expanded-content";
 import CompactContent from "./compact-content";
 import Divider from "./divider";
+import FloatingTooltip from "./floating-tooltip";
 import { getIconCounts, getUniqueIcons } from "../../utils";
+
+// Helper function to format icon text: replace dashes with spaces and capitalize first letter
+const formatIconText = (iconText: string): string => {
+    // Replace all dashes with spaces
+    const textWithSpaces = iconText.replace(/-/g, ' ');
+    // Capitalize the first letter
+    return textWithSpaces.charAt(0).toUpperCase() + textWithSpaces.slice(1);
+};
 
 interface SidebarProps {
     isVisible: boolean;
@@ -52,6 +61,8 @@ const Sidebar = ({
     const [expandedIconCategory, setExpandedIconCategory] = useState<
         string | null
     >(null);
+    const [hoveredIcon, setHoveredIcon] = useState<string | null>(null);
+    const [hoveredIconElement, setHoveredIconElement] = useState<HTMLElement | null>(null);
 
     useEffect(() => {
         getSidebarCompactState().then((compact) => {
@@ -165,6 +176,10 @@ const Sidebar = ({
                             position={position}
                             onRetryAnalysis={onRetryAnalysis}
                             firstIconHasCounter={firstIconHasCounter}
+                            onIconHover={(category, element) => {
+                                setHoveredIcon(category);
+                                setHoveredIconElement(element || null);
+                            }}
                         />
                     ) : (
                         <ExpandedContent
@@ -174,6 +189,17 @@ const Sidebar = ({
                         />
                     )}
                     <Footer />
+                    
+                    {/* Render floating tooltip outside the sidebar */}
+                    {isVisible && isCompact && contentState === SidebarContentState.PRODUCTS && hoveredIcon && (
+                        <FloatingTooltip
+                            key={`tooltip-${hoveredIcon}`}
+                            text={formatIconText(hoveredIcon)}
+                            isVisible={!!hoveredIcon}
+                            position={position}
+                            iconElement={hoveredIconElement}
+                        />
+                    )}
                 </motion.div>
             )}
         </AnimatePresence>
