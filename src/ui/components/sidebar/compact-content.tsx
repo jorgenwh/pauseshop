@@ -107,12 +107,46 @@ const CompactContent = ({
                     damping: 20,
                     bounce: 0.5,
                 }}
-                onClick={onRetryAnalysis}
+                onClick={() => {
+                    // Clear hover state before triggering retry
+                    onIconHover && onIconHover(null, null);
+                    onRetryAnalysis();
+                }}
+                onMouseEnter={(e) => onIconHover && onIconHover("nothing-found", e.currentTarget)}
+                onMouseLeave={() => onIconHover && onIconHover(null, null)}
+                style={{ position: 'relative' }} // Ensure proper positioning context for tooltip
             >
                 <img
                     src={chrome.runtime.getURL("icons/nothing-found.png")}
                     alt="No products found"
                     className="pauseshop-nothing-found-icon"
+                />
+            </motion.div>
+        );
+    }
+
+    const buildErrorContent = () => {
+        return (
+            <motion.div
+                initial={{ opacity: 0, scale: 0 }}
+                animate={{ opacity: 1, scale: 1 }}
+                whileHover={{
+                    scale: 1.2
+                }}
+                transition={{
+                    type: "spring",
+                    stiffness: 260,
+                    damping: 20,
+                    bounce: 0.5,
+                }}
+                onMouseEnter={(e) => onIconHover && onIconHover("error", e.currentTarget)}
+                onMouseLeave={() => onIconHover && onIconHover(null, null)}
+                style={{ position: 'relative' }} // Ensure proper positioning context for tooltip
+            >
+                <img
+                    src={chrome.runtime.getURL("icons/error.png")}
+                    alt="An error occurred"
+                    className="pauseshop-error-icon"
                 />
             </motion.div>
         );
@@ -126,6 +160,8 @@ const CompactContent = ({
             return buildNoProductsContent();
         case SidebarContentState.PRODUCTS:
             return buildContent();
+        case SidebarContentState.ERROR:
+            return buildErrorContent();
         default:
             return null;
         }

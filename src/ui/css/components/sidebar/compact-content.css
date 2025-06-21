@@ -57,9 +57,17 @@
     left: -3px;
     right: auto;
 }
+
 .pauseshop-nothing-found-icon {
-    width: 30px;
-    height: 30px;
+    width: 32px;
+    height: 32px;
+    position: relative;
+    top: -1px;
+}
+
+.pauseshop-error-icon {
+    width: 34px;
+    height: 34px;
     position: relative;
     top: -1px;
 }

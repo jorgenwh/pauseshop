@@ -30,6 +30,7 @@ export class UIManager {
     private sidebarContentState: SidebarContentState =
         SidebarContentState.LOADING;
     private sidebarConfig: SidebarConfig;
+    private errorMessage: string = "";
     private sidebarEvents: SidebarEvents; // Events for UIManager to handle or pass to React component
 
     private productStorage: ProductStorage = { pauseId: "", productGroups: [] };
@@ -68,6 +69,7 @@ export class UIManager {
                 this.hideSidebar();
             },
             onRetryAnalysis: () => {
+                this.errorMessage = ""; // Reset error message when retrying analysis
                 chrome.runtime.sendMessage({ type: "retryAnalysis" });
             },
         };
@@ -144,6 +146,7 @@ export class UIManager {
                         onProductClick={this.sidebarEvents.onProductClick}
                         onClose={this.sidebarEvents.onClose}
                         onRetryAnalysis={this.sidebarEvents.onRetryAnalysis}
+                        errorMessage={this.errorMessage}
                     />
                 </React.StrictMode>,
             );
@@ -175,6 +178,7 @@ export class UIManager {
      */
     public async hideSidebar(): Promise<boolean> {
         this.sidebarVisible = false;
+        this.errorMessage = ""; // Reset error message when hiding sidebar
         this.renderSidebar();
         return true;
     }
@@ -202,6 +206,7 @@ export class UIManager {
         this.productStorage = { pauseId: message.pauseId, productGroups: [] };
         this.sidebarContentState = SidebarContentState.LOADING;
         this.sidebarVisible = true; // Make sure sidebar is visible when analysis starts
+        this.errorMessage = ""; // Reset error message when starting a new analysis
         this.renderSidebar();
         return true;
     };
@@ -231,6 +236,7 @@ export class UIManager {
         );
         this.sidebarContentState = SidebarContentState.ERROR;
         this.sidebarVisible = true; // Make sure sidebar is visible to show error
+        this.errorMessage = message.error || "Unknown error occurred"; // Store the error message
         this.renderSidebar();
         return true;
     };
