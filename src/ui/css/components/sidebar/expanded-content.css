@@ -16,6 +16,10 @@
 .pauseshop-expanded-sidebar-content.show-scrollbar {
     overflow-y: auto;
     
+    /* Custom scrollbar styling */
+    scrollbar-width: thin; /* Firefox - 'thin' is typically around 10px */
+    scrollbar-color: var(--pauseshop-theme-trim-color) transparent;
+    
     /* Explicitly set scrollbar gutter to match our padding calculations */
     scrollbar-gutter: stable;
 }
