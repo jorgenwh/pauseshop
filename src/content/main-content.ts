@@ -28,7 +28,7 @@ const shouldActivateExtension = (): boolean => {
     if (!isUrlAllowed(window.location.href)) {
         return false;
     }
-    
+
     // Then check if there's a video element on the page
     const videoElement = document.querySelector("video");
     return !!videoElement;

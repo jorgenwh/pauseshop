@@ -36,104 +36,103 @@ chrome.runtime.onMessage.addListener(
         };
 
         switch (message.type) {
-        case "captureScreenshot": {
-            const windowId =
-                    sender.tab?.windowId || chrome.windows.WINDOW_ID_CURRENT;
-            const abortSignal = cancellationRegistry.getAbortSignal(
-                message.pauseId,
-            );
-            handleScreenshotAnalysis(
-                windowId,
-                message.pauseId,
-                abortSignal,
-                ENABLE_SCREENSHOT_VALIDATION,
-                message.videoBounds,
-                sender.tab?.id,
-            )
-                .then(safeSendResponse)
-                .catch((error) => {
-                    if (error.name === "AbortError") {
-                        console.warn(
-                            `[PauseShop:ServiceWorker] Analysis cancelled for pauseId: ${message.pauseId}`,
-                        );
-                        safeSendResponse({
-                            success: false,
-                            error: "Analysis cancelled",
-                            pauseId: message.pauseId,
-                        });
-                    } else {
-                        console.error(
-                            `[PauseShop:ServiceWorker] Screenshot analysis error for pauseId: ${message.pauseId}:`,
-                            error,
-                        );
-                        safeSendResponse({
-                            success: false,
-                            error: error.message || "Unknown error",
-                            pauseId: message.pauseId,
-                        });
-                    }
-                });
-            break;
-        }
-        case "registerPause":
-            cancellationRegistry.registerPause(message.pauseId);
-            safeSendResponse({ success: true });
-            break;
-        case "cancelPause":
-            cancellationRegistry.cancelPause(message.pauseId);
-            safeSendResponse({ success: true });
-            break;
-        case "toggleSidebarPosition":
-            chrome.tabs.query(
-                { active: true, currentWindow: true },
-                (tabs) => {
-                    if (tabs && tabs.length > 0 && tabs[0].id) {
-                        chrome.tabs.sendMessage(tabs[0].id, {
-                            type: "toggleSidebarPosition",
-                        });
-                    }
-                },
-            );
-            safeSendResponse({ success: true });
-            break;
-        case "retryAnalysis": {
-            const pauseId = `pause-${Date.now()}`;
-            const windowId =
-                    sender.tab?.windowId || chrome.windows.WINDOW_ID_CURRENT;
-            const abortSignal = cancellationRegistry.getAbortSignal(pauseId);
-            handleScreenshotAnalysis(
-                windowId,
-                pauseId,
-                abortSignal,
-                ENABLE_SCREENSHOT_VALIDATION,
-                undefined,
-                sender.tab?.id,
-            )
-                .then(safeSendResponse)
-                .catch((error) => {
-                    if (error.name === "AbortError") {
-                        console.warn(
-                            `[PauseShop:ServiceWorker] Analysis cancelled for pauseId: ${pauseId}`,
-                        );
-                        safeSendResponse({
-                            success: false,
-                            error: "Analysis cancelled",
-                            pauseId,
-                        });
-                    } else {
-                        console.error(
-                            `[PauseShop:ServiceWorker] Screenshot analysis error for pauseId: ${pauseId}:`,
-                            error,
-                        );
-                        safeSendResponse({
-                            success: false,
-                            error: error.message || "Unknown error",
-                            pauseId,
-                        });
-                    }
-                });
-            break;
-        }
+            case "captureScreenshot": {
+                const windowId =
+                        sender.tab?.windowId || chrome.windows.WINDOW_ID_CURRENT;
+                const abortSignal = cancellationRegistry.getAbortSignal(
+                    message.pauseId,
+                );
+                handleScreenshotAnalysis(
+                    windowId,
+                    message.pauseId,
+                    abortSignal,
+                    ENABLE_SCREENSHOT_VALIDATION,
+                    message.videoBounds,
+                    sender.tab?.id,
+                )
+                    .then(safeSendResponse)
+                    .catch((error) => {
+                        if (error.name === "AbortError") {
+                            console.warn(
+                                `[PauseShop:ServiceWorker] Analysis cancelled for pauseId: ${message.pauseId}`,
+                            );
+                            safeSendResponse({
+                                success: false,
+                                error: "Analysis cancelled",
+                                pauseId: message.pauseId,
+                            });
+                        } else {
+                            console.error(
+                                `[PauseShop:ServiceWorker] Screenshot analysis error for pauseId: ${message.pauseId}:`,
+                                error,
+                            );
+                            safeSendResponse({
+                                success: false,
+                                error: error.message || "Unknown error",
+                                pauseId: message.pauseId,
+                            });
+                        }
+                    });
+                break;
+            }
+            case "registerPause":
+                cancellationRegistry.registerPause(message.pauseId);
+                safeSendResponse({ success: true });
+                break;
+            case "cancelPause":
+                cancellationRegistry.cancelPause(message.pauseId);
+                safeSendResponse({ success: true });
+                break;
+            case "toggleSidebarPosition":
+                if (message.tabId) {
+                    chrome.tabs.sendMessage(message.tabId, {
+                        type: "toggleSidebarPosition",
+                    }).catch(error => {
+                        console.error(`[PauseShop:ServiceWorker] Error sending toggleSidebarPosition message to tab ${message.tabId}: ${error}`);
+                    });
+                } else {
+                    console.warn("[PauseShop:ServiceWorker] No tabId provided for toggleSidebarPosition message");
+                }
+                safeSendResponse({ success: true });
+                break;
+            case "retryAnalysis": {
+                const pauseId = `pause-${Date.now()}`;
+                const windowId =
+                        sender.tab?.windowId || chrome.windows.WINDOW_ID_CURRENT;
+                const abortSignal = cancellationRegistry.getAbortSignal(pauseId);
+                handleScreenshotAnalysis(
+                    windowId,
+                    pauseId,
+                    abortSignal,
+                    ENABLE_SCREENSHOT_VALIDATION,
+                    undefined,
+                    sender.tab?.id,
+                )
+                    .then(safeSendResponse)
+                    .catch((error) => {
+                        if (error.name === "AbortError") {
+                            console.warn(
+                                `[PauseShop:ServiceWorker] Analysis cancelled for pauseId: ${pauseId}`,
+                            );
+                            safeSendResponse({
+                                success: false,
+                                error: "Analysis cancelled",
+                                pauseId,
+                            });
+                        } else {
+                            console.error(
+                                `[PauseShop:ServiceWorker] Screenshot analysis error for pauseId: ${pauseId}:`,
+                                error,
+                            );
+                            safeSendResponse({
+                                success: false,
+                                error: error.message || "Unknown error",
+                                pauseId,
+                            });
+                        }
+                    });
+                break;
+            }
         }
 
         return true; // Keep message channel open for async response
