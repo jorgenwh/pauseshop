@@ -2,11 +2,11 @@
     position: fixed;
     background-color: var(--pauseshop-bg);
     color: var(--pauseshop-white);
-    padding: 6px 10px;
+    padding: 8px 10px;
     border-radius: 6px;
     border: 1px solid var(--pauseshop-border-color);
     font-size: 12px;
-    white-space: nowrap;
+    white-space: pre-line;
     pointer-events: none;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
     z-index: 100001;
@@ -14,7 +14,8 @@
     display: flex;
     align-items: center; /* Center text vertically */
     justify-content: center;
-    line-height: 1;
+    line-height: 1.4;
+    text-align: center;
 }
 
 /* Position tooltip to the left of the sidebar when sidebar is on the right */

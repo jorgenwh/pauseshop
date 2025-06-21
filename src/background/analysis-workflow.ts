@@ -4,9 +4,9 @@
 
 import { analyzeImageStreaming } from "./api-client";
 import { Product } from "../types/common";
-import { constructAmazonSearch } from "../scraper/amazon-search";
-import { executeAmazonSearch } from "../scraper/amazon-http-client";
-import { scrapeAmazonSearchResult } from "../scraper/amazon-parser";
+import { constructAmazonSearch } from "../amazon/amazon-search";
+import { executeAmazonSearch } from "../amazon/amazon-http-client";
+import { scrapeAmazonSearchResult } from "../amazon/amazon-parser";
 import { captureAndCropScreenshot } from "./screenshot-capturer";
 import { openScreenshotForValidation } from "./screenshot-debug";
 import type { ScreenshotResponse, VideoBounds } from "./types";
