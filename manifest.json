@@ -8,7 +8,6 @@
         "extension_pages": "script-src 'self'; object-src 'self'; default-src 'self'; img-src 'self' data:; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src * data:"
     },
     "permissions": [
-        "tabs",
         "storage",
         "activeTab"
     ],
