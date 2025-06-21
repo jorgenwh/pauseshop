@@ -26,6 +26,7 @@ export interface ScreenshotResponse {
 
 export interface ToggleSidebarPositionMessage {
     type: "toggleSidebarPosition";
+    tabId?: number;
 }
 
 export interface RegisterPauseMessage {

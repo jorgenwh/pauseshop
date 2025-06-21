@@ -45,16 +45,8 @@ export const handleScreenshotAnalysis = async (
         // Track all async operations from onProduct callbacks
         const pendingOperations: Promise<void>[] = [];
 
-        // Use the origin tab ID if provided, otherwise fall back to querying for active tab
-        let tabId = originTabId;
-        if (!tabId) {
-            tabId = (
-                await chrome.tabs.query({
-                    active: true,
-                    currentWindow: true,
-                })
-            )[0]?.id;
-        }
+        // Use the origin tab ID provided by the sender
+        const tabId = originTabId;
 
         try {
             if (tabId) {
