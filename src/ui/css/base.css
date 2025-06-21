@@ -4,13 +4,12 @@
 :root {
     /* Theme and Spacing */
     --pauseshop-bg: rgba(30, 30, 30, 1.0);
-    --pauseshop-theme-trim-color: #30b3a4;
+    --pauseshop-theme-trim-color: rgba(48, 179, 164);
     --pauseshop-white: rgba(190, 190, 190, 1);
     --pauseshop-lighter-bg: rgba(40, 40, 40, 1);
 
     --sidebar-text-color: var(--pauseshop-white);
     --sidebar-border-color: var(--pauseshop-white);
-
     --sidebar-toggle-button-bg: var(--pauseshop-bg);
     --sidebar-toggle-button-border: var(--pauseshop-white);
     --arrow-icon-color: var(--pauseshop-white);
