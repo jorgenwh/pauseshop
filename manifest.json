@@ -28,12 +28,7 @@
         {
             "matches": [
                 "https://*.netflix.com/*",
-                "https://*.hulu.com/*",
-                "https://*.youtube.com/*",
-                "https://*.primevideo.com/*",
-                "https://*.disneyplus.com/*",
-                "https://*.hbomax.com/*",
-                "https://*.max.com/*"
+                "https://*.youtube.com/*"
             ],
             "js": [
                 "content/main-content.js"
@@ -51,12 +46,7 @@
             ],
             "matches": [
                 "https://*.netflix.com/*",
-                "https://*.hulu.com/*",
-                "https://*.youtube.com/*",
-                "https://*.primevideo.com/*",
-                "https://*.disneyplus.com/*",
-                "https://*.hbomax.com/*",
-                "https://*.max.com/*"
+                "https://*.youtube.com/*"
             ]
         }
     ],
