@@ -8,7 +8,8 @@
     z-index: 99999;
     transition:
         left 0s ease-in-out,
-        right 0s ease-in-out;
+        right 0s ease-in-out,
+        height 0.4s cubic-bezier(0.16, 1, 0.3, 1); /* Smoother height transitions with custom easing */
     pointer-events: all;
     background-color: var(--pauseshop-bg);
     overflow: visible;

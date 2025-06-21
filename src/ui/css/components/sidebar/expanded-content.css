@@ -1,42 +1,59 @@
 /* Expanded Sidebar Content Container */
 .pauseshop-expanded-sidebar-content {
-    /* Set up scrollable container */
-    overflow-y: auto;
     /* Responsive max-height based on viewport */
     max-height: 60vh;
+}
 
+/* No shared base styles needed as we want immediate changes without transitions */
+
+/* Hide scrollbar state */
+.pauseshop-expanded-sidebar-content.hide-scrollbar {
+    overflow-y: hidden;
+    padding-right: 0;
+}
+
+/* Show scrollbar state */
+.pauseshop-expanded-sidebar-content.show-scrollbar {
+    overflow-y: auto;
+    
     /* Custom scrollbar styling */
-    scrollbar-width: thin;
+    scrollbar-width: thin; /* Firefox - 'thin' is typically around 10px */
     scrollbar-color: var(--pauseshop-theme-trim-color) transparent;
-
-    /* Use scrollbar-gutter to reserve space even when scrollbar isn't visible */
+    
+    /* Explicitly set scrollbar gutter to match our padding calculations */
     scrollbar-gutter: stable;
 }
 
 /* Webkit scrollbar styling for Chrome/Safari */
-.pauseshop-expanded-sidebar-content::-webkit-scrollbar {
-    width: 8px;
+.pauseshop-expanded-sidebar-content.show-scrollbar::-webkit-scrollbar {
+    width: 10px; /* Adjusted to match our padding calculations */
 }
 
-.pauseshop-expanded-sidebar-content::-webkit-scrollbar-track {
+.pauseshop-expanded-sidebar-content.show-scrollbar::-webkit-scrollbar-track {
     background: transparent;
     border-radius: 4px;
 }
 
-.pauseshop-expanded-sidebar-content::-webkit-scrollbar-thumb {
+.pauseshop-expanded-sidebar-content.show-scrollbar::-webkit-scrollbar-thumb {
     background-color: var(--pauseshop-theme-trim-color);
     border-radius: 4px;
     border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.pauseshop-expanded-sidebar-content::-webkit-scrollbar-thumb:hover {
+.pauseshop-expanded-sidebar-content.show-scrollbar::-webkit-scrollbar-thumb:hover {
     background-color: #3cc4b4;
 }
 
 /* Product List Styles */
 .pauseshop-product-list {
-    padding: 10px 8.25px 10px 16.25px; /* Dynamic right padding that subtracts scrollbar gutter space */
+    padding: 10px 16px; /* More right padding when scrollbar is hidden */
     display: flex;
     flex-direction: column;
     gap: 10px;
+    /* No transition for immediate padding changes */
+}
+
+/* Reduced padding when scrollbar is visible to prevent content shift */
+.pauseshop-expanded-sidebar-content.show-scrollbar .pauseshop-product-list {
+    padding-right: 6px; /* Adjusted to account for exact scrollbar width */
 }
