@@ -139,11 +139,6 @@ const CompactContent = ({
                     damping: 20,
                     bounce: 0.5,
                 }}
-                onClick={() => {
-                    // Clear hover state before triggering retry
-                    onIconHover && onIconHover(null, null);
-                    onRetryAnalysis();
-                }}
                 onMouseEnter={(e) => onIconHover && onIconHover("error", e.currentTarget)}
                 onMouseLeave={() => onIconHover && onIconHover(null, null)}
                 style={{ position: 'relative' }} // Ensure proper positioning context for tooltip

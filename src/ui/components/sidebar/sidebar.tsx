@@ -41,6 +41,7 @@ interface SidebarProps {
     onProductClick: (product: AmazonScrapedProduct) => void;
     onClose: () => void;
     onRetryAnalysis: () => void;
+    errorMessage?: string;
 }
 
 const Sidebar = ({
@@ -52,6 +53,7 @@ const Sidebar = ({
     onHide,
     onClose,
     onRetryAnalysis,
+    errorMessage = "Analysis failed",
 }: SidebarProps) => {
     const [isCompact, setIsCompact] = useState<boolean>(true);
     const [
@@ -208,7 +210,7 @@ const Sidebar = ({
                                 hoveredIcon === "nothing-found" 
                                     ? "No products found.\nClick to try again." 
                                     : hoveredIcon === "error"
-                                        ? "Analysis failed.\nClick to try again."
+                                        ? `${errorMessage}`
                                         : formatIconText(hoveredIcon)
                             }
                             isVisible={!!hoveredIcon}
