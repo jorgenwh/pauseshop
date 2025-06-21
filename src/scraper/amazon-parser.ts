@@ -45,11 +45,11 @@ const extractPriceFromOffscreen = (htmlContent: string): number | null => {
     let match;
     while ((match = pattern.exec(htmlContent)) !== null) {
         if (match[1]) {
-            const pricePattern = /[$€£¥]?\s*(\d+(?:[.,]\d{1,2})?)/;
+            const pricePattern = /[$€£¥]?\s*((?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d{1,2})?)/;
             const priceMatch = match[1].match(pricePattern);
 
             if (priceMatch && priceMatch[1]) {
-                const priceText = priceMatch[1].replace(",", ".");
+                const priceText = priceMatch[1].replace(/,/g, "");
                 const price = parseFloat(priceText);
                 if (!isNaN(price)) {
                     console.log(`[PauseShop Scraper] Success with Offscreen strategy.`);
@@ -65,11 +65,12 @@ const extractPriceFromOffscreen = (htmlContent: string): number | null => {
  * Price Strategy 2: Extracts price by combining whole and fractional parts.
  */
 const extractPriceFromWholeAndFraction = (htmlContent: string): number | null => {
-    const pattern = /<span[^>]*class="[^"]*a-price-whole[^"]*"[^>]*>(\d+)[\s\S]*?<\/span>[\s\S]*?<span[^>]*class="[^"]*a-price-fraction[^"]*"[^>]*>(\d+)<\/span>/gi;
+    const pattern = /<span[^>]*class="[^"]*a-price-whole[^"]*"[^>]*>([\d,]+)[\s\S]*?<\/span>[\s\S]*?<span[^>]*class="[^"]*a-price-fraction[^"]*"[^>]*>(\d+)<\/span>/gi;
     let match;
     while ((match = pattern.exec(htmlContent)) !== null) {
         if (match[1] && match[2]) {
-            const priceText = `${match[1]}.${match[2]}`;
+            const wholePartWithoutCommas = match[1].replace(/,/g, "");
+            const priceText = `${wholePartWithoutCommas}.${match[2]}`;
             const price = parseFloat(priceText);
             if (!isNaN(price)) {
                 console.log(`[PauseShop Scraper] Success with Whole/Fraction strategy.`);
