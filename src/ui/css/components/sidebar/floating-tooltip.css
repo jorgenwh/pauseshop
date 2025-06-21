@@ -2,7 +2,7 @@
     position: fixed;
     background-color: var(--pauseshop-bg);
     color: var(--pauseshop-white);
-    padding: 8px 10px;
+    padding: 6px 10px;
     border-radius: 6px;
     border: 1px solid var(--pauseshop-border-color);
     font-size: 12px;
@@ -14,7 +14,7 @@
     display: flex;
     align-items: center; /* Center text vertically */
     justify-content: center;
-    line-height: 1.4;
+    line-height: 1;
     text-align: center;
 }
 
