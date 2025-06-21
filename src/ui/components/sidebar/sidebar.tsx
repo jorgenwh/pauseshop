@@ -41,6 +41,7 @@ interface SidebarProps {
     onProductClick: (product: AmazonScrapedProduct) => void;
     onClose: () => void;
     onRetryAnalysis: () => void;
+    errorMessage?: string;
 }
 
 const Sidebar = ({
@@ -52,6 +53,7 @@ const Sidebar = ({
     onHide,
     onClose,
     onRetryAnalysis,
+    errorMessage = "Analysis failed",
 }: SidebarProps) => {
     const [isCompact, setIsCompact] = useState<boolean>(true);
     const [
@@ -80,6 +82,12 @@ const Sidebar = ({
         } else {
             setIsCompact(lastUserSelectedCompactState);
         }
+
+        // Clear tooltip when content state changes, especially to loading
+        if (contentState === SidebarContentState.LOADING) {
+            setHoveredIcon(null);
+            setHoveredIconElement(null);
+        }
     }, [contentState, lastUserSelectedCompactState]);
 
     useEffect(() => {
@@ -103,7 +111,11 @@ const Sidebar = ({
     };
 
     const handleIconClick = (iconCategory: string) => {
-        if (contentState === SidebarContentState.NO_PRODUCTS) {
+        // Clear the hovered icon state when clicking any icon
+        setHoveredIcon(null);
+        setHoveredIconElement(null);
+
+        if (contentState === SidebarContentState.NO_PRODUCTS || contentState === SidebarContentState.ERROR) {
             onRetryAnalysis();
         } else {
             toggleCompactMode(iconCategory);
@@ -189,12 +201,18 @@ const Sidebar = ({
                         />
                     )}
                     <Footer />
-                    
+
                     {/* Render floating tooltip outside the sidebar */}
-                    {isVisible && isCompact && contentState === SidebarContentState.PRODUCTS && hoveredIcon && (
+                    {isVisible && isCompact && hoveredIcon && (
                         <FloatingTooltip
                             key={`tooltip-${hoveredIcon}`}
-                            text={formatIconText(hoveredIcon)}
+                            text={
+                                hoveredIcon === "nothing-found" 
+                                    ? "No products found.\nClick to try again." 
+                                    : hoveredIcon === "error"
+                                        ? `${errorMessage}`
+                                        : formatIconText(hoveredIcon)
+                            }
                             isVisible={!!hoveredIcon}
                             position={position}
                             iconElement={hoveredIconElement}
