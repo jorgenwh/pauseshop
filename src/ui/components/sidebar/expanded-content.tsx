@@ -1,4 +1,5 @@
 import { motion, Variants } from "motion/react";
+import { useState, useEffect, useRef } from "react";
 import { ProductStorage, SidebarContentState } from "../../types";
 import ProductGroupCard from "./product-group-card";
 import "../../css/components/sidebar/expanded-content.css";
@@ -32,8 +33,42 @@ interface ExpandedContentProps {
 }
 
 const ExpandedContent = ({contentState, productStorage, expandedIconCategory }: ExpandedContentProps) => {
+    const [showScrollbar, setShowScrollbar] = useState(false);
+    const contentRef = useRef<HTMLDivElement>(null);
+
+    // Check if content height approaches max height (60vh)
+    useEffect(() => {
+        if (contentState !== SidebarContentState.PRODUCTS || !contentRef.current) {
+            return;
+        }
+
+        // Create a ResizeObserver to monitor content height changes
+        const resizeObserver = new ResizeObserver(entries => {
+            for (const entry of entries) {
+                const contentHeight = entry.contentRect.height;
+                const maxHeight = window.innerHeight * 0.6; // 60vh
+                // Add a tiny 1px buffer to max height to account for rounding
+                const thresholdHeight = maxHeight - 1; // Show scrollbar just 1px before max height
+                
+                // Enable scrollbar when content is extremely close to max height
+                setShowScrollbar(contentHeight >= thresholdHeight);
+            }
+        });
+
+        resizeObserver.observe(contentRef.current);
+        
+        return () => {
+            resizeObserver.disconnect();
+        };
+    }, [contentState, productStorage]);
+
+    const contentClasses = [
+        "pauseshop-expanded-sidebar-content",
+        showScrollbar ? "show-scrollbar" : "hide-scrollbar"
+    ].join(" ");
+
     return (
-        <div className="pauseshop-expanded-sidebar-content">
+        <div className={contentClasses} ref={contentRef}>
             {contentState === SidebarContentState.LOADING && (
                 <p className="text-white">Loading products...</p>
             )}
