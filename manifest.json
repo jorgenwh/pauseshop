@@ -25,11 +25,7 @@
         "https://*.amazon.es/*",
         "https://*.amazon.ca/*",
         "https://*.amazon.com.au/*",
-        "https://*.amazon.co.jp/*",
-        "https://fonts.googleapis.com/",
-        "https://fonts.gstatic.com/",
-        "https://pauseshop-server-rfrxaro25a-uc.a.run.app/",
-        "http://localhost:3000/"
+        "https://*.amazon.co.jp/*"
     ],
     "background": {
         "service_worker": "background/service-worker.js"

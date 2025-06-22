@@ -8,7 +8,7 @@ import { constructAmazonSearch } from "../amazon/amazon-search";
 import { executeAmazonSearch } from "../amazon/amazon-http-client";
 import { scrapeAmazonSearchResult } from "../amazon/amazon-parser";
 import { ENABLE_FRAME_VALIDATION, openFrameInNewTab } from "./frame-debugger";
-import type { ScreenshotResponse } from "./types";
+import type { BackgroundMessageResponse } from "./types";
 
 /**
  * Handles the complete frame and streaming analysis workflow
@@ -18,7 +18,7 @@ export const handleScreenshotAnalysis = async (
     pauseId: string,
     abortSignal?: AbortSignal,
     originTabId?: number,
-): Promise<ScreenshotResponse> => {
+): Promise<BackgroundMessageResponse> => {
     try {
         // Check if already aborted
         if (abortSignal?.aborted) {

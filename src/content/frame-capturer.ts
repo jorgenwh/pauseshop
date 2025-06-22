@@ -29,7 +29,7 @@ export const captureVideoFrame = async (
         const imageData = canvas.toDataURL('image/png');
 
         const message = {
-            type: "image_data",
+            type: "registerFrame",
             pauseId: pauseId,
             imageData: imageData,
         };

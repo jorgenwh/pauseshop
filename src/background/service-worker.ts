@@ -5,16 +5,16 @@
 
 import { handleScreenshotAnalysis } from "./analysis-workflow";
 import { cancellationRegistry } from "./cancellation-registry";
-import type { BackgroundMessage, ScreenshotResponse } from "./types";
+import type { BackgroundMessage, BackgroundMessageResponse} from "./types";
 
 chrome.runtime.onMessage.addListener(
     (
         message: BackgroundMessage,
         sender: chrome.runtime.MessageSender,
-        sendResponse: (response: ScreenshotResponse) => void,
+        sendResponse: (response: BackgroundMessageResponse) => void,
     ) => {
         // Helper function to safely send response
-        const safeSendResponse = (response: ScreenshotResponse) => {
+        const safeSendResponse = (response: BackgroundMessageResponse) => {
             try {
                 // Check if the message port is still valid by checking chrome.runtime.lastError
                 // after attempting to send the response
@@ -35,7 +35,7 @@ chrome.runtime.onMessage.addListener(
         };
 
         switch (message.type) {
-            case "image_data": {
+            case "registerFrame": {
                 const abortSignal = cancellationRegistry.getAbortSignal(
                     message.pauseId,
                 );

@@ -2,7 +2,7 @@
  * Types and interfaces for the PauseShop background service worker
  */
 
-export interface ScreenshotResponse {
+export interface BackgroundMessageResponse {
     success: boolean;
     error?: string;
     pauseId?: string;
@@ -27,8 +27,8 @@ export interface RetryAnalysisMessage {
     type: "retryAnalysis";
 }
 
-export interface ImageDataMessage {
-    type: "image_data";
+export interface FrameMessage {
+    type: "registerFrame";
     pauseId: string;
     imageData: string;
 }
@@ -38,4 +38,4 @@ export type BackgroundMessage =
     | RegisterPauseMessage
     | CancelPauseMessage
     | RetryAnalysisMessage
-    | ImageDataMessage;
+    | FrameMessage;
