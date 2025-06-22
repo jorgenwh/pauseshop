@@ -8,7 +8,6 @@ export * from "./service-worker";
 export * from "./analysis-workflow";
 
 // Utilities
-export * from "./screenshot-capturer";
 export * from "./debug-utils";
 
 // Types

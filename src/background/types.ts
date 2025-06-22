@@ -2,23 +2,7 @@
  * Types and interfaces for the PauseShop background service worker
  */
 
-export interface ScreenshotMessage {
-    type: "captureScreenshot";
-    pauseId: string;
-    videoBounds?: VideoBounds;
-}
-
-export interface VideoBounds {
-    x: number;
-    y: number;
-    width: number;
-    height: number;
-    scrollX: number;
-    scrollY: number;
-    devicePixelRatio: number;
-}
-
-export interface ScreenshotResponse {
+export interface BackgroundMessageResponse {
     success: boolean;
     error?: string;
     pauseId?: string;
@@ -43,10 +27,15 @@ export interface RetryAnalysisMessage {
     type: "retryAnalysis";
 }
 
+export interface FrameMessage {
+    type: "registerFrame";
+    pauseId: string;
+    imageData: string;
+}
 
 export type BackgroundMessage =
-    | ScreenshotMessage
     | ToggleSidebarPositionMessage
     | RegisterPauseMessage
     | CancelPauseMessage
-    | RetryAnalysisMessage;
+    | RetryAnalysisMessage
+    | FrameMessage;

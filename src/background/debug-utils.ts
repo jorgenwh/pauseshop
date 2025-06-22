@@ -3,7 +3,7 @@
  */
 
 /**
- * Debug function: Opens screenshot in new tab (kept for debugging purposes)
+ * Debug function: Opens frame in new tab (kept for debugging purposes)
  * @param imageData The image data URL to open
  */
 export const openScreenshotInNewTab = async (

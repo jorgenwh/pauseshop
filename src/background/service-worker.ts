@@ -1,21 +1,20 @@
 /**
  * PauseShop Background Service Worker
- * Handles screenshot capture and server communication
+ * Handles frame capture and server communication
  */
 
 import { handleScreenshotAnalysis } from "./analysis-workflow";
 import { cancellationRegistry } from "./cancellation-registry";
-import { ENABLE_SCREENSHOT_VALIDATION } from "./screenshot-debug";
-import type { BackgroundMessage, ScreenshotResponse } from "./types";
+import type { BackgroundMessage, BackgroundMessageResponse} from "./types";
 
 chrome.runtime.onMessage.addListener(
     (
         message: BackgroundMessage,
         sender: chrome.runtime.MessageSender,
-        sendResponse: (response: ScreenshotResponse) => void,
+        sendResponse: (response: BackgroundMessageResponse) => void,
     ) => {
         // Helper function to safely send response
-        const safeSendResponse = (response: ScreenshotResponse) => {
+        const safeSendResponse = (response: BackgroundMessageResponse) => {
             try {
                 // Check if the message port is still valid by checking chrome.runtime.lastError
                 // after attempting to send the response
@@ -36,18 +35,14 @@ chrome.runtime.onMessage.addListener(
         };
 
         switch (message.type) {
-            case "captureScreenshot": {
-                const windowId =
-                        sender.tab?.windowId || chrome.windows.WINDOW_ID_CURRENT;
+            case "registerFrame": {
                 const abortSignal = cancellationRegistry.getAbortSignal(
                     message.pauseId,
                 );
                 handleScreenshotAnalysis(
-                    windowId,
+                    message.imageData,
                     message.pauseId,
                     abortSignal,
-                    ENABLE_SCREENSHOT_VALIDATION,
-                    message.videoBounds,
                     sender.tab?.id,
                 )
                     .then(safeSendResponse)
@@ -97,15 +92,12 @@ chrome.runtime.onMessage.addListener(
                 break;
             case "retryAnalysis": {
                 const pauseId = `pause-${Date.now()}`;
-                const windowId =
-                        sender.tab?.windowId || chrome.windows.WINDOW_ID_CURRENT;
                 const abortSignal = cancellationRegistry.getAbortSignal(pauseId);
+                // Since we are not taking a frame, we can pass an empty string for the image data.
                 handleScreenshotAnalysis(
-                    windowId,
+                    "",
                     pauseId,
                     abortSignal,
-                    ENABLE_SCREENSHOT_VALIDATION,
-                    undefined,
                     sender.tab?.id,
                 )
                     .then(safeSendResponse)
