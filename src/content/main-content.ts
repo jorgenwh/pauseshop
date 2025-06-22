@@ -1,9 +1,9 @@
 import { initializeVideoDetector } from "./video-detector";
 import {
-    initializeScreenshotCapturer,
+    initializeFrameCapturer,
     cleanupUI,
     setUIManager,
-} from "./screenshot-capturer";
+} from "./frame-capturer";
 import { UIManager } from "../ui/ui-manager";
 import { allowedSites } from "./allowed-sites";
 
@@ -48,7 +48,7 @@ const initializeExtension = (): void => {
     }
 
     console.log("[PauseShop] Initializing extension components");
-    initializeScreenshotCapturer();
+    initializeFrameCapturer();
     cleanupVideoDetector = initializeVideoDetector();
 
     uiManagerInstance = UIManager.create();
@@ -123,3 +123,4 @@ window.addEventListener("pagehide", () => {
     cleanupUI();
     clearInterval(urlCheckInterval);
 });
+

@@ -1,5 +1,5 @@
 /**
- * Streaming analysis workflow for processing screenshots and constructing Amazon search results
+ * Streaming analysis workflow for processing frames and constructing Amazon search results
  */
 
 import { analyzeImageStreaming } from "./api-client";
@@ -7,18 +7,16 @@ import { Product } from "../types/common";
 import { constructAmazonSearch } from "../amazon/amazon-search";
 import { executeAmazonSearch } from "../amazon/amazon-http-client";
 import { scrapeAmazonSearchResult } from "../amazon/amazon-parser";
-import { captureAndCropScreenshot } from "./screenshot-capturer";
-import { openScreenshotForValidation } from "./screenshot-debug";
-import type { ScreenshotResponse, VideoBounds } from "./types";
+import { ENABLE_FRAME_VALIDATION, openFrameInNewTab } from "./frame-debugger";
+import type { ScreenshotResponse } from "./types";
 
 /**
- * Handles the complete screenshot and streaming analysis workflow
+ * Handles the complete frame and streaming analysis workflow
  */
 export const handleScreenshotAnalysis = async (
     imageData: string,
     pauseId: string,
     abortSignal?: AbortSignal,
-    enableScreenshotValidation: boolean = false,
     originTabId?: number,
 ): Promise<ScreenshotResponse> => {
     try {
@@ -28,14 +26,14 @@ export const handleScreenshotAnalysis = async (
             throw new DOMException('Operation aborted', 'AbortError');
         }
 
-        // Optionally open screenshot in new tab for validation
-        if (enableScreenshotValidation) {
-            await openScreenshotForValidation(imageData);
+        // Optionally open frame in new tab for validation
+        if (ENABLE_FRAME_VALIDATION) {
+            await openFrameInNewTab(imageData);
         }
 
-        // Check again after screenshot capture
+        // Check again after frame capture
         if (abortSignal?.aborted) {
-            console.log(`[PauseShop:AnalysisWorkflow] Aborted after screenshot capture for pauseId: ${pauseId}`);
+            console.log(`[PauseShop:AnalysisWorkflow] Aborted after frame capture for pauseId: ${pauseId}`);
             throw new DOMException('Operation aborted', 'AbortError');
         }
 
@@ -243,7 +241,7 @@ export const handleScreenshotAnalysis = async (
         const errorMessage =
             error instanceof Error ? error.message : "Unknown error";
         console.error(
-            `[PauseShop:AnalysisWorkflow] Screenshot workflow failed for pauseId: ${pauseId}: ${errorMessage}`,
+            `[PauseShop:AnalysisWorkflow] Frame workflow failed for pauseId: ${pauseId}: ${errorMessage}`,
         );
         return { success: false, error: errorMessage, pauseId };
     }

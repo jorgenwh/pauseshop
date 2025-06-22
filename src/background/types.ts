@@ -2,22 +2,6 @@
  * Types and interfaces for the PauseShop background service worker
  */
 
-export interface ScreenshotMessage {
-    type: "captureScreenshot";
-    pauseId: string;
-    videoBounds?: VideoBounds;
-}
-
-export interface VideoBounds {
-    x: number;
-    y: number;
-    width: number;
-    height: number;
-    scrollX: number;
-    scrollY: number;
-    devicePixelRatio: number;
-}
-
 export interface ScreenshotResponse {
     success: boolean;
     error?: string;
@@ -50,7 +34,6 @@ export interface ImageDataMessage {
 }
 
 export type BackgroundMessage =
-    | ScreenshotMessage
     | ToggleSidebarPositionMessage
     | RegisterPauseMessage
     | CancelPauseMessage

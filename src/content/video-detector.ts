@@ -1,5 +1,5 @@
 import { SeekingState } from "../types/video";
-import { captureVideoFrame, hideUI } from "./screenshot-capturer";
+import { captureVideoFrame, hideUI } from "./frame-capturer";
 import { SiteHandlerRegistry } from "./site-handlers/site-handler-registry";
 import { seekingDebounceMs, timeJumpThreshold } from "./constants";
 

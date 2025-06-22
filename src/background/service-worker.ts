@@ -1,11 +1,10 @@
 /**
  * PauseShop Background Service Worker
- * Handles screenshot capture and server communication
+ * Handles frame capture and server communication
  */
 
 import { handleScreenshotAnalysis } from "./analysis-workflow";
 import { cancellationRegistry } from "./cancellation-registry";
-import { ENABLE_SCREENSHOT_VALIDATION } from "./screenshot-debug";
 import type { BackgroundMessage, ScreenshotResponse } from "./types";
 
 chrome.runtime.onMessage.addListener(
@@ -44,7 +43,6 @@ chrome.runtime.onMessage.addListener(
                     message.imageData,
                     message.pauseId,
                     abortSignal,
-                    ENABLE_SCREENSHOT_VALIDATION,
                     sender.tab?.id,
                 )
                     .then(safeSendResponse)
@@ -95,12 +93,11 @@ chrome.runtime.onMessage.addListener(
             case "retryAnalysis": {
                 const pauseId = `pause-${Date.now()}`;
                 const abortSignal = cancellationRegistry.getAbortSignal(pauseId);
-                // Since we are not taking a screenshot, we can pass an empty string for the image data.
+                // Since we are not taking a frame, we can pass an empty string for the image data.
                 handleScreenshotAnalysis(
                     "",
                     pauseId,
                     abortSignal,
-                    ENABLE_SCREENSHOT_VALIDATION,
                     sender.tab?.id,
                 )
                     .then(safeSendResponse)
