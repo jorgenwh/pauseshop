@@ -43,10 +43,16 @@ export interface RetryAnalysisMessage {
     type: "retryAnalysis";
 }
 
+export interface ImageDataMessage {
+    type: "image_data";
+    pauseId: string;
+    imageData: string;
+}
 
 export type BackgroundMessage =
     | ScreenshotMessage
     | ToggleSidebarPositionMessage
     | RegisterPauseMessage
     | CancelPauseMessage
-    | RetryAnalysisMessage;
+    | RetryAnalysisMessage
+    | ImageDataMessage;

@@ -36,18 +36,15 @@ chrome.runtime.onMessage.addListener(
         };
 
         switch (message.type) {
-            case "captureScreenshot": {
-                const windowId =
-                        sender.tab?.windowId || chrome.windows.WINDOW_ID_CURRENT;
+            case "image_data": {
                 const abortSignal = cancellationRegistry.getAbortSignal(
                     message.pauseId,
                 );
                 handleScreenshotAnalysis(
-                    windowId,
+                    message.imageData,
                     message.pauseId,
                     abortSignal,
                     ENABLE_SCREENSHOT_VALIDATION,
-                    message.videoBounds,
                     sender.tab?.id,
                 )
                     .then(safeSendResponse)
@@ -97,15 +94,13 @@ chrome.runtime.onMessage.addListener(
                 break;
             case "retryAnalysis": {
                 const pauseId = `pause-${Date.now()}`;
-                const windowId =
-                        sender.tab?.windowId || chrome.windows.WINDOW_ID_CURRENT;
                 const abortSignal = cancellationRegistry.getAbortSignal(pauseId);
+                // Since we are not taking a screenshot, we can pass an empty string for the image data.
                 handleScreenshotAnalysis(
-                    windowId,
+                    "",
                     pauseId,
                     abortSignal,
                     ENABLE_SCREENSHOT_VALIDATION,
-                    undefined,
                     sender.tab?.id,
                 )
                     .then(safeSendResponse)

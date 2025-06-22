@@ -15,11 +15,10 @@ import type { ScreenshotResponse, VideoBounds } from "./types";
  * Handles the complete screenshot and streaming analysis workflow
  */
 export const handleScreenshotAnalysis = async (
-    windowId: number,
+    imageData: string,
     pauseId: string,
     abortSignal?: AbortSignal,
     enableScreenshotValidation: boolean = false,
-    videoBounds?: VideoBounds,
     originTabId?: number,
 ): Promise<ScreenshotResponse> => {
     try {
@@ -28,8 +27,6 @@ export const handleScreenshotAnalysis = async (
             console.warn(`[PauseShop:AnalysisWorkflow] Already aborted at start for pauseId: ${pauseId}`);
             throw new DOMException('Operation aborted', 'AbortError');
         }
-
-        const imageData = await captureAndCropScreenshot(windowId, videoBounds);
 
         // Optionally open screenshot in new tab for validation
         if (enableScreenshotValidation) {

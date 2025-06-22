@@ -1,5 +1,5 @@
 import { SeekingState } from "../types/video";
-import { captureScreenshot, hideUI } from "./screenshot-capturer";
+import { captureVideoFrame, hideUI } from "./screenshot-capturer";
 import { SiteHandlerRegistry } from "./site-handlers/site-handler-registry";
 import { seekingDebounceMs, timeJumpThreshold } from "./constants";
 
@@ -57,13 +57,10 @@ const handlePause =
             const debounceTime = siteHandlerRegistry.getDebounceTime(seekingState);
 
             seekingState.pauseDebounceTimeoutId = window.setTimeout(() => {
-                const videoElement = document.querySelector(
-                    "video",
-                ) as HTMLVideoElement;
                 if (videoElement && videoElement.paused && seekingState.currentPauseId === newPauseId) {
                     if (!seekingState.isSeeking) {
-                        captureScreenshot(newPauseId).catch((_error) => {
-                            // Error logging is handled within captureScreenshot
+                        captureVideoFrame(newPauseId, videoElement).catch((_error: Error) => {
+                            // Error logging is handled within captureVideoFrame
                         });
                     }
                 }
