@@ -3,7 +3,7 @@
  */
 
 // Debug flag to enable frame validation globally
-export const ENABLE_FRAME_VALIDATION = false;
+export const ENABLE_FRAME_VALIDATION = true;
 
 /**
  * Opens a frame in a new tab for validation/debugging purposes

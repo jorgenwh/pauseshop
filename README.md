@@ -1,6 +1,6 @@
 # PauseShop 🛒
 
-Ever paused Netflix and thought "I NEED that lamp"? We got you covered! 🛋️✨
+Ever paused a video and thought "I NEED that sweater"? We got you covered! 🛋️✨
 
 PauseShop is a Chrome extension that turns your streaming addiction into a shopping opportunity. Pause any video, and we'll magically find those products on Amazon for you (or hopefully something similar).
 
@@ -12,14 +12,11 @@ PauseShop is a Chrome extension that turns your streaming addiction into a shopp
 4. **Amazon** search results appear like magic ✨
 5. **Shop** till you drop (or until you resume the show)
 
-## What it supports 📺
-
-- Netflix
-- YouTube
-
-with many more to come!
-
 _Disclaimer: We are not responsible for your impulse purchases or explaining to your partner why you bought a $200 throw pillow because you saw it in Bridgerton._
+
+## Supported sites
+
+We currently support YouTube videos and shorts, with plans to expand to Instagram and TikTok.
 
 ## Setup Instructions 🚀
 
