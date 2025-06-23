@@ -1,4 +1,4 @@
-import { initializeVideoDetector, triggerRetryAnalysis } from "./video-detector";
+import { initializeVideoDetector } from "./video-detector";
 import {
     initializeFrameCapturer,
     cleanupUI,
@@ -79,26 +79,8 @@ const cleanupExtension = (): void => {
     uiManagerInstance = null;
 };
 
-const handleRetryAnalysis = (): void => {
-    triggerRetryAnalysis();
-};
-
 // Initialize on page load with retry mechanism
 initializeExtensionWithRetry();
-
-// Handle messages from background script
-chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
-    switch (message.type) {
-        case "retryAnalysis":
-            handleRetryAnalysis();
-            sendResponse({ success: true });
-            break;
-        default:
-            // Let other message handlers deal with other message types
-            break;
-    }
-    return true; // Keep message channel open for async response
-});
 
 // Listen for URL changes (SPA navigation)
 let lastUrl = window.location.href;
