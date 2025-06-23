@@ -1,7 +1,7 @@
 import "../../css/components/sidebar/sidebar.css";
 import "../../../global.css";
 import "../../css/base.css";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { AmazonScrapedProduct } from "../../../types/amazon";
 import {
@@ -65,6 +65,12 @@ const Sidebar = ({
     >(null);
     const [hoveredIcon, setHoveredIcon] = useState<string | null>(null);
     const [hoveredIconElement, setHoveredIconElement] = useState<HTMLElement | null>(null);
+    const [isHoveringExpandedSidebar, setIsHoveringExpandedSidebar] = useState<boolean>(false);
+    
+    // Use refs to access current state values in event handlers
+    const isHoveringRef = useRef(false);
+    const isCompactRef = useRef(true);
+    const isVisibleRef = useRef(false);
 
     useEffect(() => {
         getSidebarCompactState().then((compact) => {
@@ -79,6 +85,8 @@ const Sidebar = ({
             contentState === SidebarContentState.NO_PRODUCTS
         ) {
             setIsCompact(true);
+            // Reset hover state when forcing compact mode
+            setIsHoveringExpandedSidebar(false);
         } else {
             setIsCompact(lastUserSelectedCompactState);
         }
@@ -102,12 +110,70 @@ const Sidebar = ({
         }
     }, [isVisible, onShow, onHide]);
 
+    // Update refs when state changes
+    useEffect(() => {
+        isHoveringRef.current = isHoveringExpandedSidebar;
+    }, [isHoveringExpandedSidebar]);
+
+    useEffect(() => {
+        isCompactRef.current = isCompact;
+    }, [isCompact]);
+
+    useEffect(() => {
+        isVisibleRef.current = isVisible;
+    }, [isVisible]);
+
+    // Handle scroll prevention when hovering over expanded sidebar
+    useEffect(() => {
+        const handleDocumentWheel = (e: WheelEvent) => {
+            // Use refs to get current values (avoids stale closure issues)
+            if (isHoveringRef.current && !isCompactRef.current && isVisibleRef.current) {
+                const sidebarElement = document.getElementById('pauseshop-sidebar');
+                if (!sidebarElement) return;
+
+                // Check if the event target is within the sidebar
+                if (!sidebarElement.contains(e.target as Node)) return;
+
+                // Check if the sidebar content can scroll
+                const expandedContent = sidebarElement.querySelector('.pauseshop-expanded-sidebar-content');
+                if (expandedContent) {
+                    const { scrollTop, scrollHeight, clientHeight } = expandedContent;
+                    const isScrollable = scrollHeight > clientHeight;
+                    const isAtTop = scrollTop === 0;
+                    const isAtBottom = Math.abs(scrollTop + clientHeight - scrollHeight) < 1; // Small tolerance for rounding
+
+                    // Allow scrolling within sidebar if it's scrollable and not at boundaries
+                    if (isScrollable && ((e.deltaY > 0 && !isAtBottom) || (e.deltaY < 0 && !isAtTop))) {
+                        // Let the sidebar handle the scroll, don't prevent it
+                        return;
+                    }
+                }
+                // Prevent the event from bubbling to the document (prevents page scroll)
+                e.preventDefault();
+                e.stopPropagation();
+            }
+        };
+
+        // Add event listener to document to catch all wheel events
+        document.addEventListener('wheel', handleDocumentWheel, { passive: false });
+
+        // Cleanup function to remove event listeners
+        return () => {
+            document.removeEventListener('wheel', handleDocumentWheel);
+        };
+    }, []); // Empty dependency array - event listener is stable
+
     const toggleCompactMode = (iconCategory?: string) => {
         const newCompactState = !isCompact;
         setIsCompact(newCompactState);
         setLastUserSelectedCompactState(newCompactState);
         setSidebarCompactState(newCompactState);
         setExpandedIconCategory(iconCategory || null);
+        
+        // Reset hover state when switching modes to ensure clean state
+        if (newCompactState) {
+            setIsHoveringExpandedSidebar(false);
+        }
     };
 
     const handleIconClick = (iconCategory: string) => {
@@ -171,6 +237,8 @@ const Sidebar = ({
                         pointerEvents: isVisible ? "auto" : "none",
                         height: sidebarHeight,
                     }}
+                    onMouseEnter={() => setIsHoveringExpandedSidebar(true)}
+                    onMouseLeave={() => setIsHoveringExpandedSidebar(false)}
                 >
                     <Header
                         compact={isCompact}
