@@ -91,38 +91,26 @@ chrome.runtime.onMessage.addListener(
                 safeSendResponse({ success: true });
                 break;
             case "retryAnalysis": {
-                const pauseId = `pause-${Date.now()}`;
-                const abortSignal = cancellationRegistry.getAbortSignal(pauseId);
-                // Since we are not taking a frame, we can pass an empty string for the image data.
-                handleScreenshotAnalysis(
-                    "",
-                    pauseId,
-                    abortSignal,
-                    sender.tab?.id,
-                )
-                    .then(safeSendResponse)
-                    .catch((error) => {
-                        if (error.name === "AbortError") {
-                            console.warn(
-                                `[PauseShop:ServiceWorker] Analysis cancelled for pauseId: ${pauseId}`,
-                            );
-                            safeSendResponse({
-                                success: false,
-                                error: "Analysis cancelled",
-                                pauseId,
-                            });
-                        } else {
-                            console.error(
-                                `[PauseShop:ServiceWorker] Screenshot analysis error for pauseId: ${pauseId}:`,
-                                error,
-                            );
-                            safeSendResponse({
-                                success: false,
-                                error: error.message || "Unknown error",
-                                pauseId,
-                            });
-                        }
+                // Forward retry request to content script to trigger normal pause flow
+                if (sender.tab?.id) {
+                    chrome.tabs.sendMessage(sender.tab.id, {
+                        type: "retryAnalysis",
+                    }).then(() => {
+                        safeSendResponse({ success: true });
+                    }).catch(error => {
+                        console.error(`[PauseShop:ServiceWorker] Error sending retryAnalysis message to tab ${sender.tab?.id}: ${error}`);
+                        safeSendResponse({
+                            success: false,
+                            error: "Failed to trigger retry analysis",
+                        });
                     });
+                } else {
+                    console.warn("[PauseShop:ServiceWorker] No tabId available for retryAnalysis message");
+                    safeSendResponse({
+                        success: false,
+                        error: "No tab available for retry analysis",
+                    });
+                }
                 break;
             }
         }

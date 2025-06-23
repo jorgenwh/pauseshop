@@ -40,7 +40,7 @@ const handlePause =
 
             // Register the new pause with the background service worker
             chrome.runtime.sendMessage({
-                action: "registerPause",
+                type: "registerPause",
                 pauseId: newPauseId
             }).catch((error) => {
                 console.error(`[PauseShop:VideoDetector] Failed to register pause for pauseId: ${newPauseId}`, error);
@@ -76,7 +76,7 @@ const handlePlay =
 
                 // Cancel the current pause analysis
                 chrome.runtime.sendMessage({
-                    action: "cancelPause",
+                    type: "cancelPause",
                     pauseId: pauseIdToCancel
                 }).catch((error) => {
                     console.error(`[PauseShop:VideoDetector] Failed to cancel pause for pauseId: ${pauseIdToCancel}`, error);
@@ -278,12 +278,35 @@ const createDOMObserver = (
     };
 };
 
+// Global variables to access from retry function
+let globalSiteHandlerRegistry: SiteHandlerRegistry | null = null;
+let globalSeekingState: SeekingState | null = null;
+
+export const triggerRetryAnalysis = (): void => {
+    console.log("[PauseShop:VideoDetector] Triggering retry analysis");
+    
+    const targetVideo = scanForVideos();
+    if (!targetVideo || !globalSiteHandlerRegistry || !globalSeekingState) {
+        console.warn("[PauseShop:VideoDetector] Cannot retry - video detector not properly initialized");
+        return;
+    }
+
+    // Create a synthetic pause event and trigger the same pause handling logic
+    const syntheticEvent = new Event('pause');
+    Object.defineProperty(syntheticEvent, 'target', { value: targetVideo });
+    
+    const pauseHandler = handlePause(globalSeekingState, globalSiteHandlerRegistry);
+    pauseHandler(syntheticEvent);
+};
+
 export const initializeVideoDetector = (): CleanupFunction => {
     const siteHandlerRegistry = new SiteHandlerRegistry();
     siteHandlerRegistry.initialize();
+    globalSiteHandlerRegistry = siteHandlerRegistry;
 
     let videoCleanup: CleanupFunction | null = null;
     let seekingState = createInitialSeekingState();
+    globalSeekingState = seekingState;
 
     const setVideo = (video: HTMLVideoElement): void => {
         // Clean up previous video if it exists
@@ -318,5 +341,9 @@ export const initializeVideoDetector = (): CleanupFunction => {
             videoCleanup();
         }
         observerCleanup();
+        
+        // Clean up global references
+        globalSiteHandlerRegistry = null;
+        globalSeekingState = null;
     };
 };
