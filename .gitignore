@@ -136,11 +136,6 @@ dist
 .pnp.*
 
 # PauseShop specific
-extension/dist/
-server/dist/
-extension/web-ext-artifacts/
-extension/*.zip
-server/src/config/icon-categories.ts
 
 # WXT build outputs
 .output/

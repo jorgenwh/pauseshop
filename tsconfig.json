@@ -2,11 +2,6 @@
     "extends": "./.wxt/tsconfig.json",
     "compilerOptions": {
         "jsx": "react-jsx",
-        "baseUrl": "./src",
-        "paths": {
-            "@/*": ["./*"],
-            "@types/*": ["./types/*"],
-            "@utils/*": ["./utils/*"]
-        }
+        "baseUrl": "./src"
     }
 }
