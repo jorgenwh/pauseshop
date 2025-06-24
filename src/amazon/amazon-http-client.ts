@@ -9,7 +9,7 @@ import {
     AMAZON_REQUEST_DELAY_MS,
     AMAZON_TIMEOUT_MS,
     AMAZON_USER_AGENT_ROTATE,
-} from "../background/constants";
+} from "./constants";
 import { AmazonSearch, AmazonSearchResult } from "../types/amazon";
 
 const USER_AGENTS = [
