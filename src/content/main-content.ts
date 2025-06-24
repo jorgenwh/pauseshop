@@ -7,17 +7,7 @@ import {
 import { UIManager } from "../ui/ui-manager";
 import { allowedSites } from "./allowed-sites";
 
-// Dynamically inject the content script's CSS
-const injectCss = () => {
-    const link = document.createElement("link");
-    link.rel = "stylesheet";
-    link.type = "text/css";
-    const cssUrl = chrome.runtime.getURL("content/main-content.css");
-    link.href = cssUrl;
-    document.head.appendChild(link);
-};
-
-injectCss();
+// CSS is now automatically injected by WXT via entrypoints/content.css
 
 // Initialize components based on current URL
 let cleanupVideoDetector: (() => void) | null = null;
