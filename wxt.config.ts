@@ -11,6 +11,22 @@ export default defineConfig({
     define: {
       'process.env.SERVER_ENV': JSON.stringify(process.env.SERVER_ENV || 'remote'),
     },
+    build: {
+      rollupOptions: {
+        onwarn(warning, warn) {
+          // Suppress "use client" directive warnings from Motion library
+          if (
+            warning.code === 'MODULE_LEVEL_DIRECTIVE' &&
+            warning.message.includes('"use client"') &&
+            warning.id?.includes('node_modules/motion/')
+          ) {
+            return;
+          }
+          // Use default warning handler for other warnings
+          warn(warning);
+        },
+      },
+    },
   }),
   manifest: {
     name: "PauseShop",
