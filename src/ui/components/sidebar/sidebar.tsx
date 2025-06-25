@@ -65,8 +65,7 @@ const Sidebar = ({
     >(null);
     const [hoveredIcon, setHoveredIcon] = useState<string | null>(null);
     const [hoveredIconElement, setHoveredIconElement] = useState<HTMLElement | null>(null);
-    const [isHoveringExpandedSidebar, setIsHoveringExpandedSidebar] = useState<boolean>(false);
-    
+
     // Use refs to access current state values in event handlers
     const isHoveringRef = useRef(false);
     const isCompactRef = useRef(true);
@@ -86,7 +85,7 @@ const Sidebar = ({
         ) {
             setIsCompact(true);
             // Reset hover state when forcing compact mode
-            setIsHoveringExpandedSidebar(false);
+            isHoveringRef.current = false;
         } else {
             setIsCompact(lastUserSelectedCompactState);
         }
@@ -109,11 +108,6 @@ const Sidebar = ({
             onHide();
         }
     }, [isVisible, onShow, onHide]);
-
-    // Update refs when state changes
-    useEffect(() => {
-        isHoveringRef.current = isHoveringExpandedSidebar;
-    }, [isHoveringExpandedSidebar]);
 
     useEffect(() => {
         isCompactRef.current = isCompact;
@@ -169,10 +163,11 @@ const Sidebar = ({
         setLastUserSelectedCompactState(newCompactState);
         setSidebarCompactState(newCompactState);
         setExpandedIconCategory(iconCategory || null);
-        
+
         // Reset hover state when switching modes to ensure clean state
         if (newCompactState) {
-            setIsHoveringExpandedSidebar(false);
+            // setIsHoveringExpandedSidebar(false);
+            isHoveringRef.current = false;
         }
     };
 
@@ -237,8 +232,8 @@ const Sidebar = ({
                         pointerEvents: isVisible ? "auto" : "none",
                         height: sidebarHeight,
                     }}
-                    onMouseEnter={() => setIsHoveringExpandedSidebar(true)}
-                    onMouseLeave={() => setIsHoveringExpandedSidebar(false)}
+                    onMouseEnter={() => isHoveringRef.current = true}
+                    onMouseLeave={() => isHoveringRef.current = false}
                 >
                     <Header
                         compact={isCompact}
