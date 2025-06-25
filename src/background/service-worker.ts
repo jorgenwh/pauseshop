@@ -90,29 +90,6 @@ browser.runtime.onMessage.addListener(
                 }
                 safeSendResponse({ success: true });
                 break;
-            case "retryAnalysis": {
-                // Forward retry request to content script to trigger normal pause flow
-                if (sender.tab?.id) {
-                    browser.tabs.sendMessage(sender.tab.id, {
-                        type: "retryAnalysis",
-                    }).then(() => {
-                        safeSendResponse({ success: true });
-                    }).catch(error => {
-                        console.error(`[PauseShop:ServiceWorker] Error sending retryAnalysis message to tab ${sender.tab?.id}: ${error}`);
-                        safeSendResponse({
-                            success: false,
-                            error: "Failed to trigger retry analysis",
-                        });
-                    });
-                } else {
-                    console.warn("[PauseShop:ServiceWorker] No tabId available for retryAnalysis message");
-                    safeSendResponse({
-                        success: false,
-                        error: "No tab available for retry analysis",
-                    });
-                }
-                break;
-            }
         }
 
         return true; // Keep message channel open for async response

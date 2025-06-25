@@ -284,7 +284,7 @@ let globalSeekingState: SeekingState | null = null;
 
 export const triggerRetryAnalysis = (): void => {
     console.log("[PauseShop:VideoDetector] Triggering retry analysis");
-    
+
     const targetVideo = scanForVideos();
     if (!targetVideo || !globalSiteHandlerRegistry || !globalSeekingState) {
         console.warn("[PauseShop:VideoDetector] Cannot retry - video detector not properly initialized");
@@ -294,7 +294,7 @@ export const triggerRetryAnalysis = (): void => {
     // Create a synthetic pause event and trigger the same pause handling logic
     const syntheticEvent = new Event('pause');
     Object.defineProperty(syntheticEvent, 'target', { value: targetVideo });
-    
+
     const pauseHandler = handlePause(globalSeekingState, globalSiteHandlerRegistry);
     pauseHandler(syntheticEvent);
 };
@@ -341,7 +341,7 @@ export const initializeVideoDetector = (): CleanupFunction => {
             videoCleanup();
         }
         observerCleanup();
-        
+
         // Clean up global references
         globalSiteHandlerRegistry = null;
         globalSeekingState = null;
