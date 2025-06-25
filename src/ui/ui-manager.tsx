@@ -70,8 +70,7 @@ export class UIManager {
                 this.hideSidebar();
             },
             onRetryAnalysis: () => {
-                this.errorMessage = ""; // Reset error message when retrying analysis
-                browser.runtime.sendMessage({ type: "retryAnalysis" });
+                triggerRetryAnalysis();
             },
         };
 
@@ -272,11 +271,6 @@ export class UIManager {
         return true;
     };
 
-    private handleRetryAnalysis = (): void => {
-        console.log("[PauseShop:UIManager] Handling retry analysis request");
-        triggerRetryAnalysis();
-    };
-
     /**
      * Handle messages from the background script
      */
@@ -308,10 +302,6 @@ export class UIManager {
             break;
         case "cancel_analysis":
             this.hideSidebar();
-            result = true;
-            break;
-        case "retryAnalysis":
-            this.handleRetryAnalysis();
             result = true;
             break;
         default:
