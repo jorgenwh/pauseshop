@@ -80,8 +80,8 @@ const CompactContent = ({
                     onMouseLeave={() => onIconHover && onIconHover(null, null)}
                 >
                     <img
-                        src={chrome.runtime.getURL(
-                            `icons/products/${iconCategory}.png`,
+                        src={browser.runtime.getURL(
+                            `/icons/products/${iconCategory}.png` as any,
                         )}
                         alt={iconCategory}
                         className={`pauseshop-compact-icon icon`}
@@ -117,7 +117,7 @@ const CompactContent = ({
                 style={{ position: 'relative' }} // Ensure proper positioning context for tooltip
             >
                 <img
-                    src={chrome.runtime.getURL("icons/nothing-found.png")}
+                    src={browser.runtime.getURL("/icons/nothing-found.png")}
                     alt="No products found"
                     className="pauseshop-nothing-found-icon"
                 />
@@ -144,7 +144,7 @@ const CompactContent = ({
                 style={{ position: 'relative' }} // Ensure proper positioning context for tooltip
             >
                 <img
-                    src={chrome.runtime.getURL("icons/error.png")}
+                    src={browser.runtime.getURL("/icons/error.png")}
                     alt="An error occurred"
                     className="pauseshop-error-icon"
                 />

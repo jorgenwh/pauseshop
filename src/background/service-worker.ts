@@ -5,25 +5,25 @@
 
 import { handleScreenshotAnalysis } from "./analysis-workflow";
 import { cancellationRegistry } from "./cancellation-registry";
-import type { BackgroundMessage, BackgroundMessageResponse} from "./types";
+import type { BackgroundMessage, BackgroundMessageResponse } from "./types";
 
-chrome.runtime.onMessage.addListener(
+browser.runtime.onMessage.addListener(
     (
         message: BackgroundMessage,
-        sender: chrome.runtime.MessageSender,
+        sender: Browser.runtime.MessageSender,
         sendResponse: (response: BackgroundMessageResponse) => void,
     ) => {
         // Helper function to safely send response
         const safeSendResponse = (response: BackgroundMessageResponse) => {
             try {
-                // Check if the message port is still valid by checking chrome.runtime.lastError
+                // Check if the message port is still valid by checking browser.runtime.lastError
                 // after attempting to send the response
                 sendResponse(response);
 
                 // Check for lastError after sending to detect if the receiving end exists
-                if (chrome.runtime.lastError) {
+                if (browser.runtime.lastError) {
                     console.error(
-                        `[PauseShop:ServiceWorker] Message port closed, unable to send response: ${chrome.runtime.lastError.message}`,
+                        `[PauseShop:ServiceWorker] Message port closed, unable to send response: ${browser.runtime.lastError.message}`,
                     );
                 }
             } catch (error) {
@@ -80,7 +80,7 @@ chrome.runtime.onMessage.addListener(
                 break;
             case "toggleSidebarPosition":
                 if (message.tabId) {
-                    chrome.tabs.sendMessage(message.tabId, {
+                    browser.tabs.sendMessage(message.tabId, {
                         type: "toggleSidebarPosition",
                     }).catch(error => {
                         console.error(`[PauseShop:ServiceWorker] Error sending toggleSidebarPosition message to tab ${message.tabId}: ${error}`);
@@ -93,7 +93,7 @@ chrome.runtime.onMessage.addListener(
             case "retryAnalysis": {
                 // Forward retry request to content script to trigger normal pause flow
                 if (sender.tab?.id) {
-                    chrome.tabs.sendMessage(sender.tab.id, {
+                    browser.tabs.sendMessage(sender.tab.id, {
                         type: "retryAnalysis",
                     }).then(() => {
                         safeSendResponse({ success: true });

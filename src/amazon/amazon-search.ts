@@ -11,7 +11,7 @@ import {
 } from "../types/amazon";
 import {
     AMAZON_DOMAIN,
-    AMAZON_ENABLE_CATEGORT_FILTERING,
+    AMAZON_ENABLE_CATEGORY_FILTERING,
     AMAZON_MAX_SEARCH_TERM_LENGTH,
 } from "./constants";
 
@@ -170,7 +170,7 @@ export const constructAmazonSearch = (
     urlParams.append("k", searchTerms);
 
     // Add category filtering if enabled
-    if (AMAZON_ENABLE_CATEGORT_FILTERING) {
+    if (AMAZON_ENABLE_CATEGORY_FILTERING) {
         const categoryNode = getCategoryNode(product.category);
         if (categoryNode) {
             urlParams.append("rh", `n:${categoryNode}`);

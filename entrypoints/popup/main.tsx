@@ -1,7 +1,7 @@
-import "../global.css";
+import "./style.css";
 import React from "react";
 import ReactDOM from "react-dom/client";
-import PopupApp from "./PopupApp";
+import PopupApp from "../../src/popup/PopupApp";
 
 const rootElement = document.getElementById("root");
 if (rootElement) {

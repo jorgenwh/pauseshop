@@ -1,5 +1,3 @@
-"use client"
-
 import { motion } from "motion/react";
 import { useState, SVGProps } from "react";
 import { AmazonScrapedProduct } from "../../../types/amazon";

@@ -45,7 +45,7 @@ export const handleScreenshotAnalysis = async (
 
         try {
             if (tabId) {
-                chrome.tabs
+                browser.tabs
                     .sendMessage(tabId, {
                         type: "analysis_started",
                         pauseId: pauseId,
@@ -108,7 +108,7 @@ export const handleScreenshotAnalysis = async (
                             // Send a single message with the original product and all scraped products
                             // Use the same tabId from the start of the analysis
                             if (tabId) {
-                                chrome.tabs
+                                browser.tabs
                                     .sendMessage(tabId, {
                                         type: "product_group_update",
                                         originalProduct: product,
@@ -149,7 +149,7 @@ export const handleScreenshotAnalysis = async (
 
                     // Use the same tabId from the start of the analysis
                     if (tabId) {
-                        chrome.tabs
+                        browser.tabs
                             .sendMessage(tabId, {
                                 type: "analysis_complete",
                                 pauseId: pauseId,
@@ -167,7 +167,7 @@ export const handleScreenshotAnalysis = async (
                     console.error(`[PauseShop:AnalysisWorkflow] ${errorMessage} for pauseId: ${pauseId}`);
                     // Use the same tabId from the start of the analysis
                     if (tabId) {
-                        chrome.tabs
+                        browser.tabs
                             .sendMessage(tabId, {
                                 type: "analysis_error",
                                 error: errorMessage,
@@ -193,7 +193,7 @@ export const handleScreenshotAnalysis = async (
                 console.warn(`[PauseShop:AnalysisWorkflow] Analysis aborted for pauseId: ${pauseId}`);
                 // Use the same tabId from the start of the analysis
                 if (tabId) {
-                    chrome.tabs
+                    browser.tabs
                         .sendMessage(tabId, {
                             type: "analysis_cancelled",
                             pauseId: pauseId,
@@ -214,7 +214,7 @@ export const handleScreenshotAnalysis = async (
             console.error(`[PauseShop:AnalysisWorkflow] ${errorMessage} for pauseId: ${pauseId}`);
             // Use the same tabId from the start of the analysis
             if (tabId) {
-                chrome.tabs
+                browser.tabs
                     .sendMessage(tabId, {
                         type: "analysis_error",
                         error: errorMessage,
