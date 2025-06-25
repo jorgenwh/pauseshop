@@ -39,7 +39,7 @@ const handlePause =
             seekingState.currentPauseId = newPauseId;
 
             // Register the new pause with the background service worker
-            chrome.runtime.sendMessage({
+            browser.runtime.sendMessage({
                 type: "registerPause",
                 pauseId: newPauseId
             }).catch((error) => {
@@ -75,7 +75,7 @@ const handlePlay =
                 const pauseIdToCancel = seekingState.currentPauseId;
 
                 // Cancel the current pause analysis
-                chrome.runtime.sendMessage({
+                browser.runtime.sendMessage({
                     type: "cancelPause",
                     pauseId: pauseIdToCancel
                 }).catch((error) => {

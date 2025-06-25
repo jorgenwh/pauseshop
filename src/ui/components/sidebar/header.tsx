@@ -54,7 +54,7 @@ const Header = ({
                         title="Close PauseShop"
                     >
                         <img
-                            src={chrome.runtime.getURL("icons/close.png")}
+                            src={browser.runtime.getURL("/icons/close.png")}
                             alt="Close"
                             className="pauseshop-button-icon"
                         />
@@ -85,7 +85,7 @@ const Header = ({
                             onClick={onToggleCompact}
                         >
                             <img
-                                src={chrome.runtime.getURL(`icons/${getToggleButtonIcon()}`)}
+                                src={browser.runtime.getURL(`/icons/${getToggleButtonIcon()}`)}
                                 alt={compact ? "Expand" : "Collapse"}
                                 className="pauseshop-button-icon"
                             />
@@ -96,7 +96,7 @@ const Header = ({
                             title="Close PauseShop"
                         >
                             <img
-                                src={chrome.runtime.getURL("icons/close.png")}
+                                src={browser.runtime.getURL("/icons/close.png")}
                                 alt="Close"
                                 className="pauseshop-button-icon"
                             />
@@ -110,7 +110,7 @@ const Header = ({
                             title="Close PauseShop"
                         >
                             <img
-                                src={chrome.runtime.getURL("icons/close.png")}
+                                src={browser.runtime.getURL("/icons/close.png")}
                                 alt="Close"
                                 className="pauseshop-button-icon"
                             />
@@ -120,7 +120,7 @@ const Header = ({
                             onClick={onToggleCompact}
                         >
                             <img
-                                src={chrome.runtime.getURL(`icons/${getToggleButtonIcon()}`)}
+                                src={browser.runtime.getURL(`/icons/${getToggleButtonIcon()}`)}
                                 alt={compact ? "Expand" : "Collapse"}
                                 className="pauseshop-button-icon"
                             />
@@ -139,7 +139,7 @@ const Header = ({
             }}
         >
             <img
-                src={chrome.runtime.getURL("icons/icon-128.png")}
+                src={browser.runtime.getURL("/icons/icon-128.png")}
                 alt="PauseShop Icon"
                 className={"pauseshop-sidebar-header-icon icon" + (compact ? " compact" : "")}
                 style={{

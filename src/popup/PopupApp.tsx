@@ -11,22 +11,20 @@ const PopupApp = () => {
         getSidebarPosition().then(setPosition);
     }, []);
 
-    const handleToggleSidebarPosition = () => {
+    const handleToggleSidebarPosition = async () => {
         const newPosition = position === "left" ? "right" : "left";
-        setSidebarPosition(newPosition).then(() => {
-            setPosition(newPosition);
+        await setSidebarPosition(newPosition);
+        setPosition(newPosition);
 
-            // Get the current tab ID
-            chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-                const tabId = tabs[0]?.id;
-                const message: ToggleSidebarPositionMessage = {
-                    type: "toggleSidebarPosition",
-                    tabId: tabId
-                };
-                chrome.runtime.sendMessage(message).catch((error) => {
-                    console.error("Error sending message:", error);
-                });
-            });
+        // Get the current tab ID
+        const tabs = await browser.tabs.query({ active: true, currentWindow: true });
+        const tabId = tabs[0]?.id;
+        const message: ToggleSidebarPositionMessage = {
+            type: "toggleSidebarPosition",
+            tabId: tabId,
+        };
+        browser.runtime.sendMessage(message).catch((error) => {
+            console.error("Error sending message:", error);
         });
     };
 

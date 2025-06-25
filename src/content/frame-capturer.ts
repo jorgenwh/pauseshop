@@ -33,7 +33,7 @@ export const captureVideoFrame = async (
             pauseId: pauseId,
             imageData: imageData,
         };
-        const response = await chrome.runtime.sendMessage(message);
+        const response = await browser.runtime.sendMessage(message);
         if (!response.success) {
             console.error(
                 `[Frame Capturer] Failed to process image: ${response?.error || "Unknown error"}`,

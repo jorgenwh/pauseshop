@@ -62,7 +62,7 @@ export class UIManager {
             },
             onClose: () => {
                 if (this.productStorage.pauseId) {
-                    chrome.runtime.sendMessage({
+                    browser.runtime.sendMessage({
                         type: "cancel_analysis",
                         pauseId: this.productStorage.pauseId,
                     });
@@ -71,7 +71,7 @@ export class UIManager {
             },
             onRetryAnalysis: () => {
                 this.errorMessage = ""; // Reset error message when retrying analysis
-                chrome.runtime.sendMessage({ type: "retryAnalysis" });
+                browser.runtime.sendMessage({ type: "retryAnalysis" });
             },
         };
 
@@ -81,7 +81,7 @@ export class UIManager {
             this.renderSidebar();
         });
 
-        chrome.runtime.onMessage.addListener(this.handleBackgroundMessages);
+        browser.runtime.onMessage.addListener(this.handleBackgroundMessages);
     }
 
     private createContainer(): void {
@@ -282,7 +282,7 @@ export class UIManager {
      */
     private handleBackgroundMessages = (
         message: BackgroundMessage,
-        _sender: chrome.runtime.MessageSender,
+        _sender: Browser.runtime.MessageSender,
         sendResponse: (response?: unknown) => void,
     ) => {
         let result;
@@ -343,7 +343,7 @@ export class UIManager {
 
         this.isInitialized = false;
 
-        chrome.runtime.onMessage.removeListener(this.handleBackgroundMessages);
+        browser.runtime.onMessage.removeListener(this.handleBackgroundMessages);
     }
 
     public static create(): UIManager | null {
@@ -359,3 +359,5 @@ export class UIManager {
         }
     }
 }
+
+
