@@ -101,7 +101,8 @@ Enhance the existing Amazon product scraping system with AI-powered visual simil
 ### Step 6.1: User-Controlled Ranking
 - **Manual Trigger**: Users decide when to use AI ranking via "deeper search" button
 - **Per-Group Control**: Each product group can be independently ranked or left in original order
-- **Toggle Functionality**: Allow users to switch between original Amazon relevance and AI similarity (after ranking)
+- **Toggle Functionality**: Switch between "All 50 Amazon results" and "Top 10 AI matches only"
+- **Filtered View**: AI ranked mode shows curated top 10, hiding the other 40+ products
 - **Preference Persistence**: Remember user's preferred sort mode across sessions
 - **Default Behavior**: Always start with fast Amazon results, ranking is opt-in
 
@@ -270,16 +271,27 @@ interface ProductGroup {
 
 ### Display Logic Example
 ```typescript
-// Same array, different sorting based on user preference
+// Two completely different views: all 50 vs top 10 only
 const getDisplayProducts = (products, sortMode) => {
   if (sortMode === "AI_RANKED") {
-    // Sort by AI ranking (products without ranking stay at end)
-    return [...products].sort((a, b) => 
-      (a.rankedPosition || 999) - (b.rankedPosition || 999)
-    );
+    // Show ONLY the top 10 AI matches (filter out the other 40+)
+    return products
+      .filter(p => p.rankedPosition)
+      .sort((a, b) => a.rankedPosition - b.rankedPosition);
   } else {
-    // Original Amazon order
+    // Original Amazon order (all 50 products)
     return [...products].sort((a, b) => a.position - b.position);
+  }
+};
+
+// Display position logic
+const getDisplayPosition = (product, sortMode) => {
+  if (sortMode === "AI_RANKED") {
+    // Always show AI position (1-10) since we only display ranked products
+    return `#${product.rankedPosition}`;
+  } else {
+    // Show Amazon search position for all products
+    return `#${product.position}`;
   }
 };
 
@@ -288,6 +300,33 @@ const getDeeperSearchButtonState = (productGroup) => {
   if (productGroup.rankingInProgress) return "loading";
   if (productGroup.isRanked) return "completed";
   return "idle";
+};
+
+// UI Component Example
+const ProductCard = ({ product, sortMode }) => {
+  const displayPosition = getDisplayPosition(product, sortMode);
+  
+  return (
+    <div className="product-card">
+      <img src={product.thumbnailUrl} />
+      
+      {/* Position display - context dependent */}
+      {displayPosition && (
+        <span className="position-badge">
+          {sortMode === "AI_RANKED" ? "🎯 AI Match " : "📊 Amazon "}{displayPosition}
+        </span>
+      )}
+      
+      {/* Confidence score - only for AI ranked products */}
+      {product.visualSimilarityScore && (
+        <span className="confidence-badge">
+          {Math.round(product.visualSimilarityScore * 100)}% match
+        </span>
+      )}
+      
+      <p className="price">${product.price}</p>
+    </div>
+  );
 };
 ```
 
@@ -353,21 +392,15 @@ scrapedProducts.forEach(product => {
   // Remaining 40+ products have no ranking fields (stay in original order)
 });
 
-// Display logic: show top 10 AI matches first, then remaining in original order
+// Display logic: AI ranked mode shows ONLY top 10, original mode shows all 50
 const getDisplayProducts = (products, sortMode) => {
   if (sortMode === "AI_RANKED") {
-    // Top 10 AI matches first, then remaining products in original order
-    const rankedProducts = products
+    // Show ONLY the top 10 AI matches (other 40+ are filtered out)
+    return products
       .filter(p => p.rankedPosition)
       .sort((a, b) => a.rankedPosition - b.rankedPosition);
-    
-    const unrankedProducts = products
-      .filter(p => !p.rankedPosition)
-      .sort((a, b) => a.position - b.position);
-    
-    return [...rankedProducts, ...unrankedProducts];
   } else {
-    // Original Amazon order
+    // Original Amazon order (all 50 products)
     return [...products].sort((a, b) => a.position - b.position);
   }
 };
