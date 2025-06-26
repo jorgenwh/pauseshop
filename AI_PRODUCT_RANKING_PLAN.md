@@ -45,6 +45,7 @@ Enhance the existing Amazon product scraping system with AI-powered visual simil
 
 ### Step 3.2: Analysis Workflow Enhancement
 - **Immediate Results**: Send original Amazon results immediately for fast UI response
+- **Frame Image Storage**: Include original video frame image in product group messages for later ranking use
 - **User-Triggered Ranking**: AI ranking only initiated when user clicks "deeper search" button
 - **On-Demand Processing**: Image conversion and ranking happen only when requested
 - **Progressive Enhancement**: Users get fast results first, can opt into AI ranking per product group
@@ -83,13 +84,17 @@ Enhance the existing Amazon product scraping system with AI-powered visual simil
 
 ### Step 5.1: Product Group Card Enhancement
 - **Deeper Search Button**: Prominent button to trigger AI ranking for each product group
+- **Shimmer Loading Animation**: Beautiful colorful shimmer overlay during AI ranking processing
+- **AI-Focused Loading UI**: Shimmer states for AI processing and completion only
 - **Ranking Indicators**: Visual badges showing when AI ranking is applied
 - **Confidence Display**: Show average confidence scores for ranked results
 - **Sort Toggle Controls**: Buttons to switch between original and AI-ranked views (only visible after ranking)
-- **Loading States**: Indicate when image conversion and ranking are in progress for specific product group
-- **Progress Feedback**: Show conversion progress for thumbnail processing
 
 ### Step 5.2: Product Display Enhancement
+- **Compact Card Shimmer**: Shimmer animation overlay on compact product cards during ranking loading
+- **Expanded Card Shimmer**: Shimmer animation overlay on expanded product cards during ranking loading
+- **Compact Icon Shimmer**: Shimmer animation overlay on category icons during ranking loading
+- **Unified Loading State**: All three shimmer locations active simultaneously during ranking process only
 - **Confidence Scores**: Optional display of individual product confidence ratings when ranking fields exist
 - **Visual Indicators**: Show both Amazon position and AI ranking when available
 - **Smooth Transitions**: Animate between different sort modes using field-based sorting
@@ -107,13 +112,14 @@ Enhance the existing Amazon product scraping system with AI-powered visual simil
 - **Default Behavior**: Always start with fast Amazon top 10, ranking is opt-in
 
 ### Step 6.2: Feedback and Transparency
-- **Button States**: Clear visual states for "deeper search" button (idle, processing, completed, error)
-- **Processing Indicators**: Show when image conversion and AI ranking are happening for specific product group
-- **Conversion Progress**: Display progress of thumbnail download and conversion process
+- **Shimmer Animation System**: Colorful, beautiful shimmer overlays to indicate AI ranking in progress
+- **Multi-Location Feedback**: Shimmer appears simultaneously on compact cards, compact icons, expanded cards, and deep search buttons
+- **Ranking-Only Loading State**: Shimmer only during AI ranking loading state (not thumbnail processing)
+- **Synchronized Animation**: All shimmer locations activate and deactivate together during ranking process
+- **Button States**: Clear visual states for "deeper search" button (idle, shimmer-processing, completed, error)
 - **Confidence Metrics**: Display ranking confidence to help users understand results
 - **Fallback Messaging**: Clear communication when ranking isn't available due to conversion or ranking failures
-- **Performance Metrics**: Optional display of conversion time and ranking processing time
-- **Cost Transparency**: Inform users that deeper search uses more resources/time
+- **Enhancement Messaging**: Communicate that shimmer indicates "AI ranking in progress"
 
 ## Phase 7: Error Handling and Resilience
 
@@ -127,7 +133,6 @@ Enhance the existing Amazon product scraping system with AI-powered visual simil
 ### Step 7.2: User Communication
 - **Error States**: Clear messaging when ranking features aren't available due to conversion or ranking failures
 - **Retry Mechanisms**: Allow users to retry ranking if image conversion or ranking initially fails
-- **Status Indicators**: Show current state of image conversion and ranking process
 - **Conversion Feedback**: Inform users when images are being processed for ranking
 
 ## Phase 8: Performance Optimization
@@ -231,10 +236,13 @@ const aiRankedOrder = products.filter(p => p.rankedPosition)
 3. For each product → Amazon search → Scrape results
 4. **Display original results immediately** (fast, no AI ranking overhead)
 5. **User sees "deeper search" button** on each product group
-6. **User clicks button** → Download and convert thumbnails to base64 format
-7. **Send ranking request** with original frame + base64 thumbnail images
-8. **Receive ranked results** → Update UI with toggle option for that specific group
-9. **User can switch** between original and AI-ranked views for ranked groups
+6. **User clicks button** → **Shimmer animation starts immediately** on compact cards, compact icons, expanded cards, and button
+7. **Download and convert thumbnails** → Shimmer state: 'processing' (background work)
+8. **Send ranking request** → Shimmer continues: 'processing'
+9. **AI processing** → Shimmer continues: 'processing'
+10. **Receive ranked results** → Shimmer state: 'completing' → **Shimmer fades out**
+11. **Update UI with toggle option** for that specific group
+12. **User can switch** between original and AI-ranked views for ranked groups
 
 ## Data Structure Approach
 
@@ -266,6 +274,8 @@ interface ProductGroup {
   scrapedProducts: AmazonScrapedProduct[]; // Always in original Amazon order
   isRanked: boolean;                   // Whether any products have ranking data
   rankingInProgress?: boolean;         // Whether ranking is currently being processed
+  shimmerState?: 'idle' | 'processing' | 'completing'; // Shimmer animation state
+  originalFrameImage?: string;         // Base64 image of original video frame for ranking
 }
 ```
 
@@ -297,36 +307,94 @@ const getDisplayPosition = (product, sortMode) => {
   }
 };
 
-// Button state logic
+// Button and shimmer state logic
 const getDeeperSearchButtonState = (productGroup) => {
-  if (productGroup.rankingInProgress) return "loading";
+  if (productGroup.rankingInProgress) return "shimmer-processing";
   if (productGroup.isRanked) return "completed";
   return "idle";
 };
 
-// UI Component Example
-const ProductCard = ({ product, sortMode }) => {
+const getShimmerState = (productGroup) => {
+  return productGroup.shimmerState || 'idle';
+};
+
+const shouldShowShimmer = (productGroup) => {
+  return productGroup.rankingInProgress && productGroup.shimmerState !== 'idle';
+};
+
+// UI Component Example with Shimmer
+const ProductCard = ({ product, productGroup, sortMode, isCompact = false }) => {
   const displayPosition = getDisplayPosition(product, sortMode);
+  const showShimmer = shouldShowShimmer(productGroup);
+  const shimmerState = getShimmerState(productGroup);
   
   return (
-    <div className="product-card">
+    <div className={`product-card ${isCompact ? 'compact' : 'expanded'}`}>
+      {/* Shimmer overlay during deep search */}
+      {showShimmer && (
+        <div className={`shimmer-overlay shimmer-${shimmerState}`}>
+          <div className="shimmer-animation colorful-gradient" />
+        </div>
+      )}
+      
       <img src={product.thumbnailUrl} />
       
       {/* Position display - context dependent */}
-      {displayPosition && (
+      {displayPosition && !showShimmer && (
         <span className="position-badge">
           {sortMode === "AI_RANKED" ? "🎯 AI Match " : "📊 Amazon "}{displayPosition}
         </span>
       )}
       
       {/* Confidence score - only for AI ranked products */}
-      {product.visualSimilarityScore && (
+      {product.visualSimilarityScore && !showShimmer && (
         <span className="confidence-badge">
           {Math.round(product.visualSimilarityScore * 100)}% match
         </span>
       )}
       
       <p className="price">${product.price}</p>
+    </div>
+  );
+};
+
+// Compact Card with Shimmer (same logic as expanded cards)
+const CompactCard = ({ productGroup }) => {
+  const showShimmer = shouldShowShimmer(productGroup);
+  const shimmerState = getShimmerState(productGroup);
+  
+  return (
+    <div className="compact-card">
+      {/* Shimmer overlay on entire compact card during ranking loading */}
+      {showShimmer && (
+        <div className={`compact-shimmer shimmer-${shimmerState}`}>
+          <div className="shimmer-animation colorful-gradient" />
+        </div>
+      )}
+      
+      <img src={productGroup.product.iconUrl} className="category-icon" />
+      <div className="compact-content">
+        {/* Product thumbnails, price, etc. */}
+      </div>
+    </div>
+  );
+};
+
+// Compact Icon with Shimmer (for category icons in sidebar)
+const CompactIcon = ({ productGroup }) => {
+  const showShimmer = shouldShowShimmer(productGroup);
+  const shimmerState = getShimmerState(productGroup);
+  
+  return (
+    <div className="compact-icon">
+      {/* Shimmer overlay on category icon during ranking loading */}
+      {showShimmer && (
+        <div className={`icon-shimmer shimmer-${shimmerState}`}>
+          <div className="shimmer-animation colorful-gradient" />
+        </div>
+      )}
+      
+      <img src={productGroup.product.iconUrl} className="category-icon" />
     </div>
   );
 };
