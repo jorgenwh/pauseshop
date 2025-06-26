@@ -15,17 +15,18 @@ Enhance the existing Amazon product scraping system with AI-powered visual simil
 ### Step 1.2: Request/Response Interfaces
 - **Request Interface**: Contains base64 original image and candidate images array with only ID and base64 data
 - **Response Interface**: Returns ranking metadata (ID, similarity score, ranked position) without redundant product data
-- **Data Reconstruction**: Frontend merges ranking results with original Amazon product data using IDs
-- **Error Handling**: Graceful fallback when ranking fails, preserving original results
+- **Field Updates**: Frontend adds ranking fields to existing Amazon product objects using ID matching
+- **Error Handling**: Graceful fallback when ranking fails, products simply lack ranking fields
 - **Server Isolation**: Server remains completely disconnected from Amazon - only processes images and returns rankings
 - **Bandwidth Efficiency**: Minimal payload sizes by eliminating redundant data transmission
 
 ## Phase 2: Type System Extensions
 
 ### Step 2.1: Enhanced Product Types
-- **Amazon Product Enhancement**: Add visual similarity score and ranked position fields
-- **Product Group Enhancement**: Add original products backup, ranking status flag, and ranking metadata
-- **Sort Mode Enum**: Define original vs AI-ranked display modes
+- **Amazon Product Enhancement**: Add optional visual similarity score and ranked position fields to existing products
+- **Product Group Enhancement**: Add ranking status flag and ranking metadata (no backup arrays needed)
+- **Order Preservation**: Maintain original array order while adding ranking fields for flexible sorting
+- **Sort Mode Enum**: Define original vs AI-ranked display modes using field-based sorting
 
 ### Step 2.2: Message Type Definitions
 - **Ranking Update Message**: New message type for sending ranked results from background to UI
@@ -44,66 +45,74 @@ Enhance the existing Amazon product scraping system with AI-powered visual simil
 
 ### Step 3.2: Analysis Workflow Enhancement
 - **Immediate Results**: Send original Amazon results immediately for fast UI response
-- **Image Conversion Process**: Download and convert thumbnail URLs to base64 format
-- **Background Ranking**: Trigger AI ranking call after image conversion completes
-- **Dual Message Flow**: Send both initial unranked and subsequent ranked results
+- **User-Triggered Ranking**: AI ranking only initiated when user clicks "deeper search" button
+- **On-Demand Processing**: Image conversion and ranking happen only when requested
+- **Progressive Enhancement**: Users get fast results first, can opt into AI ranking per product group
 - **Error Resilience**: Continue with original results if ranking fails or image conversion fails
 
 ### Step 3.3: API Client Extension
 - **New Ranking Function**: Create dedicated function for visual similarity API calls with minimal payload
-- **Image Processing Module**: Implement thumbnail download and base64 conversion functionality
+- **Image Processing Module**: Implement thumbnail download and base64 conversion functionality (triggered on-demand)
 - **Optimization Pipeline**: Resize and compress images before base64 conversion to minimize payload
-- **Abort Signal Support**: Ensure ranking requests can be cancelled with analysis
+- **User-Initiated Requests**: Handle ranking requests triggered by UI button clicks
+- **Abort Signal Support**: Ensure ranking requests can be cancelled
 - **Error Handling**: Robust error handling with fallback to original results
 
-### Step 3.4: Data Reconstruction Pipeline
-- **ID Matching Logic**: Map ranking results back to original Amazon product data using unique IDs
-- **Product Merging**: Combine ranking metadata (similarity score, ranked position) with original product fields
-- **Order Reconstruction**: Reorder products based on AI ranking while preserving original data
-- **Partial Success Handling**: Handle cases where only some products receive ranking data
-- **Validation**: Ensure all ranking IDs match existing product IDs before reconstruction
+### Step 3.4: Simple Field Update Pipeline
+- **ID Matching Logic**: Map ranking results back to original Amazon product objects using unique IDs
+- **Field Addition**: Add ranking metadata (similarity score, ranked position) as optional fields to existing products
+- **Order Preservation**: Keep original array order intact, no reordering needed
+- **Partial Success Handling**: Products without ranking data simply lack the optional ranking fields
+- **Validation**: Ensure all ranking IDs match existing product IDs before field updates
 
 ## Phase 4: UI State Management
 
 ### Step 4.1: UI Manager Enhancement
 - **Ranking Message Handler**: Process ranking update messages from background script
-- **Product Group Updates**: Update existing product groups with reconstructed ranked results while preserving originals
-- **Data Merging Logic**: Combine ranking metadata with original Amazon product data
-- **State Synchronization**: Ensure UI reflects both original and ranked states appropriately
+- **Product Field Updates**: Add ranking fields to existing product objects without reordering
+- **Simple State Management**: Single product array with optional ranking fields
+- **State Synchronization**: Ensure UI reflects both original and ranked states through field-based sorting
 
 ### Step 4.2: Data Flow Management
-- **Progressive Enhancement**: Display results immediately, then enhance with ranking
-- **State Preservation**: Maintain both original and ranked product orders
+- **Progressive Enhancement**: Display results immediately, then enhance with ranking fields
+- **Order Preservation**: Maintain original array order with multiple sorting options via fields
 - **Session Management**: Handle ranking updates for correct pause sessions only
+- **Graceful Degradation**: Products without ranking fields display normally in original order
 
 ## Phase 5: User Interface Components
 
 ### Step 5.1: Product Group Card Enhancement
+- **Deeper Search Button**: Prominent button to trigger AI ranking for each product group
 - **Ranking Indicators**: Visual badges showing when AI ranking is applied
 - **Confidence Display**: Show average confidence scores for ranked results
-- **Sort Toggle Controls**: Buttons to switch between original and AI-ranked views
-- **Loading States**: Indicate when image conversion and ranking are in progress
+- **Sort Toggle Controls**: Buttons to switch between original and AI-ranked views (only visible after ranking)
+- **Loading States**: Indicate when image conversion and ranking are in progress for specific product group
 - **Progress Feedback**: Show conversion progress for thumbnail processing
 
 ### Step 5.2: Product Display Enhancement
-- **Confidence Scores**: Optional display of individual product confidence ratings
-- **Visual Indicators**: Distinguish between original and AI-ranked ordering
-- **Smooth Transitions**: Animate between different sort modes
+- **Confidence Scores**: Optional display of individual product confidence ratings when ranking fields exist
+- **Visual Indicators**: Show both Amazon position and AI ranking when available
+- **Smooth Transitions**: Animate between different sort modes using field-based sorting
+- **Ranking Badges**: Clear indicators when products have AI ranking data
 - **Accessibility**: Ensure ranking features are accessible to all users
 
 ## Phase 6: User Experience Features
 
-### Step 6.1: Sort Mode Management
-- **Toggle Functionality**: Allow users to switch between original Amazon relevance and AI similarity
+### Step 6.1: User-Controlled Ranking
+- **Manual Trigger**: Users decide when to use AI ranking via "deeper search" button
+- **Per-Group Control**: Each product group can be independently ranked or left in original order
+- **Toggle Functionality**: Allow users to switch between original Amazon relevance and AI similarity (after ranking)
 - **Preference Persistence**: Remember user's preferred sort mode across sessions
-- **Default Behavior**: Sensible defaults for when to show which mode
+- **Default Behavior**: Always start with fast Amazon results, ranking is opt-in
 
 ### Step 6.2: Feedback and Transparency
-- **Processing Indicators**: Show when image conversion and AI ranking are happening
+- **Button States**: Clear visual states for "deeper search" button (idle, processing, completed, error)
+- **Processing Indicators**: Show when image conversion and AI ranking are happening for specific product group
 - **Conversion Progress**: Display progress of thumbnail download and conversion process
 - **Confidence Metrics**: Display ranking confidence to help users understand results
 - **Fallback Messaging**: Clear communication when ranking isn't available due to conversion or ranking failures
 - **Performance Metrics**: Optional display of conversion time and ranking processing time
+- **Cost Transparency**: Inform users that deeper search uses more resources/time
 
 ## Phase 7: Error Handling and Resilience
 
@@ -123,18 +132,20 @@ Enhance the existing Amazon product scraping system with AI-powered visual simil
 ## Phase 8: Performance Optimization
 
 ### Step 8.1: Efficient Processing
-- **Background Processing**: Ensure image conversion and ranking don't block initial result display
+- **On-Demand Processing**: Image conversion and ranking only happen when user requests it
+- **Fast Initial Results**: Immediate display of Amazon results without any AI processing overhead
 - **Image Optimization**: Resize and compress thumbnails before base64 conversion to minimize payload
-- **Parallel Conversion**: Use Web Workers for concurrent image processing
+- **Parallel Conversion**: Use Web Workers for concurrent image processing when triggered
 - **Minimal Payloads**: Send only ID and image data to server, eliminating redundant metadata
-- **Fast Reconstruction**: Efficiently merge ranking results with cached Amazon product data
-- **Caching Strategy**: Consider caching converted images and ranking results for repeated analyses
+- **Fast Field Updates**: Efficiently add ranking fields to existing Amazon product objects
+- **Caching Strategy**: Consider caching converted images and ranking results for repeated requests
 
 ### Step 8.2: Resource Management
-- **Memory Efficiency**: Manage storage of both original and ranked results, plus temporary base64 data
+- **Memory Efficiency**: Single product array with optional ranking fields (no duplicate data structures)
 - **Image Memory Management**: Efficient handling of large base64 strings during conversion
 - **Cleanup Procedures**: Properly dispose of converted images and ranking data when sessions end
 - **Abort Handling**: Clean cancellation of image conversion and ranking requests when needed
+- **Field-Based Storage**: Minimal memory overhead for ranking metadata as optional object properties
 
 ## Phase 9: Testing and Validation
 
@@ -174,6 +185,37 @@ Enhance the existing Amazon product scraping system with AI-powered visual simil
 - **Message System**: Extension's background-to-content messaging infrastructure
 - **Storage System**: Current product storage and state management systems
 
+## Order Preservation Strategy
+
+### Single Array with Multiple Sort Keys
+- **Array Order**: Maintains original Amazon search result order
+- **Position Field**: Explicit Amazon ranking numbers (1, 2, 3...)
+- **Ranked Position Field**: Optional AI ranking numbers (1 = best match)
+- **No Duplication**: Single product array with optional ranking fields
+- **Flexible Display**: Sort same array differently based on user preference
+
+### Data Structure Example
+```typescript
+// After scraping (original state)
+scrapedProducts = [
+  { id: "scraped-123", position: 1, amazonAsin: "B08XYZ123", price: 89.99 },
+  { id: "scraped-456", position: 2, amazonAsin: "B08ABC456", price: 75.99 },
+  { id: "scraped-789", position: 3, amazonAsin: "B08DEF789", price: 95.99 }
+];
+
+// After AI ranking (fields added, order preserved)
+scrapedProducts = [
+  { id: "scraped-123", position: 1, rankedPosition: 3, visualSimilarityScore: 0.75, ... },
+  { id: "scraped-456", position: 2, rankedPosition: 1, visualSimilarityScore: 0.92, ... },
+  { id: "scraped-789", position: 3, rankedPosition: 2, visualSimilarityScore: 0.89, ... }
+];
+
+// Display options (same array, different sorting)
+const amazonOrder = products.sort((a, b) => a.position - b.position);
+const aiRankedOrder = products.filter(p => p.rankedPosition)
+                            .sort((a, b) => a.rankedPosition - b.rankedPosition);
+```
+
 ## Data Flow Architecture
 
 ### Current Flow
@@ -186,11 +228,68 @@ Enhance the existing Amazon product scraping system with AI-powered visual simil
 1. User pauses video → Frame captured
 2. Frame sent to AI analysis → Products detected
 3. For each product → Amazon search → Scrape results
-4. **Display original results immediately** (no delay)
-5. **Download and convert thumbnails** to base64 format in background
-6. **Send ranking request** with original frame + base64 thumbnail images
-7. **Receive ranked results** → Update UI with toggle option
-8. **User can switch** between original and AI-ranked views
+4. **Display original results immediately** (fast, no AI ranking overhead)
+5. **User sees "deeper search" button** on each product group
+6. **User clicks button** → Download and convert thumbnails to base64 format
+7. **Send ranking request** with original frame + base64 thumbnail images
+8. **Receive ranked results** → Update UI with toggle option for that specific group
+9. **User can switch** between original and AI-ranked views for ranked groups
+
+## Data Structure Approach
+
+### Simplified Order Preservation Strategy
+- **Single Product Array**: Maintain one `scrapedProducts` array in original Amazon search order
+- **Optional Ranking Fields**: Add `visualSimilarityScore` and `rankedPosition` fields when ranking completes
+- **No Data Duplication**: No backup arrays or separate ranked product lists needed
+- **Field-Based Sorting**: Display different orders by sorting the same array using different fields
+- **Graceful Degradation**: Products without ranking fields display normally in original order
+
+### Product Data Structure
+```typescript
+interface AmazonScrapedProduct {
+  // Original Amazon data (always present)
+  id: string;
+  amazonAsin?: string;
+  thumbnailUrl: string;
+  productUrl: string;
+  position: number;        // Original Amazon search position (1, 2, 3...)
+  price?: number;
+  
+  // Optional ranking data (added when AI ranking completes)
+  visualSimilarityScore?: number;  // 0-1 confidence score
+  rankedPosition?: number;         // AI ranking position (1 = best match)
+}
+
+interface ProductGroup {
+  product: Product;                    // AI-detected product
+  scrapedProducts: AmazonScrapedProduct[]; // Always in original Amazon order
+  isRanked: boolean;                   // Whether any products have ranking data
+  rankingInProgress?: boolean;         // Whether ranking is currently being processed
+}
+```
+
+### Display Logic Example
+```typescript
+// Same array, different sorting based on user preference
+const getDisplayProducts = (products, sortMode) => {
+  if (sortMode === "AI_RANKED") {
+    // Sort by AI ranking (products without ranking stay at end)
+    return [...products].sort((a, b) => 
+      (a.rankedPosition || 999) - (b.rankedPosition || 999)
+    );
+  } else {
+    // Original Amazon order
+    return [...products].sort((a, b) => a.position - b.position);
+  }
+};
+
+// Button state logic
+const getDeeperSearchButtonState = (productGroup) => {
+  if (productGroup.rankingInProgress) return "loading";
+  if (productGroup.isRanked) return "completed";
+  return "idle";
+};
+```
 
 ## Message Interfaces
 
@@ -239,17 +338,30 @@ Enhance the existing Amazon product scraping system with AI-powered visual simil
 }
 ```
 
-#### Step 3: Frontend Data Reconstruction
+#### Step 3: Frontend Field Updates (No Reordering)
 ```javascript
-// Frontend merges ranking with original Amazon data
-const rankedProducts = rankings.map(ranking => {
-  const originalProduct = originalProducts.find(p => p.id === ranking.id);
-  return {
-    ...originalProduct,  // All Amazon data preserved
-    visualSimilarityScore: ranking.visualSimilarityScore,
-    rankedPosition: ranking.rankedPosition
-  };
+// Simply add ranking fields to existing products (keep original array order)
+scrapedProducts.forEach(product => {
+  const ranking = rankings.find(r => r.id === product.id);
+  if (ranking) {
+    product.visualSimilarityScore = ranking.visualSimilarityScore;
+    product.rankedPosition = ranking.rankedPosition;
+  }
+  // Products without ranking data remain unchanged
 });
+
+// Display logic: sort same array differently based on user preference
+const getDisplayProducts = (products, sortMode) => {
+  if (sortMode === "AI_RANKED") {
+    // Sort by AI ranking (products without ranking stay at end)
+    return [...products].sort((a, b) => 
+      (a.rankedPosition || 999) - (b.rankedPosition || 999)
+    );
+  } else {
+    // Original Amazon order (array order or position field)
+    return [...products].sort((a, b) => a.position - b.position);
+  }
+};
 ```
 
 ### Ranking Request to Server
@@ -261,14 +373,14 @@ const rankedProducts = rankings.map(ranking => {
 ### Ranking Response from Server
 - Array of ranking metadata (ID, similarity score, ranked position) in similarity order
 - Processing time and confidence metrics
-- No redundant product data - frontend reconstructs using IDs
+- No redundant product data - frontend adds fields to existing products using IDs
 - Error information if ranking fails
 
 ### Internal Extension Messages
 - Initial product group update (existing)
-- Image conversion progress updates (new)
-- Ranking update message with ranking metadata only (new)
-- Data reconstruction completion notifications (new)
+- User-triggered ranking request (new)
+- Image conversion progress updates for specific product group (new)
+- Ranking field update message with ranking metadata only (new)
 - UI state change notifications
 - Error and status updates for conversion and ranking
 
@@ -291,15 +403,16 @@ const rankedProducts = rankings.map(ranking => {
 
 ### Technical Risks
 - **Image conversion failures**: Always fall back to original results if thumbnails can't be converted
-- **Data reconstruction errors**: Ensure robust ID matching between ranking results and original products
-- **Ranking API failures**: Always fall back to original results
+- **Field update errors**: Ensure robust ID matching when adding ranking fields to existing products
+- **Ranking API failures**: Always fall back to original results (products simply lack ranking fields)
 - **Performance impact**: Image conversion and ranking happen in background, don't block UI
-- **Memory usage**: Efficient storage of dual result sets plus temporary base64 data (reduced by minimal payloads)
+- **Memory usage**: Minimal overhead with single product array plus optional ranking fields
 - **Network issues**: Robust timeout and retry handling for both conversion and ranking
 
 ### User Experience Risks
 - **Confusion**: Clear labeling of original vs ranked results
-- **Slow conversion/ranking**: Progressive enhancement ensures immediate results, with clear progress indicators
+- **Button discoverability**: Ensure "deeper search" button is prominent but not overwhelming
 - **Poor ranking quality**: User can always revert to original order
-- **Feature complexity**: Simple toggle interface, optional advanced features
-- **Conversion delays**: Clear feedback during image processing to set user expectations
+- **Feature complexity**: Simple button interface, optional advanced features
+- **Processing time**: Clear feedback during image processing to set user expectations
+- **Inconsistent states**: Some product groups ranked, others not - clear visual differentiation needed
