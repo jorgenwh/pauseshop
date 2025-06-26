@@ -10,7 +10,7 @@ Enhance the existing Amazon product scraping system with AI-powered visual simil
 - **Endpoint**: `POST /analyze/rank-products`
 - **Input**: Original video frame image, AI-detected product metadata, array of Amazon product thumbnails
 - **Processing**: Use computer vision AI to compare original image against each thumbnail
-- **Output**: Reordered product array with confidence scores
+- **Output**: Top 10 best matches with confidence scores (remaining products not ranked)
 
 ### Step 1.2: Request/Response Interfaces
 - **Request Interface**: Contains base64 original image and candidate images array with only ID and base64 data
@@ -316,7 +316,7 @@ const getDeeperSearchButtonState = (productGroup) => {
 }
 ```
 
-#### Step 2: Ranking Response from Server
+#### Step 2: Ranking Response from Server (Top 10 Only)
 ```json
 {
   "rankings": [
@@ -330,35 +330,44 @@ const getDeeperSearchButtonState = (productGroup) => {
       "visualSimilarityScore": 0.89, 
       "rankedPosition": 2
     }
+    // ... only top 10 matches (remaining 40+ products not included)
   ],
   "processingMetadata": {
     "processingTime": 2.3,
-    "averageConfidence": 0.905
+    "averageConfidence": 0.905,
+    "totalProductsAnalyzed": 50,
+    "topMatchesReturned": 10
   }
 }
 ```
 
-#### Step 3: Frontend Field Updates (No Reordering)
+#### Step 3: Frontend Field Updates (Top 10 Only)
 ```javascript
-// Simply add ranking fields to existing products (keep original array order)
+// Add ranking fields only to top 10 products (others remain unranked)
 scrapedProducts.forEach(product => {
   const ranking = rankings.find(r => r.id === product.id);
   if (ranking) {
     product.visualSimilarityScore = ranking.visualSimilarityScore;
     product.rankedPosition = ranking.rankedPosition;
   }
-  // Products without ranking data remain unchanged
+  // Remaining 40+ products have no ranking fields (stay in original order)
 });
 
-// Display logic: sort same array differently based on user preference
+// Display logic: show top 10 AI matches first, then remaining in original order
 const getDisplayProducts = (products, sortMode) => {
   if (sortMode === "AI_RANKED") {
-    // Sort by AI ranking (products without ranking stay at end)
-    return [...products].sort((a, b) => 
-      (a.rankedPosition || 999) - (b.rankedPosition || 999)
-    );
+    // Top 10 AI matches first, then remaining products in original order
+    const rankedProducts = products
+      .filter(p => p.rankedPosition)
+      .sort((a, b) => a.rankedPosition - b.rankedPosition);
+    
+    const unrankedProducts = products
+      .filter(p => !p.rankedPosition)
+      .sort((a, b) => a.position - b.position);
+    
+    return [...rankedProducts, ...unrankedProducts];
   } else {
-    // Original Amazon order (array order or position field)
+    // Original Amazon order
     return [...products].sort((a, b) => a.position - b.position);
   }
 };
@@ -371,9 +380,10 @@ const getDisplayProducts = (products, sortMode) => {
 - Image optimization metadata (dimensions, compression settings)
 
 ### Ranking Response from Server
-- Array of ranking metadata (ID, similarity score, ranked position) in similarity order
+- Array of top 10 ranking metadata (ID, similarity score, ranked position) in similarity order
 - Processing time and confidence metrics
 - No redundant product data - frontend adds fields to existing products using IDs
+- Remaining 40+ products receive no ranking data (stay in original order)
 - Error information if ranking fails
 
 ### Internal Extension Messages
