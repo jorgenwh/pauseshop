@@ -101,10 +101,10 @@ Enhance the existing Amazon product scraping system with AI-powered visual simil
 ### Step 6.1: User-Controlled Ranking
 - **Manual Trigger**: Users decide when to use AI ranking via "deeper search" button
 - **Per-Group Control**: Each product group can be independently ranked or left in original order
-- **Toggle Functionality**: Switch between "All 50 Amazon results" and "Top 10 AI matches only"
-- **Filtered View**: AI ranked mode shows curated top 10, hiding the other 40+ products
+- **Toggle Functionality**: Switch between "Top 10 Amazon results" and "Top 10 AI matches"
+- **Consistent Display**: Always show maximum 10 products regardless of mode
 - **Preference Persistence**: Remember user's preferred sort mode across sessions
-- **Default Behavior**: Always start with fast Amazon results, ranking is opt-in
+- **Default Behavior**: Always start with fast Amazon top 10, ranking is opt-in
 
 ### Step 6.2: Feedback and Transparency
 - **Button States**: Clear visual states for "deeper search" button (idle, processing, completed, error)
@@ -271,16 +271,18 @@ interface ProductGroup {
 
 ### Display Logic Example
 ```typescript
-// Two completely different views: all 50 vs top 10 only
+// Two different sets of top 10: Amazon's top 10 vs AI's top 10
 const getDisplayProducts = (products, sortMode) => {
   if (sortMode === "AI_RANKED") {
-    // Show ONLY the top 10 AI matches (filter out the other 40+)
+    // Show top 10 AI matches (positions 1-10)
     return products
       .filter(p => p.rankedPosition)
       .sort((a, b) => a.rankedPosition - b.rankedPosition);
   } else {
-    // Original Amazon order (all 50 products)
-    return [...products].sort((a, b) => a.position - b.position);
+    // Show top 10 Amazon results (positions 1-10)
+    return products
+      .filter(p => p.position <= 10)
+      .sort((a, b) => a.position - b.position);
   }
 };
 
@@ -392,16 +394,18 @@ scrapedProducts.forEach(product => {
   // Remaining 40+ products have no ranking fields (stay in original order)
 });
 
-// Display logic: AI ranked mode shows ONLY top 10, original mode shows all 50
+// Display logic: Always show max 10 products (Amazon's top 10 vs AI's top 10)
 const getDisplayProducts = (products, sortMode) => {
   if (sortMode === "AI_RANKED") {
-    // Show ONLY the top 10 AI matches (other 40+ are filtered out)
+    // Show top 10 AI matches (positions 1-10)
     return products
       .filter(p => p.rankedPosition)
       .sort((a, b) => a.rankedPosition - b.rankedPosition);
   } else {
-    // Original Amazon order (all 50 products)
-    return [...products].sort((a, b) => a.position - b.position);
+    // Show top 10 Amazon results (positions 1-10)
+    return products
+      .filter(p => p.position <= 10)
+      .sort((a, b) => a.position - b.position);
   }
 };
 ```
@@ -416,7 +420,7 @@ const getDisplayProducts = (products, sortMode) => {
 - Array of top 10 ranking metadata (ID, similarity score, ranked position) in similarity order
 - Processing time and confidence metrics
 - No redundant product data - frontend adds fields to existing products using IDs
-- Remaining 40+ products receive no ranking data (stay in original order)
+- **Remaining 40+ products receive no ranking data (not displayed in UI)**
 - Error information if ranking fails
 
 ### Internal Extension Messages
