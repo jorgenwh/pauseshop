@@ -21,6 +21,12 @@ import {
 } from "./types";
 import { getSidebarPosition, setSidebarPosition } from "../storage";
 import { triggerRetryAnalysis } from "../content/video-detector";
+import { ContentDetector } from "./layout/content-detector";
+import { RelativePositionCalculator } from "./layout/relative-position-calculator";
+import { LayoutMonitor } from "./layout/layout-monitor";
+import { ContentBounds, PositionStrategy, RelativePositionConfig } from "./layout/types";
+import { COMPACT_SIDEBAR_WIDTH, EXPANDED_SIDEBAR_WIDTH } from "./constants";
+import "./layout/debug"; // Import debug utilities
 
 export class UIManager {
     private container: HTMLElement | null = null;
@@ -36,15 +42,26 @@ export class UIManager {
 
     private productStorage: ProductStorage = { pauseId: "", productGroups: [] };
 
+    // Layout-aware positioning components
+    private contentDetector = new ContentDetector();
+    private positionCalculator = new RelativePositionCalculator();
+    private layoutMonitor: LayoutMonitor | null = null;
+    private currentPositionStrategy: PositionStrategy | null = null;
+    private isCompact: boolean = true; // Track sidebar state for width calculations
+
     private isInitialized: boolean = false;
 
     constructor() {
         this.sidebarConfig = {
             position: "left", // Default value, will be updated from storage
+            useContentRelativePositioning: true, // Enable content-relative positioning by default
         };
 
         this.sidebarEvents = {
-            onShow: () => { },
+            onShow: () => { 
+                // Recalculate position when sidebar is shown
+                this.calculateSidebarPosition();
+            },
             onHide: () => {
                 this.productStorage = { pauseId: "", productGroups: [] };
                 this.sidebarContentState = SidebarContentState.LOADING;
@@ -77,11 +94,79 @@ export class UIManager {
         // Load sidebar position from storage
         getSidebarPosition().then((position) => {
             this.sidebarConfig.position = position;
+            this.calculateSidebarPosition();
             this.renderSidebar();
         });
 
         browser.runtime.onMessage.addListener(this.handleBackgroundMessages);
     }
+
+    /**
+     * Calculate optimal sidebar position based on content layout
+     * Only applies content-relative positioning for specific content types (currently YouTube Shorts)
+     * Regular YouTube videos and other content use original edge positioning
+     */
+    private calculateSidebarPosition(): void {
+        if (!this.sidebarConfig.useContentRelativePositioning) {
+            this.currentPositionStrategy = null;
+            return;
+        }
+
+        const contentBounds = this.detectCurrentContent();
+        
+        if (contentBounds) {
+            // Content-relative positioning detected (currently only YouTube Shorts)
+            const config: RelativePositionConfig = {
+                offsetGap: 20,
+                preferredSide: this.sidebarConfig.position,
+                fallbackPosition: { 
+                    side: this.sidebarConfig.position, 
+                    offset: 20 
+                }
+            };
+            
+            const sidebarWidth = this.getCurrentSidebarWidth();
+            this.currentPositionStrategy = this.positionCalculator.calculatePosition(
+                contentBounds, 
+                sidebarWidth, 
+                config
+            );
+
+            console.log(`[PauseShop:UIManager] Using content-relative positioning:`, {
+                strategy: this.currentPositionStrategy,
+                contentType: contentBounds.type,
+                contentBounds: contentBounds.bounds
+            });
+        } else {
+            // No special content detected - use original edge positioning
+            // This includes regular YouTube videos, generic videos, etc.
+            this.currentPositionStrategy = null;
+            console.log(`[PauseShop:UIManager] Using original edge positioning (no special content detected)`);
+        }
+    }
+
+    /**
+     * Detect current content for positioning
+     */
+    private detectCurrentContent(): ContentBounds | null {
+        return this.contentDetector.detectContent();
+    }
+
+    /**
+     * Get current sidebar width based on compact state
+     */
+    private getCurrentSidebarWidth(): number {
+        return this.isCompact ? COMPACT_SIDEBAR_WIDTH : EXPANDED_SIDEBAR_WIDTH;
+    }
+
+    /**
+     * Handle layout changes and recalculate position
+     */
+    private handleLayoutChange = (): void => {
+        console.log(`[PauseShop:UIManager] Layout change detected, recalculating position`);
+        this.calculateSidebarPosition();
+        this.renderSidebar();
+    };
 
     private createContainer(): void {
         const existingContainer = document.querySelector(
@@ -121,6 +206,10 @@ export class UIManager {
                 throw new Error("UI container was not created.");
             }
             this.reactRoot = ReactDOM.createRoot(this.container);
+            
+            // Set up layout monitoring
+            this.layoutMonitor = new LayoutMonitor(this.handleLayoutChange);
+            
             this.renderSidebar(); // Initial render of the React sidebar
 
             this.isInitialized = true;
@@ -140,6 +229,7 @@ export class UIManager {
                         isVisible={this.sidebarVisible}
                         contentState={this.sidebarContentState}
                         position={this.sidebarConfig.position}
+                        positionStrategy={this.currentPositionStrategy || undefined}
                         productStorage={this.productStorage}
                         onShow={this.sidebarEvents.onShow}
                         onHide={this.sidebarEvents.onHide}
@@ -169,6 +259,9 @@ export class UIManager {
             this.sidebarContentState = SidebarContentState.LOADING;
             this.productStorage = { pauseId: "", productGroups: [] };
         }
+        
+        // Recalculate position when showing sidebar
+        this.calculateSidebarPosition();
         this.renderSidebar();
         return true;
     }
@@ -317,10 +410,18 @@ export class UIManager {
             this.sidebarConfig.position === "left" ? "right" : "left";
         this.sidebarConfig.position = newPosition;
         await setSidebarPosition(newPosition);
+        
+        // Recalculate position with new preference
+        this.calculateSidebarPosition();
         this.renderSidebar();
     }
 
     public cleanup(): void {
+        if (this.layoutMonitor) {
+            this.layoutMonitor.cleanup();
+            this.layoutMonitor = null;
+        }
+
         if (this.reactRoot) {
             this.reactRoot.unmount();
             this.reactRoot = null;
@@ -331,6 +432,7 @@ export class UIManager {
         }
         this.container = null;
 
+        this.currentPositionStrategy = null;
         this.isInitialized = false;
 
         browser.runtime.onMessage.removeListener(this.handleBackgroundMessages);

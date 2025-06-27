@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PauseShop Layout Test</title>
+    <style>
+        body { margin: 0; padding: 20px; font-family: Arial, sans-serif; }
+        .test-container { margin: 20px 0; padding: 20px; border: 1px solid #ccc; }
+        .mock-shorts-container {
+            width: 405px;
+            height: 720px;
+            background: #000;
+            margin: 0 auto;
+            position: relative;
+            border-radius: 8px;
+        }
+        .mock-video {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, #333, #666);
+            border-radius: 8px;
+        }
+        button { padding: 10px 20px; margin: 10px; }
+        .debug-output { 
+            background: #f5f5f5; 
+            padding: 15px; 
+            margin: 10px 0; 
+            border-radius: 4px;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <h1>PauseShop Layout-Aware Positioning Test</h1>
+    <p><strong>Note:</strong> Content-relative positioning is only used for YouTube Shorts. Regular YouTube videos keep their original edge positioning.</p>
+    
+    <div class="test-container">
+        <h2>Mock YouTube Shorts Container</h2>
+        <div id="shorts-container" class="mock-shorts-container">
+            <video class="mock-video" width="405" height="720" style="background: linear-gradient(45deg, #333, #666);">
+                <source src="data:video/mp4;base64," type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+        </div>
+    </div>
+    
+    <div class="test-container">
+        <h2>Debug Controls</h2>
+        <button onclick="runDebug()">Run Layout Debug</button>
+        <button onclick="testDetection()">Test Content Detection</button>
+        <button onclick="testPositioning()">Test Position Calculation</button>
+        
+        <div id="debug-output" class="debug-output">
+            Click a button above to run tests...
+        </div>
+    </div>
+
+    <script>
+        // Mock the current URL to simulate YouTube Shorts
+        Object.defineProperty(window, 'location', {
+            value: {
+                href: 'https://www.youtube.com/shorts/abc123',
+                pathname: '/shorts/abc123'
+            },
+            writable: true
+        });
+
+        function log(message) {
+            const output = document.getElementById('debug-output');
+            output.textContent += message + '\n';
+        }
+
+        function clearLog() {
+            document.getElementById('debug-output').textContent = '';
+        }
+
+        function runDebug() {
+            clearLog();
+            log('Running layout debug...');
+            
+            if (typeof window.pauseShopDebugLayout === 'function') {
+                window.pauseShopDebugLayout();
+                log('Debug completed - check browser console for detailed output');
+            } else {
+                log('Error: pauseShopDebugLayout function not available');
+                log('Make sure the PauseShop extension is loaded');
+            }
+        }
+
+        function testDetection() {
+            clearLog();
+            log('Testing content detection...');
+            
+            // Test video element detection (simulating what our detector does)
+            const videoElement = document.querySelector('video');
+            if (videoElement) {
+                const bounds = videoElement.getBoundingClientRect();
+                log(`Found video element:`);
+                log(`  Position: ${bounds.left}, ${bounds.top}`);
+                log(`  Size: ${bounds.width} x ${bounds.height}`);
+                log(`  Video dimensions: ${videoElement.videoWidth}x${videoElement.videoHeight}`);
+                log(`  URL pathname: ${window.location.pathname}`);
+                log(`  Is shorts URL: ${window.location.pathname.includes('/shorts/')}`);
+                
+                // Test aspect ratio detection
+                if (videoElement.videoWidth > 0 && videoElement.videoHeight > 0) {
+                    const aspectRatio = videoElement.videoWidth / videoElement.videoHeight;
+                    log(`  Video aspect ratio: ${aspectRatio.toFixed(3)} (${aspectRatio <= 1.0 ? 'Portrait/Square' : 'Landscape'})`);
+                }
+            } else {
+                log('No video element found');
+            }
+        }
+
+        function testPositioning() {
+            clearLog();
+            log('Testing position calculation...');
+            
+            const videoElement = document.querySelector('video');
+            if (videoElement) {
+                const bounds = videoElement.getBoundingClientRect();
+                const sidebarWidth = 280;
+                const offsetGap = 20;
+                
+                const leftPosition = bounds.left - sidebarWidth - offsetGap;
+                const rightPosition = bounds.right + offsetGap;
+                
+                log(`Video bounds: ${bounds.left} to ${bounds.right} (width: ${bounds.width})`);
+                log(`Viewport width: ${window.innerWidth}`);
+                log(`Sidebar width: ${sidebarWidth}`);
+                log(`Offset gap: ${offsetGap}`);
+                log('');
+                log(`Calculated positions:`);
+                log(`  Left side: x = ${leftPosition} (viable: ${leftPosition >= 0})`);
+                log(`  Right side: x = ${rightPosition} (viable: ${rightPosition + sidebarWidth <= window.innerWidth})`);
+                
+                // Determine best position
+                const leftViable = leftPosition >= 0;
+                const rightViable = rightPosition + sidebarWidth <= window.innerWidth;
+                
+                // Test YouTube Shorts specific logic
+                if (window.location.pathname.includes('/shorts/')) {
+                    const contentCenter = bounds.left + bounds.width / 2;
+                    const viewportCenter = window.innerWidth / 2;
+                    log('');
+                    log(`Shorts-specific analysis:`);
+                    log(`  Content center: ${contentCenter}`);
+                    log(`  Viewport center: ${viewportCenter}`);
+                    log(`  Content is ${contentCenter < viewportCenter ? 'left' : 'right'} of center`);
+                    log(`  Would prefer ${contentCenter < viewportCenter ? 'right' : 'left'} sidebar for balance`);
+                }
+                
+                if (leftViable && rightViable) {
+                    log(`\nBoth positions viable - would use user preference or auto-balance`);
+                } else if (leftViable) {
+                    log(`\nOnly left position viable`);
+                } else if (rightViable) {
+                    log(`\nOnly right position viable`);
+                } else {
+                    log(`\nNeither position viable - would fall back to edge positioning`);
+                }
+            }
+        }
+
+        log('Test page loaded. Mock YouTube Shorts URL: ' + window.location.href);
+    </script>
+</body>
+</html>

@@ -26,6 +26,7 @@ export type SidebarPosition = "left" | "right";
 
 export interface SidebarConfig {
     position: SidebarPosition;
+    useContentRelativePositioning?: boolean; // New flag for content-relative positioning
 }
 
 export interface SidebarEvents {

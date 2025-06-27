@@ -22,6 +22,7 @@ import CompactContent from "./compact-content";
 import Divider from "./divider";
 import FloatingTooltip from "./floating-tooltip";
 import { getIconCounts, getUniqueIcons } from "../../utils";
+import { PositionStrategy } from "../../layout/types";
 
 // Helper function to format icon text: replace dashes with spaces and capitalize first letter
 const formatIconText = (iconText: string): string => {
@@ -35,6 +36,7 @@ interface SidebarProps {
     isVisible: boolean;
     contentState: SidebarContentState;
     position: "right" | "left";
+    positionStrategy?: PositionStrategy; // New prop for content-relative positioning
     productStorage: ProductStorage;
     onShow: () => void;
     onHide: () => void;
@@ -48,6 +50,7 @@ const Sidebar = ({
     isVisible,
     contentState,
     position,
+    positionStrategy,
     productStorage,
     onShow,
     onHide,
@@ -189,11 +192,41 @@ const Sidebar = ({
             : EXPANDED_SIDEBAR_WIDTH;
         if (!isVisible) {
             // Adjust translation to account for the 20px floating offset and 75px button protrusion (increased to 100px for complete hiding)
-            return position === "right"
-                ? `translateX(${currentWidth + 100}px)`
-                : `translateX(-${currentWidth + 100}px)`;
+            if (positionStrategy) {
+                // For content-relative positioning, hide off the appropriate side
+                return positionStrategy.side === "right"
+                    ? `translateX(${currentWidth + 100}px)`
+                    : `translateX(-${currentWidth + 100}px)`;
+            } else {
+                // Fallback to original logic
+                return position === "right"
+                    ? `translateX(${currentWidth + 100}px)`
+                    : `translateX(-${currentWidth + 100}px)`;
+            }
         }
         return `translateX(0)`;
+    };
+
+    const getSidebarStyle = () => {
+        const baseStyle = {
+            transform: getSidebarTransform(),
+            pointerEvents: isVisible ? "auto" as const : "none" as const,
+            height: sidebarHeight,
+        };
+
+        if (positionStrategy) {
+            // Use calculated position strategy
+            return {
+                ...baseStyle,
+                position: 'fixed' as const,
+                left: positionStrategy.side === 'left' ? `${positionStrategy.x}px` : 'auto',
+                right: positionStrategy.side === 'right' ? `${window.innerWidth - positionStrategy.x}px` : 'auto',
+                top: '80px',
+            };
+        }
+
+        // Fallback to CSS class-based positioning (existing behavior)
+        return baseStyle;
     };
 
     const iconCounts = getIconCounts(productStorage);
@@ -204,7 +237,7 @@ const Sidebar = ({
     const sidebarClasses = [
         "pauseshop-sidebar",
         isCompact && "pauseshop-sidebar-compact",
-        `position-${position}`
+        positionStrategy ? "position-custom" : `position-${position}`
     ].filter(Boolean).join(" ");
 
     const sidebarHeight = !isCompact || contentState === SidebarContentState.PRODUCTS ? "auto" : `${COMPACT_SIDEBAR_STATIC_HEIGHT}px`;
@@ -227,11 +260,7 @@ const Sidebar = ({
                         bounce: 0.4,
                         duration: 0.1,
                     }}
-                    style={{
-                        transform: getSidebarTransform(),
-                        pointerEvents: isVisible ? "auto" : "none",
-                        height: sidebarHeight,
-                    }}
+                    style={getSidebarStyle()}
                     onMouseEnter={() => isHoveringRef.current = true}
                     onMouseLeave={() => isHoveringRef.current = false}
                 >

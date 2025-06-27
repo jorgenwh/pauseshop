@@ -35,3 +35,7 @@
     right: 20px;
     left: auto;
 }
+
+.pauseshop-sidebar.position-custom {
+    /* Position will be set via inline styles when using content-relative positioning */
+}

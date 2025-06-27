@@ -281,6 +281,7 @@ const createDOMObserver = (
 // Global variables to access from retry function
 let globalSiteHandlerRegistry: SiteHandlerRegistry | null = null;
 let globalSeekingState: SeekingState | null = null;
+let globalCurrentVideo: HTMLVideoElement | null = null;
 
 export const triggerRetryAnalysis = (): void => {
     console.log("[PauseShop:VideoDetector] Triggering retry analysis");
@@ -297,6 +298,14 @@ export const triggerRetryAnalysis = (): void => {
 
     const pauseHandler = handlePause(globalSeekingState, globalSiteHandlerRegistry);
     pauseHandler(syntheticEvent);
+};
+
+/**
+ * Get the current video element that the video detector is monitoring
+ * This is the same video element used for pause detection and frame capture
+ */
+export const getCurrentVideo = (): HTMLVideoElement | null => {
+    return globalCurrentVideo;
 };
 
 export const initializeVideoDetector = (): CleanupFunction => {
@@ -317,6 +326,9 @@ export const initializeVideoDetector = (): CleanupFunction => {
         // Reset seeking state for new video
         seekingState = createInitialSeekingState();
         seekingState.previousCurrentTime = video.currentTime;
+        
+        // Store the current video globally for layout positioning
+        globalCurrentVideo = video;
 
         // Attach listeners to new video
         videoCleanup = attachVideoListeners(
@@ -345,5 +357,6 @@ export const initializeVideoDetector = (): CleanupFunction => {
         // Clean up global references
         globalSiteHandlerRegistry = null;
         globalSeekingState = null;
+        globalCurrentVideo = null;
     };
 };
