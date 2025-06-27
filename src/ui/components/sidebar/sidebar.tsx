@@ -22,7 +22,7 @@ import CompactContent from "./compact-content";
 import Divider from "./divider";
 import FloatingTooltip from "./floating-tooltip";
 import { getIconCounts, getUniqueIcons } from "../../utils";
-import { useYouTubeShortsPositioning } from "./hooks";
+import { useYouTubeShortsPositioning, useProximityDetection } from "./hooks";
 
 // Helper function to format icon text: replace dashes with spaces and capitalize first letter
 const formatIconText = (iconText: string): string => {
@@ -138,6 +138,12 @@ const Sidebar = ({
         isVisible
     );
 
+    // Proximity detection for compact mode button visibility
+    const { isNearby: isMouseNearby, elementRef: sidebarRef } = useProximityDetection(
+        70, // 100 pixels proximity distance
+        isCompact && isVisible // Only enable when in compact mode and visible
+    );
+
     // Handle scroll prevention when hovering over expanded sidebar
     useEffect(() => {
         const handleDocumentWheel = (e: WheelEvent) => {
@@ -237,7 +243,7 @@ const Sidebar = ({
         height: sidebarHeight,
         ...youTubeShortsPosition, // Override position if on YouTube Shorts
     };
- 
+
     return (
         <AnimatePresence mode="sync">
             {isVisible && (
@@ -257,6 +263,7 @@ const Sidebar = ({
                         duration: 0.1,
                     }}
                     style={sidebarStyle}
+                    ref={sidebarRef}
                     onMouseEnter={() => isHoveringRef.current = true}
                     onMouseLeave={() => isHoveringRef.current = false}
                 >
@@ -266,6 +273,7 @@ const Sidebar = ({
                         onToggleCompact={toggleCompactMode}
                         contentState={contentState}
                         onClose={onClose}
+                        showButtonsInCompact={isMouseNearby}
                     />
                     <Divider compact={isCompact} />
                     {isCompact ? (
@@ -295,8 +303,8 @@ const Sidebar = ({
                         <FloatingTooltip
                             key={`tooltip-${hoveredIcon}`}
                             text={
-                                hoveredIcon === "nothing-found" 
-                                    ? "No products found.\nClick to try again." 
+                                hoveredIcon === "nothing-found"
+                                    ? "No products found.\nClick to try again."
                                     : hoveredIcon === "error"
                                         ? `${errorMessage}`
                                         : formatIconText(hoveredIcon)
