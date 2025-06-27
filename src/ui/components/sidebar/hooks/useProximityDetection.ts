@@ -11,7 +11,7 @@ export const useProximityDetection = (
     isEnabled: boolean = true
 ) => {
     const [isNearby, setIsNearby] = useState(false);
-    const elementRef = useRef<HTMLElement>(null);
+    const elementRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         if (!isEnabled || !elementRef.current) {
