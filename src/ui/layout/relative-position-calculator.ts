@@ -23,7 +23,7 @@ export class RelativePositionCalculator {
                 return baseOffset + 150;
             } else {
                 // Right mode expanded: 100px to the right (further from video)
-                return baseOffset + 350;
+                return baseOffset + 320;
             }
         }
     }

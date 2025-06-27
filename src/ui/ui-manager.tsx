@@ -333,6 +333,9 @@ export class UIManager {
         this.sidebarContentState = SidebarContentState.LOADING;
         this.sidebarVisible = true; // Make sure sidebar is visible when analysis starts
         this.errorMessage = ""; // Reset error message when starting a new analysis
+        
+        // Recalculate position when analysis starts to ensure correct placement
+        this.calculateSidebarPosition();
         this.renderSidebar();
         return true;
     };
