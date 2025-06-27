@@ -41,8 +41,7 @@ const initializeExtension = (): void => {
     initializeFrameCapturer();
     cleanupVideoDetector = initializeVideoDetector();
 
-    const videoElement = document.querySelector("video");
-    uiManagerInstance = UIManager.create(currentUrl, videoElement);
+    uiManagerInstance = UIManager.create(currentUrl, null);
     if (uiManagerInstance) {
         setUIManager(uiManagerInstance);
         console.log("[PauseShop] Extension successfully initialized");
