@@ -214,7 +214,7 @@ const Sidebar = ({
             height: sidebarHeight,
         };
 
-        if (positionStrategy) {
+        if (positionStrategy && positionStrategy.side && typeof positionStrategy.x === 'number') {
             // Use calculated position strategy
             return {
                 ...baseStyle,
@@ -234,10 +234,23 @@ const Sidebar = ({
     const firstIconCategory = iconCategories.values().next().value;
     const firstIconHasCounter = !!(firstIconCategory && iconCounts[firstIconCategory] > 1);
 
+    // Determine the effective position for UI elements (buttons, tooltips, etc.)
+    // This should be based on where the sidebar actually appears, not user preference
+    const effectivePosition = positionStrategy?.side || position;
+    
+    // Debug logging for position strategy issues
+    if (positionStrategy && !positionStrategy.side) {
+        console.warn('[PauseShop:Sidebar] Position strategy missing side:', positionStrategy);
+    }
+    if (positionStrategy && typeof positionStrategy.x !== 'number') {
+        console.warn('[PauseShop:Sidebar] Position strategy missing valid x coordinate:', positionStrategy);
+    }
+
     const sidebarClasses = [
         "pauseshop-sidebar",
         isCompact && "pauseshop-sidebar-compact",
-        positionStrategy ? "position-custom" : `position-${position}`
+        positionStrategy ? "position-custom" : `position-${position}`,
+        positionStrategy && effectivePosition ? `position-${effectivePosition}` : null // Add effective position class for CSS rules
     ].filter(Boolean).join(" ");
 
     const sidebarHeight = !isCompact || contentState === SidebarContentState.PRODUCTS ? "auto" : `${COMPACT_SIDEBAR_STATIC_HEIGHT}px`;
@@ -266,7 +279,7 @@ const Sidebar = ({
                 >
                     <Header
                         compact={isCompact}
-                        position={position}
+                        position={effectivePosition}
                         onToggleCompact={toggleCompactMode}
                         contentState={contentState}
                         onClose={onClose}
@@ -277,7 +290,7 @@ const Sidebar = ({
                             productStorage={productStorage}
                             onIconClick={handleIconClick}
                             contentState={contentState}
-                            position={position}
+                            position={effectivePosition}
                             onRetryAnalysis={onRetryAnalysis}
                             firstIconHasCounter={firstIconHasCounter}
                             onIconHover={(category, element) => {
@@ -306,7 +319,7 @@ const Sidebar = ({
                                         : formatIconText(hoveredIcon)
                             }
                             isVisible={!!hoveredIcon}
-                            position={position}
+                            position={effectivePosition}
                             iconElement={hoveredIconElement}
                         />
                     )}

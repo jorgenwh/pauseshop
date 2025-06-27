@@ -27,8 +27,8 @@
    - Provides detailed debug information
 
 3. **Layout Monitor** (`src/ui/layout/layout-monitor.ts`)
-   - Monitors viewport size changes (ResizeObserver)
-   - Monitors DOM changes that affect layout (MutationObserver)
+   - **Lightweight approach**: Only monitors viewport size changes (ResizeObserver)
+   - **No DOM mutation observers**: Uses periodic updates instead for better performance
    - Debounced updates to avoid excessive recalculations
    - Cleans up observers properly
 
@@ -52,7 +52,9 @@
 
 7. **CSS Support** (`src/ui/css/components/sidebar/sidebar.css`)
    - Added `position-custom` class for content-relative positioning
+   - **Dual class system**: Uses both `position-custom` and `position-left`/`position-right` classes
    - Maintains backward compatibility with existing positioning
+   - Ensures UI elements (buttons, tooltips) appear correctly regardless of positioning mode
 
 ### Debug & Testing
 
@@ -100,14 +102,16 @@ Right position: 757 + 405 + 20 = 1182px (viable)
 Result: Choose based on user preference or auto-balance
 ```
 
-## 🔄 Dynamic Updates
+### 🔄 Dynamic Updates
 
 The system automatically recalculates position when:
-- Viewport size changes (window resize)
-- DOM structure changes (YouTube navigation)
-- Sidebar is shown/hidden
-- User toggles left/right preference
-- Content layout changes
+- **Viewport size changes** (window resize via ResizeObserver)
+- **URL changes** (YouTube navigation via existing URL check interval)
+- **Periodic checks** (every 1 second via existing URL monitoring system)
+- **Sidebar is shown/hidden**
+- **User toggles left/right preference**
+
+**Performance Optimized**: Uses the existing 1-second URL check interval instead of aggressive DOM mutation observers.
 
 ## 🚀 Future Extensions
 

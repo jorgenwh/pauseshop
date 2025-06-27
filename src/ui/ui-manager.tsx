@@ -58,7 +58,7 @@ export class UIManager {
         };
 
         this.sidebarEvents = {
-            onShow: () => { 
+            onShow: () => {
                 // Recalculate position when sidebar is shown
                 this.calculateSidebarPosition();
             },
@@ -113,22 +113,22 @@ export class UIManager {
         }
 
         const contentBounds = this.detectCurrentContent();
-        
+
         if (contentBounds) {
             // Content-relative positioning detected (currently only YouTube Shorts)
             const config: RelativePositionConfig = {
-                offsetGap: 20,
+                offsetGap: 100,
                 preferredSide: this.sidebarConfig.position,
-                fallbackPosition: { 
-                    side: this.sidebarConfig.position, 
-                    offset: 20 
+                fallbackPosition: {
+                    side: this.sidebarConfig.position,
+                    offset: 20
                 }
             };
-            
+
             const sidebarWidth = this.getCurrentSidebarWidth();
             this.currentPositionStrategy = this.positionCalculator.calculatePosition(
-                contentBounds, 
-                sidebarWidth, 
+                contentBounds,
+                sidebarWidth,
                 config
             );
 
@@ -166,6 +166,25 @@ export class UIManager {
         console.log(`[PauseShop:UIManager] Layout change detected, recalculating position`);
         this.calculateSidebarPosition();
         this.renderSidebar();
+    };
+
+    /**
+     * Periodic position update (called from URL check interval)
+     * This is much more efficient than DOM mutation observers
+     */
+    public updatePositionIfNeeded(): void {
+        if (!this.sidebarVisible || !this.sidebarConfig.useContentRelativePositioning) {
+            return;
+        }
+
+        const previousStrategy = this.currentPositionStrategy;
+        this.calculateSidebarPosition();
+        
+        // Only re-render if position actually changed
+        if (JSON.stringify(previousStrategy) !== JSON.stringify(this.currentPositionStrategy)) {
+            console.log(`[PauseShop:UIManager] Position changed, re-rendering sidebar`);
+            this.renderSidebar();
+        }
     };
 
     private createContainer(): void {
@@ -206,10 +225,10 @@ export class UIManager {
                 throw new Error("UI container was not created.");
             }
             this.reactRoot = ReactDOM.createRoot(this.container);
-            
+
             // Set up layout monitoring
             this.layoutMonitor = new LayoutMonitor(this.handleLayoutChange);
-            
+
             this.renderSidebar(); // Initial render of the React sidebar
 
             this.isInitialized = true;
@@ -259,7 +278,7 @@ export class UIManager {
             this.sidebarContentState = SidebarContentState.LOADING;
             this.productStorage = { pauseId: "", productGroups: [] };
         }
-        
+
         // Recalculate position when showing sidebar
         this.calculateSidebarPosition();
         this.renderSidebar();
@@ -374,33 +393,33 @@ export class UIManager {
     ) => {
         let result;
         switch (message.type) {
-        case "analysis_started":
-            result = this.handleAnalysisStarted(message);
-            break;
-        case "analysis_complete":
-            result = this.handleAnalysisComplete(message);
-            break;
-        case "analysis_error":
-            result = this.handleAnalysisError(message);
-            break;
-        case "product_group_update":
-            result = this.handleProductGroupUpdate(message);
-            break;
-        case "analysis_cancelled":
-            result = this.handleAnalysisCancelled(message);
-            break;
-        case "toggleSidebarPosition":
-            this.toggleSidebarPosition();
-            result = true;
-            break;
-        case "cancel_analysis":
-            this.hideSidebar();
-            result = true;
-            break;
-        default:
-            result = false;
-            // Cast message to BackgroundMessage to access 'type' property safely
-            console.warn("[PauseShop:UIManager] Received unhandled background message:", (message as BackgroundMessage).type);
+            case "analysis_started":
+                result = this.handleAnalysisStarted(message);
+                break;
+            case "analysis_complete":
+                result = this.handleAnalysisComplete(message);
+                break;
+            case "analysis_error":
+                result = this.handleAnalysisError(message);
+                break;
+            case "product_group_update":
+                result = this.handleProductGroupUpdate(message);
+                break;
+            case "analysis_cancelled":
+                result = this.handleAnalysisCancelled(message);
+                break;
+            case "toggleSidebarPosition":
+                this.toggleSidebarPosition();
+                result = true;
+                break;
+            case "cancel_analysis":
+                this.hideSidebar();
+                result = true;
+                break;
+            default:
+                result = false;
+                // Cast message to BackgroundMessage to access 'type' property safely
+                console.warn("[PauseShop:UIManager] Received unhandled background message:", (message as BackgroundMessage).type);
         }
         sendResponse(result);
     };
@@ -410,7 +429,7 @@ export class UIManager {
             this.sidebarConfig.position === "left" ? "right" : "left";
         this.sidebarConfig.position = newPosition;
         await setSidebarPosition(newPosition);
-        
+
         // Recalculate position with new preference
         this.calculateSidebarPosition();
         this.renderSidebar();

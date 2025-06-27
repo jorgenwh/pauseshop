@@ -72,7 +72,7 @@ const cleanupExtension = (): void => {
 // Initialize on page load with retry mechanism
 initializeExtensionWithRetry();
 
-// Listen for URL changes (SPA navigation)
+// Listen for URL changes (SPA navigation) and update positioning
 let lastUrl = window.location.href;
 const checkForUrlChange = (): void => {
     const currentUrl = window.location.href;
@@ -90,6 +90,12 @@ const checkForUrlChange = (): void => {
         setTimeout(() => {
             initializeExtensionWithRetry();
         }, 500);
+    } else {
+        // URL hasn't changed, but check if we need to update positioning
+        // This is much more efficient than DOM mutation observers
+        if (uiManagerInstance) {
+            uiManagerInstance.updatePositionIfNeeded();
+        }
     }
 };
 
