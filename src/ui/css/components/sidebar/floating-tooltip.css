@@ -18,12 +18,14 @@
     text-align: center;
 }
 
-/* Position tooltip to the left of the sidebar when sidebar is on the right */
+/* Default position tooltip to the left of the sidebar when sidebar is on the right */
+/* These will be overridden by inline styles when custom positioning is used */
 .pauseshop-floating-tooltip.position-right {
     right: 77px; /* 47px (sidebar width) + 20px (sidebar offset) + 10px (spacing) */
 }
 
-/* Position tooltip to the right of the sidebar when sidebar is on the left */
+/* Default position tooltip to the right of the sidebar when sidebar is on the left */
+/* These will be overridden by inline styles when custom positioning is used */
 .pauseshop-floating-tooltip.position-left {
     left: 77px; /* 47px (sidebar width) + 20px (sidebar offset) + 10px (spacing) */
 }

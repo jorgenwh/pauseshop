@@ -8,6 +8,7 @@ interface HeaderProps {
     onToggleCompact: () => void;
     contentState: SidebarContentState;
     onClose: () => void;
+    showButtonsInCompact?: boolean;
 }
 
 const Header = ({
@@ -16,6 +17,7 @@ const Header = ({
     onToggleCompact,
     contentState,
     onClose,
+    showButtonsInCompact = true,
 }: HeaderProps) => {
     const getToggleButtonIcon = () => {
         return compact ? "expand.png" : "collapse.png";
@@ -32,20 +34,26 @@ const Header = ({
             return null;
         }
 
+        // In compact mode, only show buttons when mouse is nearby
+        const shouldShowButtons = !compact || showButtonsInCompact;
+
         if (contentState === SidebarContentState.NO_PRODUCTS) {
             return (
                 <motion.div
                     className="pauseshop-sidebar-button-container no-products"
                     initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
+                    animate={{ opacity: shouldShowButtons ? 1 : 0 }}
                     transition={{
-                        duration: 0.4,
+                        duration: 0.2,
                         scale: {
                             type: "spring",
                             stiffness: 260,
                             damping: 20,
                             bounce: 0.5,
                         },
+                    }}
+                    style={{
+                        pointerEvents: shouldShowButtons ? "auto" : "none",
                     }}
                 >
                     <button
@@ -67,15 +75,18 @@ const Header = ({
             <motion.div
                 className="pauseshop-sidebar-button-container"
                 initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
+                animate={{ opacity: shouldShowButtons ? 1 : 0 }}
                 transition={{
-                    duration: 0.4,
+                    duration: 0.2,
                     scale: {
                         type: "spring",
                         stiffness: 260,
                         damping: 20,
                         bounce: 0.5,
                     },
+                }}
+                style={{
+                    pointerEvents: shouldShowButtons ? "auto" : "none",
                 }}
             >
                 {position === "left" ? (
@@ -129,7 +140,7 @@ const Header = ({
                 )}
             </motion.div>
         );
-    }
+    };
 
     return (
         <div
