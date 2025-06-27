@@ -20,6 +20,7 @@ export interface RelativePositionConfig {
     offsetGap: number;        // Gap between content and sidebar
     preferredSide: 'left' | 'right' | 'auto';
     fallbackPosition: { side: 'left' | 'right'; offset: number };
+    isCompact?: boolean;      // Whether sidebar is in compact mode (for custom spacing)
 }
 
 export interface LayoutChangeCallback {

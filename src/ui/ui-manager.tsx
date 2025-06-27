@@ -117,8 +117,9 @@ export class UIManager {
         if (contentBounds) {
             // Content-relative positioning detected (currently only YouTube Shorts)
             const config: RelativePositionConfig = {
-                offsetGap: 100,
+                offsetGap: 20, // Base offset - will be modified by custom Shorts logic
                 preferredSide: this.sidebarConfig.position,
+                isCompact: this.isCompact, // Pass current sidebar state
                 fallbackPosition: {
                     side: this.sidebarConfig.position,
                     offset: 20
@@ -167,6 +168,18 @@ export class UIManager {
         this.calculateSidebarPosition();
         this.renderSidebar();
     };
+
+    /**
+     * Update sidebar compact state and recalculate position if needed
+     */
+    public updateSidebarState(isCompact: boolean): void {
+        if (this.isCompact !== isCompact) {
+            this.isCompact = isCompact;
+            console.log(`[PauseShop:UIManager] Sidebar state changed to ${isCompact ? 'compact' : 'expanded'}, recalculating position`);
+            this.calculateSidebarPosition();
+            this.renderSidebar();
+        }
+    }
 
     /**
      * Periodic position update (called from URL check interval)
@@ -255,6 +268,7 @@ export class UIManager {
                         onProductClick={this.sidebarEvents.onProductClick}
                         onClose={this.sidebarEvents.onClose}
                         onRetryAnalysis={this.sidebarEvents.onRetryAnalysis}
+                        onCompactStateChange={(isCompact) => this.updateSidebarState(isCompact)}
                         errorMessage={this.errorMessage}
                     />
                 </React.StrictMode>,

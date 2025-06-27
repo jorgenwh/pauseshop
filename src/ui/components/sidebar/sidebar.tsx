@@ -43,6 +43,7 @@ interface SidebarProps {
     onProductClick: (product: AmazonScrapedProduct) => void;
     onClose: () => void;
     onRetryAnalysis: () => void;
+    onCompactStateChange?: (isCompact: boolean) => void; // New callback for compact state changes
     errorMessage?: string;
 }
 
@@ -56,6 +57,7 @@ const Sidebar = ({
     onHide,
     onClose,
     onRetryAnalysis,
+    onCompactStateChange,
     errorMessage = "Analysis failed",
 }: SidebarProps) => {
     const [isCompact, setIsCompact] = useState<boolean>(true);
@@ -82,15 +84,25 @@ const Sidebar = ({
     }, []);
 
     useEffect(() => {
+        let newCompactState: boolean;
+        
         if (
             contentState === SidebarContentState.LOADING ||
             contentState === SidebarContentState.NO_PRODUCTS
         ) {
-            setIsCompact(true);
+            newCompactState = true;
             // Reset hover state when forcing compact mode
             isHoveringRef.current = false;
         } else {
-            setIsCompact(lastUserSelectedCompactState);
+            newCompactState = lastUserSelectedCompactState;
+        }
+
+        // Only update and notify if state actually changed
+        if (isCompact !== newCompactState) {
+            setIsCompact(newCompactState);
+            if (onCompactStateChange) {
+                onCompactStateChange(newCompactState);
+            }
         }
 
         // Clear tooltip when content state changes, especially to loading
@@ -98,7 +110,7 @@ const Sidebar = ({
             setHoveredIcon(null);
             setHoveredIconElement(null);
         }
-    }, [contentState, lastUserSelectedCompactState]);
+    }, [contentState, lastUserSelectedCompactState, isCompact, onCompactStateChange]);
 
     useEffect(() => {
         setExpandedIconCategory(null);
@@ -166,6 +178,11 @@ const Sidebar = ({
         setLastUserSelectedCompactState(newCompactState);
         setSidebarCompactState(newCompactState);
         setExpandedIconCategory(iconCategory || null);
+
+        // Notify UI Manager of compact state change for position recalculation
+        if (onCompactStateChange) {
+            onCompactStateChange(newCompactState);
+        }
 
         // Reset hover state when switching modes to ensure clean state
         if (newCompactState) {
