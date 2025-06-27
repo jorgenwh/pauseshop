@@ -32,7 +32,7 @@ export interface SidebarEvents {
     onShow: () => void;
     onHide: () => void;
     onProductClick: (product: AmazonScrapedProduct) => void;
-    onClose: () => void; // New event for closing the UI and stopping background processing
+    onClose: () => void;
     onRetryAnalysis: () => void;
 }
 

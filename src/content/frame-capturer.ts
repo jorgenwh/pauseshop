@@ -15,6 +15,9 @@ export const captureVideoFrame = async (
         return;
     }
 
+    // Update the UI with the current video element that triggered the pause
+    uiManager.updateVideoElement(video);
+
     await uiManager.showSidebar();
 
     try {

@@ -42,6 +42,8 @@ interface SidebarProps {
     onClose: () => void;
     onRetryAnalysis: () => void;
     errorMessage?: string;
+    currentPageUrl: string;
+    videoElement: HTMLVideoElement | null;
 }
 
 const Sidebar = ({
@@ -54,6 +56,8 @@ const Sidebar = ({
     onClose,
     onRetryAnalysis,
     errorMessage = "Analysis failed",
+    currentPageUrl,
+    videoElement,
 }: SidebarProps) => {
     const [isCompact, setIsCompact] = useState<boolean>(true);
     const [
@@ -116,6 +120,12 @@ const Sidebar = ({
     useEffect(() => {
         isVisibleRef.current = isVisible;
     }, [isVisible]);
+
+    useEffect(() => {
+        if (videoElement) {
+            console.log("[PauseShop] Video element rect:", videoElement.getBoundingClientRect());
+        }
+    }, [videoElement]);
 
     // Handle scroll prevention when hovering over expanded sidebar
     useEffect(() => {

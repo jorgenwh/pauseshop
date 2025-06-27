@@ -35,10 +35,14 @@ export class UIManager {
     private sidebarEvents: SidebarEvents; // Events for UIManager to handle or pass to React component
 
     private productStorage: ProductStorage = { pauseId: "", productGroups: [] };
+    private currentPageUrl: string = "";
+    private videoElement: HTMLVideoElement | null = null;
 
     private isInitialized: boolean = false;
 
-    constructor() {
+    constructor(currentPageUrl: string, videoElement: HTMLVideoElement | null) {
+        this.currentPageUrl = currentPageUrl;
+        this.videoElement = videoElement;
         this.sidebarConfig = {
             position: "left", // Default value, will be updated from storage
         };
@@ -147,6 +151,8 @@ export class UIManager {
                         onClose={this.sidebarEvents.onClose}
                         onRetryAnalysis={this.sidebarEvents.onRetryAnalysis}
                         errorMessage={this.errorMessage}
+                        currentPageUrl={this.currentPageUrl}
+                        videoElement={this.videoElement}
                     />
                 </React.StrictMode>,
             );
@@ -281,33 +287,33 @@ export class UIManager {
     ) => {
         let result;
         switch (message.type) {
-        case "analysis_started":
-            result = this.handleAnalysisStarted(message);
-            break;
-        case "analysis_complete":
-            result = this.handleAnalysisComplete(message);
-            break;
-        case "analysis_error":
-            result = this.handleAnalysisError(message);
-            break;
-        case "product_group_update":
-            result = this.handleProductGroupUpdate(message);
-            break;
-        case "analysis_cancelled":
-            result = this.handleAnalysisCancelled(message);
-            break;
-        case "toggleSidebarPosition":
-            this.toggleSidebarPosition();
-            result = true;
-            break;
-        case "cancel_analysis":
-            this.hideSidebar();
-            result = true;
-            break;
-        default:
-            result = false;
-            // Cast message to BackgroundMessage to access 'type' property safely
-            console.warn("[PauseShop:UIManager] Received unhandled background message:", (message as BackgroundMessage).type);
+            case "analysis_started":
+                result = this.handleAnalysisStarted(message);
+                break;
+            case "analysis_complete":
+                result = this.handleAnalysisComplete(message);
+                break;
+            case "analysis_error":
+                result = this.handleAnalysisError(message);
+                break;
+            case "product_group_update":
+                result = this.handleProductGroupUpdate(message);
+                break;
+            case "analysis_cancelled":
+                result = this.handleAnalysisCancelled(message);
+                break;
+            case "toggleSidebarPosition":
+                this.toggleSidebarPosition();
+                result = true;
+                break;
+            case "cancel_analysis":
+                this.hideSidebar();
+                result = true;
+                break;
+            default:
+                result = false;
+                // Cast message to BackgroundMessage to access 'type' property safely
+                console.warn("[PauseShop:UIManager] Received unhandled background message:", (message as BackgroundMessage).type);
         }
         sendResponse(result);
     };
@@ -317,6 +323,15 @@ export class UIManager {
             this.sidebarConfig.position === "left" ? "right" : "left";
         this.sidebarConfig.position = newPosition;
         await setSidebarPosition(newPosition);
+        this.renderSidebar();
+    }
+
+    /**
+     * Update the video element reference
+     */
+    public updateVideoElement(videoElement: HTMLVideoElement | null): void {
+        this.videoElement = videoElement;
+        // Re-render sidebar to pass the updated video element
         this.renderSidebar();
     }
 
@@ -336,9 +351,9 @@ export class UIManager {
         browser.runtime.onMessage.removeListener(this.handleBackgroundMessages);
     }
 
-    public static create(): UIManager | null {
+    public static create(currentPageUrl: string, videoElement: HTMLVideoElement | null): UIManager | null {
         try {
-            const manager = new UIManager();
+            const manager = new UIManager(currentPageUrl, videoElement);
             if (manager.initialize()) {
                 return manager;
             }
