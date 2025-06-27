@@ -22,6 +22,7 @@ import CompactContent from "./compact-content";
 import Divider from "./divider";
 import FloatingTooltip from "./floating-tooltip";
 import { getIconCounts, getUniqueIcons } from "../../utils";
+import { useYouTubeShortsPositioning } from "./hooks";
 
 // Helper function to format icon text: replace dashes with spaces and capitalize first letter
 const formatIconText = (iconText: string): string => {
@@ -127,6 +128,16 @@ const Sidebar = ({
         }
     }, [videoElement]);
 
+    // YouTube Shorts positioning logic
+    const { youTubeShortsPosition } = useYouTubeShortsPositioning(
+        currentPageUrl,
+        videoElement,
+        position,
+        isCompact,
+        contentState,
+        isVisible
+    );
+
     // Handle scroll prevention when hovering over expanded sidebar
     useEffect(() => {
         const handleDocumentWheel = (e: WheelEvent) => {
@@ -218,6 +229,14 @@ const Sidebar = ({
     ].filter(Boolean).join(" ");
 
     const sidebarHeight = !isCompact || contentState === SidebarContentState.PRODUCTS ? "auto" : `${COMPACT_SIDEBAR_STATIC_HEIGHT}px`;
+
+    // Combine default styles with YouTube Shorts positioning
+    const sidebarStyle: React.CSSProperties = {
+        transform: getSidebarTransform(),
+        pointerEvents: isVisible ? "auto" : "none",
+        height: sidebarHeight,
+        ...youTubeShortsPosition, // Override position if on YouTube Shorts
+    };
  
     return (
         <AnimatePresence mode="sync">
@@ -237,11 +256,7 @@ const Sidebar = ({
                         bounce: 0.4,
                         duration: 0.1,
                     }}
-                    style={{
-                        transform: getSidebarTransform(),
-                        pointerEvents: isVisible ? "auto" : "none",
-                        height: sidebarHeight,
-                    }}
+                    style={sidebarStyle}
                     onMouseEnter={() => isHoveringRef.current = true}
                     onMouseLeave={() => isHoveringRef.current = false}
                 >
@@ -289,6 +304,7 @@ const Sidebar = ({
                             isVisible={!!hoveredIcon}
                             position={position}
                             iconElement={hoveredIconElement}
+                            sidebarPosition={youTubeShortsPosition}
                         />
                     )}
                 </motion.div>
