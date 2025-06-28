@@ -17,6 +17,7 @@ export const useYouTubeShortsPositioning = (
 
     // Check if we're on YouTube Shorts
     const isOnYouTubeShorts = isYouTubeShorts(currentPageUrl);
+    const effectivePosition = isOnYouTubeShorts ? (position === "left" ? "right" : "left") : position;
 
     // Get positioning if applicable
     const youTubeShortsPosition = isOnYouTubeShorts 
@@ -39,10 +40,12 @@ export const useYouTubeShortsPositioning = (
                 window.removeEventListener('resize', handleScroll);
             };
         }
-    }, [videoElement, isCompact, contentState, position, isOnYouTubeShorts, isVisible]);
+    }, [videoElement, isCompact, contentState, position, isOnYouTubeShorts,
+        effectivePosition, isVisible]);
 
     return {
         isOnYouTubeShorts,
+        effectivePosition,
         youTubeShortsPosition,
     };
 };
