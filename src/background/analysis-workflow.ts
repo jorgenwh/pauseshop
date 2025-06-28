@@ -58,7 +58,9 @@ export const handleScreenshotAnalysis = async (
             }
 
             // Use pauseId directly as the session identifier
-            await analyzeImageStreaming(imageData, {
+            await analyzeImageStreaming(
+                imageData, 
+                {
                 onProduct: async (product: Product) => {
                     // Check if aborted before processing product
                     if (abortSignal?.aborted) {
@@ -186,7 +188,10 @@ export const handleScreenshotAnalysis = async (
                         pauseId: pauseId,
                     };
                 },
-            }, abortSignal, pauseId);
+                }, 
+                pauseId, 
+                abortSignal
+            );
             return { success: true, pauseId: pauseId };
         } catch (error) {
             // Handle AbortError

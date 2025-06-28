@@ -33,7 +33,7 @@ const ProductThumbnailCarousel = ({ thumbnails, onProductClick }: ProductThumbna
             <div className="pauseshop-carousel-container">
                 <div className="pauseshop-carousel-single">
                     <div 
-                        onClick={() => handleProductClick(thumbnail, 0)}
+                        onClick={() => handleProductClick(thumbnail)}
                         style={{ width: '100%', display: 'block', cursor: 'pointer' }}
                     >
                         {thumbnail.price && (
@@ -62,7 +62,7 @@ const ProductThumbnailCarousel = ({ thumbnails, onProductClick }: ProductThumbna
     const isFirstItem = selectedIndex === 0;
     const isLastItem = selectedIndex === displayThumbnails.length - 1;
 
-    const handleProductClick = (product: AmazonScrapedProduct, clickedIndex: number) => {
+    const handleProductClick = (product: AmazonScrapedProduct) => {
         if (onProductClick) {
             // Find the position of the clicked product in the original thumbnails array
             const originalPosition = thumbnails.findIndex(p => p.id === product.id);
@@ -116,7 +116,7 @@ const ProductThumbnailCarousel = ({ thumbnails, onProductClick }: ProductThumbna
                     {displayThumbnails.map((thumbnail, index) => (
                         <div key={index} className="pauseshop-carousel-slide">
                             <div 
-                                onClick={() => handleProductClick(thumbnail, index)}
+                                onClick={() => handleProductClick(thumbnail)}
                                 style={{ width: '100%', display: 'block', cursor: 'pointer' }}
                             >
                                 {thumbnail.price && (

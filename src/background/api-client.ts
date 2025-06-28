@@ -27,8 +27,8 @@ export interface StreamingCallbacks {
 export const analyzeImageStreaming = async (
     imageData: string,
     callbacks: StreamingCallbacks,
-    signal?: AbortSignal,
     pauseId: string,
+    signal?: AbortSignal,
 ): Promise<void> => {
     // Get the endpoint URL using the server-config helper
     const url = getEndpointUrl('/analyze/stream');

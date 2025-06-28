@@ -81,7 +81,7 @@ const CompactContent = ({
                 >
                     <img
                         src={browser.runtime.getURL(
-                            `/icons/products/${iconCategory}.png` as any,
+                            `/icons/products/${iconCategory}.png` as any
                         )}
                         alt={iconCategory}
                         className={`pauseshop-compact-icon icon`}
