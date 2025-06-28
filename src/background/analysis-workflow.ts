@@ -3,6 +3,7 @@
  */
 
 import { analyzeImageStreaming } from "./api-client";
+import { sessionManager } from "./session-manager";
 import { Product } from "../types/common";
 import { constructAmazonSearch } from "../amazon/amazon-search";
 import { executeAmazonSearch } from "../amazon/amazon-http-client";
@@ -57,6 +58,7 @@ export const handleScreenshotAnalysis = async (
                     );
             }
 
+            const sessionId = sessionManager.getSessionId(pauseId);
             await analyzeImageStreaming(imageData, {
                 onProduct: async (product: Product) => {
                     // Check if aborted before processing product
@@ -185,7 +187,7 @@ export const handleScreenshotAnalysis = async (
                         pauseId: pauseId,
                     };
                 },
-            }, abortSignal);
+            }, abortSignal, sessionId);
             return { success: true, pauseId: pauseId };
         } catch (error) {
             // Handle AbortError

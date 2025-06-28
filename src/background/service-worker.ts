@@ -5,6 +5,7 @@
 
 import { handleScreenshotAnalysis } from "./analysis-workflow";
 import { cancellationRegistry } from "./cancellation-registry";
+import { sessionManager } from "./session-manager";
 import type { BackgroundMessage, BackgroundMessageResponse } from "./types";
 
 browser.runtime.onMessage.addListener(
@@ -72,10 +73,12 @@ browser.runtime.onMessage.addListener(
             }
             case "registerPause":
                 cancellationRegistry.registerPause(message.pauseId);
+                sessionManager.startSession(message.pauseId);
                 safeSendResponse({ success: true });
                 break;
             case "cancelPause":
                 cancellationRegistry.cancelPause(message.pauseId);
+                sessionManager.endSession(message.pauseId);
                 safeSendResponse({ success: true });
                 break;
             case "toggleSidebarPosition":

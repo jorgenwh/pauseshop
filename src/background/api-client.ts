@@ -8,6 +8,7 @@ import { getEndpointUrl } from "./server-config";
 
 interface AnalyzeRequest {
     image: string;
+    sessionId?: string;
     metadata?: {
         timestamp: string;
     };
@@ -27,12 +28,14 @@ export const analyzeImageStreaming = async (
     imageData: string,
     callbacks: StreamingCallbacks,
     signal?: AbortSignal,
+    sessionId?: string,
 ): Promise<void> => {
     // Get the endpoint URL using the server-config helper
     const url = getEndpointUrl('/analyze/stream');
 
     const request: AnalyzeRequest = {
         image: imageData,
+        sessionId: sessionId,
         metadata: {
             timestamp: new Date().toISOString(),
         },
@@ -158,5 +161,27 @@ export const analyzeImageStreaming = async (
             error,
         );
         callbacks.onError(new Event("connection_error"));
+    }
+};
+
+/**
+ * Notifies the server to end a session.
+ * @param sessionId The ID of the session to end.
+ */
+export const endSession = async (sessionId: string): Promise<void> => {
+    const url = getEndpointUrl(`/session/${sessionId}/end`);
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        console.log(`[PauseShop:ApiClient] Session ended successfully for sessionId: ${sessionId}`);
+    } catch (error) {
+        console.error(`[PauseShop:ApiClient] Failed to end session for sessionId: ${sessionId}`, error);
+        // Re-throw the error to be handled by the caller
+        throw error;
     }
 };
