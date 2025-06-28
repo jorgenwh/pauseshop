@@ -1,6 +1,7 @@
 import { motion } from "motion/react";
 import { useState, SVGProps } from "react";
 import { AmazonScrapedProduct } from "../../../types/amazon";
+import { AMAZON_MAX_PRODUCTS_DISPLAY_LIMIT } from "../../../amazon/constants";
 import "../../css/components/sidebar/product-thumbnail-carousel.css";
 
 interface ProductThumbnailCarouselProps {
@@ -10,8 +11,11 @@ interface ProductThumbnailCarouselProps {
 const ProductThumbnailCarousel = ({ thumbnails }: ProductThumbnailCarouselProps) => {
     const [selectedIndex, setSelectedIndex] = useState(0);
 
+    // Limit display to first 5 products while keeping all scraped data
+    const displayThumbnails = thumbnails.slice(0, AMAZON_MAX_PRODUCTS_DISPLAY_LIMIT);
+
     // Handle empty thumbnails array
-    if (!thumbnails || thumbnails.length === 0) {
+    if (!displayThumbnails || displayThumbnails.length === 0) {
         return (
             <div className="pauseshop-carousel-container">
                 <div className="pauseshop-carousel-empty">
@@ -22,8 +26,8 @@ const ProductThumbnailCarousel = ({ thumbnails }: ProductThumbnailCarouselProps)
     }
 
     // Handle single thumbnail
-    if (thumbnails.length === 1) {
-        const thumbnail = thumbnails[0];
+    if (displayThumbnails.length === 1) {
+        const thumbnail = displayThumbnails[0];
         return (
             <div className="pauseshop-carousel-container">
                 <div className="pauseshop-carousel-single">
@@ -46,13 +50,13 @@ const ProductThumbnailCarousel = ({ thumbnails }: ProductThumbnailCarouselProps)
 
     function navigate(newDirection: 1 | -1) {
         const nextIndex = selectedIndex + newDirection;
-        if (nextIndex >= 0 && nextIndex < thumbnails.length) {
+        if (nextIndex >= 0 && nextIndex < displayThumbnails.length) {
             setSelectedIndex(nextIndex);
         }
     }
 
     const isFirstItem = selectedIndex === 0;
-    const isLastItem = selectedIndex === thumbnails.length - 1;
+    const isLastItem = selectedIndex === displayThumbnails.length - 1;
 
     return (
         <div className="pauseshop-carousel-container">
@@ -89,7 +93,7 @@ const ProductThumbnailCarousel = ({ thumbnails }: ProductThumbnailCarouselProps)
                         type: "tween"
                     }}
                 >
-                    {thumbnails.map((thumbnail, index) => (
+                    {displayThumbnails.map((thumbnail, index) => (
                         <div key={index} className="pauseshop-carousel-slide">
                             <a href={thumbnail.productUrl} target="_blank" rel="noopener noreferrer" style={{ width: '100%', display: 'block' }}>
                                 {thumbnail.price && (
