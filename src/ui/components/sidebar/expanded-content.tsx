@@ -1,6 +1,7 @@
 import { motion, Variants } from "motion/react";
 import { useState, useEffect, useRef } from "react";
 import { ProductStorage, SidebarContentState } from "../../types";
+import { AmazonScrapedProduct } from "../../../types/amazon";
 import ProductGroupCard from "./product-group-card";
 import "../../css/components/sidebar/expanded-content.css";
 
@@ -15,7 +16,7 @@ const cardContainerVariants: Variants = {
 };
 
 const cardVariants: Variants = {
-    hidden: {y: 20, opacity: 0 },
+    hidden: { y: 20, opacity: 0 },
     visible: {
         y: 0,
         opacity: 1,
@@ -30,9 +31,10 @@ interface ExpandedContentProps {
     contentState: SidebarContentState;
     productStorage: ProductStorage;
     expandedIconCategory: string | null;
+    onProductClick?: (product: AmazonScrapedProduct, position: number, allProducts: AmazonScrapedProduct[]) => void;
 }
 
-const ExpandedContent = ({contentState, productStorage, expandedIconCategory }: ExpandedContentProps) => {
+const ExpandedContent = ({ contentState, productStorage, expandedIconCategory, onProductClick }: ExpandedContentProps) => {
     const [showScrollbar, setShowScrollbar] = useState(false);
     const contentRef = useRef<HTMLDivElement>(null);
 
@@ -49,14 +51,14 @@ const ExpandedContent = ({contentState, productStorage, expandedIconCategory }: 
                 const maxHeight = window.innerHeight * 0.6; // 60vh
                 // Add a tiny 1px buffer to max height to account for rounding
                 const thresholdHeight = maxHeight - 1; // Show scrollbar just 1px before max height
-                
+
                 // Enable scrollbar when content is extremely close to max height
                 setShowScrollbar(contentHeight >= thresholdHeight);
             }
         });
 
         resizeObserver.observe(contentRef.current);
-        
+
         return () => {
             resizeObserver.disconnect();
         };
@@ -102,6 +104,7 @@ const ExpandedContent = ({contentState, productStorage, expandedIconCategory }: 
                                     groupName={group.product.name}
                                     thumbnails={group.scrapedProducts}
                                     initialExpanded={expandedIconCategory === group.product.iconCategory}
+                                    onProductClick={onProductClick}
                                 />
                             </motion.div>
                         ))}

@@ -8,7 +8,7 @@ import { getEndpointUrl } from "./server-config";
 
 interface AnalyzeRequest {
     image: string;
-    sessionId?: string;
+    sessionId: string; // Server expects 'sessionId' field, but we'll use pauseId as the value
     metadata?: {
         timestamp: string;
     };
@@ -28,18 +28,20 @@ export const analyzeImageStreaming = async (
     imageData: string,
     callbacks: StreamingCallbacks,
     signal?: AbortSignal,
-    sessionId?: string,
+    pauseId: string,
 ): Promise<void> => {
     // Get the endpoint URL using the server-config helper
     const url = getEndpointUrl('/analyze/stream');
 
     const request: AnalyzeRequest = {
         image: imageData,
-        sessionId: sessionId,
+        sessionId: pauseId, // Use pauseId as the sessionId value
         metadata: {
             timestamp: new Date().toISOString(),
         },
     };
+
+    console.log(`[PauseShop:ApiClient] Starting streaming analysis for pauseId: ${pauseId}`);
 
     try {
         // Since EventSource only supports GET, we need to use fetch with streaming response
@@ -166,10 +168,10 @@ export const analyzeImageStreaming = async (
 
 /**
  * Notifies the server to end a session.
- * @param sessionId The ID of the session to end.
+ * @param pauseId The ID of the session to end.
  */
-export const endSession = async (sessionId: string): Promise<void> => {
-    const url = getEndpointUrl(`/session/${sessionId}/end`);
+export const endSession = async (pauseId: string): Promise<void> => {
+    const url = getEndpointUrl(`/session/${pauseId}/end`);
     try {
         const response = await fetch(url, {
             method: 'POST',
@@ -178,9 +180,9 @@ export const endSession = async (sessionId: string): Promise<void> => {
         if (!response.ok) {
             throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
-        console.log(`[PauseShop:ApiClient] Session ended successfully for sessionId: ${sessionId}`);
+        console.log(`[PauseShop:ApiClient] Session ended successfully for pauseId: ${pauseId}`);
     } catch (error) {
-        console.error(`[PauseShop:ApiClient] Failed to end session for sessionId: ${sessionId}`, error);
+        console.error(`[PauseShop:ApiClient] Failed to end session for pauseId: ${pauseId}`, error);
         // Re-throw the error to be handled by the caller
         throw error;
     }

@@ -5,7 +5,7 @@
 
 import { handleScreenshotAnalysis } from "./analysis-workflow";
 import { cancellationRegistry } from "./cancellation-registry";
-import { sessionManager } from "./session-manager";
+import { endSession as apiEndSession } from "./api-client";
 import type { BackgroundMessage, BackgroundMessageResponse } from "./types";
 
 browser.runtime.onMessage.addListener(
@@ -73,12 +73,16 @@ browser.runtime.onMessage.addListener(
             }
             case "registerPause":
                 cancellationRegistry.registerPause(message.pauseId);
-                sessionManager.startSession(message.pauseId);
+                console.log(`[PauseShop:ServiceWorker] Session registered with pauseId: ${message.pauseId}`);
                 safeSendResponse({ success: true });
                 break;
             case "cancelPause":
                 cancellationRegistry.cancelPause(message.pauseId);
-                sessionManager.endSession(message.pauseId);
+                // End session on server using pauseId directly
+                apiEndSession(message.pauseId).catch((error) => {
+                    console.error(`[PauseShop:ServiceWorker] Failed to notify server of session end for pauseId: ${message.pauseId}`, error);
+                });
+                console.log(`[PauseShop:ServiceWorker] Session ended for pauseId: ${message.pauseId}`);
                 safeSendResponse({ success: true });
                 break;
             case "toggleSidebarPosition":

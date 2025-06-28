@@ -6,9 +6,10 @@ import "../../css/components/sidebar/product-thumbnail-carousel.css";
 
 interface ProductThumbnailCarouselProps {
     thumbnails: AmazonScrapedProduct[];
+    onProductClick?: (product: AmazonScrapedProduct, position: number, allProducts: AmazonScrapedProduct[]) => void;
 }
 
-const ProductThumbnailCarousel = ({ thumbnails }: ProductThumbnailCarouselProps) => {
+const ProductThumbnailCarousel = ({ thumbnails, onProductClick }: ProductThumbnailCarouselProps) => {
     const [selectedIndex, setSelectedIndex] = useState(0);
 
     // Limit display to first 5 products while keeping all scraped data
@@ -31,7 +32,10 @@ const ProductThumbnailCarousel = ({ thumbnails }: ProductThumbnailCarouselProps)
         return (
             <div className="pauseshop-carousel-container">
                 <div className="pauseshop-carousel-single">
-                    <a href={thumbnail.productUrl} target="_blank" rel="noopener noreferrer" style={{ width: '100%', display: 'block' }}>
+                    <div 
+                        onClick={() => handleProductClick(thumbnail, 0)}
+                        style={{ width: '100%', display: 'block', cursor: 'pointer' }}
+                    >
                         {thumbnail.price && (
                             <div className="pauseshop-price-pill">
                                 ${thumbnail.price.toFixed(2)}
@@ -42,7 +46,7 @@ const ProductThumbnailCarousel = ({ thumbnails }: ProductThumbnailCarouselProps)
                             alt="Product thumbnail"
                             className="pauseshop-carousel-image"
                         />
-                    </a>
+                    </div>
                 </div>
             </div>
         );
@@ -57,6 +61,22 @@ const ProductThumbnailCarousel = ({ thumbnails }: ProductThumbnailCarouselProps)
 
     const isFirstItem = selectedIndex === 0;
     const isLastItem = selectedIndex === displayThumbnails.length - 1;
+
+    const handleProductClick = (product: AmazonScrapedProduct, clickedIndex: number) => {
+        if (onProductClick) {
+            // Find the position of the clicked product in the original thumbnails array
+            const originalPosition = thumbnails.findIndex(p => p.id === product.id);
+            onProductClick(product, originalPosition, thumbnails);
+        } else {
+            // Fallback to direct Amazon link if no click handler provided
+            if (product.amazonAsin) {
+                window.open(`https://www.amazon.com/dp/${product.amazonAsin}`, "_blank");
+            } else if (product.productUrl) {
+                const decodedUrl = product.productUrl.replace(/&/g, "&");
+                window.open(decodedUrl, "_blank");
+            }
+        }
+    };
 
     return (
         <div className="pauseshop-carousel-container">
@@ -95,7 +115,10 @@ const ProductThumbnailCarousel = ({ thumbnails }: ProductThumbnailCarouselProps)
                 >
                     {displayThumbnails.map((thumbnail, index) => (
                         <div key={index} className="pauseshop-carousel-slide">
-                            <a href={thumbnail.productUrl} target="_blank" rel="noopener noreferrer" style={{ width: '100%', display: 'block' }}>
+                            <div 
+                                onClick={() => handleProductClick(thumbnail, index)}
+                                style={{ width: '100%', display: 'block', cursor: 'pointer' }}
+                            >
                                 {thumbnail.price && (
                                     <div className="pauseshop-price-pill">
                                         ${thumbnail.price.toFixed(2)}
@@ -106,7 +129,7 @@ const ProductThumbnailCarousel = ({ thumbnails }: ProductThumbnailCarouselProps)
                                     alt="Product thumbnail"
                                     className="pauseshop-carousel-image"
                                 />
-                            </a>
+                            </div>
                         </div>
                     ))}
                 </motion.div>

@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from "uuid";
 import { SeekingState } from "../types/video";
 import { captureVideoFrame, hideUI } from "./frame-capturer";
 import { SiteHandlerRegistry } from "./site-handlers/site-handler-registry";
@@ -35,7 +36,7 @@ const handlePause =
                 return;
             }
 
-            const newPauseId = Date.now().toString();
+            const newPauseId = uuidv4();
             seekingState.currentPauseId = newPauseId;
 
             // Register the new pause with the background service worker
