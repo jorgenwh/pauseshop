@@ -109,7 +109,9 @@ const CompactContent = ({
                 }}
                 onClick={() => {
                     // Clear hover state before triggering retry
-                    onIconHover && onIconHover(null, null);
+                    if (onIconHover) {
+                        onIconHover(null, null);
+                    }
                     onRetryAnalysis();
                 }}
                 onMouseEnter={(e) => onIconHover && onIconHover("nothing-found", e.currentTarget)}
