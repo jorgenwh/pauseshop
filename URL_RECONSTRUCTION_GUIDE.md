@@ -11,7 +11,7 @@ The complete referrer URL has the following format:
 
 Example:
 ```
-https://pauseshop.net/referrer?pauseId=session-123&data=710PSL6OBTLB0CB3VXLPZ3799#1|710PSL6OBTLB0CB3VXLPZ3799|61abc123DEFB07XJ8C8F54550
+https://pauseshop.net/referrer?pauseId=session-123&data=T-Shirt~clothing~0~SomeBrand~FF0000~00FF00,0000FF~FeatureA,FeatureB~2~t-shirt,shirt~0.95||1|710PSL6OBTLB0CB3VXLPZ3799|61abc123DEFB07XJ8C8F54550
 ```
 
 ## Encoded Data Format
@@ -20,18 +20,18 @@ The `data` parameter uses a custom fixed-length encoding optimized for our speci
 
 ### Format Structure
 ```
-{clickedProduct}#{clickPosition}|{product1}|{product2}|{product3}|...
+{encodedProductObject}||{clickPosition}|{amazonProduct1}|{amazonProduct2}|...
 ```
 
 Where:
-- `clickedProduct` - The actual product that was clicked (full product data)
-- `#` - Separator between clicked product and position/context
-- `clickPosition` - Index of clicked product in the products array (for context)
-- `|` - Separator between sections
-- `product1, product2...` - All scraped products for context
+- `encodedProductObject` - A tilde-separated `~` string representing the shared product metadata.
+- `||` - A double-pipe separator between the product object and the Amazon product list.
+- `clickPosition` - Index of the clicked Amazon product in the list.
+- `|` - A single-pipe separator for the Amazon product list.
+- `amazonProduct1, amazonProduct2...` - All scraped Amazon products for context.
 
-### Product Format
-Each product follows this fixed-length pattern:
+### Amazon Product Format
+Each Amazon product follows this fixed-length pattern:
 ```
 {imageId11}{asin10}[{priceInCents}]
 ```
@@ -89,19 +89,44 @@ Where:
 Extract `pauseId` and `data` from the URL query parameters.
 
 ### Step 2: Split Encoded Data
-Split the `data` parameter to extract components:
+Split the `data` parameter into its main components:
 ```javascript
-// First split by '#' to separate clicked product from the rest
-const [clickedProductStr, remainder] = encodedData.split('#');
+// Split by '||' to separate the product context from the Amazon data
+const [productContextStr, amazonDataStr] = encodedData.split('||');
 
-// Then split remainder by '|' to get position and context products
-const remainderParts = remainder.split('|');
-const clickedPosition = parseInt(remainderParts[0], 10);
-const contextProductParts = remainderParts.slice(1);
+// Parse the Amazon data
+const amazonParts = amazonDataStr.split('|');
+const clickedPosition = parseInt(amazonParts[0], 10);
+const contextProductParts = amazonParts.slice(1);
 ```
 
-### Step 3: Parse Each Product
-For each product string, extract the components using fixed-length parsing:
+### Step 3: Parse Product Context Object
+Decode the tilde-separated `productContextStr`:
+```javascript
+function parseProductContext(contextStr) {
+    const parts = contextStr.split('~');
+    
+    // Helper enums (should match your TypeScript enums)
+    const Category = ["clothing", "electronics", "furniture", "accessories", "footwear", "home_decor", "books_media", "sports_fitness", "beauty_personal_care", "kitchen_dining", "other"];
+    const TargetGender = ["men", "women", "unisex", "boy", "girl"];
+
+    return {
+        name: parts[0],
+        iconCategory: parts[1],
+        category: Category[parseInt(parts[2], 10)],
+        brand: parts[3],
+        primaryColor: parts[4],
+        secondaryColors: parts[5] ? parts[5].split(',') : [],
+        features: parts[6] ? parts[6].split(',') : [],
+        targetGender: TargetGender[parseInt(parts[7], 10)],
+        searchTerms: parts[8],
+        confidence: (parseInt(parts[9], 10) || 0) / 10
+    };
+}
+```
+
+### Step 4: Parse Each Amazon Product
+For each Amazon product string, extract the components using fixed-length parsing:
 
 ```javascript
 function parseProduct(productStr) {
@@ -132,7 +157,7 @@ function parseProduct(productStr) {
 }
 ```
 
-### Step 4: Reconstruct Amazon URLs
+### Step 5: Reconstruct Amazon URLs
 Convert the parsed data back to full Amazon URLs:
 
 ```javascript
@@ -149,32 +174,25 @@ function reconstructProductUrl(asin) {
 
 ```javascript
 function decodeReferrerData(encodedData) {
-    // Split by '#' to separate clicked product from the rest
-    const [clickedProductStr, remainder] = encodedData.split('#');
-    
-    // Parse the clicked product
-    const { imageId: clickedImageId, asin: clickedAsin, price: clickedPrice } = parseProduct(clickedProductStr);
-    const clickedProduct = {
-        imageId: clickedImageId,
-        amazonAsin: clickedAsin,
-        thumbnailUrl: reconstructThumbnailUrl(clickedImageId),
-        productUrl: clickedAsin ? reconstructProductUrl(clickedAsin) : null,
-        price: clickedPrice
-    };
-    
-    // Split remainder by '|' to get position and context products
-    const remainderParts = remainder.split('|');
-    const clickedPosition = parseInt(remainderParts[0], 10);
-    const contextProductParts = remainderParts.slice(1);
-    
+    // Split into the two main parts
+    const [productContextStr, amazonDataStr] = encodedData.split('||');
+
+    // Decode the product context
+    const productContext = parseProductContext(productContextStr);
+
+    // Decode the Amazon data
+    const amazonParts = amazonDataStr.split('|');
+    const clickedPosition = parseInt(amazonParts[0], 10);
+    const contextProductParts = amazonParts.slice(1);
+
     // Parse context products
-    const contextProducts = [];
+    const amazonProducts = [];
     for (const productStr of contextProductParts) {
         if (!productStr) continue;
         
         const { imageId, asin, price } = parseProduct(productStr);
         
-        contextProducts.push({
+        amazonProducts.push({
             imageId,
             amazonAsin: asin,
             thumbnailUrl: reconstructThumbnailUrl(imageId),
@@ -182,16 +200,20 @@ function decodeReferrerData(encodedData) {
             price
         });
     }
+
+    // The clicked product is identified by its position in the array
+    const clickedAmazonProduct = amazonProducts[clickedPosition];
     
     return {
-        clickedProduct,
+        productContext,
+        clickedAmazonProduct,
         clickedPosition,
-        contextProducts
+        amazonProducts
     };
 }
 
 // Example usage:
-const encodedData = "710PSL6OBTLB0CB3VXLPZ3799#1|710PSL6OBTLB0CB3VXLPZ3799|61abc123DEFB07XJ8C8F54550";
+const encodedData = "T-Shirt~clothing~0~SomeBrand~brown~~leather,sectional~2~t-shirt,shirt~9||1|710PSL6OBTLB0CB3VXLPZ3799|61abc123DEFB07XJ8C8F54550";
 const decoded = decodeReferrerData(encodedData);
 console.log(decoded);
 ```
@@ -209,15 +231,13 @@ eyJjIjoxLCJwIjpbeyJpIjoiNzEwUFNMNk9CVEwiLCJhIjoiQjBDQjNWWExQWiIsInAiOjM3Ljk5fSx7
 ```
 Length: ~200 characters
 
-**New Method (Fixed-Length Encoding with Clicked Product):**
+**New Method (Optimized Encoding with Product Context):**
 ```
-710PSL6OBTLB0CB3VXLPZ3799#1|710PSL6OBTLB0CB3VXLPZ3799|61abc123DEFB07XJ8C8F54550|71xyz789GHIB09ABCD12341275
+T-Shirt~...~0.95||1|710PSL6OBTLB0CB3VXLPZ3799|61abc123DEFB07XJ8C8F54550|...
 ```
-Length: ~102 characters
+Length: Varies, but highly optimized. For a typical product object and 3 Amazon products, it's around 150-200 characters. While longer than the previous version, it now includes rich product metadata that would otherwise require a separate API call or much larger JSON payload.
 
-**Savings: ~49% reduction in encoded data size**
-
-Note: The clicked product data adds some length but provides complete product information without relying on the context array position.
+**Savings: Still significantly smaller than a full JSON + Base64 approach.**
 
 ## Backward Compatibility
 
@@ -232,7 +252,8 @@ function isLegacyFormat(encodedData) {
 }
 
 function isFixedLengthFormat(encodedData) {
-    return encodedData.includes('#') && encodedData.includes('|');
+    // The new format is identified by the double pipe separator
+    return encodedData.includes('||');
 }
 ```
 

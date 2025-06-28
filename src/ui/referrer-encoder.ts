@@ -6,14 +6,15 @@
  * - Uses fixed-length format without separators (ASINs are always 10 characters)
  * - Stores prices in cents to avoid decimal points
  * 
- * Format: {clickedProduct}#{clickPosition}|{product1}|{product2}|...
- * Example: "710PSL6OBTLB0CB3VXLPZ3799#1|710PSL6OBTLB0CB3VXLPZ3799|61abc123DEFB07XJ8C8F54550"
- * 
+ * Format: {encodedProductObject}||{clickPosition}|{amazonProduct1}|{amazonProduct2}|...
+ * Example: "1~T-Shirt~...||1|710PSL6OBTLB0CB3VXLPZ3799|61abc123DEFB07XJ8C8F54550"
+ *
  * See URL_RECONSTRUCTION_GUIDE.md for decoding instructions.
  */
 
 import { AmazonScrapedProduct } from "../types/amazon";
 import { ReferrerData, ReferrerProductData, ReferrerConfig } from "../types/referrer";
+import { Product, Category, TargetGender } from "../types/common";
 
 // Amazon data constants - all ASINs and image IDs are fixed length
 const AMAZON_IMAGE_ID_LENGTH = 11; // e.g., "710PSL6OBTL"
@@ -93,36 +94,49 @@ function encodeProduct(product: ReferrerProductData): string | null {
 
 
 /**
- * Custom encoding scheme optimized for our specific data structure
- * Format: {clickedProduct}#{clickPosition}|{product1}|{product2}|...
- * Product format: {imageId11}{asin10}[{priceInCents}]
- * 
- * Since ASINs and image IDs are fixed length, no separators needed!
- * Length determines structure: 11=imageId only, 21=imageId+asin, >11&<21=imageId+price, >21=imageId+asin+price
- * 
- * Examples:
- * - Product with all data: "710PSL6OBTLB0CB3VXLPZ3799" (imageId + asin + price)
- * - Product without price: "710PSL6OBTLB0CB3VXLPZ" (imageId + asin)
- * - Product without ASIN: "710PSL6OBTL3799" (imageId + price)
- * - Product with only imageId: "710PSL6OBTL" (imageId only)
+ * Encodes a product object into a compact, URL-safe string.
+ */
+function encodeProductObject(product: Product): string {
+    const categoryIndex = Object.values(Category).indexOf(product.category);
+    const genderIndex = Object.values(TargetGender).indexOf(product.targetGender);
+
+    // Convert confidence (0-1) to a single digit (0-9)
+    const confidenceDigit = Math.floor((product.confidence || 0) * 10);
+
+    const parts = [
+        product.name || '',
+        product.iconCategory || '',
+        categoryIndex > -1 ? categoryIndex : '',
+        product.brand || '',
+        product.primaryColor || '',
+        (product.secondaryColors || []).join(','),
+        (product.features || []).join(','),
+        genderIndex > -1 ? genderIndex : '',
+        product.searchTerms || '',
+        Math.min(9, Math.max(0, confidenceDigit)) // Clamp to 0-9
+    ];
+
+    return parts.join('~');
+}
+
+/**
+ * Custom encoding scheme optimized for our specific data structure.
+ * Format: {encodedProductObject}||{clickPosition}|{amazonProducts...}
  */
 export function encodeReferrerData(data: Omit<ReferrerData, 'pauseId'>): string {
     try {
-        // Encode the clicked product
-        const encodedClickedProduct = encodeProduct(data.clickedProduct);
-        if (!encodedClickedProduct) {
-            throw new Error('Failed to encode clicked product');
+        let encodedProductContext = '';
+        if (data.productContext) {
+            encodedProductContext = encodeProductObject(data.productContext);
         }
 
-        // Encode all products for context
-        const encodedProducts = data.products
+        const encodedAmazonProducts = data.products
             .map(encodeProduct)
             .filter((p): p is string => p !== null);
 
-        // Format: {clickedProduct}#{clickPosition}|{product1}|{product2}|...
-        const result = encodedClickedProduct + '#' + data.clickedPosition + '|' + encodedProducts.join('|');
+        const amazonPart = data.clickedPosition + '|' + encodedAmazonProducts.join('|');
 
-        return result;
+        return encodedProductContext + '||' + amazonPart;
     } catch (error) {
         console.error('[PauseShop:ReferrerEncoder] Failed to encode referrer data:', error);
         throw new Error('Failed to encode referrer data');
@@ -135,25 +149,25 @@ export function encodeReferrerData(data: Omit<ReferrerData, 'pauseId'>): string 
 export function constructReferrerUrl(
     pauseId: string,
     clickedPosition: number,
-    allProducts: AmazonScrapedProduct[]
+    allProducts: AmazonScrapedProduct[],
+    productContext?: Product
 ): string {
     const config = getReferrerConfig();
 
     // Convert all products to referrer format
     const referrerProducts = allProducts.map(convertToReferrerProductData);
 
-    // Get the clicked product
-    const clickedProduct = referrerProducts[clickedPosition];
-    if (!clickedProduct) {
+    // Get the clicked Amazon product for logging
+    const clickedAmazonProduct = referrerProducts[clickedPosition];
+    if (!clickedAmazonProduct) {
         throw new Error(`No product found at position ${clickedPosition}`);
     }
 
-    // Create the data package, omitting pauseId from the encoded data
-    const referrerData: ReferrerData = {
-        pauseId,
+    // Create the data package
+    const referrerData: Omit<ReferrerData, 'pauseId'> = {
         clickedPosition,
-        clickedProduct,
-        products: referrerProducts
+        products: referrerProducts,
+        productContext
     };
 
     // Encode the data with optimized format
@@ -165,7 +179,10 @@ export function constructReferrerUrl(
     // Log information
     console.log(`[PauseShop:ReferrerEncoder] Constructed referrer URL for ${config.isLocal ? 'local' : 'remote'} environment`);
     console.log(`[PauseShop:ReferrerEncoder] Session: ${pauseId}, Position: ${clickedPosition}, Products: ${allProducts.length}`);
-    console.log(`[PauseShop:ReferrerEncoder] Clicked product: ${clickedProduct.amazonAsin || 'No ASIN'} - ${clickedProduct.price ? clickedProduct.price.toFixed(2) : 'No price'}`);
+    console.log(`[PauseShop:ReferrerEncoder] Clicked product: ${clickedAmazonProduct.amazonAsin || 'No ASIN'} - ${clickedAmazonProduct.price ? clickedAmazonProduct.price.toFixed(2) : 'No price'}`);
+    if (productContext) {
+        console.log(`[PauseShop:ReferrerEncoder] Included product context: ${productContext.name}`);
+    }
     console.log(`[PauseShop:ReferrerEncoder] URL length: ${referrerUrl.length} chars`);
 
     return referrerUrl;

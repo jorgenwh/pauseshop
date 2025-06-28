@@ -12,14 +12,16 @@ export interface ReferrerProductData {
 }
 
 
+import { Product } from "./common";
+
 /**
  * Complete data package sent to referrer page
  */
 export interface ReferrerData {
     pauseId: string;
     clickedPosition: number; // Index of clicked product in the products array
-    clickedProduct: ReferrerProductData; // The actual clicked product data
     products: ReferrerProductData[]; // All scraped products for context
+    productContext?: Product; // Shared product metadata for all thumbnails
 }
 
 /**
