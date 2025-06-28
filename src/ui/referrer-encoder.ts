@@ -32,7 +32,7 @@ export function convertToReferrerProductData(product: AmazonScrapedProduct): Ref
 /**
  * Encodes referrer data to a URL-safe base64 string
  */
-export function encodeReferrerData(data: ReferrerData): string {
+export function encodeReferrerData(data: Omit<ReferrerData, 'pauseId'>): string {
     try {
         const jsonString = JSON.stringify(data);
         const base64String = btoa(jsonString);
@@ -60,7 +60,7 @@ export function constructReferrerUrl(
     // Convert all products to referrer format
     const referrerProducts = allProducts.map(convertToReferrerProductData);
     
-    // Create the data package
+    // Create the data package, omitting pauseId from the encoded data
     const referrerData: ReferrerData = {
         pauseId,
         clickedPosition,
@@ -70,8 +70,8 @@ export function constructReferrerUrl(
     // Encode the data
     const encodedData = encodeReferrerData(referrerData);
     
-    // Construct the final URL
-    const referrerUrl = `${config.baseUrl}/referrer?data=${encodedData}`;
+    // Construct the final URL with pauseId as a query parameter
+    const referrerUrl = `${config.baseUrl}/referrer?pauseId=${pauseId}&data=${encodedData}`;
     
     console.log(`[PauseShop:ReferrerEncoder] Constructed referrer URL for ${config.isLocal ? 'local' : 'remote'} environment`);
     console.log(`[PauseShop:ReferrerEncoder] Session: ${pauseId}, Position: ${clickedPosition}, Products: ${allProducts.length}`);
@@ -82,7 +82,7 @@ export function constructReferrerUrl(
 /**
  * Decodes referrer data from a URL-safe base64 string (for testing/debugging)
  */
-export function decodeReferrerData(encodedData: string): ReferrerData {
+export function decodeReferrerData(encodedData: string): Omit<ReferrerData, 'pauseId'> {
     try {
         // Restore base64 padding and characters
         let base64String = encodedData
@@ -95,7 +95,7 @@ export function decodeReferrerData(encodedData: string): ReferrerData {
         }
         
         const jsonString = atob(base64String);
-        return JSON.parse(jsonString) as ReferrerData;
+        return JSON.parse(jsonString) as Omit<ReferrerData, 'pauseId'>;
     } catch (error) {
         console.error('[PauseShop:ReferrerEncoder] Failed to decode referrer data:', error);
         throw new Error('Failed to decode referrer data');
