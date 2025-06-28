@@ -11,12 +11,14 @@ export interface ReferrerProductData {
     price?: number;
 }
 
+
 /**
  * Complete data package sent to referrer page
  */
 export interface ReferrerData {
     pauseId: string;
     clickedPosition: number; // Index of clicked product in the products array
+    clickedProduct: ReferrerProductData; // The actual clicked product data
     products: ReferrerProductData[]; // All scraped products for context
 }
 
