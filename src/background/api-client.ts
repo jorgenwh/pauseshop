@@ -8,6 +8,7 @@ import { getEndpointUrl } from "./server-config";
 
 interface AnalyzeRequest {
     image: string;
+    sessionId: string; // Server expects 'sessionId' field, but we'll use pauseId as the value
     metadata?: {
         timestamp: string;
     };
@@ -26,6 +27,7 @@ export interface StreamingCallbacks {
 export const analyzeImageStreaming = async (
     imageData: string,
     callbacks: StreamingCallbacks,
+    pauseId: string,
     signal?: AbortSignal,
 ): Promise<void> => {
     // Get the endpoint URL using the server-config helper
@@ -33,10 +35,13 @@ export const analyzeImageStreaming = async (
 
     const request: AnalyzeRequest = {
         image: imageData,
+        sessionId: pauseId, // Use pauseId as the sessionId value
         metadata: {
             timestamp: new Date().toISOString(),
         },
     };
+
+    console.log(`[PauseShop:ApiClient] Starting streaming analysis for pauseId: ${pauseId}`);
 
     try {
         // Since EventSource only supports GET, we need to use fetch with streaming response
@@ -158,5 +163,27 @@ export const analyzeImageStreaming = async (
             error,
         );
         callbacks.onError(new Event("connection_error"));
+    }
+};
+
+/**
+ * Notifies the server to end a session.
+ * @param pauseId The ID of the session to end.
+ */
+export const endSession = async (pauseId: string): Promise<void> => {
+    const url = getEndpointUrl(`/session/${pauseId}/end`);
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        console.log(`[PauseShop:ApiClient] Session ended successfully for pauseId: ${pauseId}`);
+    } catch (error) {
+        console.error(`[PauseShop:ApiClient] Failed to end session for pauseId: ${pauseId}`, error);
+        // Re-throw the error to be handled by the caller
+        throw error;
     }
 };

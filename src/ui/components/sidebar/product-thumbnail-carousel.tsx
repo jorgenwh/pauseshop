@@ -1,17 +1,22 @@
 import { motion } from "motion/react";
 import { useState, SVGProps } from "react";
 import { AmazonScrapedProduct } from "../../../types/amazon";
+import { AMAZON_MAX_PRODUCTS_DISPLAY_LIMIT } from "../../../amazon/constants";
 import "../../css/components/sidebar/product-thumbnail-carousel.css";
 
 interface ProductThumbnailCarouselProps {
     thumbnails: AmazonScrapedProduct[];
+    onProductClick?: (product: AmazonScrapedProduct, position: number, allProducts: AmazonScrapedProduct[]) => void;
 }
 
-const ProductThumbnailCarousel = ({ thumbnails }: ProductThumbnailCarouselProps) => {
+const ProductThumbnailCarousel = ({ thumbnails, onProductClick }: ProductThumbnailCarouselProps) => {
     const [selectedIndex, setSelectedIndex] = useState(0);
 
+    // Limit display to first 5 products while keeping all scraped data
+    const displayThumbnails = thumbnails.slice(0, AMAZON_MAX_PRODUCTS_DISPLAY_LIMIT);
+
     // Handle empty thumbnails array
-    if (!thumbnails || thumbnails.length === 0) {
+    if (!displayThumbnails || displayThumbnails.length === 0) {
         return (
             <div className="pauseshop-carousel-container">
                 <div className="pauseshop-carousel-empty">
@@ -22,12 +27,15 @@ const ProductThumbnailCarousel = ({ thumbnails }: ProductThumbnailCarouselProps)
     }
 
     // Handle single thumbnail
-    if (thumbnails.length === 1) {
-        const thumbnail = thumbnails[0];
+    if (displayThumbnails.length === 1) {
+        const thumbnail = displayThumbnails[0];
         return (
             <div className="pauseshop-carousel-container">
                 <div className="pauseshop-carousel-single">
-                    <a href={thumbnail.productUrl} target="_blank" rel="noopener noreferrer" style={{ width: '100%', display: 'block' }}>
+                    <div 
+                        onClick={() => handleProductClick(thumbnail)}
+                        style={{ width: '100%', display: 'block', cursor: 'pointer' }}
+                    >
                         {thumbnail.price && (
                             <div className="pauseshop-price-pill">
                                 ${thumbnail.price.toFixed(2)}
@@ -38,7 +46,7 @@ const ProductThumbnailCarousel = ({ thumbnails }: ProductThumbnailCarouselProps)
                             alt="Product thumbnail"
                             className="pauseshop-carousel-image"
                         />
-                    </a>
+                    </div>
                 </div>
             </div>
         );
@@ -46,13 +54,29 @@ const ProductThumbnailCarousel = ({ thumbnails }: ProductThumbnailCarouselProps)
 
     function navigate(newDirection: 1 | -1) {
         const nextIndex = selectedIndex + newDirection;
-        if (nextIndex >= 0 && nextIndex < thumbnails.length) {
+        if (nextIndex >= 0 && nextIndex < displayThumbnails.length) {
             setSelectedIndex(nextIndex);
         }
     }
 
     const isFirstItem = selectedIndex === 0;
-    const isLastItem = selectedIndex === thumbnails.length - 1;
+    const isLastItem = selectedIndex === displayThumbnails.length - 1;
+
+    const handleProductClick = (product: AmazonScrapedProduct) => {
+        if (onProductClick) {
+            // Find the position of the clicked product in the original thumbnails array
+            const originalPosition = thumbnails.findIndex(p => p.id === product.id);
+            onProductClick(product, originalPosition, thumbnails);
+        } else {
+            // Fallback to direct Amazon link if no click handler provided
+            if (product.amazonAsin) {
+                window.open(`https://www.amazon.com/dp/${product.amazonAsin}`, "_blank");
+            } else if (product.productUrl) {
+                const decodedUrl = product.productUrl.replace(/&/g, "&");
+                window.open(decodedUrl, "_blank");
+            }
+        }
+    };
 
     return (
         <div className="pauseshop-carousel-container">
@@ -89,9 +113,12 @@ const ProductThumbnailCarousel = ({ thumbnails }: ProductThumbnailCarouselProps)
                         type: "tween"
                     }}
                 >
-                    {thumbnails.map((thumbnail, index) => (
+                    {displayThumbnails.map((thumbnail, index) => (
                         <div key={index} className="pauseshop-carousel-slide">
-                            <a href={thumbnail.productUrl} target="_blank" rel="noopener noreferrer" style={{ width: '100%', display: 'block' }}>
+                            <div 
+                                onClick={() => handleProductClick(thumbnail)}
+                                style={{ width: '100%', display: 'block', cursor: 'pointer' }}
+                            >
                                 {thumbnail.price && (
                                     <div className="pauseshop-price-pill">
                                         ${thumbnail.price.toFixed(2)}
@@ -102,7 +129,7 @@ const ProductThumbnailCarousel = ({ thumbnails }: ProductThumbnailCarouselProps)
                                     alt="Product thumbnail"
                                     className="pauseshop-carousel-image"
                                 />
-                            </a>
+                            </div>
                         </div>
                     ))}
                 </motion.div>

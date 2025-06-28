@@ -39,7 +39,7 @@ interface SidebarProps {
     productStorage: ProductStorage;
     onShow: () => void;
     onHide: () => void;
-    onProductClick: (product: AmazonScrapedProduct) => void;
+    onProductClick: (product: AmazonScrapedProduct, position: number, allProducts: AmazonScrapedProduct[]) => void;
     onClose: () => void;
     onRetryAnalysis: () => void;
     errorMessage?: string;
@@ -54,6 +54,7 @@ const Sidebar = ({
     productStorage,
     onShow,
     onHide,
+    onProductClick,
     onClose,
     onRetryAnalysis,
     errorMessage = "Analysis failed",
@@ -295,6 +296,7 @@ const Sidebar = ({
                             contentState={contentState}
                             productStorage={productStorage}
                             expandedIconCategory={expandedIconCategory}
+                            onProductClick={onProductClick}
                         />
                     )}
                     <Footer />

@@ -8,9 +8,10 @@ interface ProductGroupCardProps {
     groupName: string;
     thumbnails: AmazonScrapedProduct[];
     initialExpanded?: boolean;
+    onProductClick?: (product: AmazonScrapedProduct, position: number, allProducts: AmazonScrapedProduct[]) => void;
 }
 
-const ProductGroupCard = ({ groupName, thumbnails, initialExpanded = false }: ProductGroupCardProps) => {
+const ProductGroupCard = ({ groupName, thumbnails, initialExpanded = false, onProductClick }: ProductGroupCardProps) => {
     const [isExpanded, setIsExpanded] = useState(initialExpanded);
 
     const toggleExpand = () => {
@@ -42,7 +43,7 @@ const ProductGroupCard = ({ groupName, thumbnails, initialExpanded = false }: Pr
             {/* Collapsible Content */}
             {isExpanded && (
                 <div className="pauseshop-product-card-content"> {}
-                    <ProductThumbnailCarousel thumbnails={thumbnails} />
+                    <ProductThumbnailCarousel thumbnails={thumbnails} onProductClick={onProductClick} />
                 </div>
             )}
         </motion.div>

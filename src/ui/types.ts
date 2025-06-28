@@ -31,7 +31,7 @@ export interface SidebarConfig {
 export interface SidebarEvents {
     onShow: () => void;
     onHide: () => void;
-    onProductClick: (product: AmazonScrapedProduct) => void;
+    onProductClick: (product: AmazonScrapedProduct, position: number, allProducts: AmazonScrapedProduct[]) => void;
     onClose: () => void;
     onRetryAnalysis: () => void;
 }

@@ -21,6 +21,7 @@ import {
 } from "./types";
 import { getSidebarPosition, setSidebarPosition } from "../storage";
 import { triggerRetryAnalysis } from "../content/video-detector";
+import { constructReferrerUrl } from "./referrer-encoder";
 
 export class UIManager {
     private container: HTMLElement | null = null;
@@ -53,15 +54,43 @@ export class UIManager {
                 this.productStorage = { pauseId: "", productGroups: [] };
                 this.sidebarContentState = SidebarContentState.LOADING;
             },
-            onProductClick: (product: AmazonScrapedProduct) => {
-                if (product.amazonAsin) {
-                    window.open(
-                        `https://www.amazon.com/dp/${product.amazonAsin}`,
-                        "_blank",
+            onProductClick: async (product: AmazonScrapedProduct, position: number, allProducts: AmazonScrapedProduct[]) => {
+                try {
+                    if (!this.productStorage.pauseId) {
+                        console.error("[PauseShop:UIManager] No pauseId available for product click");
+                        // Fallback to direct Amazon link
+                        if (product.amazonAsin) {
+                            window.open(`https://www.amazon.com/dp/${product.amazonAsin}`, "_blank");
+                        }
+                        return;
+                    }
+
+                    // Find the product group that contains the clicked product to get the context
+                    const productGroup = this.productStorage.productGroups.find(group =>
+                        group.scrapedProducts.some(p => p.amazonAsin === product.amazonAsin && p.thumbnailUrl === product.thumbnailUrl)
                     );
-                } else if (product.productUrl) {
-                    const decodedUrl = product.productUrl.replace(/&/g, "&");
-                    window.open(decodedUrl, "_blank");
+
+                    const productContext = productGroup ? productGroup.product : undefined;
+
+                    if (!productContext) {
+                        console.warn("[PauseShop:UIManager] Could not find product context for the clicked item.");
+                    }
+
+                    // Construct referrer URL with encoded data
+                    const referrerUrl = constructReferrerUrl(
+                        this.productStorage.pauseId,
+                        position,
+                        allProducts,
+                        productContext
+                    );
+                    window.open(referrerUrl, "_blank");
+
+                } catch (error) {
+                    console.error("[PauseShop:UIManager] Error handling product click:", error);
+                    // Fallback to direct Amazon link
+                    if (product.amazonAsin) {
+                        window.open(`https://www.amazon.com/dp/${product.amazonAsin}`, "_blank");
+                    }
                 }
             },
             onClose: () => {
