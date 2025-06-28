@@ -129,7 +129,7 @@ const Sidebar = ({
     }, [videoElement]);
 
     // YouTube Shorts positioning logic
-    const { youTubeShortsPosition } = useYouTubeShortsPositioning(
+    const { isOnYouTubeShorts, youTubeShortsPosition, effectivePosition } = useYouTubeShortsPositioning(
         currentPageUrl,
         videoElement,
         position,
@@ -231,7 +231,8 @@ const Sidebar = ({
     const sidebarClasses = [
         "pauseshop-sidebar",
         isCompact && "pauseshop-sidebar-compact",
-        `position-${position}`
+        `position-${position}`,
+        isOnYouTubeShorts && "youtube-shorts"
     ].filter(Boolean).join(" ");
 
     const sidebarHeight = !isCompact || contentState === SidebarContentState.PRODUCTS ? "auto" : `${COMPACT_SIDEBAR_STATIC_HEIGHT}px`;
@@ -269,7 +270,7 @@ const Sidebar = ({
                 >
                     <Header
                         compact={isCompact}
-                        position={position}
+                        position={effectivePosition}
                         onToggleCompact={toggleCompactMode}
                         contentState={contentState}
                         onClose={onClose}

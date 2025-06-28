@@ -177,3 +177,25 @@
     right: auto;
     bottom: 18px;
 }
+
+/* Overrides for YouTube Shorts - Reverse the hover direction */
+.pauseshop-sidebar.youtube-shorts.pauseshop-sidebar-compact:not(.position-right) .pauseshop-sidebar-button-container {
+    right: auto;
+    left: -55px; /* Hover left instead of right */
+}
+
+.pauseshop-sidebar.youtube-shorts.pauseshop-sidebar-compact.position-right .pauseshop-sidebar-button-container {
+    left: auto;
+    right: -55px; /* Hover right instead of left */
+}
+
+/* Handle the no-products case as well */
+.pauseshop-sidebar.youtube-shorts.pauseshop-sidebar-compact:not(.position-right) .pauseshop-sidebar-button-container.no-products {
+    right: auto;
+    left: -28px;
+}
+
+.pauseshop-sidebar.youtube-shorts.pauseshop-sidebar-compact.position-right .pauseshop-sidebar-button-container.no-products {
+    left: auto;
+    right: -28px;
+}
