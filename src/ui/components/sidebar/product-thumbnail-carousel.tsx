@@ -36,11 +36,6 @@ const ProductThumbnailCarousel = ({ thumbnails, onProductClick }: ProductThumbna
                         onClick={() => handleProductClick(thumbnail)}
                         style={{ width: '100%', display: 'block', cursor: 'pointer' }}
                     >
-                        {thumbnail.price && (
-                            <div className="pauseshop-price-pill">
-                                ${thumbnail.price.toFixed(2)}
-                            </div>
-                        )}
                         <img
                             src={thumbnail.thumbnailUrl}
                             alt="Product thumbnail"
@@ -119,11 +114,6 @@ const ProductThumbnailCarousel = ({ thumbnails, onProductClick }: ProductThumbna
                                 onClick={() => handleProductClick(thumbnail)}
                                 style={{ width: '100%', display: 'block', cursor: 'pointer' }}
                             >
-                                {thumbnail.price && (
-                                    <div className="pauseshop-price-pill">
-                                        ${thumbnail.price.toFixed(2)}
-                                    </div>
-                                )}
                                 <img
                                     src={thumbnail.thumbnailUrl}
                                     alt="Product thumbnail"
