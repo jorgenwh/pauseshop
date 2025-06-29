@@ -52,7 +52,7 @@ const extractPriceFromOffscreen = (htmlContent: string): number | null => {
                 const priceText = priceMatch[1].replace(/,/g, "");
                 const price = parseFloat(priceText);
                 if (!isNaN(price)) {
-                    console.log(`[PauseShop Scraper] Success with Offscreen strategy.`);
+                    // console.log(`[PauseShop Scraper] Success with Offscreen strategy.`);
                     return price;
                 }
             }
@@ -130,9 +130,9 @@ const extractProductDataFromHtml = (
         }
 
         if (price !== null) {
-            console.log(`[PauseShop Scraper] Associated price ${price.toFixed(2)} with ASIN ${asin}.`);
+            // console.log(`[PauseShop Scraper] Associated price ${price.toFixed(2)} with ASIN ${asin}.`);
         } else {
-            console.log(`[PauseShop Scraper] No price found for ASIN ${asin} (position ${position}) on search page: ${searchUrl}`);
+            // console.log(`[PauseShop Scraper] No price found for ASIN ${asin} (position ${position}) on search page: ${searchUrl}`);
         }
 
         return {
@@ -178,7 +178,7 @@ const parseAmazonSearchHtml = (
             if (!asin || !containerHtml || processedAsins.has(asin)) {
                 continue;
             }
-            
+
             const productData = extractProductDataFromHtml(
                 containerHtml,
                 asin,
@@ -186,14 +186,14 @@ const parseAmazonSearchHtml = (
                 baseUrl,
                 searchUrl,
             );
-            
+
             if (productData) {
                 scrapedProducts.push(productData);
                 processedAsins.add(asin);
                 position++;
             }
         }
-        
+
         return scrapedProducts;
     } catch (error) {
         console.error("Error parsing Amazon HTML with regex:", error);
