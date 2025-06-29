@@ -1,6 +1,7 @@
 import { motion } from "motion/react";
 import "../../css/components/sidebar/header.css";
 import { SidebarContentState } from "../../types";
+import { isYouTubeShorts } from "./positioning/youtube-shorts-utils";
 
 interface HeaderProps {
     compact: boolean;
@@ -71,6 +72,9 @@ const Header = ({
             );
         }
 
+        const isOnYouTubeShorts = isYouTubeShorts(window.location.href);
+        const shouldFlipButtonOrder = isOnYouTubeShorts && !compact;
+
         return (
             <motion.div
                 className="pauseshop-sidebar-button-container"
@@ -90,53 +94,105 @@ const Header = ({
                 }}
             >
                 {position === "left" ? (
-                    <>
-                        <button
-                            className="pauseshop-sidebar-toggle-button"
-                            onClick={onToggleCompact}
-                        >
-                            <img
-                                src={browser.runtime.getURL(`/icons/${getToggleButtonIcon()}`)}
-                                alt={compact ? "Expand" : "Collapse"}
-                                className="pauseshop-button-icon"
-                            />
-                        </button>
-                        <button
-                            className="pauseshop-sidebar-close-button"
-                            onClick={onClose}
-                            title="Close PauseShop"
-                        >
-                            <img
-                                src={browser.runtime.getURL("/icons/close.png")}
-                                alt="Close"
-                                className="pauseshop-button-icon"
-                            />
-                        </button>
-                    </>
+                    shouldFlipButtonOrder ? (
+                        <>
+                            <button
+                                className="pauseshop-sidebar-close-button"
+                                onClick={onClose}
+                                title="Close PauseShop"
+                            >
+                                <img
+                                    src={browser.runtime.getURL("/icons/close.png")}
+                                    alt="Close"
+                                    className="pauseshop-button-icon"
+                                />
+                            </button>
+                            <button
+                                className="pauseshop-sidebar-toggle-button"
+                                onClick={onToggleCompact}
+                            >
+                                <img
+                                    src={browser.runtime.getURL(`/icons/${getToggleButtonIcon()}`)}
+                                    alt={compact ? "Expand" : "Collapse"}
+                                    className="pauseshop-button-icon"
+                                />
+                            </button>
+                        </>
+                    ) : (
+                        <>
+                            <button
+                                className="pauseshop-sidebar-toggle-button"
+                                onClick={onToggleCompact}
+                            >
+                                <img
+                                    src={browser.runtime.getURL(`/icons/${getToggleButtonIcon()}`)}
+                                    alt={compact ? "Expand" : "Collapse"}
+                                    className="pauseshop-button-icon"
+                                />
+                            </button>
+                            <button
+                                className="pauseshop-sidebar-close-button"
+                                onClick={onClose}
+                                title="Close PauseShop"
+                            >
+                                <img
+                                    src={browser.runtime.getURL("/icons/close.png")}
+                                    alt="Close"
+                                    className="pauseshop-button-icon"
+                                />
+                            </button>
+                        </>
+                    )
                 ) : (
-                    <>
-                        <button
-                            className="pauseshop-sidebar-close-button"
-                            onClick={onClose}
-                            title="Close PauseShop"
-                        >
-                            <img
-                                src={browser.runtime.getURL("/icons/close.png")}
-                                alt="Close"
-                                className="pauseshop-button-icon"
-                            />
-                        </button>
-                        <button
-                            className="pauseshop-sidebar-toggle-button"
-                            onClick={onToggleCompact}
-                        >
-                            <img
-                                src={browser.runtime.getURL(`/icons/${getToggleButtonIcon()}`)}
-                                alt={compact ? "Expand" : "Collapse"}
-                                className="pauseshop-button-icon"
-                            />
-                        </button>
-                    </>
+                    shouldFlipButtonOrder ? (
+                        <>
+                            <button
+                                className="pauseshop-sidebar-toggle-button"
+                                onClick={onToggleCompact}
+                            >
+                                <img
+                                    src={browser.runtime.getURL(`/icons/${getToggleButtonIcon()}`)}
+                                    alt={compact ? "Expand" : "Collapse"}
+                                    className="pauseshop-button-icon"
+                                />
+                            </button>
+                            <button
+                                className="pauseshop-sidebar-close-button"
+                                onClick={onClose}
+                                title="Close PauseShop"
+                            >
+                                <img
+                                    src={browser.runtime.getURL("/icons/close.png")}
+                                    alt="Close"
+                                    className="pauseshop-button-icon"
+                                />
+                            </button>
+                        </>
+                    ) : (
+                        <>
+                            <button
+                                className="pauseshop-sidebar-close-button"
+                                onClick={onClose}
+                                title="Close PauseShop"
+                            >
+                                <img
+                                    src={browser.runtime.getURL("/icons/close.png")}
+                                    alt="Close"
+                                    className="pauseshop-button-icon"
+                                />
+                            </button>
+                            <button
+                                className="pauseshop-sidebar-toggle-button"
+                                onClick={onToggleCompact}
+                            >
+                                <img
+                                    src={browser.runtime.getURL(`/icons/${getToggleButtonIcon()}`)}
+                                    alt={compact ? "Expand" : "Collapse"}
+                                    className="pauseshop-button-icon"
+                                />
+                            </button>
+                        </>
+                    )
                 )}
             </motion.div>
         );
