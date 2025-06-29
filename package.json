@@ -3,6 +3,7 @@
     "version": "0.1.0",
     "description": "PauseShop Chrome Extension",
     "private": true,
+    "type": "module",
     "scripts": {
         "dev": "wxt",
         "dev:firefox": "wxt -b firefox",
