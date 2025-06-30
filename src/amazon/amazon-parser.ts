@@ -132,7 +132,7 @@ const extractProductDataFromHtml = (
         if (price !== null) {
             // console.log(`[PauseShop Scraper] Associated price ${price.toFixed(2)} with ASIN ${asin}.`);
         } else {
-            // console.log(`[PauseShop Scraper] No price found for ASIN ${asin} (position ${position}) on search page: ${searchUrl}`);
+            console.log(`[PauseShop Scraper] No price found for ASIN ${asin} (position ${position}) on search page: ${searchUrl}`);
         }
 
         return {
