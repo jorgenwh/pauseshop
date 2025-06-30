@@ -6,28 +6,12 @@
 import { Product, Category, TargetGender } from "../types/common";
 import {
     AmazonSearch,
-    CategoryNodeMapping,
     SearchTermValidationResult,
 } from "../types/amazon";
 import {
     AMAZON_DOMAIN,
-    AMAZON_ENABLE_CATEGORY_FILTERING,
     AMAZON_MAX_SEARCH_TERM_LENGTH,
 } from "./constants";
-
-const CATEGORY_NODES: CategoryNodeMapping = {
-    [Category.CLOTHING]: "7141123011", // Clothing, Shoes & Jewelry
-    [Category.FOOTWEAR]: "679255011", // Shoes
-    [Category.ACCESSORIES]: "2475687011", // Accessories
-    [Category.ELECTRONICS]: "172282", // Electronics
-    [Category.FURNITURE]: "1063306", // Home & Kitchen > Furniture
-    [Category.HOME_DECOR]: "1063498", // Home & Kitchen > Home Décor
-    [Category.BOOKS_MEDIA]: "283155", // Books
-    [Category.SPORTS_FITNESS]: "3375251", // Sports & Outdoors
-    [Category.BEAUTY_PERSONAL_CARE]: "3760901", // Beauty & Personal Care
-    [Category.KITCHEN_DINING]: "1063498", // Home & Kitchen
-    [Category.OTHER]: "", // No specific category
-};
 
 /**
  * Validates and processes search terms
@@ -137,13 +121,6 @@ const optimizeSearchTerms = (product: Product): string => {
 };
 
 /**
- * Gets Amazon category node for filtering
- */
-const getCategoryNode = (category: Category): string | null => {
-    return CATEGORY_NODES[category] || null;
-};
-
-/**
  * Constructs an Amazon search URL for a single product
  */
 export const constructAmazonSearch = (
@@ -169,22 +146,17 @@ export const constructAmazonSearch = (
     // Add search terms
     urlParams.append("k", searchTerms);
 
-    // Add category filtering if enabled
-    if (AMAZON_ENABLE_CATEGORY_FILTERING) {
-        const categoryNode = getCategoryNode(product.category);
-        if (categoryNode) {
-            urlParams.append("rh", `n:${categoryNode}`);
-        }
-    }
+    // Add parameters to mimic a manual search from the search bar
+    const crid = Math.random().toString(36).substring(2, 15).toUpperCase();
+    urlParams.append("crid", crid);
 
-    // Add sorting for relevance
-    urlParams.append("sort", "relevanceblender");
+    // The sprefix is the search term, plus a suffix.
+    // The suffix seems to indicate the type of search, e.g., 'aps' for all products.
+    const sprefix = `${searchTerms},aps,132`;
+    urlParams.append("sprefix", sprefix);
 
-    // Add reference for tracking
-    urlParams.append("ref", "sr_pg_1");
-
-    // Add query ID for tracking
-    urlParams.append("qid", Date.now().toString());
+    // This ref tag indicates "search bar, no suggestion, submission 1"
+    urlParams.append("ref", "nb_sb_noss_1");
 
     const searchUrl = `${baseUrl}?${urlParams.toString()}`;
 
@@ -197,26 +169,3 @@ export const constructAmazonSearch = (
     };
 };
 
-/**
- * Gets available Amazon domains
- */
-export const getAvailableAmazonDomains = (): string[] => {
-    return [
-        "amazon.com",
-        "amazon.co.uk",
-        "amazon.de",
-        "amazon.fr",
-        "amazon.it",
-        "amazon.es",
-        "amazon.ca",
-        "amazon.com.au",
-        "amazon.co.jp",
-    ];
-};
-
-/**
- * Validates Amazon domain
- */
-export const validateAmazonDomain = (domain: string): boolean => {
-    return getAvailableAmazonDomains().includes(domain);
-};
