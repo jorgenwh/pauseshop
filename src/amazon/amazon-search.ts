@@ -6,28 +6,12 @@
 import { Product, Category, TargetGender } from "../types/common";
 import {
     AmazonSearch,
-    CategoryNodeMapping,
     SearchTermValidationResult,
 } from "../types/amazon";
 import {
     AMAZON_DOMAIN,
-    AMAZON_ENABLE_CATEGORY_FILTERING,
     AMAZON_MAX_SEARCH_TERM_LENGTH,
 } from "./constants";
-
-const CATEGORY_NODES: CategoryNodeMapping = {
-    [Category.CLOTHING]: "7141123011", // Clothing, Shoes & Jewelry
-    [Category.FOOTWEAR]: "679255011", // Shoes
-    [Category.ACCESSORIES]: "2475687011", // Accessories
-    [Category.ELECTRONICS]: "172282", // Electronics
-    [Category.FURNITURE]: "1063306", // Home & Kitchen > Furniture
-    [Category.HOME_DECOR]: "1063498", // Home & Kitchen > Home Décor
-    [Category.BOOKS_MEDIA]: "283155", // Books
-    [Category.SPORTS_FITNESS]: "3375251", // Sports & Outdoors
-    [Category.BEAUTY_PERSONAL_CARE]: "3760901", // Beauty & Personal Care
-    [Category.KITCHEN_DINING]: "1063498", // Home & Kitchen
-    [Category.OTHER]: "", // No specific category
-};
 
 /**
  * Validates and processes search terms
@@ -134,13 +118,6 @@ const optimizeSearchTerms = (product: Product): string => {
     parts.push(...importantFeatures);
 
     return parts.join(" ").trim();
-};
-
-/**
- * Gets Amazon category node for filtering
- */
-const getCategoryNode = (category: Category): string | null => {
-    return CATEGORY_NODES[category] || null;
 };
 
 /**
