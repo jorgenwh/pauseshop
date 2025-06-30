@@ -169,22 +169,17 @@ export const constructAmazonSearch = (
     // Add search terms
     urlParams.append("k", searchTerms);
 
-    // Add category filtering if enabled
-    if (AMAZON_ENABLE_CATEGORY_FILTERING) {
-        const categoryNode = getCategoryNode(product.category);
-        if (categoryNode) {
-            urlParams.append("rh", `n:${categoryNode}`);
-        }
-    }
+    // Add parameters to mimic a manual search from the search bar
+    const crid = Math.random().toString(36).substring(2, 15).toUpperCase();
+    urlParams.append("crid", crid);
 
-    // Add sorting for relevance
-    urlParams.append("sort", "relevanceblender");
+    // The sprefix is the search term, plus a suffix.
+    // The suffix seems to indicate the type of search, e.g., 'aps' for all products.
+    const sprefix = `${searchTerms},aps,132`;
+    urlParams.append("sprefix", sprefix);
 
-    // Add reference for tracking
-    urlParams.append("ref", "sr_pg_1");
-
-    // Add query ID for tracking
-    urlParams.append("qid", Date.now().toString());
+    // This ref tag indicates "search bar, no suggestion, submission 1"
+    urlParams.append("ref", "nb_sb_noss_1");
 
     const searchUrl = `${baseUrl}?${urlParams.toString()}`;
 
