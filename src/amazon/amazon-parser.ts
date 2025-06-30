@@ -52,7 +52,6 @@ const extractPriceFromOffscreen = (htmlContent: string): number | null => {
                 const priceText = priceMatch[1].replace(/,/g, "");
                 const price = parseFloat(priceText);
                 if (!isNaN(price)) {
-                    // console.log(`[PauseShop Scraper] Success with Offscreen strategy.`);
                     return price;
                 }
             }
@@ -73,7 +72,6 @@ const extractPriceFromWholeAndFraction = (htmlContent: string): number | null =>
             const priceText = `${wholePartWithoutCommas}.${match[2]}`;
             const price = parseFloat(priceText);
             if (!isNaN(price)) {
-                console.log(`[PauseShop Scraper] Success with Whole/Fraction strategy.`);
                 return price;
             }
         }
@@ -116,7 +114,6 @@ const extractProductDataFromHtml = (
     asin: string,
     position: number,
     baseUrl: string,
-    searchUrl: string,
 ): AmazonScrapedProduct | null => {
     try {
         const id = `scraped-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
@@ -127,12 +124,6 @@ const extractProductDataFromHtml = (
 
         if (!thumbnailUrl) {
             return null;
-        }
-
-        if (price !== null) {
-            // console.log(`[PauseShop Scraper] Associated price ${price.toFixed(2)} with ASIN ${asin}.`);
-        } else {
-            console.log(`[PauseShop Scraper] No price found for ASIN ${asin} (position ${position}) on search page: ${searchUrl}`);
         }
 
         return {
@@ -155,7 +146,6 @@ const extractProductDataFromHtml = (
 const parseAmazonSearchHtml = (
     htmlContent: string,
     baseUrl: string,
-    searchUrl: string,
 ): AmazonScrapedProduct[] => {
     try {
         const searchResultPattern = /<div[^>]*data-asin="([^"]+)"[^>]*data-component-type="s-search-result"[^>]*>([\s\S]*?)(?=<div[^>]*data-component-type="s-search-result"|$)/gi;
@@ -166,11 +156,6 @@ const parseAmazonSearchHtml = (
 
         while ((match = searchResultPattern.exec(htmlContent)) !== null) {
             if (position > AMAZON_MAX_PRODUCTS_PER_SEARCH) break;
-
-            // Log the search URL every 5 products for easier verification
-            if ((position - 1) % 5 === 0) {
-                console.log(`[PauseShop Scraper] Checking products on page: ${searchUrl}`);
-            }
 
             const asin = match[1];
             const containerHtml = match[2];
@@ -184,7 +169,6 @@ const parseAmazonSearchHtml = (
                 asin,
                 position,
                 baseUrl,
-                searchUrl,
             );
 
             if (productData) {
@@ -213,7 +197,6 @@ export const scrapeAmazonSearchResult = (
         const scrapedProducts = parseAmazonSearchHtml(
             searchResult.htmlContent,
             baseUrl,
-            searchResult.searchUrl,
         );
 
         return {

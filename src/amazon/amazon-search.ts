@@ -169,26 +169,3 @@ export const constructAmazonSearch = (
     };
 };
 
-/**
- * Gets available Amazon domains
- */
-export const getAvailableAmazonDomains = (): string[] => {
-    return [
-        "amazon.com",
-        "amazon.co.uk",
-        "amazon.de",
-        "amazon.fr",
-        "amazon.it",
-        "amazon.es",
-        "amazon.ca",
-        "amazon.com.au",
-        "amazon.co.jp",
-    ];
-};
-
-/**
- * Validates Amazon domain
- */
-export const validateAmazonDomain = (domain: string): boolean => {
-    return getAvailableAmazonDomains().includes(domain);
-};
