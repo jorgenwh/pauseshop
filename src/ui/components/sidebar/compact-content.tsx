@@ -1,5 +1,6 @@
 import "../../css/components/sidebar/compact-content.css";
 import { motion } from "motion/react";
+import { PublicPath } from "wxt/browser";
 import LoadingAnimation from "./loading-animation";
 import { ProductStorage, SidebarContentState } from "../../types";
 import { getIconCounts, getUniqueIcons } from "../../utils";
@@ -81,7 +82,7 @@ const CompactContent = ({
                 >
                     <img
                         src={browser.runtime.getURL(
-                            `/icons/products/${iconCategory}.png`
+                            `/icons/products/${iconCategory}.png` as PublicPath
                         )}
                         alt={iconCategory}
                         className={`pauseshop-compact-icon icon`}
