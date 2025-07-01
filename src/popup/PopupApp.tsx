@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getSidebarPosition, setSidebarPosition } from "../storage";
+import { sidebarPosition } from "../storage";
 import { SidebarPosition } from "../ui/types";
 import { ToggleSidebarPositionMessage } from "../background/types";
 import "../ui/css/base.css";
@@ -8,12 +8,12 @@ const PopupApp = () => {
     const [position, setPosition] = useState<SidebarPosition>("left");
 
     useEffect(() => {
-        getSidebarPosition().then(setPosition);
+        sidebarPosition.getValue().then(setPosition);
     }, []);
 
     const handleToggleSidebarPosition = async () => {
         const newPosition = position === "left" ? "right" : "left";
-        await setSidebarPosition(newPosition);
+        await sidebarPosition.setValue(newPosition);
         setPosition(newPosition);
 
         // Get the current tab ID

@@ -5,8 +5,7 @@ import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { AmazonScrapedProduct } from "../../../types/amazon";
 import {
-    getSidebarCompactState,
-    setSidebarCompactState,
+    sidebarCompactState,
 } from "../../../storage";
 
 import { ProductStorage, SidebarContentState } from "../../types";
@@ -78,7 +77,7 @@ const Sidebar = ({
     const isVisibleRef = useRef(false);
 
     useEffect(() => {
-        getSidebarCompactState().then((compact) => {
+        sidebarCompactState.getValue().then((compact) => {
             setIsCompact(compact);
             setLastUserSelectedCompactState(compact);
         });
@@ -189,7 +188,7 @@ const Sidebar = ({
         const newCompactState = !isCompact;
         setIsCompact(newCompactState);
         setLastUserSelectedCompactState(newCompactState);
-        setSidebarCompactState(newCompactState);
+        sidebarCompactState.setValue(newCompactState);
         setExpandedIconCategory(iconCategory || null);
 
         // Reset hover state when switching modes to ensure clean state

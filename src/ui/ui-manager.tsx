@@ -19,7 +19,7 @@ import {
     ProductStorage,
     AnalysisCancelledMessage,
 } from "./types";
-import { getSidebarPosition, setSidebarPosition } from "../storage";
+import { sidebarPosition } from "../storage";
 import { triggerRetryAnalysis } from "../content/video-detector";
 import { constructReferrerUrl } from "./referrer-encoder";
 
@@ -108,7 +108,7 @@ export class UIManager {
         };
 
         // Load sidebar position from storage
-        getSidebarPosition().then((position) => {
+        sidebarPosition.getValue().then((position) => {
             this.sidebarConfig.position = position;
             this.renderSidebar();
         });
@@ -351,7 +351,7 @@ export class UIManager {
         const newPosition =
             this.sidebarConfig.position === "left" ? "right" : "left";
         this.sidebarConfig.position = newPosition;
-        await setSidebarPosition(newPosition);
+        await sidebarPosition.setValue(newPosition);
         this.renderSidebar();
     }
 
