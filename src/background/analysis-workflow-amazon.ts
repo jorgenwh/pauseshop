@@ -4,9 +4,9 @@
 
 import { analyzeImageStreaming } from "./api-client";
 import { Product } from "../types/common";
-import { constructGoogleSearch } from "../google/construct-query";
-import { executeGoogleSearch } from "../google/google-http-client";
-import { scrapeGoogleSearchResult } from "../google/google-parser";
+import { constructAmazonSearch } from "../amazon/amazon-search";
+import { executeAmazonSearch } from "../amazon/amazon-http-client";
+import { scrapeAmazonSearchResult } from "../amazon/amazon-parser";
 import { ENABLE_FRAME_VALIDATION, openFrameInNewTab } from "./frame-debugger";
 import type { BackgroundMessageResponse } from "./types";
 
