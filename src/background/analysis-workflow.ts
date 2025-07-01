@@ -1,5 +1,5 @@
 /**
- * Streaming analysis workflow for processing frames and constructing Amazon search results
+ * Streaming analysis workflow for processing frames and constructing Google search results
  */
 
 import { analyzeImageStreaming } from "./api-client";
@@ -70,43 +70,43 @@ export const handleScreenshotAnalysis = async (
                     // Create a promise for this product's async processing
                     const productProcessingPromise = (async () => {
                         try {
-                            const amazonSearch = constructAmazonSearch(product);
-                            if (!amazonSearch) {
+                            const googleSearchQuery = constructGoogleSearch(product);
+                            if (!googleSearchQuery) {
                                 console.warn(
-                                    `[PauseShop:AnalysisWorkflow] Failed to construct Amazon search for pauseId: ${pauseId} - skipping`,
+                                    `[PauseShop:AnalysisWorkflow] Failed to construct Google search for pauseId: ${pauseId} - skipping`,
                                 );
                                 return;
                             }
 
-                            // Check if aborted before Amazon search
+                            // Check if aborted before Google search
                             if (abortSignal?.aborted) {
-                                console.log(`[PauseShop:AnalysisWorkflow] Product processing aborted before Amazon search for pauseId: ${pauseId}`);
+                                console.log(`[PauseShop:AnalysisWorkflow] Product processing aborted before Google search for pauseId: ${pauseId}`);
                                 return;
                             }
 
-                            const amazonSearchResult =
-                                await executeAmazonSearch(amazonSearch, abortSignal);
-                            if (!amazonSearchResult) {
+                            const googleSearchResult =
+                                await executeGoogleSearch(googleSearchQuery, abortSignal);
+                            if (!googleSearchResult) {
                                 console.warn(
-                                    `[PauseShop:AnalysisWorkflow] Failed to construct Amazon search result for pauseId: ${pauseId} - skipping`,
+                                    `[PauseShop:AnalysisWorkflow] Failed to construct Google search result for pauseId: ${pauseId} - skipping`,
                                 );
                                 return;
                             }
 
-                            const amazonScrapedResult =
-                                scrapeAmazonSearchResult(amazonSearchResult);
+                            const googleScrapedResult =
+                                scrapeGoogleSearchResult(googleSearchResult);
                             if (
-                                amazonScrapedResult === null ||
-                                amazonScrapedResult.products.length === 0
+                                googleScrapedResult === null ||
+                                googleScrapedResult.products.length === 0
                             ) {
                                 console.warn(
-                                    `[PauseShop:AnalysisWorkflow] Failed to construct Amazon search result for pauseId: ${pauseId} - skipping`,
+                                    `[PauseShop:AnalysisWorkflow] Failed to scrape Google search result for pauseId: ${pauseId} - skipping`,
                                 );
                                 return;
                             }
 
                             const scrapedProducts =
-                                amazonScrapedResult.products;
+                                googleScrapedResult.products;
 
                             // Send a single message with the original product and all scraped products
                             // Use the same tabId from the start of the analysis
@@ -132,9 +132,9 @@ export const handleScreenshotAnalysis = async (
                             const errorMessage =
                                 error instanceof Error
                                     ? error.message
-                                    : "Unknown Amazon search/scraping error";
+                                    : "Unknown Google search/scraping error";
                             console.error(
-                                `[PauseShop:AnalysisWorkflow] Amazon search/scraping failed for pauseId: ${pauseId}, product: ${product.name}: ${errorMessage}`,
+                                `[PauseShop:AnalysisWorkflow] Google search/scraping failed for pauseId: ${pauseId}, product: ${product.name}: ${errorMessage}`,
                             );
                         }
                     })();
