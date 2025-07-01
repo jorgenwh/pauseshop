@@ -38,7 +38,7 @@ interface SidebarProps {
     productStorage: ProductStorage;
     onShow: () => void;
     onHide: () => void;
-    onProductClick: (product: AmazonScrapedProduct, position: number, allProducts: AmazonScrapedProduct[]) => void;
+    onProductClick: (product: AmazonScrapedProduct) => void;
     onClose: () => void;
     onRetryAnalysis: () => void;
     errorMessage?: string;

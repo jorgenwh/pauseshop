@@ -31,7 +31,7 @@ interface ExpandedContentProps {
     contentState: SidebarContentState;
     productStorage: ProductStorage;
     expandedIconCategory: string | null;
-    onProductClick?: (product: AmazonScrapedProduct, position: number, allProducts: AmazonScrapedProduct[]) => void;
+    onProductClick?: (product: AmazonScrapedProduct) => void;
 }
 
 const ExpandedContent = ({ contentState, productStorage, expandedIconCategory, onProductClick }: ExpandedContentProps) => {

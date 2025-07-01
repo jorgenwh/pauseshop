@@ -15,6 +15,10 @@ export interface ProductStorage {
     productGroups: ProductGroup[];
 }
 
+export interface ClickedProductInfo {
+    clickedProduct: AmazonScrapedProduct;
+}
+
 export enum SidebarContentState {
     LOADING = "loading",
     PRODUCTS = "products",
@@ -31,7 +35,7 @@ export interface SidebarConfig {
 export interface SidebarEvents {
     onShow: () => void;
     onHide: () => void;
-    onProductClick: (product: AmazonScrapedProduct, position: number, allProducts: AmazonScrapedProduct[]) => void;
+    onProductClick: (product: AmazonScrapedProduct) => void;
     onClose: () => void;
     onRetryAnalysis: () => void;
 }

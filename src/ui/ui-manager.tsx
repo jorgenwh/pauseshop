@@ -19,9 +19,12 @@ import {
     ProductStorage,
     AnalysisCancelledMessage,
 } from "./types";
-import { sidebarPosition } from "../storage";
+import {
+    clickedProductInfo,
+    productStorage as productStorageItem,
+    sidebarPosition,
+} from "../storage";
 import { triggerRetryAnalysis } from "../content/video-detector";
-import { constructReferrerUrl } from "./referrer-encoder";
 
 export class UIManager {
     private container: HTMLElement | null = null;
@@ -54,43 +57,31 @@ export class UIManager {
                 this.productStorage = { pauseId: "", productGroups: [] };
                 this.sidebarContentState = SidebarContentState.LOADING;
             },
-            onProductClick: async (product: AmazonScrapedProduct, position: number, allProducts: AmazonScrapedProduct[]) => {
+            onProductClick: async (product: AmazonScrapedProduct) => {
                 try {
                     if (!this.productStorage.pauseId) {
-                        console.error("[PauseShop:UIManager] No pauseId available for product click");
-                        // Fallback to direct Amazon link
-                        if (product.amazonAsin) {
-                            window.open(`https://www.amazon.com/dp/${product.amazonAsin}`, "_blank");
-                        }
+                        console.error(
+                            "[PauseShop:UIManager] No pauseId available for product click",
+                        );
                         return;
                     }
 
-                    // Find the product group that contains the clicked product to get the context
-                    const productGroup = this.productStorage.productGroups.find(group =>
-                        group.scrapedProducts.some(p => p.amazonAsin === product.amazonAsin && p.thumbnailUrl === product.thumbnailUrl)
-                    );
+                    await clickedProductInfo.setValue({
+                        clickedProduct: product,
+                    });
 
-                    const productContext = productGroup ? productGroup.product : undefined;
+                    // Log storage for verification
+                    const session = await clickedProductInfo.getValue();
+                    const products = await productStorageItem.getValue();
+                    console.log("[PauseShop:UIManager] Clicked Product Info:", session);
+                    console.log("[PauseShop:UIManager] Product Storage:", products);
 
-                    if (!productContext) {
-                        console.warn("[PauseShop:UIManager] Could not find product context for the clicked item.");
-                    }
-
-                    // Construct referrer URL with encoded data
-                    const referrerUrl = constructReferrerUrl(
-                        this.productStorage.pauseId,
-                        position,
-                        allProducts,
-                        productContext
-                    );
-                    window.open(referrerUrl, "_blank");
-
+                    window.open("https://pauseshop.net/referrer", "_blank");
                 } catch (error) {
-                    console.error("[PauseShop:UIManager] Error handling product click:", error);
-                    // Fallback to direct Amazon link
-                    if (product.amazonAsin) {
-                        window.open(`https://www.amazon.com/dp/${product.amazonAsin}`, "_blank");
-                    }
+                    console.error(
+                        "[PauseShop:UIManager] Error handling product click:",
+                        error,
+                    );
                 }
             },
             onClose: () => {
@@ -237,6 +228,10 @@ export class UIManager {
     private handleAnalysisStarted = (
         message: AnalysisStartedMessage,
     ): boolean => {
+        // Clear previous session data
+        productStorageItem.setValue(null);
+        clickedProductInfo.setValue(null);
+
         // Update the current pauseId when a new analysis starts
         this.productStorage = { pauseId: message.pauseId, productGroups: [] };
         this.sidebarContentState = SidebarContentState.LOADING;
@@ -288,6 +283,9 @@ export class UIManager {
             product: message.originalProduct,
             scrapedProducts: message.scrapedProducts,
         });
+
+        // Update product storage whenever it's updated
+        productStorageItem.setValue(this.productStorage);
 
         this.sidebarContentState = SidebarContentState.PRODUCTS;
         this.sidebarVisible = true; // Make sure sidebar is visible to show products
