@@ -2,7 +2,7 @@
  * Handles messages from external websites, such as pauseshop.net
  */
 
-import { clickedProductInfo, productStorage } from '../storage';
+import { sessionData } from "../storage";
 
 /**
  * Initializes the listener for external messages.
@@ -13,16 +13,13 @@ export function initializeExternalMessaging() {
       if (message.command === 'identify_and_get_data') {
         (async () => {
           try {
-            const [clickedProduct, productData] = await Promise.all([
-              clickedProductInfo.getValue(),
-              productStorage.getValue(),
-            ]);
+            const session = await sessionData.getValue();
 
             sendResponse({
-              app: 'PauseShop',
+              app: "PauseShop",
               data: {
-                clickedProduct,
-                productStorage: productData,
+                clickedProduct: session,
+                productStorage: session,
               },
             });
           } catch (error) {

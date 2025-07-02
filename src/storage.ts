@@ -1,5 +1,9 @@
 import { storage } from "#imports";
-import { ClickedProductInfo, ProductStorage, SidebarPosition } from "./ui/types";
+import {
+    ClickedProductInfo,
+    ProductStorage,
+    SidebarPosition,
+} from "./ui/types";
 
 export const sidebarPosition = storage.defineItem<SidebarPosition>(
     "local:sidebarPosition",
@@ -15,16 +19,8 @@ export const sidebarCompactState = storage.defineItem<boolean>(
     },
 );
 
-export const clickedProductInfo = storage.defineItem<ClickedProductInfo | null>(
-    "local:clickedProductInfo",
-    {
-        fallback: null,
-    },
-);
+export type SessionData = ProductStorage & Partial<ClickedProductInfo>;
 
-export const productStorage = storage.defineItem<ProductStorage | null>(
-    "local:productStorage",
-    {
-        fallback: null,
-    },
-);
+export const sessionData = storage.defineItem<SessionData | null>("local:session", {
+    fallback: null,
+});

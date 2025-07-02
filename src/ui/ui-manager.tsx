@@ -19,11 +19,7 @@ import {
     ProductStorage,
     AnalysisCancelledMessage,
 } from "./types";
-import {
-    clickedProductInfo,
-    productStorage as productStorageItem,
-    sidebarPosition,
-} from "../storage";
+import { sessionData, sidebarPosition } from "../storage";
 import { triggerRetryAnalysis } from "../content/video-detector";
 import { getWebsiteBaseUrl } from "../background/server-config";
 
@@ -67,16 +63,22 @@ export class UIManager {
                         return;
                     }
 
-                    await clickedProductInfo.setValue({
-                        id: product.id,
-                        clickedProduct: product,
-                    });
+                    const currentSession = await sessionData.getValue();
+                    if (currentSession) {
+                        await sessionData.setValue({
+                            ...currentSession,
+                            id: product.id,
+                            clickedProduct: product,
+                        });
+                    }
 
                     // Log storage for verification
-                    const session = await clickedProductInfo.getValue();
-                    const products = await productStorageItem.getValue();
-                    console.log("[PauseShop:UIManager] Clicked Product Info:", session);
-                    console.log("[PauseShop:UIManager] Product Storage:", products);
+                    const session = await sessionData.getValue();
+                    const sessionSize = session ? JSON.stringify(session).length : 0;
+                    console.log(
+                        `[PauseShop:UIManager] Session Data (size: ${sessionSize} bytes):`,
+                        session,
+                    );
 
                     const baseUrl = getWebsiteBaseUrl();
                     const extensionId = browser.runtime.id;
@@ -235,8 +237,7 @@ export class UIManager {
         message: AnalysisStartedMessage,
     ): boolean => {
         // Clear previous session data
-        productStorageItem.setValue(null);
-        clickedProductInfo.setValue(null);
+        sessionData.setValue(null);
 
         // Update the current pauseId when a new analysis starts
         this.productStorage = { pauseId: message.pauseId, productGroups: [] };
@@ -291,7 +292,7 @@ export class UIManager {
         });
 
         // Update product storage whenever it's updated
-        productStorageItem.setValue(this.productStorage);
+        sessionData.setValue(this.productStorage);
 
         this.sidebarContentState = SidebarContentState.PRODUCTS;
         this.sidebarVisible = true; // Make sure sidebar is visible to show products
