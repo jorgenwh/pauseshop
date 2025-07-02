@@ -20,7 +20,12 @@ export function initializeExternalMessaging() {
               app: "PauseShop",
               data: {
                 clickedProduct: session?.clickedProduct ?? null,
-                productStorage: session,
+                productStorage: session
+                  ? {
+                      pauseId: session.pauseId,
+                      productGroups: session.productGroups,
+                    }
+                  : null,
                 clickHistory: history,
               },
             });
