@@ -69,13 +69,10 @@ export class UIManager {
                         return;
                     }
 
-                    const currentSession = await sessionData.getValue();
-                    if (currentSession) {
-                        await sessionData.setValue({
-                            ...currentSession,
-                            clickedProduct: product,
-                        });
-                    }
+                    await sessionData.setValue({
+                        ...this.productStorage,
+                        clickedProduct: product,
+                    });
 
                     // New click history logic
                     const productGroup = this.productStorage.productGroups.find(
@@ -339,9 +336,6 @@ export class UIManager {
             product: message.originalProduct,
             scrapedProducts: message.scrapedProducts,
         });
-
-        // Update product storage whenever it's updated
-        sessionData.setValue(this.productStorage);
 
         this.sidebarContentState = SidebarContentState.PRODUCTS;
         this.sidebarVisible = true; // Make sure sidebar is visible to show products
