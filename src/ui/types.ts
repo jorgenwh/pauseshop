@@ -16,6 +16,7 @@ export interface ProductStorage {
 }
 
 export interface ClickedProductInfo {
+    id: string;
     clickedProduct: AmazonScrapedProduct;
 }
 

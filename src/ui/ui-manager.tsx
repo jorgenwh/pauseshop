@@ -68,6 +68,7 @@ export class UIManager {
                     }
 
                     await clickedProductInfo.setValue({
+                        id: product.id,
                         clickedProduct: product,
                     });
 
