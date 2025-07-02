@@ -25,6 +25,7 @@ import {
     sidebarPosition,
 } from "../storage";
 import { triggerRetryAnalysis } from "../content/video-detector";
+import { getWebsiteBaseUrl } from "../background/server-config";
 
 export class UIManager {
     private container: HTMLElement | null = null;
@@ -76,7 +77,8 @@ export class UIManager {
                     console.log("[PauseShop:UIManager] Clicked Product Info:", session);
                     console.log("[PauseShop:UIManager] Product Storage:", products);
 
-                    window.open("https://pauseshop.net/referrer", "_blank");
+                    const baseUrl = getWebsiteBaseUrl();
+                    window.open(`${baseUrl}/referrer`, "_blank");
                 } catch (error) {
                     console.error(
                         "[PauseShop:UIManager] Error handling product click:",

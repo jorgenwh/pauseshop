@@ -7,6 +7,10 @@ import { handleScreenshotAnalysis } from "./analysis-workflow";
 import { cancellationRegistry } from "./cancellation-registry";
 import { endSession as apiEndSession } from "./api-client";
 import type { BackgroundMessage, BackgroundMessageResponse } from "./types";
+import { initializeExternalMessaging } from './external-messaging';
+
+// Initialize the external messaging listener
+initializeExternalMessaging();
 
 browser.runtime.onMessage.addListener(
     (
