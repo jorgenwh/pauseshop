@@ -15,10 +15,6 @@ export interface ProductStorage {
     productGroups: ProductGroup[];
 }
 
-export interface ClickedProductInfo {
-    id: string;
-    clickedProduct: AmazonScrapedProduct;
-}
 
 export enum SidebarContentState {
     LOADING = "loading",

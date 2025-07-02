@@ -19,7 +19,7 @@ export function initializeExternalMessaging() {
             sendResponse({
               app: "PauseShop",
               data: {
-                clickedProduct: session,
+                clickedProduct: session?.clickedProduct ?? null,
                 productStorage: session,
                 clickHistory: history,
               },

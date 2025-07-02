@@ -1,10 +1,10 @@
 import { storage } from "#imports";
 import {
-    ClickedProductInfo,
     ProductGroup,
     ProductStorage,
     SidebarPosition,
 } from "./ui/types";
+import { AmazonScrapedProduct } from "./types/amazon";
 
 export const sidebarPosition = storage.defineItem<SidebarPosition>(
     "local:sidebarPosition",
@@ -20,13 +20,16 @@ export const sidebarCompactState = storage.defineItem<boolean>(
     },
 );
 
-export type SessionData = ProductStorage & Partial<ClickedProductInfo>;
+export type SessionData = ProductStorage & {
+    clickedProduct?: AmazonScrapedProduct;
+};
 
 export const sessionData = storage.defineItem<SessionData | null>("local:session", {
     fallback: null,
 });
 
-export interface ClickHistoryEntry extends ClickedProductInfo {
+export interface ClickHistoryEntry {
+    clickedProduct: AmazonScrapedProduct;
     productGroup: ProductGroup;
 }
 

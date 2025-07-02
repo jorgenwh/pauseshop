@@ -72,7 +72,6 @@ export class UIManager {
                     if (currentSession) {
                         await sessionData.setValue({
                             ...currentSession,
-                            id: product.id,
                             clickedProduct: product,
                         });
                     }
@@ -87,7 +86,6 @@ export class UIManager {
                         const history = await clickHistory.getValue();
                         const pauseId = this.productStorage.pauseId;
                         const newEntry: ClickHistoryEntry = {
-                            id: product.id,
                             clickedProduct: product,
                             productGroup: productGroup,
                         };
