@@ -1,12 +1,12 @@
 /**
- * Streaming analysis workflow for processing frames and constructing Google search results
+ * Streaming analysis workflow for processing frames and constructing Amazon search results
  */
 
 import { analyzeImageStreaming } from "./api-client";
 import { Product } from "../types/common";
-import { constructGoogleSearch } from "../google/construct-query";
-import { executeGoogleSearch } from "../google/google-http-client";
-import { scrapeGoogleSearchResult } from "../google/google-parser";
+import { constructAmazonSearch } from "../amazon/amazon-search";
+import { executeAmazonSearch } from "../amazon/amazon-http-client";
+import { scrapeAmazonSearchResult } from "../amazon/amazon-parser";
 import { ENABLE_FRAME_VALIDATION, openFrameInNewTab } from "./frame-debugger";
 import type { BackgroundMessageResponse } from "./types";
 
@@ -70,43 +70,43 @@ export const handleScreenshotAnalysis = async (
                     // Create a promise for this product's async processing
                     const productProcessingPromise = (async () => {
                         try {
-                            const googleSearchQuery = constructGoogleSearch(product);
-                            if (!googleSearchQuery) {
+                            const amazonSearch = constructAmazonSearch(product);
+                            if (!amazonSearch) {
                                 console.warn(
-                                    `[PauseShop:AnalysisWorkflow] Failed to construct Google search for pauseId: ${pauseId} - skipping`,
+                                    `[PauseShop:AnalysisWorkflow] Failed to construct Amazon search for pauseId: ${pauseId} - skipping`,
                                 );
                                 return;
                             }
 
-                            // Check if aborted before Google search
+                            // Check if aborted before Amazon search
                             if (abortSignal?.aborted) {
-                                console.log(`[PauseShop:AnalysisWorkflow] Product processing aborted before Google search for pauseId: ${pauseId}`);
+                                console.log(`[PauseShop:AnalysisWorkflow] Product processing aborted before Amazon search for pauseId: ${pauseId}`);
                                 return;
                             }
 
-                            const googleSearchResult =
-                                await executeGoogleSearch(googleSearchQuery, abortSignal);
-                            if (!googleSearchResult) {
+                            const amazonSearchResult =
+                                await executeAmazonSearch(amazonSearch, abortSignal);
+                            if (!amazonSearchResult) {
                                 console.warn(
-                                    `[PauseShop:AnalysisWorkflow] Failed to construct Google search result for pauseId: ${pauseId} - skipping`,
+                                    `[PauseShop:AnalysisWorkflow] Failed to construct Amazon search result for pauseId: ${pauseId} - skipping`,
                                 );
                                 return;
                             }
 
-                            const googleScrapedResult =
-                                scrapeGoogleSearchResult(googleSearchResult);
+                            const amazonScrapedResult =
+                                scrapeAmazonSearchResult(amazonSearchResult);
                             if (
-                                googleScrapedResult === null ||
-                                googleScrapedResult.products.length === 0
+                                amazonScrapedResult === null ||
+                                amazonScrapedResult.products.length === 0
                             ) {
                                 console.warn(
-                                    `[PauseShop:AnalysisWorkflow] Failed to scrape Google search result for pauseId: ${pauseId} - skipping`,
+                                    `[PauseShop:AnalysisWorkflow] Failed to construct Amazon search result for pauseId: ${pauseId} - skipping`,
                                 );
                                 return;
                             }
 
                             const scrapedProducts =
-                                googleScrapedResult.products;
+                                amazonScrapedResult.products;
 
                             // Send a single message with the original product and all scraped products
                             // Use the same tabId from the start of the analysis
@@ -132,9 +132,9 @@ export const handleScreenshotAnalysis = async (
                             const errorMessage =
                                 error instanceof Error
                                     ? error.message
-                                    : "Unknown Google search/scraping error";
+                                    : "Unknown Amazon search/scraping error";
                             console.error(
-                                `[PauseShop:AnalysisWorkflow] Google search/scraping failed for pauseId: ${pauseId}, product: ${product.name}: ${errorMessage}`,
+                                `[PauseShop:AnalysisWorkflow] Amazon search/scraping failed for pauseId: ${pauseId}, product: ${product.name}: ${errorMessage}`,
                             );
                         }
                     })();
