@@ -22,6 +22,7 @@ import {
 import {
     clickHistory,
     ClickHistoryEntry,
+    MAX_CLICK_HISTORY_ENTRIES,
     sessionData,
     sidebarPosition,
 } from "../storage";
@@ -97,7 +98,7 @@ export class UIManager {
                         const newHistory = [...history, newEntry];
 
                         // Enforce total limit of 20 entries
-                        if (newHistory.length > 20) {
+                        if (newHistory.length > MAX_CLICK_HISTORY_ENTRIES) {
                             newHistory.shift(); // Remove the oldest entry
                         }
 
@@ -108,6 +109,23 @@ export class UIManager {
                         console.log(
                             "[PauseShop:UIManager] Updated Click History:",
                             updatedHistory,
+                        );
+                        const updatedSessionData = await sessionData.getValue();
+
+                        const historySizeBytes =
+                            JSON.stringify(updatedHistory).length;
+                        const sessionDataSizeBytes = updatedSessionData
+                            ? JSON.stringify(updatedSessionData).length
+                            : 0;
+                        const totalSizeBytes =
+                            historySizeBytes + sessionDataSizeBytes;
+                        const totalSizeKB = totalSizeBytes / 1024;
+                        const totalStorageLimitBytes = 10 * 1024 * 1024; // 10 MB
+                        const percentageUsed =
+                            (totalSizeBytes / totalStorageLimitBytes) * 100;
+
+                        console.log(
+                            `[PauseShop:UIManager] Total storage size (clickHistory + sessionData): ${totalSizeKB.toFixed(2)} KB / 10MB (${percentageUsed.toFixed(2)}%)`,
                         );
                     }
 

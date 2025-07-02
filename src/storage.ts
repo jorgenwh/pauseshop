@@ -36,6 +36,8 @@ export interface ClickHistoryEntry {
 
 export type ClickHistoryStorage = ClickHistoryEntry[];
 
+export const MAX_CLICK_HISTORY_ENTRIES = 20;
+
 export const clickHistory = storage.defineItem<ClickHistoryStorage>(
     "local:clickHistory",
     {
