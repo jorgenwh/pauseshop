@@ -18,7 +18,7 @@ export function initializeExternalMessaging() {
           try {
             // Retrieve all items from local storage
             const allStorage = {
-              clickedProductInfo: await clickedProductInfo.getValue(),
+              clickedProduct: await clickedProductInfo.getValue(),
               productStorage: await productStorage.getValue(),
             };
             // Send the retrieved items back to the website
