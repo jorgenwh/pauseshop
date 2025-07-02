@@ -83,23 +83,25 @@ export class UIManager {
                     );
 
                     if (productGroup) {
-                        const history = await clickHistory.getValue();
+                        let history = await clickHistory.getValue();
+                        if (!Array.isArray(history)) {
+                            history = [];
+                        }
                         const pauseId = this.productStorage.pauseId;
                         const newEntry: ClickHistoryEntry = {
+                            pauseId,
                             clickedProduct: product,
                             productGroup: productGroup,
                         };
 
-                        let entries = history[pauseId] || [];
-                        entries.push(newEntry);
-                        if (entries.length > 20) {
-                            entries.shift(); // Remove the oldest entry
+                        const newHistory = [...history, newEntry];
+
+                        // Enforce total limit of 20 entries
+                        if (newHistory.length > 20) {
+                            newHistory.shift(); // Remove the oldest entry
                         }
 
-                        await clickHistory.setValue({
-                            ...history,
-                            [pauseId]: entries,
-                        });
+                        await clickHistory.setValue(newHistory);
 
                         // Log the entire click history for verification
                         const updatedHistory = await clickHistory.getValue();

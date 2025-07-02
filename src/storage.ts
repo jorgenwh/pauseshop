@@ -29,17 +29,16 @@ export const sessionData = storage.defineItem<SessionData | null>("local:session
 });
 
 export interface ClickHistoryEntry {
+    pauseId: string;
     clickedProduct: AmazonScrapedProduct;
     productGroup: ProductGroup;
 }
 
-export type ClickHistoryStorage = {
-    [pauseId: string]: ClickHistoryEntry[];
-};
+export type ClickHistoryStorage = ClickHistoryEntry[];
 
 export const clickHistory = storage.defineItem<ClickHistoryStorage>(
     "local:clickHistory",
     {
-        fallback: {},
+        fallback: [],
     },
 );
