@@ -1,6 +1,7 @@
 import { storage } from "#imports";
 import {
     ClickedProductInfo,
+    ProductGroup,
     ProductStorage,
     SidebarPosition,
 } from "./ui/types";
@@ -24,3 +25,18 @@ export type SessionData = ProductStorage & Partial<ClickedProductInfo>;
 export const sessionData = storage.defineItem<SessionData | null>("local:session", {
     fallback: null,
 });
+
+export interface ClickHistoryEntry extends ClickedProductInfo {
+    productGroup: ProductGroup;
+}
+
+export type ClickHistoryStorage = {
+    [pauseId: string]: ClickHistoryEntry[];
+};
+
+export const clickHistory = storage.defineItem<ClickHistoryStorage>(
+    "local:clickHistory",
+    {
+        fallback: {},
+    },
+);

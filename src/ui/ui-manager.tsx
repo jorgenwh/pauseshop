@@ -19,7 +19,12 @@ import {
     ProductStorage,
     AnalysisCancelledMessage,
 } from "./types";
-import { sessionData, sidebarPosition } from "../storage";
+import {
+    clickHistory,
+    ClickHistoryEntry,
+    sessionData,
+    sidebarPosition,
+} from "../storage";
 import { triggerRetryAnalysis } from "../content/video-detector";
 import { getWebsiteBaseUrl } from "../background/server-config";
 
@@ -72,18 +77,44 @@ export class UIManager {
                         });
                     }
 
-                    // Log storage for verification
-                    const session = await sessionData.getValue();
-                    const sessionSize = session ? JSON.stringify(session).length : 0;
-                    console.log(
-                        `[PauseShop:UIManager] Session Data (size: ${sessionSize} bytes):`,
-                        session,
+                    // New click history logic
+                    const productGroup = this.productStorage.productGroups.find(
+                        (pg) =>
+                            pg.scrapedProducts.some((p) => p.id === product.id),
                     );
+
+                    if (productGroup) {
+                        const history = await clickHistory.getValue();
+                        const pauseId = this.productStorage.pauseId;
+                        const newEntry: ClickHistoryEntry = {
+                            id: product.id,
+                            clickedProduct: product,
+                            productGroup: productGroup,
+                        };
+
+                        let entries = history[pauseId] || [];
+                        entries.push(newEntry);
+                        if (entries.length > 20) {
+                            entries.shift(); // Remove the oldest entry
+                        }
+
+                        await clickHistory.setValue({
+                            ...history,
+                            [pauseId]: entries,
+                        });
+
+                        // Log the entire click history for verification
+                        const updatedHistory = await clickHistory.getValue();
+                        console.log(
+                            "[PauseShop:UIManager] Updated Click History:",
+                            updatedHistory,
+                        );
+                    }
 
                     const baseUrl = getWebsiteBaseUrl();
                     const extensionId = browser.runtime.id;
                     const url = new URL(`${baseUrl}/referrer`);
-                    url.searchParams.append('extensionId', extensionId);
+                    url.searchParams.append("extensionId", extensionId);
                     window.open(url.toString(), "_blank");
                 } catch (error) {
                     console.error(
