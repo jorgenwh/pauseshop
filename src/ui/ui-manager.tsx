@@ -79,7 +79,10 @@ export class UIManager {
                     console.log("[PauseShop:UIManager] Product Storage:", products);
 
                     const baseUrl = getWebsiteBaseUrl();
-                    window.open(`${baseUrl}/referrer`, "_blank");
+                    const extensionId = browser.runtime.id;
+                    const url = new URL(`${baseUrl}/referrer`);
+                    url.searchParams.append('extensionId', extensionId);
+                    window.open(url.toString(), "_blank");
                 } catch (error) {
                     console.error(
                         "[PauseShop:UIManager] Error handling product click:",
