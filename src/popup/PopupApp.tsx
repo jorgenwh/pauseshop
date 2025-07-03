@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { sidebarPosition } from "../storage";
+import { sidebarPosition, clickHistory } from "../storage";
 import { SidebarPosition } from "../ui/types";
 import { ToggleSidebarPositionMessage } from "../background/types";
 import "../ui/css/base.css";
@@ -28,6 +28,11 @@ const PopupApp = () => {
         });
     };
 
+    const handleClearClickHistory = async () => {
+        await clickHistory.setValue([]);
+        console.log("Click history cleared");
+    };
+
     return (
         <div
             className="p-4 text-center font-sans"
@@ -46,6 +51,15 @@ const PopupApp = () => {
                     style={{ backgroundColor: "var(--pauseshop-theme-trim-color)" }}
                 >
                     {position === "left" ? "Left" : "Right"}
+                </button>
+            </div>
+            <div className="flex items-center justify-center mt-4">
+                <button
+                    onClick={handleClearClickHistory}
+                    className="px-4 py-2 text-white rounded-md"
+                    style={{ backgroundColor: "var(--pauseshop-theme-trim-color)" }}
+                >
+                    Clear History
                 </button>
             </div>
         </div>
