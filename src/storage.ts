@@ -32,6 +32,9 @@ export interface ClickHistoryEntry {
     pauseId: string;
     clickedProduct: AmazonScrapedProduct;
     productGroup: ProductGroup;
+    // Deep search metadata
+    hasDeepSearch?: boolean;    // Whether deep search was performed for this session
+    deepSearchTimestamp?: number; // When deep search was completed (Unix timestamp)
 }
 
 export type ClickHistoryStorage = ClickHistoryEntry[];

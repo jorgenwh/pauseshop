@@ -36,6 +36,9 @@ export interface AmazonScrapedProduct {
     productUrl: string;
     position: number;
     price?: number;
+    // Deep search ranking data (only present if deep search was performed)
+    rank?: number;              // 1-N position from deep search
+    similarityScore?: number;   // 0-1 similarity score from deep search
 }
 
 export interface AmazonScrapedResult {
