@@ -21,5 +21,6 @@ export const YOUTUBE_SHORTS_POSITIONING = {
     minEdgeDistance: 20,
 };
 
+import { SidebarPosition } from '../../../types';
+
 export type PositionMode = 'compact' | 'expanded' | 'loading';
-export type SidebarPosition = 'left' | 'right';
