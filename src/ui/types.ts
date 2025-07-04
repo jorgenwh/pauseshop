@@ -4,6 +4,7 @@
 
 import { AmazonScrapedProduct } from "../types/amazon";
 import { Product } from "../types/common";
+import { ToggleSidebarPositionMessage } from "../background/types";
 
 export interface ProductGroup {
     product: Product;
@@ -14,6 +15,7 @@ export interface ProductStorage {
     pauseId: string;
     productGroups: ProductGroup[];
 }
+
 
 export enum SidebarContentState {
     LOADING = "loading",
@@ -31,7 +33,7 @@ export interface SidebarConfig {
 export interface SidebarEvents {
     onShow: () => void;
     onHide: () => void;
-    onProductClick: (product: AmazonScrapedProduct, position: number, allProducts: AmazonScrapedProduct[]) => void;
+    onProductClick: (product: AmazonScrapedProduct) => void;
     onClose: () => void;
     onRetryAnalysis: () => void;
 }
@@ -65,9 +67,6 @@ export interface AnalysisCancelledMessage {
     pauseId: string;
 }
 
-export interface ToggleSidebarPositionMessage {
-    type: "toggleSidebarPosition";
-}
 
 export interface RetryAnalysisMessage {
     type: "retryAnalysis";

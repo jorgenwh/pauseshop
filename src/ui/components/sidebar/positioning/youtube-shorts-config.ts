@@ -22,4 +22,3 @@ export const YOUTUBE_SHORTS_POSITIONING = {
 };
 
 export type PositionMode = 'compact' | 'expanded' | 'loading';
-export type SidebarPosition = 'left' | 'right';

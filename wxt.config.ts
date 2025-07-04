@@ -72,6 +72,12 @@ export default defineConfig({
         action: {
             default_popup: "popup/index.html",
             default_title: "PauseShop"
+        },
+        externally_connectable: {
+            "matches": [
+                "https://*.pauseshop.net/*",
+                "http://localhost:5173/*"
+            ]
         }
     }
 });

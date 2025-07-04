@@ -1,56 +1,49 @@
-import { SidebarPosition } from "./ui/types";
+import { storage } from "#imports";
+import {
+    ProductGroup,
+    ProductStorage,
+    SidebarPosition,
+} from "./ui/types";
+import { AmazonScrapedProduct } from "./types/amazon";
 
-// Default values
-const DEFAULT_SIDEBAR_POSITION: SidebarPosition = "left";
-const DEFAULT_SIDEBAR_COMPACT_STATE: boolean = true;
+export const sidebarPosition = storage.defineItem<SidebarPosition>(
+    "local:sidebarPosition",
+    {
+        fallback: "left",
+    },
+);
 
-// --- Storage Keys ---
-const SIDEBAR_POSITION_KEY = "sidebarPosition";
-const SIDEBAR_COMPACT_STATE_KEY = "sidebarCompactState";
+export const sidebarCompactState = storage.defineItem<boolean>(
+    "local:sidebarCompactState",
+    {
+        fallback: true,
+    },
+);
 
-// --- Getter Functions ---
-
-export const getSidebarPosition = (): Promise<SidebarPosition> => {
-    return new Promise((resolve) => {
-        browser.storage.sync.get(SIDEBAR_POSITION_KEY, (result) => {
-            resolve(
-                (result[SIDEBAR_POSITION_KEY] as SidebarPosition) ||
-                DEFAULT_SIDEBAR_POSITION,
-            );
-        });
-    });
+export type SessionData = ProductStorage & {
+    clickedProduct?: AmazonScrapedProduct;
 };
 
-export const getSidebarCompactState = (): Promise<boolean> => {
-    return new Promise((resolve) => {
-        browser.storage.sync.get(SIDEBAR_COMPACT_STATE_KEY, (result) => {
-            resolve(
-                (result[SIDEBAR_COMPACT_STATE_KEY] as boolean) ??
-                DEFAULT_SIDEBAR_COMPACT_STATE,
-            );
-        });
-    });
-};
+export const sessionData = storage.defineItem<SessionData | null>("local:session", {
+    fallback: null,
+});
 
-// --- Setter Functions ---
+export interface ClickHistoryEntry {
+    pauseId: string;
+    clickedProduct: AmazonScrapedProduct;
+    productGroup: ProductGroup;
+    // Deep search metadata
+    hasDeepSearch?: boolean;    // Whether deep search was performed for this session
+    deepSearchTimestamp?: number; // When deep search was completed (Unix timestamp)
+}
 
-export const setSidebarPosition = (
-    position: SidebarPosition,
-): Promise<void> => {
-    return new Promise((resolve) => {
-        browser.storage.sync.set({ [SIDEBAR_POSITION_KEY]: position }, () => {
-            resolve();
-        });
-    });
-};
+export type ClickHistoryStorage = ClickHistoryEntry[];
 
-export const setSidebarCompactState = (isCompact: boolean): Promise<void> => {
-    return new Promise((resolve) => {
-        browser.storage.sync.set(
-            { [SIDEBAR_COMPACT_STATE_KEY]: isCompact },
-            () => {
-                resolve();
-            },
-        );
-    });
-};
+export const MAX_CLICK_HISTORY_ENTRIES = 20;
+
+export const clickHistory = storage.defineItem<ClickHistoryStorage>(
+    "local:clickHistory",
+    {
+        fallback: [],
+    },
+);

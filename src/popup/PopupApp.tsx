@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getSidebarPosition, setSidebarPosition } from "../storage";
+import { sidebarPosition, clickHistory } from "../storage";
 import { SidebarPosition } from "../ui/types";
 import { ToggleSidebarPositionMessage } from "../background/types";
 import "../ui/css/base.css";
@@ -8,12 +8,12 @@ const PopupApp = () => {
     const [position, setPosition] = useState<SidebarPosition>("left");
 
     useEffect(() => {
-        getSidebarPosition().then(setPosition);
+        sidebarPosition.getValue().then(setPosition);
     }, []);
 
     const handleToggleSidebarPosition = async () => {
         const newPosition = position === "left" ? "right" : "left";
-        await setSidebarPosition(newPosition);
+        await sidebarPosition.setValue(newPosition);
         setPosition(newPosition);
 
         // Get the current tab ID
@@ -23,9 +23,13 @@ const PopupApp = () => {
             type: "toggleSidebarPosition",
             tabId: tabId,
         };
-        browser.runtime.sendMessage(message).catch((error) => {
-            console.error("Error sending message:", error);
+        browser.runtime.sendMessage(message).catch(() => {
+            // Error sending toggle position message
         });
+    };
+
+    const handleClearClickHistory = async () => {
+        await clickHistory.setValue([]);
     };
 
     return (
@@ -46,6 +50,15 @@ const PopupApp = () => {
                     style={{ backgroundColor: "var(--pauseshop-theme-trim-color)" }}
                 >
                     {position === "left" ? "Left" : "Right"}
+                </button>
+            </div>
+            <div className="flex items-center justify-center mt-4">
+                <button
+                    onClick={handleClearClickHistory}
+                    className="px-4 py-2 text-white rounded-md"
+                    style={{ backgroundColor: "var(--pauseshop-theme-trim-color)" }}
+                >
+                    Clear History
                 </button>
             </div>
         </div>

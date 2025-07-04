@@ -5,8 +5,7 @@ import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { AmazonScrapedProduct } from "../../../types/amazon";
 import {
-    getSidebarCompactState,
-    setSidebarCompactState,
+    sidebarCompactState,
 } from "../../../storage";
 
 import { ProductStorage, SidebarContentState } from "../../types";
@@ -21,16 +20,9 @@ import ExpandedContent from "./expanded-content";
 import CompactContent from "./compact-content";
 import Divider from "./divider";
 import FloatingTooltip from "./floating-tooltip";
-import { getIconCounts, getUniqueIcons } from "../../utils";
+import { getIconCounts, getUniqueIcons, formatIconText } from "../../utils";
 import { useYouTubeShortsPositioning, useProximityDetection } from "./hooks";
 
-// Helper function to format icon text: replace dashes with spaces and capitalize first letter
-const formatIconText = (iconText: string): string => {
-    // Replace all dashes with spaces
-    const textWithSpaces = iconText.replace(/-/g, ' ');
-    // Capitalize the first letter
-    return textWithSpaces.charAt(0).toUpperCase() + textWithSpaces.slice(1);
-};
 
 interface SidebarProps {
     isVisible: boolean;
@@ -39,7 +31,7 @@ interface SidebarProps {
     productStorage: ProductStorage;
     onShow: () => void;
     onHide: () => void;
-    onProductClick: (product: AmazonScrapedProduct, position: number, allProducts: AmazonScrapedProduct[]) => void;
+    onProductClick: (product: AmazonScrapedProduct) => void;
     onClose: () => void;
     onRetryAnalysis: () => void;
     errorMessage?: string;
@@ -78,7 +70,7 @@ const Sidebar = ({
     const isVisibleRef = useRef(false);
 
     useEffect(() => {
-        getSidebarCompactState().then((compact) => {
+        sidebarCompactState.getValue().then((compact) => {
             setIsCompact(compact);
             setLastUserSelectedCompactState(compact);
         });
@@ -189,7 +181,7 @@ const Sidebar = ({
         const newCompactState = !isCompact;
         setIsCompact(newCompactState);
         setLastUserSelectedCompactState(newCompactState);
-        setSidebarCompactState(newCompactState);
+        sidebarCompactState.setValue(newCompactState);
         setExpandedIconCategory(iconCategory || null);
 
         // Reset hover state when switching modes to ensure clean state

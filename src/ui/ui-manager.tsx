@@ -19,9 +19,15 @@ import {
     ProductStorage,
     AnalysisCancelledMessage,
 } from "./types";
-import { getSidebarPosition, setSidebarPosition } from "../storage";
+import {
+    clickHistory,
+    ClickHistoryEntry,
+    MAX_CLICK_HISTORY_ENTRIES,
+    sessionData,
+    sidebarPosition,
+} from "../storage";
 import { triggerRetryAnalysis } from "../content/video-detector";
-import { constructReferrerUrl } from "./referrer-encoder";
+import { getWebsiteBaseUrl } from "../background/server-config";
 
 export class UIManager {
     private container: HTMLElement | null = null;
@@ -54,43 +60,54 @@ export class UIManager {
                 this.productStorage = { pauseId: "", productGroups: [] };
                 this.sidebarContentState = SidebarContentState.LOADING;
             },
-            onProductClick: async (product: AmazonScrapedProduct, position: number, allProducts: AmazonScrapedProduct[]) => {
+            onProductClick: async (product: AmazonScrapedProduct) => {
                 try {
                     if (!this.productStorage.pauseId) {
-                        console.error("[PauseShop:UIManager] No pauseId available for product click");
-                        // Fallback to direct Amazon link
-                        if (product.amazonAsin) {
-                            window.open(`https://www.amazon.com/dp/${product.amazonAsin}`, "_blank");
-                        }
+                        // No pauseId available for product click
                         return;
                     }
 
-                    // Find the product group that contains the clicked product to get the context
-                    const productGroup = this.productStorage.productGroups.find(group =>
-                        group.scrapedProducts.some(p => p.amazonAsin === product.amazonAsin && p.thumbnailUrl === product.thumbnailUrl)
+                    await sessionData.setValue({
+                        ...this.productStorage,
+                        clickedProduct: product,
+                    });
+
+                    // New click history logic
+                    const productGroup = this.productStorage.productGroups.find(
+                        (pg) =>
+                            pg.scrapedProducts.some((p) => p.id === product.id),
                     );
 
-                    const productContext = productGroup ? productGroup.product : undefined;
+                    if (productGroup) {
+                        let history = await clickHistory.getValue();
+                        if (!Array.isArray(history)) {
+                            history = [];
+                        }
+                        const pauseId = this.productStorage.pauseId;
+                        const newEntry: ClickHistoryEntry = {
+                            pauseId,
+                            clickedProduct: product,
+                            productGroup: productGroup,
+                        };
 
-                    if (!productContext) {
-                        console.warn("[PauseShop:UIManager] Could not find product context for the clicked item.");
+                        const newHistory = [...history, newEntry];
+
+                        // Enforce total limit of 20 entries
+                        if (newHistory.length > MAX_CLICK_HISTORY_ENTRIES) {
+                            newHistory.shift(); // Remove the oldest entry
+                        }
+
+                        await clickHistory.setValue(newHistory);
+
                     }
 
-                    // Construct referrer URL with encoded data
-                    const referrerUrl = constructReferrerUrl(
-                        this.productStorage.pauseId,
-                        position,
-                        allProducts,
-                        productContext
-                    );
-                    window.open(referrerUrl, "_blank");
-
-                } catch (error) {
-                    console.error("[PauseShop:UIManager] Error handling product click:", error);
-                    // Fallback to direct Amazon link
-                    if (product.amazonAsin) {
-                        window.open(`https://www.amazon.com/dp/${product.amazonAsin}`, "_blank");
-                    }
+                    const baseUrl = getWebsiteBaseUrl();
+                    const extensionId = browser.runtime.id;
+                    const url = new URL(`${baseUrl}/referrer`);
+                    url.searchParams.append("extensionId", extensionId);
+                    window.open(url.toString(), "_blank");
+                } catch {
+                    // Error handling product click
                 }
             },
             onClose: () => {
@@ -108,7 +125,7 @@ export class UIManager {
         };
 
         // Load sidebar position from storage
-        getSidebarPosition().then((position) => {
+        sidebarPosition.getValue().then((position) => {
             this.sidebarConfig.position = position;
             this.renderSidebar();
         });
@@ -237,6 +254,9 @@ export class UIManager {
     private handleAnalysisStarted = (
         message: AnalysisStartedMessage,
     ): boolean => {
+        // Clear previous session data
+        sessionData.setValue(null);
+
         // Update the current pauseId when a new analysis starts
         this.productStorage = { pauseId: message.pauseId, productGroups: [] };
         this.sidebarContentState = SidebarContentState.LOADING;
@@ -351,7 +371,7 @@ export class UIManager {
         const newPosition =
             this.sidebarConfig.position === "left" ? "right" : "left";
         this.sidebarConfig.position = newPosition;
-        await setSidebarPosition(newPosition);
+        await sidebarPosition.setValue(newPosition);
         this.renderSidebar();
     }
 

@@ -6,7 +6,7 @@ import "../../css/components/sidebar/product-thumbnail-carousel.css";
 
 interface ProductThumbnailCarouselProps {
     thumbnails: AmazonScrapedProduct[];
-    onProductClick?: (product: AmazonScrapedProduct, position: number, allProducts: AmazonScrapedProduct[]) => void;
+    onProductClick?: (product: AmazonScrapedProduct) => void;
 }
 
 const ProductThumbnailCarousel = ({ thumbnails, onProductClick }: ProductThumbnailCarouselProps) => {
@@ -59,17 +59,7 @@ const ProductThumbnailCarousel = ({ thumbnails, onProductClick }: ProductThumbna
 
     const handleProductClick = (product: AmazonScrapedProduct) => {
         if (onProductClick) {
-            // Find the position of the clicked product in the original thumbnails array
-            const originalPosition = thumbnails.findIndex(p => p.id === product.id);
-            onProductClick(product, originalPosition, thumbnails);
-        } else {
-            // Fallback to direct Amazon link if no click handler provided
-            if (product.amazonAsin) {
-                window.open(`https://www.amazon.com/dp/${product.amazonAsin}`, "_blank");
-            } else if (product.productUrl) {
-                const decodedUrl = product.productUrl.replace(/&/g, "&");
-                window.open(decodedUrl, "_blank");
-            }
+            onProductClick(product);
         }
     };
 

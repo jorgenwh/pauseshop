@@ -22,7 +22,6 @@ export const handleScreenshotAnalysis = async (
     try {
         // Check if already aborted
         if (abortSignal?.aborted) {
-            console.warn(`[PauseShop:AnalysisWorkflow] Already aborted at start for pauseId: ${pauseId}`);
             throw new DOMException('Operation aborted', 'AbortError');
         }
 
@@ -33,7 +32,6 @@ export const handleScreenshotAnalysis = async (
 
         // Check again after frame capture
         if (abortSignal?.aborted) {
-            console.log(`[PauseShop:AnalysisWorkflow] Aborted after frame capture for pauseId: ${pauseId}`);
             throw new DOMException('Operation aborted', 'AbortError');
         }
 
@@ -80,7 +78,6 @@ export const handleScreenshotAnalysis = async (
 
                             // Check if aborted before Amazon search
                             if (abortSignal?.aborted) {
-                                console.log(`[PauseShop:AnalysisWorkflow] Product processing aborted before Amazon search for pauseId: ${pauseId}`);
                                 return;
                             }
 
@@ -196,7 +193,6 @@ export const handleScreenshotAnalysis = async (
         } catch (error) {
             // Handle AbortError
             if (error instanceof Error && error.name === 'AbortError') {
-                console.warn(`[PauseShop:AnalysisWorkflow] Analysis aborted for pauseId: ${pauseId}`);
                 // Use the same tabId from the start of the analysis
                 if (tabId) {
                     browser.tabs

@@ -11,9 +11,14 @@ export const getUniqueIcons = (productStorage: ProductStorage): Set<string> => {
     return uniqueIcons
 }
 
-export const countUniqueIcons = (productStorage: ProductStorage): number => {
-    return getUniqueIcons(productStorage).size;
-}
+// Helper function to format icon text: replace dashes with spaces and capitalize first letter
+export const formatIconText = (iconText: string): string => {
+    // Replace all dashes with spaces
+    const textWithSpaces = iconText.replace(/-/g, ' ');
+    // Capitalize the first letter
+    return textWithSpaces.charAt(0).toUpperCase() + textWithSpaces.slice(1);
+};
+
 
 export const getIconCounts = (productStorage: ProductStorage): Record<string, number> => {
     const iconCounts: Record<string, number> = {};

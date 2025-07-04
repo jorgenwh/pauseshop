@@ -8,7 +8,7 @@ interface ProductGroupCardProps {
     groupName: string;
     thumbnails: AmazonScrapedProduct[];
     initialExpanded?: boolean;
-    onProductClick?: (product: AmazonScrapedProduct, position: number, allProducts: AmazonScrapedProduct[]) => void;
+    onProductClick?: (product: AmazonScrapedProduct) => void;
 }
 
 const ProductGroupCard = ({ groupName, thumbnails, initialExpanded = false, onProductClick }: ProductGroupCardProps) => {
