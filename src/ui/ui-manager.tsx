@@ -106,7 +106,7 @@ export class UIManager {
                     const url = new URL(`${baseUrl}/referrer`);
                     url.searchParams.append("extensionId", extensionId);
                     window.open(url.toString(), "_blank");
-                } catch (error) {
+                } catch {
                     // Error handling product click
                 }
             },

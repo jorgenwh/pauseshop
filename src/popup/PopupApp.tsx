@@ -23,7 +23,7 @@ const PopupApp = () => {
             type: "toggleSidebarPosition",
             tabId: tabId,
         };
-        browser.runtime.sendMessage(message).catch((error) => {
+        browser.runtime.sendMessage(message).catch(() => {
             // Error sending toggle position message
         });
     };

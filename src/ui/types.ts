@@ -4,6 +4,7 @@
 
 import { AmazonScrapedProduct } from "../types/amazon";
 import { Product } from "../types/common";
+import { ToggleSidebarPositionMessage } from "../background/types";
 
 export interface ProductGroup {
     product: Product;
