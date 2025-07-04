@@ -24,13 +24,12 @@ const PopupApp = () => {
             tabId: tabId,
         };
         browser.runtime.sendMessage(message).catch((error) => {
-            console.error("Error sending message:", error);
+            // Error sending toggle position message
         });
     };
 
     const handleClearClickHistory = async () => {
         await clickHistory.setValue([]);
-        console.log("Click history cleared");
     };
 
     return (

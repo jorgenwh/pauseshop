@@ -66,9 +66,6 @@ export interface AnalysisCancelledMessage {
     pauseId: string;
 }
 
-export interface ToggleSidebarPositionMessage {
-    type: "toggleSidebarPosition";
-}
 
 export interface RetryAnalysisMessage {
     type: "retryAnalysis";

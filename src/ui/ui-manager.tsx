@@ -63,9 +63,7 @@ export class UIManager {
             onProductClick: async (product: AmazonScrapedProduct) => {
                 try {
                     if (!this.productStorage.pauseId) {
-                        console.error(
-                            "[PauseShop:UIManager] No pauseId available for product click",
-                        );
+                        // No pauseId available for product click
                         return;
                     }
 
@@ -101,29 +99,6 @@ export class UIManager {
 
                         await clickHistory.setValue(newHistory);
 
-                        // Log the entire click history for verification
-                        const updatedHistory = await clickHistory.getValue();
-                        console.log(
-                            "[PauseShop:UIManager] Updated Click History:",
-                            updatedHistory,
-                        );
-                        const updatedSessionData = await sessionData.getValue();
-
-                        const historySizeBytes =
-                            JSON.stringify(updatedHistory).length;
-                        const sessionDataSizeBytes = updatedSessionData
-                            ? JSON.stringify(updatedSessionData).length
-                            : 0;
-                        const totalSizeBytes =
-                            historySizeBytes + sessionDataSizeBytes;
-                        const totalSizeKB = totalSizeBytes / 1024;
-                        const totalStorageLimitBytes = 10 * 1024 * 1024; // 10 MB
-                        const percentageUsed =
-                            (totalSizeBytes / totalStorageLimitBytes) * 100;
-
-                        console.log(
-                            `[PauseShop:UIManager] Total storage size (clickHistory + sessionData): ${totalSizeKB.toFixed(2)} KB / 10MB (${percentageUsed.toFixed(2)}%)`,
-                        );
                     }
 
                     const baseUrl = getWebsiteBaseUrl();
@@ -132,10 +107,7 @@ export class UIManager {
                     url.searchParams.append("extensionId", extensionId);
                     window.open(url.toString(), "_blank");
                 } catch (error) {
-                    console.error(
-                        "[PauseShop:UIManager] Error handling product click:",
-                        error,
-                    );
+                    // Error handling product click
                 }
             },
             onClose: () => {
