@@ -131,6 +131,10 @@
     transform: scale(1.4);
 }
 
+.pauseshop-sidebar-toggle-button:active {
+    transform: scale(0.9);
+}
+
 .pauseshop-sidebar-close-button {
     background-color: #dc3545;
     border: none;
@@ -148,6 +152,10 @@
 .pauseshop-sidebar-close-button:hover {
     transform: scale(1.4);
     background-color: #c82333;
+}
+
+.pauseshop-sidebar-close-button:active {
+    transform: scale(0.9);
 }
 
 /* Button Icons */
