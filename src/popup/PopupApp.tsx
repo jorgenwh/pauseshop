@@ -46,7 +46,7 @@ const PopupApp = () => {
                 </span>
                 <button
                     onClick={handleToggleSidebarPosition}
-                    className="px-4 py-2 text-white rounded-md w-20"
+                    className="px-4 py-2 text-white rounded-md w-20 transition-all duration-100 active:scale-95 active:opacity-80"
                     style={{ backgroundColor: "var(--pauseshop-theme-trim-color)" }}
                 >
                     {position === "left" ? "Left" : "Right"}
@@ -55,7 +55,7 @@ const PopupApp = () => {
             <div className="flex items-center justify-center mt-4">
                 <button
                     onClick={handleClearClickHistory}
-                    className="px-4 py-2 text-white rounded-md"
+                    className="px-4 py-2 text-white rounded-md transition-all duration-100 active:scale-95 active:opacity-80"
                     style={{ backgroundColor: "var(--pauseshop-theme-trim-color)" }}
                 >
                     Clear History
