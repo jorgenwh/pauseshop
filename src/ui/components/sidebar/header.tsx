@@ -31,12 +31,43 @@ const Header = ({
     ].filter(Boolean).join(" ");
 
     const renderButtons = () => {
-        if (contentState === SidebarContentState.LOADING) {
-            return null;
-        }
-
         // In compact mode, only show buttons when mouse is nearby
         const shouldShowButtons = !compact || showButtonsInCompact;
+
+        if (contentState === SidebarContentState.LOADING) {
+            // During loading, only show close button in compact mode when mouse is nearby
+            return (
+                <motion.div
+                    className="pauseshop-sidebar-button-container no-products"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: shouldShowButtons ? 1 : 0 }}
+                    transition={{
+                        duration: 0.2,
+                        scale: {
+                            type: "spring",
+                            stiffness: 260,
+                            damping: 20,
+                            bounce: 0.5,
+                        },
+                    }}
+                    style={{
+                        pointerEvents: shouldShowButtons ? "auto" : "none",
+                    }}
+                >
+                    <button
+                        className="pauseshop-sidebar-close-button"
+                        onClick={onClose}
+                        title="Close PauseShop"
+                    >
+                        <img
+                            src={browser.runtime.getURL("/icons/close.png")}
+                            alt="Close"
+                            className="pauseshop-button-icon"
+                        />
+                    </button>
+                </motion.div>
+            );
+        }
 
         if (contentState === SidebarContentState.NO_PRODUCTS) {
             return (

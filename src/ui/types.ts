@@ -72,11 +72,6 @@ export interface RetryAnalysisMessage {
     type: "retryAnalysis";
 }
 
-export interface CancelAnalysisMessage {
-    type: "cancel_analysis";
-    pauseId: string;
-}
-
 export type BackgroundMessage =
     | AnalysisStartedMessage
     | ProductGroupUpdateMessage
@@ -85,4 +80,3 @@ export type BackgroundMessage =
     | AnalysisCancelledMessage
     | ToggleSidebarPositionMessage
     | RetryAnalysisMessage
-    | CancelAnalysisMessage;
