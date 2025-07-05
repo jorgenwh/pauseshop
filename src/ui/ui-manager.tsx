@@ -113,7 +113,7 @@ export class UIManager {
             onClose: () => {
                 if (this.productStorage.pauseId) {
                     browser.runtime.sendMessage({
-                        type: "cancel_analysis",
+                        type: "cancelPause",
                         pauseId: this.productStorage.pauseId,
                     });
                 }
@@ -353,10 +353,6 @@ export class UIManager {
                 break;
             case "toggleSidebarPosition":
                 this.toggleSidebarPosition();
-                result = true;
-                break;
-            case "cancel_analysis":
-                this.hideSidebar();
                 result = true;
                 break;
             default:
