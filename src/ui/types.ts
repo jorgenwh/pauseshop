@@ -1,5 +1,5 @@
 /**
- * UI-specific type definitions for PauseShop extension
+ * UI-specific type definitions for FreezeFrame extension
  */
 
 import { AmazonScrapedProduct } from "../types/amazon";

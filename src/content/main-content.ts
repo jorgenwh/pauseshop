@@ -30,21 +30,21 @@ const isUrlAllowed = (url: string): boolean => {
 
 const initializeExtension = (): void => {
     const currentUrl = window.location.href;
-    console.log(`[PauseShop] Attempting to initialize extension on: ${currentUrl}`);
+    console.log(`[FreezeFrame] Attempting to initialize extension on: ${currentUrl}`);
     
     if (!shouldActivateExtension()) {
-        console.warn("[PauseShop] Extension activation conditions not met, skipping initialization");
+        console.warn("[FreezeFrame] Extension activation conditions not met, skipping initialization");
         return;
     }
 
-    console.log("[PauseShop] Initializing extension components");
+    console.log("[FreezeFrame] Initializing extension components");
     initializeFrameCapturer();
     cleanupVideoDetector = initializeVideoDetector();
 
     uiManagerInstance = UIManager.create(currentUrl, null);
     if (uiManagerInstance) {
         setUIManager(uiManagerInstance);
-        console.log("[PauseShop] Extension successfully initialized");
+        console.log("[FreezeFrame] Extension successfully initialized");
     } else {
         console.error("PauseShop UI: Failed to initialize UIManager in main-content.ts");
     }
@@ -78,11 +78,11 @@ const checkForUrlChange = (): void => {
     const currentUrl = window.location.href;
     if (currentUrl !== lastUrl) {
         lastUrl = currentUrl;
-        console.log(`[PauseShop] URL changed to: ${currentUrl}`);
+        console.log(`[FreezeFrame] URL changed to: ${currentUrl}`);
 
         // Always clean up existing extension when URL changes
         if (cleanupVideoDetector) {
-            console.log(`[PauseShop] Cleaning up extension due to URL change`);
+            console.log(`[FreezeFrame] Cleaning up extension due to URL change`);
             cleanupExtension();
         }
 

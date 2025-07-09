@@ -1,7 +1,7 @@
 {
-    "name": "pauseshop-extension",
+    "name": "freezeframe-extension",
     "version": "0.1.0",
-    "description": "PauseShop Chrome Extension",
+    "description": "FreezeFrame Chrome Extension",
     "private": true,
     "type": "module",
     "scripts": {

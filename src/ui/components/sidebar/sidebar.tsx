@@ -117,7 +117,7 @@ const Sidebar = ({
 
     useEffect(() => {
         if (videoElement) {
-            console.log("[PauseShop] Video element rect:", videoElement.getBoundingClientRect());
+            console.log("[FreezeFrame] Video element rect:", videoElement.getBoundingClientRect());
         }
     }, [videoElement]);
 

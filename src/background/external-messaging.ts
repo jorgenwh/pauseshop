@@ -18,7 +18,7 @@ export function initializeExternalMessaging() {
 
                         sendResponse({
                             // TODO: more robust handshake mechanism
-                            app: "PauseShop",
+                            app: "FreezeFrame",
                             data: {
                                 clickedProduct: session?.clickedProduct ?? null,
                                 productStorage: session
@@ -32,7 +32,7 @@ export function initializeExternalMessaging() {
                         });
                     } catch (error) {
                         sendResponse({
-                            app: 'PauseShop',
+                            app: 'FreezeFrame',
                             error: error instanceof Error ? error.message : String(error),
                         });
                     }
@@ -55,13 +55,13 @@ export function initializeExternalMessaging() {
 
                         sendResponse({
                             // TODO: more robust handshake mechanism
-                            app: "PauseShop",
+                            app: "FreezeFrame",
                             success: true,
                         });
                     } catch (error) {
                         sendResponse({
                             // TODO: more robust handshake mechanism
-                            app: 'PauseShop',
+                            app: 'FreezeFrame',
                             error: error instanceof Error ? error.message : String(error),
                         });
                     }

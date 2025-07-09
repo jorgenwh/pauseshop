@@ -32,7 +32,7 @@ const handlePause =
 
             // Don't trigger extension if video is near the end
             if (videoElement && videoElement.duration - videoElement.currentTime < 0.25) {
-                console.warn(`[PauseShop:VideoDetector] Ignoring pause because video is near the end`);
+                console.warn(`[FreezeFrame:VideoDetector] Ignoring pause because video is near the end`);
                 return;
             }
 
@@ -44,7 +44,7 @@ const handlePause =
                 type: "registerPause",
                 pauseId: newPauseId
             }).catch((error) => {
-                console.error(`[PauseShop:VideoDetector] Failed to register pause for pauseId: ${newPauseId}`, error);
+                console.error(`[FreezeFrame:VideoDetector] Failed to register pause for pauseId: ${newPauseId}`, error);
             });
 
             if (siteHandlerRegistry.shouldIgnorePause(seekingState)) {
@@ -80,7 +80,7 @@ const handlePlay =
                     type: "cancelPause",
                     pauseId: pauseIdToCancel
                 }).catch((error) => {
-                    console.error(`[PauseShop:VideoDetector] Failed to cancel pause for pauseId: ${pauseIdToCancel}`, error);
+                    console.error(`[FreezeFrame:VideoDetector] Failed to cancel pause for pauseId: ${pauseIdToCancel}`, error);
                 });
                 seekingState.currentPauseId = null;
             }
@@ -284,11 +284,11 @@ let globalSiteHandlerRegistry: SiteHandlerRegistry | null = null;
 let globalSeekingState: SeekingState | null = null;
 
 export const triggerRetryAnalysis = (): void => {
-    console.log("[PauseShop:VideoDetector] Triggering retry analysis");
+    console.log("[FreezeFrame:VideoDetector] Triggering retry analysis");
 
     const targetVideo = scanForVideos();
     if (!targetVideo || !globalSiteHandlerRegistry || !globalSeekingState) {
-        console.warn("[PauseShop:VideoDetector] Cannot retry - video detector not properly initialized");
+        console.warn("[FreezeFrame:VideoDetector] Cannot retry - video detector not properly initialized");
         return;
     }
 

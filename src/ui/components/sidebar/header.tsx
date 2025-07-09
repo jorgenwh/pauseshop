@@ -57,7 +57,7 @@ const Header = ({
                     <button
                         className="pauseshop-sidebar-close-button"
                         onClick={onClose}
-                        title="Close PauseShop"
+                        title="Close FreezeFrame"
                     >
                         <img
                             src={browser.runtime.getURL("/icons/close.png")}
@@ -91,7 +91,7 @@ const Header = ({
                     <button
                         className="pauseshop-sidebar-close-button"
                         onClick={onClose}
-                        title="Close PauseShop"
+                        title="Close FreezeFrame"
                     >
                         <img
                             src={browser.runtime.getURL("/icons/close.png")}
@@ -130,7 +130,7 @@ const Header = ({
                             <button
                                 className="pauseshop-sidebar-close-button"
                                 onClick={onClose}
-                                title="Close PauseShop"
+                                title="Close FreezeFrame"
                             >
                                 <img
                                     src={browser.runtime.getURL("/icons/close.png")}
@@ -164,7 +164,7 @@ const Header = ({
                             <button
                                 className="pauseshop-sidebar-close-button"
                                 onClick={onClose}
-                                title="Close PauseShop"
+                                title="Close FreezeFrame"
                             >
                                 <img
                                     src={browser.runtime.getURL("/icons/close.png")}
@@ -190,7 +190,7 @@ const Header = ({
                             <button
                                 className="pauseshop-sidebar-close-button"
                                 onClick={onClose}
-                                title="Close PauseShop"
+                                title="Close FreezeFrame"
                             >
                                 <img
                                     src={browser.runtime.getURL("/icons/close.png")}
@@ -204,7 +204,7 @@ const Header = ({
                             <button
                                 className="pauseshop-sidebar-close-button"
                                 onClick={onClose}
-                                title="Close PauseShop"
+                                title="Close FreezeFrame"
                             >
                                 <img
                                     src={browser.runtime.getURL("/icons/close.png")}
@@ -238,7 +238,7 @@ const Header = ({
         >
             <img
                 src={browser.runtime.getURL("/icons/icon-128.png")}
-                alt="PauseShop Icon"
+                alt="FreezeFrame Icon"
                 className={"pauseshop-sidebar-header-icon icon" + (compact ? " compact" : "")}
                 style={{
                     width: "30px",
@@ -247,10 +247,10 @@ const Header = ({
             />
             <div className="pauseshop-sidebar-header-title-container">
                 <h1 className="pauseshop-sidebar-header-title-pause">
-                    Pause
+                    Freeze
                 </h1>
                 <h1 className="pauseshop-sidebar-header-title-shop">
-                    Shop
+                    Frame
                 </h1>
             </div>
             {renderButtons()}

@@ -210,7 +210,7 @@ export const scrapeAmazonSearchResult = (
         const errorMessage =
             error instanceof Error ? error.message : "Unknown scraping error";
         console.warn(
-            `[PauseShop] Failed to scrape search result: ${searchResult.id}`,
+            `[FreezeFrame] Failed to scrape search result: ${searchResult.id}`,
             errorMessage,
         );
         return null;
