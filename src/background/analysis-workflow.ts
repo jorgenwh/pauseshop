@@ -50,7 +50,7 @@ export const handleScreenshotAnalysis = async (
                     })
                     .catch((e) =>
                         console.error(
-                            `[PauseShop:AnalysisWorkflow] Error sending analysis_started to tab ${tabId}: ${e.message}`,
+                            `[FreezeFrame:AnalysisWorkflow] Error sending analysis_started to tab ${tabId}: ${e.message}`,
                         ),
                     );
             }
@@ -71,7 +71,7 @@ export const handleScreenshotAnalysis = async (
                             const amazonSearch = constructAmazonSearch(product);
                             if (!amazonSearch) {
                                 console.warn(
-                                    `[PauseShop:AnalysisWorkflow] Failed to construct Amazon search for pauseId: ${pauseId} - skipping`,
+                                    `[FreezeFrame:AnalysisWorkflow] Failed to construct Amazon search for pauseId: ${pauseId} - skipping`,
                                 );
                                 return;
                             }
@@ -85,7 +85,7 @@ export const handleScreenshotAnalysis = async (
                                 await executeAmazonSearch(amazonSearch, abortSignal);
                             if (!amazonSearchResult) {
                                 console.warn(
-                                    `[PauseShop:AnalysisWorkflow] Failed to construct Amazon search result for pauseId: ${pauseId} - skipping`,
+                                    `[FreezeFrame:AnalysisWorkflow] Failed to construct Amazon search result for pauseId: ${pauseId} - skipping`,
                                 );
                                 return;
                             }
@@ -97,7 +97,7 @@ export const handleScreenshotAnalysis = async (
                                 amazonScrapedResult.products.length === 0
                             ) {
                                 console.warn(
-                                    `[PauseShop:AnalysisWorkflow] Failed to construct Amazon search result for pauseId: ${pauseId} - skipping`,
+                                    `[FreezeFrame:AnalysisWorkflow] Failed to construct Amazon search result for pauseId: ${pauseId} - skipping`,
                                 );
                                 return;
                             }
@@ -117,12 +117,12 @@ export const handleScreenshotAnalysis = async (
                                     })
                                     .catch((e) =>
                                         console.error(
-                                            `[PauseShop:AnalysisWorkflow] Error sending product group update to tab ${tabId} for pauseId: ${pauseId}: ${e.message}`,
+                                            `[FreezeFrame:AnalysisWorkflow] Error sending product group update to tab ${tabId} for pauseId: ${pauseId}: ${e.message}`,
                                         ),
                                     );
                             } else {
                                 console.warn(
-                                    `[PauseShop:AnalysisWorkflow] Could not find active tab to send product group update for pauseId: ${pauseId}`,
+                                    `[FreezeFrame:AnalysisWorkflow] Could not find active tab to send product group update for pauseId: ${pauseId}`,
                                 );
                             }
                         } catch (error) {
@@ -131,7 +131,7 @@ export const handleScreenshotAnalysis = async (
                                     ? error.message
                                     : "Unknown Amazon search/scraping error";
                             console.error(
-                                `[PauseShop:AnalysisWorkflow] Amazon search/scraping failed for pauseId: ${pauseId}, product: ${product.name}: ${errorMessage}`,
+                                `[FreezeFrame:AnalysisWorkflow] Amazon search/scraping failed for pauseId: ${pauseId}, product: ${product.name}: ${errorMessage}`,
                             );
                         }
                     })();
@@ -143,7 +143,7 @@ export const handleScreenshotAnalysis = async (
                         await Promise.allSettled(pendingOperations);
                     } catch (error) {
                         console.error(
-                            `[PauseShop:AnalysisWorkflow] Error waiting for product processing for pauseId: ${pauseId}: ${error instanceof Error ? error.message : "Unknown error"}`,
+                            `[FreezeFrame:AnalysisWorkflow] Error waiting for product processing for pauseId: ${pauseId}: ${error instanceof Error ? error.message : "Unknown error"}`,
                         );
                     }
 
@@ -156,7 +156,7 @@ export const handleScreenshotAnalysis = async (
                             })
                             .catch((e) =>
                                 console.error(
-                                    `[PauseShop:AnalysisWorkflow] Error sending analysis complete to tab ${tabId} for pauseId: ${pauseId}: ${e.message}`,
+                                    `[FreezeFrame:AnalysisWorkflow] Error sending analysis complete to tab ${tabId} for pauseId: ${pauseId}: ${e.message}`,
                                 ),
                             );
                     }
@@ -164,7 +164,7 @@ export const handleScreenshotAnalysis = async (
                 },
                 onError: async (error: Event) => {
                     const errorMessage = `Streaming analysis failed: ${error.type || "Unknown error"}`;
-                    console.error(`[PauseShop:AnalysisWorkflow] ${errorMessage} for pauseId: ${pauseId}`);
+                    console.error(`[FreezeFrame:AnalysisWorkflow] ${errorMessage} for pauseId: ${pauseId}`);
                     // Use the same tabId from the start of the analysis
                     if (tabId) {
                         browser.tabs
@@ -175,7 +175,7 @@ export const handleScreenshotAnalysis = async (
                             })
                             .catch((e) =>
                                 console.error(
-                                    `[PauseShop:AnalysisWorkflow] Error sending analysis error to tab ${tabId} for pauseId: ${pauseId}: ${e.message}`,
+                                    `[FreezeFrame:AnalysisWorkflow] Error sending analysis error to tab ${tabId} for pauseId: ${pauseId}: ${e.message}`,
                                 ),
                             );
                     }
@@ -202,7 +202,7 @@ export const handleScreenshotAnalysis = async (
                         })
                         .catch((e) =>
                             console.error(
-                                `[PauseShop:AnalysisWorkflow] Error sending analysis cancelled to tab ${tabId} for pauseId: ${pauseId}: ${e.message}`,
+                                `[FreezeFrame:AnalysisWorkflow] Error sending analysis cancelled to tab ${tabId} for pauseId: ${pauseId}: ${e.message}`,
                             ),
                         );
                 }
@@ -213,7 +213,7 @@ export const handleScreenshotAnalysis = async (
                 error instanceof Error
                     ? error.message
                     : "Failed to start streaming analysis";
-            console.error(`[PauseShop:AnalysisWorkflow] ${errorMessage} for pauseId: ${pauseId}`);
+            console.error(`[FreezeFrame:AnalysisWorkflow] ${errorMessage} for pauseId: ${pauseId}`);
             // Use the same tabId from the start of the analysis
             if (tabId) {
                 browser.tabs
@@ -224,7 +224,7 @@ export const handleScreenshotAnalysis = async (
                     })
                     .catch((e) =>
                         console.error(
-                            `[PauseShop:AnalysisWorkflow] Error sending analysis error to tab ${tabId} for pauseId: ${pauseId}: ${e.message}`,
+                            `[FreezeFrame:AnalysisWorkflow] Error sending analysis error to tab ${tabId} for pauseId: ${pauseId}: ${e.message}`,
                         ),
                     );
             }
@@ -243,7 +243,7 @@ export const handleScreenshotAnalysis = async (
         const errorMessage =
             error instanceof Error ? error.message : "Unknown error";
         console.error(
-            `[PauseShop:AnalysisWorkflow] Frame workflow failed for pauseId: ${pauseId}: ${errorMessage}`,
+            `[FreezeFrame:AnalysisWorkflow] Frame workflow failed for pauseId: ${pauseId}: ${errorMessage}`,
         );
         return { success: false, error: errorMessage, pauseId };
     }

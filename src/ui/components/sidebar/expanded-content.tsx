@@ -65,7 +65,7 @@ const ExpandedContent = ({ contentState, productStorage, expandedIconCategory, o
     }, [contentState, productStorage]);
 
     const contentClasses = [
-        "pauseshop-expanded-sidebar-content",
+        "freezeframe-expanded-sidebar-content",
         showScrollbar ? "show-scrollbar" : "hide-scrollbar"
     ].join(" ");
 
@@ -76,7 +76,7 @@ const ExpandedContent = ({ contentState, productStorage, expandedIconCategory, o
             )}
             {contentState === SidebarContentState.PRODUCTS && (
                 <motion.div
-                    className="pauseshop-product-list"
+                    className="freezeframe-product-list"
                     variants={cardContainerVariants}
                     initial="hidden"
                     animate="visible"

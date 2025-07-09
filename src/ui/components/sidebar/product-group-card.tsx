@@ -20,7 +20,7 @@ const ProductGroupCard = ({ groupName, thumbnails, initialExpanded = false, onPr
 
     return (
         <motion.div
-            className="pauseshop-product-card"
+            className="freezeframe-product-card"
             whileHover={{ scale: 1.03 }}
             transition={{
                 type: "spring",
@@ -31,18 +31,18 @@ const ProductGroupCard = ({ groupName, thumbnails, initialExpanded = false, onPr
         >
             {/* Header */}
             <div
-                className="pauseshop-product-card-header"
+                className="freezeframe-product-card-header"
                 onClick={toggleExpand}
             >
-                <div className="pauseshop-product-card-header-content">
-                    <h3 className="pauseshop-product-card-title">{groupName}</h3>
+                <div className="freezeframe-product-card-header-content">
+                    <h3 className="freezeframe-product-card-title">{groupName}</h3>
                 </div>
-                <span className="pauseshop-product-card-arrow">{isExpanded ? "▲" : "▼"}</span>
+                <span className="freezeframe-product-card-arrow">{isExpanded ? "▲" : "▼"}</span>
             </div>
 
             {/* Collapsible Content */}
             {isExpanded && (
-                <div className="pauseshop-product-card-content"> {}
+                <div className="freezeframe-product-card-content"> {}
                     <ProductThumbnailCarousel thumbnails={thumbnails} onProductClick={onProductClick} />
                 </div>
             )}

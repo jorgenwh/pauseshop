@@ -1,5 +1,5 @@
 /**
- * PauseShop Background Service Worker
+ * FreezeFrame Background Service Worker
  * Handles frame capture and server communication
  */
 
@@ -28,13 +28,13 @@ browser.runtime.onMessage.addListener(
                 // Check for lastError after sending to detect if the receiving end exists
                 if (browser.runtime.lastError) {
                     console.error(
-                        `[PauseShop:ServiceWorker] Message port closed, unable to send response: ${browser.runtime.lastError.message}`,
+                        `[FreezeFrame:ServiceWorker] Message port closed, unable to send response: ${browser.runtime.lastError.message}`,
                     );
                 }
             } catch (error) {
                 // Catch any synchronous errors when calling sendResponse
                 console.error(
-                    `[PauseShop:ServiceWorker] Failed to send response - receiving end may not exist: ${error}`,
+                    `[FreezeFrame:ServiceWorker] Failed to send response - receiving end may not exist: ${error}`,
                 );
             }
         };
@@ -54,7 +54,7 @@ browser.runtime.onMessage.addListener(
                     .catch((error) => {
                         if (error.name === "AbortError") {
                             console.warn(
-                                `[PauseShop:ServiceWorker] Analysis cancelled for pauseId: ${message.pauseId}`,
+                                `[FreezeFrame:ServiceWorker] Analysis cancelled for pauseId: ${message.pauseId}`,
                             );
                             safeSendResponse({
                                 success: false,
@@ -63,7 +63,7 @@ browser.runtime.onMessage.addListener(
                             });
                         } else {
                             console.error(
-                                `[PauseShop:ServiceWorker] Screenshot analysis error for pauseId: ${message.pauseId}:`,
+                                `[FreezeFrame:ServiceWorker] Screenshot analysis error for pauseId: ${message.pauseId}:`,
                                 error,
                             );
                             safeSendResponse({
@@ -83,7 +83,7 @@ browser.runtime.onMessage.addListener(
                 cancellationRegistry.cancelPause(message.pauseId);
                 // End session on server using pauseId directly
                 apiEndSession(message.pauseId).catch((error) => {
-                    console.error(`[PauseShop:ServiceWorker] Failed to notify server of session end for pauseId: ${message.pauseId}`, error);
+                    console.error(`[FreezeFrame:ServiceWorker] Failed to notify server of session end for pauseId: ${message.pauseId}`, error);
                 });
                 safeSendResponse({ success: true });
                 break;
@@ -92,10 +92,10 @@ browser.runtime.onMessage.addListener(
                     browser.tabs.sendMessage(message.tabId, {
                         type: "toggleSidebarPosition",
                     }).catch(error => {
-                        console.error(`[PauseShop:ServiceWorker] Error sending toggleSidebarPosition message to tab ${message.tabId}: ${error}`);
+                        console.error(`[FreezeFrame:ServiceWorker] Error sending toggleSidebarPosition message to tab ${message.tabId}: ${error}`);
                     });
                 } else {
-                    console.warn("[PauseShop:ServiceWorker] No tabId provided for toggleSidebarPosition message");
+                    console.warn("[FreezeFrame:ServiceWorker] No tabId provided for toggleSidebarPosition message");
                 }
                 safeSendResponse({ success: true });
                 break;

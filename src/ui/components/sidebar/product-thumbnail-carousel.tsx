@@ -18,8 +18,8 @@ const ProductThumbnailCarousel = ({ thumbnails, onProductClick }: ProductThumbna
     // Handle empty thumbnails array
     if (!displayThumbnails || displayThumbnails.length === 0) {
         return (
-            <div className="pauseshop-carousel-container">
-                <div className="pauseshop-carousel-empty">
+            <div className="freezeframe-carousel-container">
+                <div className="freezeframe-carousel-empty">
                     No products available
                 </div>
             </div>
@@ -30,8 +30,8 @@ const ProductThumbnailCarousel = ({ thumbnails, onProductClick }: ProductThumbna
     if (displayThumbnails.length === 1) {
         const thumbnail = displayThumbnails[0];
         return (
-            <div className="pauseshop-carousel-container">
-                <div className="pauseshop-carousel-single">
+            <div className="freezeframe-carousel-container">
+                <div className="freezeframe-carousel-single">
                     <div 
                         onClick={() => handleProductClick(thumbnail)}
                         style={{ width: '100%', display: 'block', cursor: 'pointer' }}
@@ -39,7 +39,7 @@ const ProductThumbnailCarousel = ({ thumbnails, onProductClick }: ProductThumbna
                         <img
                             src={thumbnail.thumbnailUrl}
                             alt="Product thumbnail"
-                            className="pauseshop-carousel-image"
+                            className="freezeframe-carousel-image"
                         />
                     </div>
                 </div>
@@ -64,14 +64,14 @@ const ProductThumbnailCarousel = ({ thumbnails, onProductClick }: ProductThumbna
     };
 
     return (
-        <div className="pauseshop-carousel-container">
+        <div className="freezeframe-carousel-container">
             <motion.button
                 key="prev-button"
-                className="pauseshop-carousel-button pauseshop-carousel-button-prev"
+                className="freezeframe-carousel-button freezeframe-carousel-button-prev"
                 aria-label="Previous product"
                 onClick={() => navigate(-1)}
                 disabled={isFirstItem}
-                whileFocus={!isFirstItem ? { outline: "2px solid var(--pauseshop-theme-trim-color)" } : {}}
+                whileFocus={!isFirstItem ? { outline: "2px solid var(--freezeframe-theme-trim-color)" } : {}}
                 whileTap={!isFirstItem ? { scale: 0.9 } : {}}
                 animate={{ 
                     opacity: isFirstItem ? 0.6 : 1,
@@ -86,9 +86,9 @@ const ProductThumbnailCarousel = ({ thumbnails, onProductClick }: ProductThumbna
                 <ArrowLeft />
             </motion.button>
 
-            <div className="pauseshop-carousel-content">
+            <div className="freezeframe-carousel-content">
                 <motion.div
-                    className="pauseshop-carousel-strip"
+                    className="freezeframe-carousel-strip"
                     animate={{ 
                         x: `-${selectedIndex * 100}%` 
                     }}
@@ -99,7 +99,7 @@ const ProductThumbnailCarousel = ({ thumbnails, onProductClick }: ProductThumbna
                     }}
                 >
                     {displayThumbnails.map((thumbnail, index) => (
-                        <div key={index} className="pauseshop-carousel-slide">
+                        <div key={index} className="freezeframe-carousel-slide">
                             <div 
                                 onClick={() => handleProductClick(thumbnail)}
                                 style={{ width: '100%', display: 'block', cursor: 'pointer' }}
@@ -107,7 +107,7 @@ const ProductThumbnailCarousel = ({ thumbnails, onProductClick }: ProductThumbna
                                 <img
                                     src={thumbnail.thumbnailUrl}
                                     alt="Product thumbnail"
-                                    className="pauseshop-carousel-image"
+                                    className="freezeframe-carousel-image"
                                 />
                             </div>
                         </div>
@@ -117,11 +117,11 @@ const ProductThumbnailCarousel = ({ thumbnails, onProductClick }: ProductThumbna
 
             <motion.button
                 key="next-button"
-                className="pauseshop-carousel-button pauseshop-carousel-button-next"
+                className="freezeframe-carousel-button freezeframe-carousel-button-next"
                 aria-label="Next product"
                 onClick={() => navigate(1)}
                 disabled={isLastItem}
-                whileFocus={!isLastItem ? { outline: "2px solid var(--pauseshop-theme-trim-color)" } : {}}
+                whileFocus={!isLastItem ? { outline: "2px solid var(--freezeframe-theme-trim-color)" } : {}}
                 whileTap={!isLastItem ? { scale: 0.9 } : {}}
                 animate={{ 
                     opacity: isLastItem ? 0.6 : 1,

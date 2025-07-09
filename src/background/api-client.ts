@@ -1,6 +1,6 @@
 /**
  * API client for server communication
- * Handles HTTP requests to the PauseShop backend server
+ * Handles HTTP requests to the FreezeFrame backend server
  */
 
 import { Product } from "../types/common";
@@ -41,7 +41,7 @@ export const analyzeImageStreaming = async (
         },
     };
 
-    console.log(`[PauseShop:ApiClient] Starting streaming analysis for pauseId: ${pauseId}`);
+    console.log(`[FreezeFrame:ApiClient] Starting streaming analysis for pauseId: ${pauseId}`);
 
     try {
         // Since EventSource only supports GET, we need to use fetch with streaming response
@@ -74,7 +74,7 @@ export const analyzeImageStreaming = async (
                 do {
                     // Check if aborted
                     if (signal?.aborted) {
-                        console.log(`[PauseShop:ApiClient] Streaming aborted - cancelling reader`);
+                        console.log(`[FreezeFrame:ApiClient] Streaming aborted - cancelling reader`);
                         reader.cancel();
                         throw new DOMException('Operation aborted', 'AbortError');
                     }
@@ -130,7 +130,7 @@ export const analyzeImageStreaming = async (
                                     }
                                 } catch (parseError) {
                                     console.error(
-                                        "[PauseShop:ApiClient] Error parsing streaming data:",
+                                        "[FreezeFrame:ApiClient] Error parsing streaming data:",
                                         parseError,
                                         "Data:",
                                         data,
@@ -143,10 +143,10 @@ export const analyzeImageStreaming = async (
             } catch (error) {
                 // Re-throw AbortError
                 if (error instanceof Error && error.name === 'AbortError') {
-                    console.warn(`[PauseShop:ApiClient] Stream reading aborted`);
+                    console.warn(`[FreezeFrame:ApiClient] Stream reading aborted`);
                     throw error;
                 }
-                console.error("[PauseShop:ApiClient] Error reading stream:", error);
+                console.error("[FreezeFrame:ApiClient] Error reading stream:", error);
                 callbacks.onError(new Event("stream_error"));
             }
         };
@@ -155,11 +155,11 @@ export const analyzeImageStreaming = async (
     } catch (error) {
         // Re-throw AbortError to be handled by the caller
         if (error instanceof Error && error.name === 'AbortError') {
-            console.warn(`[PauseShop:ApiClient] Streaming analysis aborted during initialization`);
+            console.warn(`[FreezeFrame:ApiClient] Streaming analysis aborted during initialization`);
             throw error;
         }
         console.error(
-            "[PauseShop:ApiClient] Failed to start streaming analysis:",
+            "[FreezeFrame:ApiClient] Failed to start streaming analysis:",
             error,
         );
         callbacks.onError(new Event("connection_error"));
@@ -180,9 +180,9 @@ export const endSession = async (pauseId: string): Promise<void> => {
         if (!response.ok) {
             throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
-        console.log(`[PauseShop:ApiClient] Session ended successfully for pauseId: ${pauseId}`);
+        console.log(`[FreezeFrame:ApiClient] Session ended successfully for pauseId: ${pauseId}`);
     } catch (error) {
-        console.error(`[PauseShop:ApiClient] Failed to end session for pauseId: ${pauseId}`, error);
+        console.error(`[FreezeFrame:ApiClient] Failed to end session for pauseId: ${pauseId}`, error);
         // Re-throw the error to be handled by the caller
         throw error;
     }

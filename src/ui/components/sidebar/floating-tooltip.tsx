@@ -45,7 +45,7 @@ const FloatingTooltip = ({ text, isVisible, position, iconElement, sidebarPositi
         <AnimatePresence>
             {isVisible && iconElement && (
                 <motion.div
-                    className={`pauseshop-floating-tooltip position-${position}`}
+                    className={`freezeframe-floating-tooltip position-${position}`}
                     style={getTooltipStyle()}
                     initial={{ opacity: 0, scale: 0 }}
                     animate={{ opacity: 1, scale: 1 }}

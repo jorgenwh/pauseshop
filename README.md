@@ -1,8 +1,8 @@
-# PauseShop 🛒
+# FreezeFrame 🛒
 
 Ever paused a video and thought "I NEED that sweater"? We got you covered! 🛋️✨
 
-PauseShop is a Chrome extension that turns your streaming addiction into a shopping opportunity. Pause any video, and we'll magically find those products on Amazon for you (or hopefully something similar).
+FreezeFrame is a Chrome extension that turns your streaming addiction into a shopping opportunity. Pause any video, and we'll magically find those products on Amazon for you (or hopefully something similar).
 
 ## How it works 🪄
 
@@ -31,8 +31,8 @@ We currently support YouTube videos and shorts, with plans to expand to Instagra
 Clone the repository and install dependencies
 
 ```bash
-git clone https://github.com/jorgenwh/pauseshop
-cd pauseshop
+git clone https://github.com/jorgenwh/freezeframe
+cd freezeframe
 npm install
 ```
 
@@ -64,7 +64,7 @@ npm run dev:dev
 2. Enable **Developer mode** (toggle in the top right)
 3. Click **Load unpacked**
 4. Select the `dist` folder from your project directory
-5. The PauseShop extension should now appear in your extensions list
+5. The FreezeFrame extension should now appear in your extensions list
 
 ## Bugs and missing features 🪲
 

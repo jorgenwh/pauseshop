@@ -8,13 +8,13 @@ export type ServerEnvironment = 'remote' | 'local';
 
 // Server URLs for different environments
 export const SERVER_URLS = {
-    remote: 'https://pauseshop-server-rfrxaro25a-uc.a.run.app',
+    remote: 'https://freezeframe-server-rfrxaro25a-uc.a.run.app',
     local: 'http://localhost:3000'
 };
 
 // Website URLs for different environments
 export const WEBSITE_URLS = {
-    remote: 'https://pauseshop.net',
+    remote: 'https://freeze-frame.net',
     local: 'http://localhost:5173'
 };
 

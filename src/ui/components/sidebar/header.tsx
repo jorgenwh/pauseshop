@@ -25,8 +25,8 @@ const Header = ({
     };
 
     const headerClasses = [
-        "pauseshop-sidebar-header",
-        compact && "pauseshop-sidebar-compact",
+        "freezeframe-sidebar-header",
+        compact && "freezeframe-sidebar-compact",
         `position-${position}`
     ].filter(Boolean).join(" ");
 
@@ -38,7 +38,7 @@ const Header = ({
             // During loading, only show close button in compact mode when mouse is nearby
             return (
                 <motion.div
-                    className="pauseshop-sidebar-button-container no-products"
+                    className="freezeframe-sidebar-button-container no-products"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: shouldShowButtons ? 1 : 0 }}
                     transition={{
@@ -55,14 +55,14 @@ const Header = ({
                     }}
                 >
                     <button
-                        className="pauseshop-sidebar-close-button"
+                        className="freezeframe-sidebar-close-button"
                         onClick={onClose}
                         title="Close FreezeFrame"
                     >
                         <img
                             src={browser.runtime.getURL("/icons/close.png")}
                             alt="Close"
-                            className="pauseshop-button-icon"
+                            className="freezeframe-button-icon"
                         />
                     </button>
                 </motion.div>
@@ -72,7 +72,7 @@ const Header = ({
         if (contentState === SidebarContentState.NO_PRODUCTS) {
             return (
                 <motion.div
-                    className="pauseshop-sidebar-button-container no-products"
+                    className="freezeframe-sidebar-button-container no-products"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: shouldShowButtons ? 1 : 0 }}
                     transition={{
@@ -89,14 +89,14 @@ const Header = ({
                     }}
                 >
                     <button
-                        className="pauseshop-sidebar-close-button"
+                        className="freezeframe-sidebar-close-button"
                         onClick={onClose}
                         title="Close FreezeFrame"
                     >
                         <img
                             src={browser.runtime.getURL("/icons/close.png")}
                             alt="Close"
-                            className="pauseshop-button-icon"
+                            className="freezeframe-button-icon"
                         />
                     </button>
                 </motion.div>
@@ -108,7 +108,7 @@ const Header = ({
 
         return (
             <motion.div
-                className="pauseshop-sidebar-button-container"
+                className="freezeframe-sidebar-button-container"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: shouldShowButtons ? 1 : 0 }}
                 transition={{
@@ -128,48 +128,48 @@ const Header = ({
                     shouldFlipButtonOrder ? (
                         <>
                             <button
-                                className="pauseshop-sidebar-close-button"
+                                className="freezeframe-sidebar-close-button"
                                 onClick={onClose}
                                 title="Close FreezeFrame"
                             >
                                 <img
                                     src={browser.runtime.getURL("/icons/close.png")}
                                     alt="Close"
-                                    className="pauseshop-button-icon"
+                                    className="freezeframe-button-icon"
                                 />
                             </button>
                             <button
-                                className="pauseshop-sidebar-toggle-button"
+                                className="freezeframe-sidebar-toggle-button"
                                 onClick={onToggleCompact}
                             >
                                 <img
                                     src={browser.runtime.getURL(`/icons/${getToggleButtonIcon()}`)}
                                     alt={compact ? "Expand" : "Collapse"}
-                                    className="pauseshop-button-icon"
+                                    className="freezeframe-button-icon"
                                 />
                             </button>
                         </>
                     ) : (
                         <>
                             <button
-                                className="pauseshop-sidebar-toggle-button"
+                                className="freezeframe-sidebar-toggle-button"
                                 onClick={onToggleCompact}
                             >
                                 <img
                                     src={browser.runtime.getURL(`/icons/${getToggleButtonIcon()}`)}
                                     alt={compact ? "Expand" : "Collapse"}
-                                    className="pauseshop-button-icon"
+                                    className="freezeframe-button-icon"
                                 />
                             </button>
                             <button
-                                className="pauseshop-sidebar-close-button"
+                                className="freezeframe-sidebar-close-button"
                                 onClick={onClose}
                                 title="Close FreezeFrame"
                             >
                                 <img
                                     src={browser.runtime.getURL("/icons/close.png")}
                                     alt="Close"
-                                    className="pauseshop-button-icon"
+                                    className="freezeframe-button-icon"
                                 />
                             </button>
                         </>
@@ -178,48 +178,48 @@ const Header = ({
                     shouldFlipButtonOrder ? (
                         <>
                             <button
-                                className="pauseshop-sidebar-toggle-button"
+                                className="freezeframe-sidebar-toggle-button"
                                 onClick={onToggleCompact}
                             >
                                 <img
                                     src={browser.runtime.getURL(`/icons/${getToggleButtonIcon()}`)}
                                     alt={compact ? "Expand" : "Collapse"}
-                                    className="pauseshop-button-icon"
+                                    className="freezeframe-button-icon"
                                 />
                             </button>
                             <button
-                                className="pauseshop-sidebar-close-button"
+                                className="freezeframe-sidebar-close-button"
                                 onClick={onClose}
                                 title="Close FreezeFrame"
                             >
                                 <img
                                     src={browser.runtime.getURL("/icons/close.png")}
                                     alt="Close"
-                                    className="pauseshop-button-icon"
+                                    className="freezeframe-button-icon"
                                 />
                             </button>
                         </>
                     ) : (
                         <>
                             <button
-                                className="pauseshop-sidebar-close-button"
+                                className="freezeframe-sidebar-close-button"
                                 onClick={onClose}
                                 title="Close FreezeFrame"
                             >
                                 <img
                                     src={browser.runtime.getURL("/icons/close.png")}
                                     alt="Close"
-                                    className="pauseshop-button-icon"
+                                    className="freezeframe-button-icon"
                                 />
                             </button>
                             <button
-                                className="pauseshop-sidebar-toggle-button"
+                                className="freezeframe-sidebar-toggle-button"
                                 onClick={onToggleCompact}
                             >
                                 <img
                                     src={browser.runtime.getURL(`/icons/${getToggleButtonIcon()}`)}
                                     alt={compact ? "Expand" : "Collapse"}
-                                    className="pauseshop-button-icon"
+                                    className="freezeframe-button-icon"
                                 />
                             </button>
                         </>
@@ -239,17 +239,17 @@ const Header = ({
             <img
                 src={browser.runtime.getURL("/icons/icon-128.png")}
                 alt="FreezeFrame Icon"
-                className={"pauseshop-sidebar-header-icon icon" + (compact ? " compact" : "")}
+                className={"freezeframe-sidebar-header-icon icon" + (compact ? " compact" : "")}
                 style={{
                     width: "30px",
                     height: "30px",
                 }}
             />
-            <div className="pauseshop-sidebar-header-title-container">
-                <h1 className="pauseshop-sidebar-header-title-pause">
+            <div className="freezeframe-sidebar-header-title-container">
+                <h1 className="freezeframe-sidebar-header-title-freeze">
                     Freeze
                 </h1>
-                <h1 className="pauseshop-sidebar-header-title-shop">
+                <h1 className="freezeframe-sidebar-header-title-frame">
                     Frame
                 </h1>
             </div>

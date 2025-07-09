@@ -135,14 +135,14 @@ export class UIManager {
 
     private createContainer(): void {
         const existingContainer = document.querySelector(
-            ".pauseshop-ui-container",
+            ".freezeframe-ui-container",
         );
         if (existingContainer) {
             existingContainer.remove();
         }
 
         this.container = document.createElement("div");
-        this.container.className = "pauseshop-ui-container";
+        this.container.className = "freezeframe-ui-container";
 
         const containerStyles = {
             position: "fixed" as const,

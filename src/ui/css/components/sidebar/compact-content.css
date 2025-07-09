@@ -1,5 +1,5 @@
 /* Styles for Compact Sidebar Content */
-.pauseshop-compact-sidebar-content {
+.freezeframe-compact-sidebar-content {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -11,7 +11,7 @@
     position: relative; /* Ensure proper positioning context for tooltips */
 }
 
-.pauseshop-compact-icon-container {
+.freezeframe-compact-icon-container {
     position: relative;
     width: 27px;
     height: 27px;
@@ -21,21 +21,21 @@
     cursor: pointer;
 }
 
-.pauseshop-compact-icon {
+.freezeframe-compact-icon {
     width: 100%;
     height: 100%;
     object-fit: contain;
 }
 
-.pauseshop-compact-icon.icon {
+.freezeframe-compact-icon.icon {
     filter: invert(0.74509803921)
 }
 
-.pauseshop-compact-icon-count {
+.freezeframe-compact-icon-count {
     position: absolute;
     top: -8px;
     right: -8px;
-    background-color: var(--pauseshop-theme-trim-color);
+    background-color: var(--freezeframe-theme-trim-color);
     color: white;
     border-radius: 50%;
     font-size: 1.2em;
@@ -53,19 +53,19 @@
 }
 
 /* Adjust position of count overlay when positioned on right */
-.pauseshop-sidebar.position-right .pauseshop-compact-icon-container .pauseshop-compact-icon-count {
+.freezeframe-sidebar.position-right .freezeframe-compact-icon-container .freezeframe-compact-icon-count {
     left: -3px;
     right: auto;
 }
 
-.pauseshop-nothing-found-icon {
+.freezeframe-nothing-found-icon {
     width: 32px;
     height: 32px;
     position: relative;
     top: -1px;
 }
 
-.pauseshop-error-icon {
+.freezeframe-error-icon {
     width: 34px;
     height: 34px;
     position: relative;

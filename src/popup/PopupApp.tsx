@@ -35,10 +35,10 @@ const PopupApp = () => {
     return (
         <div
             className="p-4 text-center font-sans"
-            style={{ backgroundColor: "var(--pauseshop-bg)" }}
+            style={{ backgroundColor: "var(--freezeframe-bg)" }}
         >
             <h1 className="text-lg font-bold mb-2" style={{ color: "white" }}>
-                PauseShop Settings
+                FreezeFrame Settings
             </h1>
             <div className="flex items-center justify-center">
                 <span className="mr-2" style={{ color: "white" }}>
@@ -47,7 +47,7 @@ const PopupApp = () => {
                 <button
                     onClick={handleToggleSidebarPosition}
                     className="px-4 py-2 text-white rounded-md w-20 transition-all duration-100 active:scale-95 active:opacity-80"
-                    style={{ backgroundColor: "var(--pauseshop-theme-trim-color)" }}
+                    style={{ backgroundColor: "var(--freezeframe-theme-trim-color)" }}
                 >
                     {position === "left" ? "Left" : "Right"}
                 </button>
@@ -56,7 +56,7 @@ const PopupApp = () => {
                 <button
                     onClick={handleClearClickHistory}
                     className="px-4 py-2 text-white rounded-md transition-all duration-100 active:scale-95 active:opacity-80"
-                    style={{ backgroundColor: "var(--pauseshop-theme-trim-color)" }}
+                    style={{ backgroundColor: "var(--freezeframe-theme-trim-color)" }}
                 >
                     Clear History
                 </button>

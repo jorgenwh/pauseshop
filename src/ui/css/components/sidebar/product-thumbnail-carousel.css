@@ -1,4 +1,4 @@
-.pauseshop-carousel-container {
+.freezeframe-carousel-container {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -7,7 +7,7 @@
     position: relative;
 }
 
-.pauseshop-carousel-content {
+.freezeframe-carousel-content {
     position: relative;
     display: flex;
     justify-content: flex-start;
@@ -16,14 +16,14 @@
     overflow: hidden; /* Ensure content stays within borders */
 }
 
-.pauseshop-carousel-strip {
+.freezeframe-carousel-strip {
     display: flex;
     width: 100%;
     flex-direction: row;
     flex-wrap: nowrap;
 }
 
-.pauseshop-carousel-slide {
+.freezeframe-carousel-slide {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -32,16 +32,16 @@
     position: relative;
 }
 
-.pauseshop-carousel-image {
+.freezeframe-carousel-image {
     width: 100%;
     height: 200px;
     object-fit: cover;
     border-radius: 0 0 10px 10px; /* Match bottom corners of card */
 }
 
-.pauseshop-carousel-button {
-    background: var(--pauseshop-lighter-bg); /* Semi-transparent background */
-    color: var(--pauseshop-white, #ffffff);
+.freezeframe-carousel-button {
+    background: var(--freezeframe-lighter-bg); /* Semi-transparent background */
+    color: var(--freezeframe-white, #ffffff);
     width: 40px; /* Increased from 32px (25% larger) */
     height: 40px; /* Increased from 32px (25% larger) */
     border: none;
@@ -57,28 +57,28 @@
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
 }
 
-.pauseshop-carousel-button:not(:disabled):hover {
-    background: color-mix(in srgb, var(--pauseshop-theme-trim-color) 75%, black);
+.freezeframe-carousel-button:not(:disabled):hover {
+    background: color-mix(in srgb, var(--freezeframe-theme-trim-color) 75%, black);
     opacity: 0.8;
 }
 
-.pauseshop-carousel-button:disabled {
-    /* Removed cursor: not-allowed to keep default cursor */
+.freezeframe-carousel-button:disabled {
+    opacity: 0.5;
 }
 
-.pauseshop-carousel-button-prev {
+.freezeframe-carousel-button-prev {
     left: 10px;
     top: calc(50% - 20px); /* Adjust for any potential offset */
     transform: translateY(-50%);
 }
 
-.pauseshop-carousel-button-next {
+.freezeframe-carousel-button-next {
     right: 10px;
     top: calc(50% - 20px); /* Adjust for any potential offset */
     transform: translateY(-50%);
 }
 
-.pauseshop-carousel-single {
+.freezeframe-carousel-single {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -86,13 +86,13 @@
     position: relative;
 }
 
-.pauseshop-carousel-empty {
+.freezeframe-carousel-empty {
     display: flex;
     justify-content: center;
     align-items: center;
     width: 100%;
     height: 160px;
-    color: var(--pauseshop-white, #bebebe);
+    color: var(--freezeframe-white, #bebebe);
     font-style: italic;
     background-color: rgba(45, 45, 45, 1.0); /* Slightly lighter than the card background */
     border-radius: 0 0 10px 10px; /* Match bottom corners of card */
@@ -101,20 +101,20 @@
 
 /* Responsive adjustments */
 @media (max-width: 480px) {
-    .pauseshop-carousel-button {
+    .freezeframe-carousel-button {
         width: 36px; /* Increased from 28px (~29% larger) */
         height: 36px; /* Increased from 28px (~29% larger) */
     }
 
-    .pauseshop-carousel-button-prev {
+    .freezeframe-carousel-button-prev {
         left: 5px;
     }
 
-    .pauseshop-carousel-button-next {
+    .freezeframe-carousel-button-next {
         right: 5px;
     }
 
-    .pauseshop-carousel-image {
+    .freezeframe-carousel-image {
         width: 100%;
         height: 140px;
     }

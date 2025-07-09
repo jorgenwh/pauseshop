@@ -1,5 +1,5 @@
 /**
- * Types and interfaces for the PauseShop background service worker
+ * Types and interfaces for the FreezeFrame background service worker
  */
 
 export interface BackgroundMessageResponse {

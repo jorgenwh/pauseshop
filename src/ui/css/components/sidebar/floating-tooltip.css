@@ -1,10 +1,10 @@
-.pauseshop-floating-tooltip {
+.freezeframe-floating-tooltip {
     position: fixed;
-    background-color: var(--pauseshop-bg);
-    color: var(--pauseshop-white);
+    background-color: var(--freezeframe-bg);
+    color: var(--freezeframe-white);
     padding: 6px 10px;
     border-radius: 6px;
-    border: 1px solid var(--pauseshop-border-color);
+    border: 1px solid var(--freezeframe-border-color);
     font-size: 12px;
     white-space: pre-line;
     pointer-events: none;
@@ -20,12 +20,12 @@
 
 /* Default position tooltip to the left of the sidebar when sidebar is on the right */
 /* These will be overridden by inline styles when custom positioning is used */
-.pauseshop-floating-tooltip.position-right {
+.freezeframe-floating-tooltip.position-right {
     right: 77px; /* 47px (sidebar width) + 20px (sidebar offset) + 10px (spacing) */
 }
 
 /* Default position tooltip to the right of the sidebar when sidebar is on the left */
 /* These will be overridden by inline styles when custom positioning is used */
-.pauseshop-floating-tooltip.position-left {
+.freezeframe-floating-tooltip.position-left {
     left: 77px; /* 47px (sidebar width) + 20px (sidebar offset) + 10px (spacing) */
 }

@@ -1,5 +1,5 @@
 /* Header Styles */
-.pauseshop-sidebar-header {
+.freezeframe-sidebar-header {
     display: flex;
     align-items: flex-end;
     position: relative;
@@ -9,25 +9,25 @@
 }
 
 /* Only add padding-bottom in expanded mode */
-.pauseshop-sidebar:not(.pauseshop-sidebar-compact) .pauseshop-sidebar-header {
+.freezeframe-sidebar:not(.freezeframe-sidebar-compact) .freezeframe-sidebar-header {
     padding-bottom: 5px;
 }
 
 /* Hide icon in expanded mode */
-.pauseshop-sidebar:not(.pauseshop-sidebar-compact) .pauseshop-sidebar-header-icon {
+.freezeframe-sidebar:not(.freezeframe-sidebar-compact) .freezeframe-sidebar-header-icon {
     display: none;
 }
 
-.pauseshop-sidebar-header-icon {
+.freezeframe-sidebar-header-icon {
     margin-left: 8px;
 }
 
-.pauseshop-sidebar.position-right .pauseshop-sidebar-header-icon {
+.freezeframe-sidebar.position-right .freezeframe-sidebar-header-icon {
     margin-left: auto;
     margin-right: 8px;
 }
 
-.pauseshop-sidebar-header-title-container {
+.freezeframe-sidebar-header-title-container {
     position: absolute;
     left: 50%;
     bottom: 10px;
@@ -42,34 +42,34 @@
     align-self: flex-end;
 }
 
-.pauseshop-sidebar.position-right .pauseshop-sidebar-header-title-container {
+.freezeframe-sidebar.position-right .freezeframe-sidebar-header-title-container {
     left: auto;
     right: 50%;
     transform: translateX(50%);
 }
 
-.pauseshop-sidebar.pauseshop-sidebar-compact .pauseshop-sidebar-header-title-container {
+.freezeframe-sidebar.freezeframe-sidebar-compact .freezeframe-sidebar-header-title-container {
     opacity: 0;
     pointer-events: none;
 }
 
-.pauseshop-sidebar-header-title-pause {
+.freezeframe-sidebar-header-title-freeze {
     font-weight: 900;
     font-size: 25px;
     margin: 0;
     line-height: 1;
 }
 
-.pauseshop-sidebar-header-title-shop {
+.freezeframe-sidebar-header-title-frame {
     font-weight: 400;
     font-size: 25px;
-    color: var(--pauseshop-theme-trim-color);
+    color: var(--freezeframe-theme-trim-color);
     margin: 0;
     line-height: 1;
 }
 
 /* Button Container */
-.pauseshop-sidebar-button-container {
+.freezeframe-sidebar-button-container {
     position: absolute;
     bottom: 0;
     right: 8px;
@@ -83,38 +83,38 @@
 }
 
 /* Only move buttons up in expanded mode */
-.pauseshop-sidebar:not(.pauseshop-sidebar-compact) .pauseshop-sidebar-button-container {
+.freezeframe-sidebar:not(.freezeframe-sidebar-compact) .freezeframe-sidebar-button-container {
     bottom: 18px;
 }
 
 /* In expanded mode, keep buttons on right side for both positions */
-.pauseshop-sidebar.position-right:not(.pauseshop-sidebar-compact) .pauseshop-sidebar-button-container {
+.freezeframe-sidebar.position-right:not(.freezeframe-sidebar-compact) .freezeframe-sidebar-button-container {
     left: auto;
     right: 8px;
     flex-direction: row-reverse;
 }
 
 /* Only move to left side in compact mode */
-.pauseshop-sidebar.position-right.pauseshop-sidebar-compact .pauseshop-sidebar-button-container {
+.freezeframe-sidebar.position-right.freezeframe-sidebar-compact .freezeframe-sidebar-button-container {
     left: 8px;
     right: auto;
 }
 
-.pauseshop-sidebar.pauseshop-sidebar-compact .pauseshop-sidebar-button-container {
+.freezeframe-sidebar.freezeframe-sidebar-compact .freezeframe-sidebar-button-container {
     right: -55px;
     bottom: 17px;
     background-color: var(--sidebar-toggle-button-bg);
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
 }
 
-.pauseshop-sidebar.pauseshop-sidebar-compact.position-right .pauseshop-sidebar-button-container {
+.freezeframe-sidebar.freezeframe-sidebar-compact.position-right .freezeframe-sidebar-button-container {
     left: -55px;
     right: auto;
     bottom: 17px;
 }
 
 /* Buttons */
-.pauseshop-sidebar-toggle-button {
+.freezeframe-sidebar-toggle-button {
     background-color: transparent;
     border: none;
     cursor: pointer;
@@ -127,15 +127,15 @@
     transition: transform 0.2s ease-in-out;
 }
 
-.pauseshop-sidebar-toggle-button:hover {
+.freezeframe-sidebar-toggle-button:hover {
     transform: scale(1.4);
 }
 
-.pauseshop-sidebar-toggle-button:active {
+.freezeframe-sidebar-toggle-button:active {
     transform: scale(0.9);
 }
 
-.pauseshop-sidebar-close-button {
+.freezeframe-sidebar-close-button {
     background-color: #dc3545;
     border: none;
     cursor: pointer;
@@ -149,28 +149,28 @@
     transition: transform 0.2s ease-in-out, background-color 0.2s ease-in-out;
 }
 
-.pauseshop-sidebar-close-button:hover {
+.freezeframe-sidebar-close-button:hover {
     transform: scale(1.4);
     background-color: #c82333;
 }
 
-.pauseshop-sidebar-close-button:active {
+.freezeframe-sidebar-close-button:active {
     transform: scale(0.9);
 }
 
 /* Button Icons */
-.pauseshop-button-icon {
+.freezeframe-button-icon {
     width: 14px;
     height: 14px;
     filter: invert(0.9);
     transition: transform 0.2s ease-in-out;
 }
 
-.pauseshop-sidebar-close-button .pauseshop-button-icon {
+.freezeframe-sidebar-close-button .freezeframe-button-icon {
     filter: invert(1) brightness(100%);
 }
 
-.pauseshop-sidebar.pauseshop-sidebar-compact .pauseshop-sidebar-button-container.no-products {
+.freezeframe-sidebar.freezeframe-sidebar-compact .freezeframe-sidebar-button-container.no-products {
     right: -28px;
     bottom: 18px;
     width: 22px;
@@ -180,30 +180,30 @@
     border-radius: 6px;
 }
 
-.pauseshop-sidebar.pauseshop-sidebar-compact.position-right .pauseshop-sidebar-button-container.no-products {
+.freezeframe-sidebar.freezeframe-sidebar-compact.position-right .freezeframe-sidebar-button-container.no-products {
     left: -28px;
     right: auto;
     bottom: 18px;
 }
 
 /* Overrides for YouTube Shorts - Reverse the hover direction */
-.pauseshop-sidebar.youtube-shorts.pauseshop-sidebar-compact:not(.position-right) .pauseshop-sidebar-button-container {
+.freezeframe-sidebar.youtube-shorts.freezeframe-sidebar-compact:not(.position-right) .freezeframe-sidebar-button-container {
     right: auto;
     left: -55px; /* Hover left instead of right */
 }
 
-.pauseshop-sidebar.youtube-shorts.pauseshop-sidebar-compact.position-right .pauseshop-sidebar-button-container {
+.freezeframe-sidebar.youtube-shorts.freezeframe-sidebar-compact.position-right .freezeframe-sidebar-button-container {
     left: auto;
     right: -55px; /* Hover right instead of left */
 }
 
 /* Handle the no-products case as well */
-.pauseshop-sidebar.youtube-shorts.pauseshop-sidebar-compact:not(.position-right) .pauseshop-sidebar-button-container.no-products {
+.freezeframe-sidebar.youtube-shorts.freezeframe-sidebar-compact:not(.position-right) .freezeframe-sidebar-button-container.no-products {
     right: auto;
     left: -28px;
 }
 
-.pauseshop-sidebar.youtube-shorts.pauseshop-sidebar-compact.position-right .pauseshop-sidebar-button-container.no-products {
+.freezeframe-sidebar.youtube-shorts.freezeframe-sidebar-compact.position-right .freezeframe-sidebar-button-container.no-products {
     left: auto;
     right: -28px;
 }

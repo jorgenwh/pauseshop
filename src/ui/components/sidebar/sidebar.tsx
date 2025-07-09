@@ -142,14 +142,14 @@ const Sidebar = ({
         const handleDocumentWheel = (e: WheelEvent) => {
             // Use refs to get current values (avoids stale closure issues)
             if (isHoveringRef.current && !isCompactRef.current && isVisibleRef.current) {
-                const sidebarElement = document.getElementById('pauseshop-sidebar');
+                const sidebarElement = document.getElementById('freezeframe-sidebar');
                 if (!sidebarElement) return;
 
                 // Check if the event target is within the sidebar
                 if (!sidebarElement.contains(e.target as Node)) return;
 
                 // Check if the sidebar content can scroll
-                const expandedContent = sidebarElement.querySelector('.pauseshop-expanded-sidebar-content');
+                const expandedContent = sidebarElement.querySelector('.freezeframe-expanded-sidebar-content');
                 if (expandedContent) {
                     const { scrollTop, scrollHeight, clientHeight } = expandedContent;
                     const isScrollable = scrollHeight > clientHeight;
@@ -222,8 +222,8 @@ const Sidebar = ({
     const firstIconHasCounter = !!(firstIconCategory && iconCounts[firstIconCategory] > 1);
 
     const sidebarClasses = [
-        "pauseshop-sidebar",
-        isCompact && "pauseshop-sidebar-compact",
+        "freezeframe-sidebar",
+        isCompact && "freezeframe-sidebar-compact",
         `position-${position}`,
         isOnYouTubeShorts && "youtube-shorts"
     ].filter(Boolean).join(" ");
@@ -243,7 +243,7 @@ const Sidebar = ({
             {isVisible && (
                 <motion.div
                     key={isCompact ? "compact-sidebar" : "expanded-sidebar"}
-                    id="pauseshop-sidebar"
+                    id="freezeframe-sidebar"
                     className={sidebarClasses}
                     initial={{ opacity: 0, scale: 0 }}
                     animate={{ opacity: 1, scale: 1 }}

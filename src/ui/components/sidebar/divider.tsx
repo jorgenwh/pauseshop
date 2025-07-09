@@ -6,7 +6,7 @@ interface DividerProps {
 
 const Divider = ({ compact = false }: DividerProps) => {
     const dividerClasses = [
-        "pauseshop-sidebar-divider",
+        "freezeframe-sidebar-divider",
         compact && "compact"
     ].filter(Boolean).join(" ");
 
