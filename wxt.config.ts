@@ -29,10 +29,10 @@ export default defineConfig({
         },
     }),
     manifest: {
-        name: "PauseShop",
-        version: "0.1.0",
-        version_name: "0.1.0 Beta",
-        description: "Discover products from paused videos and find them on Amazon",
+        name: "FreezeFrame",
+        version: "0.4.0",
+        version_name: "0.4.0 Beta",
+        description: "Discover products from paused YouTube videos and find them on Amazon",
         content_security_policy: {
             extension_pages: "script-src 'self'; object-src 'self'; default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src * data:"
         },
@@ -71,7 +71,7 @@ export default defineConfig({
         ],
         action: {
             default_popup: "popup/index.html",
-            default_title: "PauseShop"
+            default_title: "FreezeFrame"
         },
         externally_connectable: {
             "matches": [

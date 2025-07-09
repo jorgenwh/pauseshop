@@ -1,5 +1,5 @@
 /**
- * Main UI manager for PauseShop extension
+ * Main UI manager for FreezeFrame extension
  * Orchestrates all UI components and handles lifecycle management
  */
 
@@ -271,7 +271,7 @@ export class UIManager {
     ): boolean => {
         if (this.productStorage.pauseId !== message.pauseId) {
             console.warn(
-                `[PauseShop:UIManager] Ignoring analysis_complete from old pauseId: ${message.pauseId}`,
+                `[FreezeFrame:UIManager] Ignoring analysis_complete from old pauseId: ${message.pauseId}`,
             );
             return false;
         }
@@ -287,7 +287,7 @@ export class UIManager {
 
     private handleAnalysisError = (message: AnalysisErrorMessage): boolean => {
         console.error(
-            `[PauseShop:UIManager] Received analysis_error message for pauseId: ${message.pauseId}`,
+            `[FreezeFrame:UIManager] Received analysis_error message for pauseId: ${message.pauseId}`,
         );
         this.sidebarContentState = SidebarContentState.ERROR;
         this.sidebarVisible = true; // Make sure sidebar is visible to show error
@@ -358,7 +358,7 @@ export class UIManager {
             default:
                 result = false;
                 // Cast message to BackgroundMessage to access 'type' property safely
-                console.warn("[PauseShop:UIManager] Received unhandled background message:", (message as BackgroundMessage).type);
+                console.warn("[FreezeFrame:UIManager] Received unhandled background message:", (message as BackgroundMessage).type);
         }
         sendResponse(result);
     };
@@ -404,7 +404,7 @@ export class UIManager {
             }
             return null;
         } catch (error) {
-            console.error("[PauseShop:UIManager] Failed to create UI Manager:", error);
+            console.error("[FreezeFrame:UIManager] Failed to create UI Manager:", error);
             return null;
         }
     }
