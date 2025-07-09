@@ -12,8 +12,8 @@ export const ENABLE_FRAME_VALIDATION = false;
 export const openFrameInNewTab = async (imageData: string): Promise<void> => {
     try {
         await browser.tabs.create({ url: imageData });
-        console.log("[PauseShop:FrameDebugger] Frame opened in new tab for validation");
+        console.log("[FreezeFrame:FrameDebugger] Frame opened in new tab for validation");
     } catch (error) {
-        console.error("[PauseShop:FrameDebugger] Failed to open frame in new tab:", error);
+        console.error("[FreezeFrame:FrameDebugger] Failed to open frame in new tab:", error);
     }
 };

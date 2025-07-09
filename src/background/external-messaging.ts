@@ -1,5 +1,5 @@
 /**
- * Handles messages from external websites, such as pauseshop.net
+ * Handles messages from external websites, such as freeze-frame.net
  */
 
 import { sessionData, clickHistory } from "../storage";

@@ -36,7 +36,7 @@ const CompactContent = ({
         return (
             <motion.span
                 key={iconCounts[iconCategory]}
-                className="pauseshop-compact-icon-count"
+                className="freezeframe-compact-icon-count"
                 initial={{ scale: 0, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{
@@ -60,7 +60,7 @@ const CompactContent = ({
                         marginTop: index === 0 && firstIconHasCounter ? '7px' : '0',
                         position: 'relative' // Ensure proper positioning context for tooltip
                     }}
-                    className="pauseshop-compact-icon-container"
+                    className="freezeframe-compact-icon-container"
                     initial={{ opacity: 0, scale: 0 }}
                     animate={{ opacity: 1, scale: 1 }}
                     whileHover={{
@@ -85,7 +85,7 @@ const CompactContent = ({
                             `/icons/products/${iconCategory}.png` as PublicPath
                         )}
                         alt={iconCategory}
-                        className={`pauseshop-compact-icon icon`}
+                        className={`freezeframe-compact-icon icon`}
                     />
                     {buildCategoryCounter(iconCategory)}
                     {/* Tooltip is rendered outside the icon container for proper positioning */}
@@ -122,7 +122,7 @@ const CompactContent = ({
                 <img
                     src={browser.runtime.getURL("/icons/nothing-found.png")}
                     alt="No products found"
-                    className="pauseshop-nothing-found-icon"
+                    className="freezeframe-nothing-found-icon"
                 />
             </motion.div>
         );
@@ -149,7 +149,7 @@ const CompactContent = ({
                 <img
                     src={browser.runtime.getURL("/icons/error.png")}
                     alt="An error occurred"
-                    className="pauseshop-error-icon"
+                    className="freezeframe-error-icon"
                 />
             </motion.div>
         );
@@ -171,7 +171,7 @@ const CompactContent = ({
     }
 
     const compactContentClasses = [
-        "pauseshop-compact-sidebar-content",
+        "freezeframe-compact-sidebar-content",
         `position-${position}`
     ].join(" ");
 

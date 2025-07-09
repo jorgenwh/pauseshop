@@ -1,6 +1,6 @@
 # Plan for Session Management Implementation
 
-This document outlines the plan to implement session management functionality in the PauseShop Chrome Extension.
+This document outlines the plan to implement session management functionality in the FreezeFrame Chrome Extension.
 
 ### 1. Dependency Management
 

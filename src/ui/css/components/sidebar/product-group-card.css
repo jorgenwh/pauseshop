@@ -1,18 +1,18 @@
 /* Product Card Glassy Effect */
-.pauseshop-product-card {
+.freezeframe-product-card {
     backdrop-filter: blur(10px);
     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
     border-radius: 10px;
-    background-color: var(--pauseshop-lighter-bg); /* Slightly lighter than pauseshop-bg */
+    background-color: var(--freezeframe-lighter-bg); /* Slightly lighter than freezeframe-bg */
     margin: 2.5px;
     padding: 2.5px 2.5px 0 2.5px;
 }
-.pauseshop-product-card:hover {
+.freezeframe-product-card:hover {
     box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.5);
 }
 
 /* Product Card Header Styles */
-.pauseshop-product-card-header {
+.freezeframe-product-card-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -23,14 +23,14 @@
 }
 
 /* Product Card Header Content Styles */
-.pauseshop-product-card-header-content {
+.freezeframe-product-card-header-content {
     display: flex;
     align-items: center;
 }
 
 /* Product Card Title Styles */
-.pauseshop-product-card-title {
-    color: var(--pauseshop-white);
+.freezeframe-product-card-title {
+    color: var(--freezeframe-white);
     font-size: 15px;
     font-weight: 600;
     line-height: 1;
@@ -39,17 +39,17 @@
 }
 
 /* Product Card Arrow Styles */
-.pauseshop-product-card-arrow {
-    color: var(--pauseshop-white);
+.freezeframe-product-card-arrow {
+    color: var(--freezeframe-white);
     font-size: 10px;
 }
 
 /* Product Card Content Styles */
-.pauseshop-product-card-content {
+.freezeframe-product-card-content {
     padding: 0;
 }
 
 /* Product Card Text Styles */
-.pauseshop-product-card-text {
+.freezeframe-product-card-text {
     color: #9ca3af;
 }

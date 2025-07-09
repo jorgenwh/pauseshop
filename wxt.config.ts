@@ -75,7 +75,7 @@ export default defineConfig({
         },
         externally_connectable: {
             "matches": [
-                "https://*.pauseshop.net/*",
+                "https://*.freeze-frame.net/*",
                 "http://localhost:5173/*"
             ]
         }

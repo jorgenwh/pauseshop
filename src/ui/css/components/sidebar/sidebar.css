@@ -1,4 +1,4 @@
-.pauseshop-sidebar {
+.freezeframe-sidebar {
     border-radius: 16px;
     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
     position: fixed;
@@ -11,27 +11,27 @@
         right 0s ease-in-out,
         height 0.4s cubic-bezier(0.16, 1, 0.3, 1); /* Smoother height transitions with custom easing */
     pointer-events: all;
-    background-color: var(--pauseshop-bg);
+    background-color: var(--freezeframe-bg);
     overflow: visible;
     padding-top: 4px;
     padding-bottom: 8px;
 }
 
-.pauseshop-sidebar.pauseshop-sidebar-compact {
+.freezeframe-sidebar.freezeframe-sidebar-compact {
     width: 47px;
 }
 
 /* Hide overflow only when expanded to enable scrolling */
-.pauseshop-sidebar:not(.pauseshop-sidebar-compact) {
+.freezeframe-sidebar:not(.freezeframe-sidebar-compact) {
     overflow: hidden;
 }
 
-.pauseshop-sidebar.position-left {
+.freezeframe-sidebar.position-left {
     left: 20px;
     right: auto;
 }
 
-.pauseshop-sidebar.position-right {
+.freezeframe-sidebar.position-right {
     right: 20px;
     left: auto;
 }

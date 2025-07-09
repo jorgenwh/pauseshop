@@ -46,7 +46,7 @@ const initializeExtension = (): void => {
         setUIManager(uiManagerInstance);
         console.log("[FreezeFrame] Extension successfully initialized");
     } else {
-        console.error("PauseShop UI: Failed to initialize UIManager in main-content.ts");
+        console.error("FreezeFrame UI: Failed to initialize UIManager in main-content.ts");
     }
 };
 

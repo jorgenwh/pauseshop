@@ -18,18 +18,18 @@ const LoadingAnimation = () => {
         <motion.div
             animate="jump"
             transition={{ staggerChildren: -0.2, staggerDirection: -1 }}
-            className="pauseshop-loading-container"
+            className="freezeframe-loading-container"
         >
             <motion.div
-                className="pauseshop-loading-dot"
+                className="freezeframe-loading-dot"
                 variants={dotVariants}
             />
             <motion.div
-                className="pauseshop-loading-dot"
+                className="freezeframe-loading-dot"
                 variants={dotVariants}
             />
             <motion.div
-                className="pauseshop-loading-dot"
+                className="freezeframe-loading-dot"
                 variants={dotVariants}
             />
         </motion.div>

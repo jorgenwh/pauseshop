@@ -29,7 +29,7 @@ export class CancellationRegistry {
         if (controller) {
             controller.abort();
             this.controllers.delete(pauseId);
-            console.warn(`[PauseShop:CancellationRegistry] Cancelled pause for pauseId: ${pauseId}`);
+            console.warn(`[FreezeFrame:CancellationRegistry] Cancelled pause for pauseId: ${pauseId}`);
         }
     }
 
@@ -39,7 +39,7 @@ export class CancellationRegistry {
     cancelAll(): void {
         this.controllers.forEach((controller, pauseId) => {
             controller.abort();
-            console.warn(`[PauseShop:CancellationRegistry] Cancelled pause for pauseId: ${pauseId}`);
+            console.warn(`[FreezeFrame:CancellationRegistry] Cancelled pause for pauseId: ${pauseId}`);
         });
         this.controllers.clear();
     }
