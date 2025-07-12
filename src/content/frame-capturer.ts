@@ -1,4 +1,5 @@
 import { UIManager } from "../ui/ui-manager";
+import { captureOptimizedScreenshot } from "./screenshot-optimizer";
 
 export let uiManager: UIManager | null = null;
 
@@ -21,15 +22,8 @@ export const captureVideoFrame = async (
     await uiManager.showSidebar();
 
     try {
-        const canvas = document.createElement('canvas');
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        const ctx = canvas.getContext('2d');
-        if (!ctx) {
-            throw new Error('Could not get canvas context');
-        }
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-        const imageData = canvas.toDataURL('image/png');
+        // Use optimized screenshot capture with smart format selection
+        const imageData = captureOptimizedScreenshot(video, 5); // 5MB limit for extension
 
         const message = {
             type: "registerFrame",
