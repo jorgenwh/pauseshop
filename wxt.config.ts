@@ -29,9 +29,9 @@ export default defineConfig({
         },
     }),
     manifest: {
-        name: "FreezeFrame",
-        version: "0.4.0",
-        version_name: "0.4.0 Beta",
+        name: "FreezeFrame - Identify Products from YouTube Videos",
+        version: "0.4.1",
+        version_name: "0.4.1 Beta",
         description: "Discover products from paused YouTube videos and find them on Amazon",
         content_security_policy: {
             extension_pages: "script-src 'self'; object-src 'self'; default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src * data:"
