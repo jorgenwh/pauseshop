@@ -22,6 +22,8 @@ import Divider from "./divider";
 import FloatingTooltip from "./floating-tooltip";
 import { getIconCounts, getUniqueIcons, formatIconText } from "../../utils";
 import { useYouTubeShortsPositioning, useProximityDetection } from "./hooks";
+import { browser } from "wxt/browser";
+import { safeTranslate } from "../../../utils/language";
 interface SidebarProps {
     isVisible: boolean;
     contentState: SidebarContentState;
@@ -297,8 +299,7 @@ const Sidebar = ({
                             key={`tooltip-${hoveredIcon}`}
                             text={
                                 hoveredIcon === "nothing-found"
-                                    ? browser.i18n.getMessage('sidebar_content_noProductsFound')
-                                    : hoveredIcon === "error"
+                                     ? safeTranslate('sidebar_content_noProductsFound', 'No products found')                                    : hoveredIcon === "error"
                                         ? `${errorMessage}`
                                         : formatIconText(hoveredIcon)
                             }

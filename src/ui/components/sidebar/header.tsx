@@ -3,16 +3,7 @@ import "../../css/components/sidebar/header.css";
 import { SidebarContentState } from "../../types";
 import { isYouTubeShorts } from "./positioning/youtube-shorts-utils";
 import { browser } from "wxt/browser";
-
-// Safe i18n wrapper using browser.i18n.getMessage directly
-const safeT = (key: string, fallback: string) => {
-    try {
-        return browser.i18n.getMessage(key as any) || fallback;
-    } catch (error) {
-        console.warn(`i18n translation failed for key: ${key}`, error);
-        return fallback;
-    }
-};
+import { safeTranslate } from "../../../utils/language";
 
 interface HeaderProps {
     compact: boolean;
@@ -68,11 +59,11 @@ const Header = ({
                     <button
                         className="freezeframe-sidebar-close-button"
                         onClick={onClose}
-                        title={safeT('sidebar_header_close', 'Close FreezeFrame')}
+                        title={safeTranslate('sidebar_header_close', 'Close FreezeFrame')}
                     >
                         <img
                             src={browser.runtime.getURL("/icons/close.png")}
-                            alt={safeT('sidebar_header_close', 'Close FreezeFrame')}
+                            alt={safeTranslate('sidebar_header_close', 'Close FreezeFrame')}
                             className="freezeframe-button-icon"
                         />
                     </button>
@@ -102,11 +93,11 @@ const Header = ({
                     <button
                         className="freezeframe-sidebar-close-button"
                         onClick={onClose}
-                        title={safeT('sidebar_header_close', 'Close FreezeFrame')}
+                        title={safeTranslate('sidebar_header_close', 'Close FreezeFrame')}
                     >
                         <img
                             src={browser.runtime.getURL("/icons/close.png")}
-                            alt={safeT('sidebar_header_close', 'Close FreezeFrame')}
+                            alt={safeTranslate('sidebar_header_close', 'Close FreezeFrame')}
                             className="freezeframe-button-icon"
                         />
                     </button>
@@ -141,11 +132,11 @@ const Header = ({
                             <button
                                 className="freezeframe-sidebar-close-button"
                                 onClick={onClose}
-                                title={safeT('sidebar_header_close', 'Close FreezeFrame')}
+                                title={safeTranslate('sidebar_header_close', 'Close FreezeFrame')}
                             >
                                 <img
                                     src={browser.runtime.getURL("/icons/close.png")}
-                                    alt={safeT('sidebar_header_close', 'Close FreezeFrame')}
+                                    alt={safeTranslate('sidebar_header_close', 'Close FreezeFrame')}
                                     className="freezeframe-button-icon"
                                 />
                             </button>
@@ -155,8 +146,7 @@ const Header = ({
                             >
                                 <img
                                     src={browser.runtime.getURL(`/icons/${getToggleButtonIcon()}`)}
-                                    alt={compact ? safeT('sidebar_header_expand', 'Expand') : safeT('sidebar_header_collapse', 'Collapse')}
-                                    className="freezeframe-button-icon"
+                                     alt={compact ? safeTranslate('sidebar_header_expand', 'Expand') : safeTranslate('sidebar_header_collapse', 'Collapse')}                                    className="freezeframe-button-icon"
                                 />
                             </button>
                         </>
@@ -168,18 +158,17 @@ const Header = ({
                             >
                                 <img
                                     src={browser.runtime.getURL(`/icons/${getToggleButtonIcon()}`)}
-                                    alt={compact ? safeT('sidebar_header_expand', 'Expand') : safeT('sidebar_header_collapse', 'Collapse')}
-                                    className="freezeframe-button-icon"
+                                     alt={compact ? safeTranslate('sidebar_header_expand', 'Expand') : safeTranslate('sidebar_header_collapse', 'Collapse')}                                    className="freezeframe-button-icon"
                                 />
                             </button>
                             <button
                                 className="freezeframe-sidebar-close-button"
                                 onClick={onClose}
-                                title={safeT('sidebar_header_close', 'Close FreezeFrame')}
+                                title={safeTranslate('sidebar_header_close', 'Close FreezeFrame')}
                             >
                                 <img
                                     src={browser.runtime.getURL("/icons/close.png")}
-                                    alt={safeT('sidebar_header_close', 'Close FreezeFrame')}
+                                    alt={safeTranslate('sidebar_header_close', 'Close FreezeFrame')}
                                     className="freezeframe-button-icon"
                                 />
                             </button>
@@ -194,18 +183,17 @@ const Header = ({
                             >
                                 <img
                                     src={browser.runtime.getURL(`/icons/${getToggleButtonIcon()}`)}
-                                    alt={compact ? safeT('sidebar_header_expand', 'Expand') : safeT('sidebar_header_collapse', 'Collapse')}
-                                    className="freezeframe-button-icon"
+                                     alt={compact ? safeTranslate('sidebar_header_expand', 'Expand') : safeTranslate('sidebar_header_collapse', 'Collapse')}                                    className="freezeframe-button-icon"
                                 />
                             </button>
                             <button
                                 className="freezeframe-sidebar-close-button"
                                 onClick={onClose}
-                                title={safeT('sidebar_header_close', 'Close FreezeFrame')}
+                                title={safeTranslate('sidebar_header_close', 'Close FreezeFrame')}
                             >
                                 <img
                                     src={browser.runtime.getURL("/icons/close.png")}
-                                    alt={safeT('sidebar_header_close', 'Close FreezeFrame')}
+                                    alt={safeTranslate('sidebar_header_close', 'Close FreezeFrame')}
                                     className="freezeframe-button-icon"
                                 />
                             </button>
@@ -215,11 +203,11 @@ const Header = ({
                             <button
                                 className="freezeframe-sidebar-close-button"
                                 onClick={onClose}
-                                title={safeT('sidebar_header_close', 'Close FreezeFrame')}
+                                title={safeTranslate('sidebar_header_close', 'Close FreezeFrame')}
                             >
                                 <img
                                     src={browser.runtime.getURL("/icons/close.png")}
-                                    alt={safeT('sidebar_header_close', 'Close FreezeFrame')}
+                                    alt={safeTranslate('sidebar_header_close', 'Close FreezeFrame')}
                                     className="freezeframe-button-icon"
                                 />
                             </button>
@@ -229,8 +217,7 @@ const Header = ({
                             >
                                 <img
                                     src={browser.runtime.getURL(`/icons/${getToggleButtonIcon()}`)}
-                                    alt={compact ? safeT('sidebar_header_expand', 'Expand') : safeT('sidebar_header_collapse', 'Collapse')}
-                                    className="freezeframe-button-icon"
+                                     alt={compact ? safeTranslate('sidebar_header_expand', 'Expand') : safeTranslate('sidebar_header_collapse', 'Collapse')}                                    className="freezeframe-button-icon"
                                 />
                             </button>
                         </>
@@ -258,10 +245,10 @@ const Header = ({
             />
             <div className="freezeframe-sidebar-header-title-container">
                 <h1 className="freezeframe-sidebar-header-title-freeze">
-                    {safeT('sidebar_header_freeze', 'Freeze')}
+                    {safeTranslate('sidebar_header_freeze', 'Freeze')}
                 </h1>
                 <h1 className="freezeframe-sidebar-header-title-frame">
-                    {safeT('sidebar_header_frame', 'Frame')}
+                    {safeTranslate('sidebar_header_frame', 'Frame')}
                 </h1>
             </div>
             {renderButtons()}

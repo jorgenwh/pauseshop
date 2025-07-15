@@ -4,6 +4,7 @@ import { AmazonScrapedProduct } from "../../../types/amazon";
 import { AMAZON_MAX_PRODUCTS_DISPLAY_LIMIT } from "../../../amazon/constants";
 import { browser } from "wxt/browser";
 import "../../css/components/sidebar/product-thumbnail-carousel.css";
+import { safeTranslate } from "../../../utils/language";
 
 interface ProductThumbnailCarouselProps {
     thumbnails: AmazonScrapedProduct[];
@@ -21,7 +22,7 @@ const ProductThumbnailCarousel = ({ thumbnails, onProductClick }: ProductThumbna
         return (
             <div className="freezeframe-carousel-container">
                 <div className="freezeframe-carousel-empty">
-                    {browser.i18n.getMessage('sidebar_carousel_noProducts' as any) || 'No products available'}
+                    {safeTranslate('sidebar_carousel_noProducts', 'No products available')}
                 </div>
             </div>
         );
@@ -69,7 +70,7 @@ const ProductThumbnailCarousel = ({ thumbnails, onProductClick }: ProductThumbna
             <motion.button
                 key="prev-button"
                 className="freezeframe-carousel-button freezeframe-carousel-button-prev"
-                aria-label={browser.i18n.getMessage('sidebar_carousel_previousProduct' as any) || 'Previous product'}
+                aria-label={safeTranslate('sidebar_carousel_previousProduct', 'Previous product')}
                 onClick={() => navigate(-1)}
                 disabled={isFirstItem}
                 whileFocus={!isFirstItem ? { outline: "2px solid var(--freezeframe-theme-trim-color)" } : {}}
@@ -119,7 +120,7 @@ const ProductThumbnailCarousel = ({ thumbnails, onProductClick }: ProductThumbna
             <motion.button
                 key="next-button"
                 className="freezeframe-carousel-button freezeframe-carousel-button-next"
-                aria-label={browser.i18n.getMessage('sidebar_carousel_nextProduct' as any) || 'Next product'}
+                aria-label={safeTranslate('sidebar_carousel_nextProduct', 'Next product')}
                 onClick={() => navigate(1)}
                 disabled={isLastItem}
                 whileFocus={!isLastItem ? { outline: "2px solid var(--freezeframe-theme-trim-color)" } : {}}
