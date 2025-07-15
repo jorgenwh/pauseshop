@@ -4,6 +4,7 @@ import { PublicPath } from "wxt/browser";
 import LoadingAnimation from "./loading-animation";
 import { ProductStorage, SidebarContentState } from "../../types";
 import { getIconCounts, getUniqueIcons } from "../../utils";
+import { browser } from "wxt/browser";
 
 interface CompactContentProps {
     productStorage: ProductStorage;
@@ -121,7 +122,7 @@ const CompactContent = ({
             >
                 <img
                     src={browser.runtime.getURL("/icons/nothing-found.png")}
-                    alt="No products found"
+                    alt={browser.i18n.getMessage('sidebar_content_noProductsFoundAlt')}
                     className="freezeframe-nothing-found-icon"
                 />
             </motion.div>
@@ -148,7 +149,7 @@ const CompactContent = ({
             >
                 <img
                     src={browser.runtime.getURL("/icons/error.png")}
-                    alt="An error occurred"
+                    alt={browser.i18n.getMessage('sidebar_content_errorOccurredAlt')}
                     className="freezeframe-error-icon"
                 />
             </motion.div>

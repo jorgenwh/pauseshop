@@ -20,6 +20,15 @@ export const sidebarCompactState = storage.defineItem<boolean>(
     },
 );
 
+export type LanguagePreference = "auto" | "en" | "es" | "de" | "fr" | "it" | "ja";
+
+export const languagePreference = storage.defineItem<LanguagePreference>(
+    "local:languagePreference",
+    {
+        fallback: "auto",
+    },
+);
+
 export type SessionData = ProductStorage & {
     clickedProduct?: AmazonScrapedProduct;
 };
