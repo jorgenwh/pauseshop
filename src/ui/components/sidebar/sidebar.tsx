@@ -298,7 +298,7 @@ const Sidebar = ({
                             key={`tooltip-${hoveredIcon}`}
                             text={
                                 hoveredIcon === "nothing-found"
-                                     ? safeTranslate('sidebar_content_noProductsFound', 'No products found')                                    : hoveredIcon === "error"
+                                    ? safeTranslate('sidebar_content_noProductsFound', 'No products found') : hoveredIcon === "error"
                                         ? `${errorMessage}`
                                         : formatIconText(hoveredIcon)
                             }
