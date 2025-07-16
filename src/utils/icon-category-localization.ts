@@ -1188,11 +1188,11 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
  */
 export function getLocalizedIconCategory(iconCategory: string, language?: string): string {
     // Get browser language or fallback to English
-    const browserLanguage = language || (typeof navigator !== 'undefined' ? navigator.language.split('-')[0] : 'en');
+    const browserLanguage = language || (typeof window !== 'undefined' && window.navigator ? window.navigator.language.split('-')[0] : 'en');
     let targetLanguage: SupportedLanguage = 'en';
     
     // Handle Portuguese - map pt to pt_BR
-    if (browserLanguage === 'pt' || (typeof navigator !== 'undefined' && navigator.language.startsWith('pt'))) {
+    if (browserLanguage === 'pt' || (typeof window !== 'undefined' && window.navigator?.language.startsWith('pt'))) {
         targetLanguage = 'pt_BR';
     } else if (['en', 'es', 'de', 'fr', 'it', 'ja', 'ko', 'hi', 'tr', 'ar'].includes(browserLanguage)) {
         targetLanguage = browserLanguage as SupportedLanguage;

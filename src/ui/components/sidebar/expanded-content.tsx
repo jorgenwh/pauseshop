@@ -4,7 +4,6 @@ import { ProductStorage, SidebarContentState } from "../../types";
 import { AmazonScrapedProduct } from "../../../types/amazon";
 import ProductGroupCard from "./product-group-card";
 import "../../css/components/sidebar/expanded-content.css";
-import { browser } from "wxt/browser";
 import { safeTranslate } from "../../../utils/language";
 
 const cardContainerVariants: Variants = {

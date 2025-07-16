@@ -8,7 +8,9 @@ import { browser } from "wxt/browser";
  */
 export function safeTranslate(key: string, fallback: string): string {
     try {
-        return browser.i18n.getMessage(key as any) || fallback;
+        // Use type assertion to bypass strict typing while maintaining type safety
+        const getMessage = browser.i18n.getMessage as (key: string) => string;
+        return getMessage(key) || fallback;
     } catch (error) {
         console.warn(`[FreezeFrame] i18n translation failed for key: ${key}`, error);
         return fallback;

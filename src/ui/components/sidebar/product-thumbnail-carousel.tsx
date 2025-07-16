@@ -2,7 +2,6 @@ import { motion } from "motion/react";
 import { useState, SVGProps } from "react";
 import { AmazonScrapedProduct } from "../../../types/amazon";
 import { AMAZON_MAX_PRODUCTS_DISPLAY_LIMIT } from "../../../amazon/constants";
-import { browser } from "wxt/browser";
 import "../../css/components/sidebar/product-thumbnail-carousel.css";
 import { safeTranslate } from "../../../utils/language";
 

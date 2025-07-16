@@ -22,7 +22,6 @@ import Divider from "./divider";
 import FloatingTooltip from "./floating-tooltip";
 import { getIconCounts, getUniqueIcons, formatIconText } from "../../utils";
 import { useYouTubeShortsPositioning, useProximityDetection } from "./hooks";
-import { browser } from "wxt/browser";
 import { safeTranslate } from "../../../utils/language";
 interface SidebarProps {
     isVisible: boolean;
