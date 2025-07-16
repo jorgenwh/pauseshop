@@ -31,8 +31,8 @@ export default defineConfig({
     }),
     manifest: {
         name: "__MSG_extName__",
-        version: "0.4.1",
-        version_name: "0.4.1 Beta",
+        version: "0.5.0",
+        version_name: "0.5.0 Beta",
         description: "__MSG_extDescription__",
         default_locale: "en",
         content_security_policy: {
