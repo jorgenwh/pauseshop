@@ -1,0 +1,46 @@
+# Extension Manifest
+extName: "FreezeFrame - YouTube 동영상에서 제품 식별"
+extDescription: "일시정지된 YouTube 동영상에서 제품을 발견하고 Amazon에서 찾아보세요"
+actionTitle: "FreezeFrame"
+
+# Sidebar Header
+sidebar:
+  header:
+    freeze: "Freeze"
+    frame: "Frame"
+    close: "FreezeFrame 닫기"
+    expand: "확장"
+    collapse: "축소"
+  
+  # Sidebar Content
+  content:
+    analysisFailedDefault: "분석 실패"
+    noProductsFound: "제품을 찾을 수 없습니다.\n다시 시도하려면 클릭하세요."
+    loadingProducts: "제품 로딩 중..."
+    errorOccurred: "오류가 발생했습니다. 자세한 내용은 콘솔을 확인하세요."
+    noProductsFoundAlt: "제품을 찾을 수 없음"
+    errorOccurredAlt: "오류 발생"
+  
+  # Product Carousel
+  carousel:
+    previousProduct: "이전 제품"
+    nextProduct: "다음 제품"
+    noProducts: "사용 가능한 제품 없음"
+
+# Popup Settings
+popup:
+  title: "FreezeFrame 설정"
+  sidebarPosition: "사이드바 위치:"
+  positionLeft: "왼쪽"
+  positionRight: "오른쪽"
+  clearHistory: "기록 지우기"
+  language: "언어:"
+  languageAuto: "자동"
+
+# General Messages
+general:
+  loading: "로딩 중..."
+  error: "오류"
+  retry: "다시 시도"
+  cancel: "취소"
+  ok: "확인"

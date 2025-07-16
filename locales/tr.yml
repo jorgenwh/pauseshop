@@ -1,0 +1,46 @@
+# Extension Manifest
+extName: "FreezeFrame - YouTube Videolarından Ürünleri Tanımlayın"
+extDescription: "Duraklatılmış YouTube videolarından ürünleri keşfedin ve Amazon'da bulun"
+actionTitle: "FreezeFrame"
+
+# Sidebar Header
+sidebar:
+  header:
+    freeze: "Dondur"
+    frame: "Çerçeve"
+    close: "FreezeFrame'i Kapat"
+    expand: "Genişlet"
+    collapse: "Daralt"
+  
+  # Sidebar Content
+  content:
+    analysisFailedDefault: "Analiz başarısız"
+    noProductsFound: "Ürün bulunamadı.\nTekrar denemek için tıklayın."
+    loadingProducts: "Ürünler yükleniyor..."
+    errorOccurred: "Bir hata oluştu. Ayrıntılar için konsolu kontrol edin."
+    noProductsFoundAlt: "Ürün bulunamadı"
+    errorOccurredAlt: "Bir hata oluştu"
+  
+  # Product Carousel
+  carousel:
+    previousProduct: "Önceki ürün" 
+    nextProduct: "Sonraki ürün"
+    noProducts: "Ürün mevcut değil"
+
+# Popup Settings
+popup:
+  title: "FreezeFrame Ayarları"
+  sidebarPosition: "Kenar Çubuğu Konumu:"
+  positionLeft: "Sol"
+  positionRight: "Sağ"
+  clearHistory: "Geçmişi Temizle"
+  language: "Dil:"
+  languageAuto: "Otomatik"
+
+# General Messages
+general:
+  loading: "Yükleniyor..."
+  error: "Hata"
+  retry: "Tekrar Dene"
+  cancel: "İptal"
+  ok: "Tamam"

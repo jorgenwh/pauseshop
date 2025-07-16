@@ -3,7 +3,7 @@
  * Maps icon category keys to localized display names for tooltips and UI
  */
 
-type SupportedLanguage = 'en' | 'es' | 'de' | 'fr' | 'it' | 'ja';
+type SupportedLanguage = 'en' | 'es' | 'de' | 'fr' | 'it' | 'ja' | 'pt_BR' | 'ko' | 'hi' | 'tr' | 'ar';
 
 type IconCategoryLocalizations = {
     [key: string]: {
@@ -13,9 +13,13 @@ type IconCategoryLocalizations = {
         fr: string;
         it: string;
         ja: string;
+        pt_BR: string;
+        ko: string;
+        hi: string;
+        tr: string;
+        ar: string;
     };
 };
-
 export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
     "alcoholic-beverage": {
         en: "Alcoholic Beverage",
@@ -23,7 +27,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Alkoholisches Getränk",
         fr: "Boisson Alcoolisée",
         it: "Bevanda Alcolica",
-        ja: "アルコール飲料"
+        ja: "アルコール飲料",
+        pt_BR: "Bebida Alcoólica",
+        ko: "알코올 음료",
+        hi: "मादक पेय",
+        tr: "Alkollü İçecek",
+        ar: "مشروب كحولي"
     },
     "baby-clothes": {
         en: "Baby Clothes",
@@ -31,7 +40,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Babykleidung",
         fr: "Vêtements de Bébé",
         it: "Vestiti per Bambini",
-        ja: "ベビー服"
+        ja: "ベビー服",
+        pt_BR: "Roupas de Bebê",
+        ko: "아기 옷",
+        hi: "बच्चों के कपड़े",
+        tr: "Bebek Kıyafetleri",
+        ar: "ملابس الأطفال"
     },
     "backpack": {
         en: "Backpack",
@@ -39,7 +53,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Rucksack",
         fr: "Sac à Dos",
         it: "Zaino",
-        ja: "バックパック"
+        ja: "バックパック",
+        pt_BR: "Mochila",
+        ko: "백팩",
+        hi: "बैकपैक",
+        tr: "Sırt Çantası",
+        ar: "حقيبة ظهر"
     },
     "bathroom": {
         en: "Bathroom",
@@ -47,7 +66,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Badezimmer",
         fr: "Salle de Bain",
         it: "Bagno",
-        ja: "バスルーム"
+        ja: "バスルーム",
+        pt_BR: "Banheiro",
+        ko: "욕실",
+        hi: "बाथरूम",
+        tr: "Banyo",
+        ar: "حمام"
     },
     "beanie": {
         en: "Beanie",
@@ -55,7 +79,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Mütze",
         fr: "Bonnet",
         it: "Berretto",
-        ja: "ビーニー"
+        ja: "ビーニー",
+        pt_BR: "Gorro",
+        ko: "비니",
+        hi: "टोपी",
+        tr: "Bere",
+        ar: "قبعة صوفية"
     },
     "beauty-and-selfcare": {
         en: "Beauty & Self Care",
@@ -63,7 +92,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Schönheit & Körperpflege",
         fr: "Beauté & Soins Personnels",
         it: "Bellezza & Cura Personale",
-        ja: "美容・セルフケア"
+        ja: "美容・セルフケア",
+        pt_BR: "Beleza e Cuidados Pessoais",
+        ko: "뷰티 & 셀프케어",
+        hi: "सौंदर्य और स्वयं की देखभाल",
+        tr: "Güzellik ve Kişisel Bakım",
+        ar: "الجمال والعناية الشخصية"
     },
     "bedroom": {
         en: "Bedroom",
@@ -71,7 +105,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Schlafzimmer",
         fr: "Chambre",
         it: "Camera da Letto",
-        ja: "ベッドルーム"
+        ja: "ベッドルーム",
+        pt_BR: "Quarto",
+        ko: "침실",
+        hi: "शयनकक्ष",
+        tr: "Yatak Odası",
+        ar: "غرفة النوم"
     },
     "belt": {
         en: "Belt",
@@ -79,7 +118,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Gürtel",
         fr: "Ceinture",
         it: "Cintura",
-        ja: "ベルト"
+        ja: "ベルト",
+        pt_BR: "Cinto",
+        ko: "벨트",
+        hi: "बेल्ट",
+        tr: "Kemer",
+        ar: "حزام"
     },
     "bicycle": {
         en: "Bicycle",
@@ -87,7 +131,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Fahrrad",
         fr: "Vélo",
         it: "Bicicletta",
-        ja: "自転車"
+        ja: "自転車",
+        pt_BR: "Bicicleta",
+        ko: "자전거",
+        hi: "साइकिल",
+        tr: "Bisiklet",
+        ar: "دراجة هوائية"
     },
     "board-games": {
         en: "Board Games",
@@ -95,7 +144,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Brettspiele",
         fr: "Jeux de Société",
         it: "Giochi da Tavolo",
-        ja: "ボードゲーム"
+        ja: "ボードゲーム",
+        pt_BR: "Jogos de Tabuleiro",
+        ko: "보드게임",
+        hi: "बोर्ड गेम्स",
+        tr: "Masa Oyunları",
+        ar: "ألعاب الطاولة"
     },
     "book": {
         en: "Book",
@@ -103,7 +157,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Buch",
         fr: "Livre",
         it: "Libro",
-        ja: "本"
+        ja: "本",
+        pt_BR: "Livro",
+        ko: "책",
+        hi: "किताब",
+        tr: "Kitap",
+        ar: "كتاب"
     },
     "bracelet": {
         en: "Bracelet",
@@ -111,7 +170,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Armband",
         fr: "Bracelet",
         it: "Braccialetto",
-        ja: "ブレスレット"
+        ja: "ブレスレット",
+        pt_BR: "Pulseira",
+        ko: "팔찌",
+        hi: "कंगन",
+        tr: "Bilezik",
+        ar: "سوار"
     },
     "cabinet": {
         en: "Cabinet",
@@ -119,7 +183,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Schrank",
         fr: "Armoire",
         it: "Mobile",
-        ja: "キャビネット"
+        ja: "キャビネット",
+        pt_BR: "Armário",
+        ko: "캐비닛",
+        hi: "अलमारी",
+        tr: "Dolap",
+        ar: "خزانة"
     },
     "camera": {
         en: "Camera",
@@ -127,7 +196,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Kamera",
         fr: "Appareil Photo",
         it: "Fotocamera",
-        ja: "カメラ"
+        ja: "カメラ",
+        pt_BR: "Câmera",
+        ko: "카메라",
+        hi: "कैमरा",
+        tr: "Kamera",
+        ar: "كاميرا"
     },
     "candy": {
         en: "Candy",
@@ -135,7 +209,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Süßigkeiten",
         fr: "Bonbons",
         it: "Caramelle",
-        ja: "キャンディ"
+        ja: "キャンディ",
+        pt_BR: "Doces",
+        ko: "사탕",
+        hi: "कैंडी",
+        tr: "Şeker",
+        ar: "حلوى"
     },
     "cap": {
         en: "Cap",
@@ -143,7 +222,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Kappe",
         fr: "Casquette",
         it: "Cappellino",
-        ja: "キャップ"
+        ja: "キャップ",
+        pt_BR: "Boné",
+        ko: "모자",
+        hi: "टोपी",
+        tr: "Şapka",
+        ar: "قبعة"
     },
     "card-games": {
         en: "Card Games",
@@ -151,7 +235,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Kartenspiele",
         fr: "Jeux de Cartes",
         it: "Giochi di Carte",
-        ja: "カードゲーム"
+        ja: "カードゲーム",
+        pt_BR: "Jogos de Cartas",
+        ko: "카드게임",
+        hi: "कार्ड गेम्स",
+        tr: "Kart Oyunları",
+        ar: "ألعاب الورق"
     },
     "chair": {
         en: "Chair",
@@ -159,7 +248,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Stuhl",
         fr: "Chaise",
         it: "Sedia",
-        ja: "椅子"
+        ja: "椅子",
+        pt_BR: "Cadeira",
+        ko: "의자",
+        hi: "कुर्सी",
+        tr: "Sandalye",
+        ar: "كرسي"
     },
     "children": {
         en: "Children",
@@ -167,7 +261,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Kinder",
         fr: "Enfants",
         it: "Bambini",
-        ja: "子供"
+        ja: "子供",
+        pt_BR: "Crianças",
+        ko: "어린이",
+        hi: "बच्चे",
+        tr: "Çocuklar",
+        ar: "أطفال"
     },
     "desk": {
         en: "Desk",
@@ -175,7 +274,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Schreibtisch",
         fr: "Bureau",
         it: "Scrivania",
-        ja: "デスク"
+        ja: "デスク",
+        pt_BR: "Mesa",
+        ko: "책상",
+        hi: "डेस्क",
+        tr: "Masa",
+        ar: "مكتب"
     },
     "dessert": {
         en: "Dessert",
@@ -183,7 +287,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Dessert",
         fr: "Dessert",
         it: "Dolce",
-        ja: "デザート"
+        ja: "デザート",
+        pt_BR: "Sobremesa",
+        ko: "디저트",
+        hi: "मिठाई",
+        tr: "Tatlı",
+        ar: "حلوى"
     },
     "dress": {
         en: "Dress",
@@ -191,7 +300,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Kleid",
         fr: "Robe",
         it: "Vestito",
-        ja: "ドレス"
+        ja: "ドレス",
+        pt_BR: "Vestido",
+        ko: "드레스",
+        hi: "पोशाक",
+        tr: "Elbise",
+        ar: "فستان"
     },
     "electronics": {
         en: "Electronics",
@@ -199,7 +313,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Elektronik",
         fr: "Électronique",
         it: "Elettronica",
-        ja: "電子機器"
+        ja: "電子機器",
+        pt_BR: "Eletrônicos",
+        ko: "전자제품",
+        hi: "इलेक्ट्रॉनिक्स",
+        tr: "Elektronik",
+        ar: "إلكترونيات"
     },
     "folder": {
         en: "Folder",
@@ -207,7 +326,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Ordner",
         fr: "Dossier",
         it: "Cartella",
-        ja: "フォルダー"
+        ja: "フォルダー",
+        pt_BR: "Pasta",
+        ko: "폴더",
+        hi: "फ़ोल्डर",
+        tr: "Klasör",
+        ar: "مجلد"
     },
     "food": {
         en: "Food",
@@ -215,7 +339,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Essen",
         fr: "Nourriture",
         it: "Cibo",
-        ja: "食べ物"
+        ja: "食べ物",
+        pt_BR: "Comida",
+        ko: "음식",
+        hi: "भोजन",
+        tr: "Yemek",
+        ar: "طعام"
     },
     "frame": {
         en: "Frame",
@@ -223,7 +352,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Rahmen",
         fr: "Cadre",
         it: "Cornice",
-        ja: "フレーム"
+        ja: "フレーム",
+        pt_BR: "Moldura",
+        ko: "액자",
+        hi: "फ्रेम",
+        tr: "Çerçeve",
+        ar: "إطار"
     },
     "fruit": {
         en: "Fruit",
@@ -231,7 +365,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Obst",
         fr: "Fruit",
         it: "Frutta",
-        ja: "果物"
+        ja: "果物",
+        pt_BR: "Fruta",
+        ko: "과일",
+        hi: "फल",
+        tr: "Meyve",
+        ar: "فاكهة"
     },
     "furniture": {
         en: "Furniture",
@@ -239,7 +378,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Möbel",
         fr: "Meubles",
         it: "Mobili",
-        ja: "家具"
+        ja: "家具",
+        pt_BR: "Móveis",
+        ko: "가구",
+        hi: "फर्नीचर",
+        tr: "Mobilya",
+        ar: "أثاث"
     },
     "garage": {
         en: "Garage",
@@ -247,7 +391,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Garage",
         fr: "Garage",
         it: "Garage",
-        ja: "ガレージ"
+        ja: "ガレージ",
+        pt_BR: "Garagem",
+        ko: "차고",
+        hi: "गैराज",
+        tr: "Garaj",
+        ar: "مرآب"
     },
     "gardening": {
         en: "Gardening",
@@ -255,7 +404,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Garten",
         fr: "Jardinage",
         it: "Giardinaggio",
-        ja: "ガーデニング"
+        ja: "ガーデニング",
+        pt_BR: "Jardinagem",
+        ko: "원예",
+        hi: "बागवानी",
+        tr: "Bahçıvanlık",
+        ar: "بستنة"
     },
     "glasses": {
         en: "Glasses",
@@ -263,7 +417,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Brille",
         fr: "Lunettes",
         it: "Occhiali",
-        ja: "メガネ"
+        ja: "メガネ",
+        pt_BR: "Óculos",
+        ko: "안경",
+        hi: "चश्मा",
+        tr: "Gözlük",
+        ar: "نظارات"
     },
     "grocery-shelf": {
         en: "Grocery Shelf",
@@ -271,7 +430,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Lebensmittelregal",
         fr: "Étagère d'Épicerie",
         it: "Scaffale Alimentari",
-        ja: "食料品棚"
+        ja: "食料品棚",
+        pt_BR: "Prateleira de Supermercado",
+        ko: "식료품 선반",
+        hi: "किराना शेल्फ",
+        tr: "Market Rafı",
+        ar: "رف البقالة"
     },
     "handbag": {
         en: "Handbag",
@@ -279,7 +443,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Handtasche",
         fr: "Sac à Main",
         it: "Borsa",
-        ja: "ハンドバッグ"
+        ja: "ハンドバッグ",
+        pt_BR: "Bolsa",
+        ko: "핸드백",
+        hi: "हैंडबैग",
+        tr: "El Çantası",
+        ar: "حقيبة يد"
     },
     "hat": {
         en: "Hat",
@@ -287,7 +456,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Hut",
         fr: "Chapeau",
         it: "Cappello",
-        ja: "帽子"
+        ja: "帽子",
+        pt_BR: "Chapéu",
+        ko: "모자",
+        hi: "टोपी",
+        tr: "Şapka",
+        ar: "قبعة"
     },
     "headphones": {
         en: "Headphones",
@@ -295,7 +469,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Kopfhörer",
         fr: "Casque",
         it: "Cuffie",
-        ja: "ヘッドフォン"
+        ja: "ヘッドフォン",
+        pt_BR: "Fones de Ouvido",
+        ko: "헤드폰",
+        hi: "हेडफोन",
+        tr: "Kulaklık",
+        ar: "سماعات رأس"
     },
     "home-decoration": {
         en: "Home Decoration",
@@ -303,7 +482,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Wohndekoration",
         fr: "Décoration Maison",
         it: "Decorazione Casa",
-        ja: "ホームデコレーション"
+        ja: "ホームデコレーション",
+        pt_BR: "Decoração da Casa",
+        ko: "홈 데코레이션",
+        hi: "घर की सजावट",
+        tr: "Ev Dekorasyonu",
+        ar: "ديكور المنزل"
     },
     "hoodie": {
         en: "Hoodie",
@@ -311,7 +495,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Kapuzenpullover",
         fr: "Sweat à Capuche",
         it: "Felpa con Cappuccio",
-        ja: "フーディー"
+        ja: "フーディー",
+        pt_BR: "Moletom com Capuz",
+        ko: "후디",
+        hi: "हूडी",
+        tr: "Kapüşonlu Sweatshirt",
+        ar: "هودي"
     },
     "hot-drinks": {
         en: "Hot Drinks",
@@ -319,7 +508,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Heißgetränke",
         fr: "Boissons Chaudes",
         it: "Bevande Calde",
-        ja: "温かい飲み物"
+        ja: "温かい飲み物",
+        pt_BR: "Bebidas Quentes",
+        ko: "뜨거운 음료",
+        hi: "गर्म पेय",
+        tr: "Sıcak İçecekler",
+        ar: "مشروبات ساخنة"
     },
     "jacket": {
         en: "Jacket",
@@ -327,7 +521,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Jacke",
         fr: "Veste",
         it: "Giacca",
-        ja: "ジャケット"
+        ja: "ジャケット",
+        pt_BR: "Jaqueta",
+        ko: "재킷",
+        hi: "जैकेट",
+        tr: "Ceket",
+        ar: "سترة"
     },
     "jeans": {
         en: "Jeans",
@@ -335,7 +534,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Jeans",
         fr: "Jean",
         it: "Jeans",
-        ja: "ジーンズ"
+        ja: "ジーンズ",
+        pt_BR: "Jeans",
+        ko: "청바지",
+        hi: "जींस",
+        tr: "Kot Pantolon",
+        ar: "جينز"
     },
     "kitchen-ware": {
         en: "Kitchen Ware",
@@ -343,7 +547,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Küchengeschirr",
         fr: "Ustensiles de Cuisine",
         it: "Utensili da Cucina",
-        ja: "キッチン用品"
+        ja: "キッチン用品",
+        pt_BR: "Utensílios de Cozinha",
+        ko: "주방용품",
+        hi: "रसोई के बर्तन",
+        tr: "Mutfak Eşyaları",
+        ar: "أدوات المطبخ"
     },
     "lamp": {
         en: "Lamp",
@@ -351,7 +560,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Lampe",
         fr: "Lampe",
         it: "Lampada",
-        ja: "ランプ"
+        ja: "ランプ",
+        pt_BR: "Lâmpada",
+        ko: "램프",
+        hi: "लैंप",
+        tr: "Lamba",
+        ar: "مصباح"
     },
     "laptop": {
         en: "Laptop",
@@ -359,7 +573,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Laptop",
         fr: "Ordinateur Portable",
         it: "Laptop",
-        ja: "ラップトップ"
+        ja: "ラップトップ",
+        pt_BR: "Laptop",
+        ko: "노트북",
+        hi: "लैपटॉप",
+        tr: "Dizüstü Bilgisayar",
+        ar: "حاسوب محمول"
     },
     "lighting": {
         en: "Lighting",
@@ -367,7 +586,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Beleuchtung",
         fr: "Éclairage",
         it: "Illuminazione",
-        ja: "照明"
+        ja: "照明",
+        pt_BR: "Iluminação",
+        ko: "조명",
+        hi: "प्रकाश व्यवस्था",
+        tr: "Aydınlatma",
+        ar: "إضاءة"
     },
     "mail": {
         en: "Mail",
@@ -375,7 +599,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Post",
         fr: "Courrier",
         it: "Posta",
-        ja: "郵便"
+        ja: "郵便",
+        pt_BR: "Correio",
+        ko: "우편",
+        hi: "मेल",
+        tr: "Posta",
+        ar: "بريد"
     },
     "meat": {
         en: "Meat",
@@ -383,7 +612,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Fleisch",
         fr: "Viande",
         it: "Carne",
-        ja: "肉"
+        ja: "肉",
+        pt_BR: "Carne",
+        ko: "고기",
+        hi: "मांस",
+        tr: "Et",
+        ar: "لحم"
     },
     "medical": {
         en: "Medical",
@@ -391,7 +625,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Medizinisch",
         fr: "Médical",
         it: "Medico",
-        ja: "医療"
+        ja: "医療",
+        pt_BR: "Médico",
+        ko: "의료",
+        hi: "चिकित्सा",
+        tr: "Tıbbi",
+        ar: "طبي"
     },
     "mens-underwear": {
         en: "Men's Underwear",
@@ -399,7 +638,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Herrenunterwäsche",
         fr: "Sous-vêtements Homme",
         it: "Biancheria Intima Uomo",
-        ja: "男性用下着"
+        ja: "男性用下着",
+        pt_BR: "Roupa Íntima Masculina",
+        ko: "남성 속옷",
+        hi: "पुरुषों का अंडरवियर",
+        tr: "Erkek İç Çamaşırı",
+        ar: "ملابس داخلية رجالية"
     },
     "monitor": {
         en: "Monitor",
@@ -407,7 +651,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Monitor",
         fr: "Moniteur",
         it: "Monitor",
-        ja: "モニター"
+        ja: "モニター",
+        pt_BR: "Monitor",
+        ko: "모니터",
+        hi: "मॉनिटर",
+        tr: "Monitör",
+        ar: "شاشة"
     },
     "music": {
         en: "Music",
@@ -415,7 +664,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Musik",
         fr: "Musique",
         it: "Musica",
-        ja: "音楽"
+        ja: "音楽",
+        pt_BR: "Música",
+        ko: "음악",
+        hi: "संगीत",
+        tr: "Müzik",
+        ar: "موسيقى"
     },
     "necklace": {
         en: "Necklace",
@@ -423,7 +677,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Halskette",
         fr: "Collier",
         it: "Collana",
-        ja: "ネックレス"
+        ja: "ネックレス",
+        pt_BR: "Colar",
+        ko: "목걸이",
+        hi: "हार",
+        tr: "Kolye",
+        ar: "عقد"
     },
     "nightgown": {
         en: "Nightgown",
@@ -431,7 +690,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Nachthemd",
         fr: "Chemise de Nuit",
         it: "Camicia da Notte",
-        ja: "ナイトガウン"
+        ja: "ナイトガウン",
+        pt_BR: "Camisola",
+        ko: "잠옷",
+        hi: "नाइटगाउन",
+        tr: "Gecelik",
+        ar: "قميص نوم"
     },
     "other": {
         en: "Other",
@@ -439,7 +703,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Andere",
         fr: "Autre",
         it: "Altro",
-        ja: "その他"
+        ja: "その他",
+        pt_BR: "Outro",
+        ko: "기타",
+        hi: "अन्य",
+        tr: "Diğer",
+        ar: "أخرى"
     },
     "outdoor-cooking": {
         en: "Outdoor Cooking",
@@ -447,7 +716,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Outdoor-Küche",
         fr: "Cuisine Extérieure",
         it: "Cucina all'Aperto",
-        ja: "アウトドア料理"
+        ja: "アウトドア料理",
+        pt_BR: "Cozinha ao Ar Livre",
+        ko: "야외 요리",
+        hi: "आउटडोर कुकिंग",
+        tr: "Açık Hava Yemek Pişirme",
+        ar: "طبخ خارجي"
     },
     "pajama": {
         en: "Pajama",
@@ -455,7 +729,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Pyjama",
         fr: "Pyjama",
         it: "Pigiama",
-        ja: "パジャマ"
+        ja: "パジャマ",
+        pt_BR: "Pijama",
+        ko: "파자마",
+        hi: "पजामा",
+        tr: "Pijama",
+        ar: "بيجامة"
     },
     "paper": {
         en: "Paper",
@@ -463,7 +742,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Papier",
         fr: "Papier",
         it: "Carta",
-        ja: "紙"
+        ja: "紙",
+        pt_BR: "Papel",
+        ko: "종이",
+        hi: "कागज",
+        tr: "Kağıt",
+        ar: "ورق"
     },
     "pets": {
         en: "Pets",
@@ -471,7 +755,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Haustiere",
         fr: "Animaux de Compagnie",
         it: "Animali Domestici",
-        ja: "ペット"
+        ja: "ペット",
+        pt_BR: "Animais de Estimação",
+        ko: "반려동물",
+        hi: "पालतू जानवर",
+        tr: "Evcil Hayvanlar",
+        ar: "حيوانات أليفة"
     },
     "printer": {
         en: "Printer",
@@ -479,7 +768,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Drucker",
         fr: "Imprimante",
         it: "Stampante",
-        ja: "プリンター"
+        ja: "プリンター",
+        pt_BR: "Impressora",
+        ko: "프린터",
+        hi: "प्रिंटर",
+        tr: "Yazıcı",
+        ar: "طابعة"
     },
     "ring": {
         en: "Ring",
@@ -487,7 +781,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Ring",
         fr: "Bague",
         it: "Anello",
-        ja: "指輪"
+        ja: "指輪",
+        pt_BR: "Anel",
+        ko: "반지",
+        hi: "अंगूठी",
+        tr: "Yüzük",
+        ar: "خاتم"
     },
     "scarf": {
         en: "Scarf",
@@ -495,7 +794,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Schal",
         fr: "Écharpe",
         it: "Sciarpa",
-        ja: "スカーフ"
+        ja: "スカーフ",
+        pt_BR: "Cachecol",
+        ko: "스카프",
+        hi: "स्कार्फ",
+        tr: "Atkı",
+        ar: "وشاح"
     },
     "seafood": {
         en: "Seafood",
@@ -503,7 +807,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Meeresfrüchte",
         fr: "Fruits de Mer",
         it: "Frutti di Mare",
-        ja: "シーフード"
+        ja: "シーフード",
+        pt_BR: "Frutos do Mar",
+        ko: "해산물",
+        hi: "समुद्री भोजन",
+        tr: "Deniz Ürünleri",
+        ar: "مأكولات بحرية"
     },
     "shirt": {
         en: "Shirt",
@@ -511,7 +820,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Hemd",
         fr: "Chemise",
         it: "Camicia",
-        ja: "シャツ"
+        ja: "シャツ",
+        pt_BR: "Camisa",
+        ko: "셔츠",
+        hi: "शर्ट",
+        tr: "Gömlek",
+        ar: "قميص"
     },
     "shoes": {
         en: "Shoes",
@@ -519,7 +833,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Schuhe",
         fr: "Chaussures",
         it: "Scarpe",
-        ja: "靴"
+        ja: "靴",
+        pt_BR: "Sapatos",
+        ko: "신발",
+        hi: "जूते",
+        tr: "Ayakkabı",
+        ar: "أحذية"
     },
     "shorts": {
         en: "Shorts",
@@ -527,7 +846,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Shorts",
         fr: "Short",
         it: "Pantaloncini",
-        ja: "ショーツ"
+        ja: "ショーツ",
+        pt_BR: "Shorts",
+        ko: "반바지",
+        hi: "शॉर्ट्स",
+        tr: "Şort",
+        ar: "شورت"
     },
     "smartphone": {
         en: "Smartphone",
@@ -535,7 +859,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Smartphone",
         fr: "Smartphone",
         it: "Smartphone",
-        ja: "スマートフォン"
+        ja: "スマートフォン",
+        pt_BR: "Smartphone",
+        ko: "스마트폰",
+        hi: "स्मार्टफोन",
+        tr: "Akıllı Telefon",
+        ar: "هاتف ذكي"
     },
     "socks": {
         en: "Socks",
@@ -543,7 +872,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Socken",
         fr: "Chaussettes",
         it: "Calzini",
-        ja: "靴下"
+        ja: "靴下",
+        pt_BR: "Meias",
+        ko: "양말",
+        hi: "मोज़े",
+        tr: "Çorap",
+        ar: "جوارب"
     },
     "sofa": {
         en: "Sofa",
@@ -551,7 +885,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Sofa",
         fr: "Canapé",
         it: "Divano",
-        ja: "ソファ"
+        ja: "ソファ",
+        pt_BR: "Sofá",
+        ko: "소파",
+        hi: "सोफा",
+        tr: "Kanepe",
+        ar: "أريكة"
     },
     "soft-drink-or-bottle": {
         en: "Soft Drink or Bottle",
@@ -559,7 +898,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Erfrischungsgetränk oder Flasche",
         fr: "Boisson Gazeuse ou Bouteille",
         it: "Bibita o Bottiglia",
-        ja: "ソフトドリンクまたはボトル"
+        ja: "ソフトドリンクまたはボトル",
+        pt_BR: "Refrigerante ou Garrafa",
+        ko: "청량음료 또는 병",
+        hi: "शीतल पेय या बोतल",
+        tr: "Meşrubat veya Şişe",
+        ar: "مشروب غازي أو زجاجة"
     },
     "sports": {
         en: "Sports",
@@ -567,7 +911,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Sport",
         fr: "Sports",
         it: "Sport",
-        ja: "スポーツ"
+        ja: "スポーツ",
+        pt_BR: "Esportes",
+        ko: "스포츠",
+        hi: "खेल",
+        tr: "Spor",
+        ar: "رياضة"
     },
     "stationery": {
         en: "Stationery",
@@ -575,7 +924,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Schreibwaren",
         fr: "Papeterie",
         it: "Cancelleria",
-        ja: "文房具"
+        ja: "文房具",
+        pt_BR: "Papelaria",
+        ko: "문구류",
+        hi: "स्टेशनरी",
+        tr: "Kırtasiye",
+        ar: "قرطاسية"
     },
     "suit-jacket": {
         en: "Suit Jacket",
@@ -583,7 +937,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Sakko",
         fr: "Veste de Costume",
         it: "Giacca da Completo",
-        ja: "スーツジャケット"
+        ja: "スーツジャケット",
+        pt_BR: "Paletó",
+        ko: "정장 재킷",
+        hi: "सूट जैकेट",
+        tr: "Takım Elbise Ceketi",
+        ar: "سترة بدلة"
     },
     "t-shirt": {
         en: "T-Shirt",
@@ -591,7 +950,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "T-Shirt",
         fr: "T-Shirt",
         it: "Maglietta",
-        ja: "Tシャツ"
+        ja: "Tシャツ",
+        pt_BR: "Camiseta",
+        ko: "티셔츠",
+        hi: "टी-शर्ट",
+        tr: "Tişört",
+        ar: "تي شيرت"
     },
     "table": {
         en: "Table",
@@ -599,7 +963,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Tisch",
         fr: "Table",
         it: "Tavolo",
-        ja: "テーブル"
+        ja: "テーブル",
+        pt_BR: "Mesa",
+        ko: "테이블",
+        hi: "मेज",
+        tr: "Masa",
+        ar: "طاولة"
     },
     "tablet": {
         en: "Tablet",
@@ -607,7 +976,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Tablet",
         fr: "Tablette",
         it: "Tablet",
-        ja: "タブレット"
+        ja: "タブレット",
+        pt_BR: "Tablet",
+        ko: "태블릿",
+        hi: "टैबलेट",
+        tr: "Tablet",
+        ar: "جهاز لوحي"
     },
     "tie": {
         en: "Tie",
@@ -615,7 +989,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Krawatte",
         fr: "Cravate",
         it: "Cravatta",
-        ja: "ネクタイ"
+        ja: "ネクタイ",
+        pt_BR: "Gravata",
+        ko: "넥타이",
+        hi: "टाई",
+        tr: "Kravat",
+        ar: "ربطة عنق"
     },
     "tools": {
         en: "Tools",
@@ -623,7 +1002,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Werkzeuge",
         fr: "Outils",
         it: "Strumenti",
-        ja: "工具"
+        ja: "工具",
+        pt_BR: "Ferramentas",
+        ko: "도구",
+        hi: "उपकरण",
+        tr: "Araçlar",
+        ar: "أدوات"
     },
     "toys": {
         en: "Toys",
@@ -631,7 +1015,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Spielzeug",
         fr: "Jouets",
         it: "Giocattoli",
-        ja: "おもちゃ"
+        ja: "おもちゃ",
+        pt_BR: "Brinquedos",
+        ko: "장난감",
+        hi: "खिलौने",
+        tr: "Oyuncaklar",
+        ar: "ألعاب"
     },
     "tracksuit": {
         en: "Tracksuit",
@@ -639,7 +1028,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Trainingsanzug",
         fr: "Survêtement",
         it: "Tuta",
-        ja: "トラックスーツ"
+        ja: "トラックスーツ",
+        pt_BR: "Agasalho",
+        ko: "트랙수트",
+        hi: "ट्रैकसूट",
+        tr: "Eşofman",
+        ar: "بدلة رياضية"
     },
     "trash-can": {
         en: "Trash Can",
@@ -647,7 +1041,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Mülleimer",
         fr: "Poubelle",
         it: "Cestino",
-        ja: "ゴミ箱"
+        ja: "ゴミ箱",
+        pt_BR: "Lixeira",
+        ko: "쓰레기통",
+        hi: "कूड़ादान",
+        tr: "Çöp Kutusu",
+        ar: "سلة مهملات"
     },
     "trousers": {
         en: "Trousers",
@@ -655,7 +1054,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Hose",
         fr: "Pantalon",
         it: "Pantaloni",
-        ja: "ズボン"
+        ja: "ズボン",
+        pt_BR: "Calças",
+        ko: "바지",
+        hi: "पतलून",
+        tr: "Pantolon",
+        ar: "بنطلون"
     },
     "tv": {
         en: "TV",
@@ -663,7 +1067,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Fernseher",
         fr: "Télévision",
         it: "TV",
-        ja: "テレビ"
+        ja: "テレビ",
+        pt_BR: "TV",
+        ko: "TV",
+        hi: "टीवी",
+        tr: "TV",
+        ar: "تلفزيون"
     },
     "vegetable": {
         en: "Vegetable",
@@ -671,7 +1080,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Gemüse",
         fr: "Légume",
         it: "Verdura",
-        ja: "野菜"
+        ja: "野菜",
+        pt_BR: "Vegetal",
+        ko: "채소",
+        hi: "सब्जी",
+        tr: "Sebze",
+        ar: "خضروات"
     },
     "vest": {
         en: "Vest",
@@ -679,7 +1093,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Weste",
         fr: "Gilet",
         it: "Giubbotto",
-        ja: "ベスト"
+        ja: "ベスト",
+        pt_BR: "Colete",
+        ko: "조끼",
+        hi: "बनियान",
+        tr: "Yelek",
+        ar: "صدرية"
     },
     "video-game": {
         en: "Video Game",
@@ -687,7 +1106,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Videospiel",
         fr: "Jeu Vidéo",
         it: "Videogioco",
-        ja: "ビデオゲーム"
+        ja: "ビデオゲーム",
+        pt_BR: "Videogame",
+        ko: "비디오 게임",
+        hi: "वीडियो गेम",
+        tr: "Video Oyunu",
+        ar: "لعبة فيديو"
     },
     "watch": {
         en: "Watch",
@@ -695,7 +1119,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Uhr",
         fr: "Montre",
         it: "Orologio",
-        ja: "腕時計"
+        ja: "腕時計",
+        pt_BR: "Relógio",
+        ko: "시계",
+        hi: "घड़ी",
+        tr: "Saat",
+        ar: "ساعة"
     },
     "wine-glass": {
         en: "Wine Glass",
@@ -703,7 +1132,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Weinglas",
         fr: "Verre à Vin",
         it: "Bicchiere da Vino",
-        ja: "ワイングラス"
+        ja: "ワイングラス",
+        pt_BR: "Taça de Vinho",
+        ko: "와인잔",
+        hi: "वाइन ग्लास",
+        tr: "Şarap Kadehi",
+        ar: "كأس نبيذ"
     },
     "womens-t-shirt": {
         en: "Women's T-Shirt",
@@ -711,7 +1145,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Damen-T-Shirt",
         fr: "T-Shirt Femme",
         it: "Maglietta da Donna",
-        ja: "女性用Tシャツ"
+        ja: "女性用Tシャツ",
+        pt_BR: "Camiseta Feminina",
+        ko: "여성용 티셔츠",
+        hi: "महिलाओं की टी-शर्ट",
+        tr: "Kadın Tişörtü",
+        ar: "تي شيرت نسائي"
     },
     "womens-underwear": {
         en: "Women's Underwear",
@@ -719,7 +1158,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Damenunterwäsche",
         fr: "Sous-vêtements Femme",
         it: "Biancheria Intima Donna",
-        ja: "女性用下着"
+        ja: "女性用下着",
+        pt_BR: "Roupa Íntima Feminina",
+        ko: "여성 속옷",
+        hi: "महिलाओं का अंडरवियर",
+        tr: "Kadın İç Çamaşırı",
+        ar: "ملابس داخلية نسائية"
     },
     "writing-utensil": {
         en: "Writing Utensil",
@@ -727,7 +1171,12 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
         de: "Schreibutensil",
         fr: "Ustensile d'Écriture",
         it: "Strumento di Scrittura",
-        ja: "筆記用具"
+        ja: "筆記用具",
+        pt_BR: "Utensílio de Escrita",
+        ko: "필기구",
+        hi: "लेखन उपकरण",
+        tr: "Yazı Gereçleri",
+        ar: "أداة كتابة"
     }
 };
 
@@ -740,16 +1189,21 @@ export const ICON_CATEGORY_LOCALIZATIONS: IconCategoryLocalizations = {
 export function getLocalizedIconCategory(iconCategory: string, language?: string): string {
     // Get browser language or fallback to English
     const browserLanguage = language || (typeof navigator !== 'undefined' ? navigator.language.split('-')[0] : 'en');
-    const targetLanguage = ['en', 'es', 'de', 'fr', 'it', 'ja'].includes(browserLanguage) 
-        ? browserLanguage as SupportedLanguage 
-        : 'en';
+    let targetLanguage: SupportedLanguage = 'en';
     
+    // Handle Portuguese - map pt to pt_BR
+    if (browserLanguage === 'pt' || (typeof navigator !== 'undefined' && navigator.language.startsWith('pt'))) {
+        targetLanguage = 'pt_BR';
+    } else if (['en', 'es', 'de', 'fr', 'it', 'ja', 'ko', 'hi', 'tr', 'ar'].includes(browserLanguage)) {
+        targetLanguage = browserLanguage as SupportedLanguage;
+    }
+
     // Get localized name or fallback to formatted English
     const localization = ICON_CATEGORY_LOCALIZATIONS[iconCategory];
     if (localization) {
         return localization[targetLanguage];
     }
-    
+
     // Fallback: format the icon category key (replace dashes with spaces, capitalize)
     return iconCategory.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
 }
