@@ -3,7 +3,7 @@ import { motion } from "motion/react";
 import { PublicPath } from "wxt/browser";
 import LoadingAnimation from "./loading-animation";
 import { ProductStorage, SidebarContentState } from "../../types";
-import { getIconCounts, getUniqueIcons } from "../../utils";
+import { getIconCounts, getUniqueIcons, formatIconText } from "../../utils";
 import { browser } from "wxt/browser";
 import { safeTranslate } from "../../../utils/language";
 
@@ -86,7 +86,7 @@ const CompactContent = ({
                         src={browser.runtime.getURL(
                             `/icons/products/${iconCategory}.png` as PublicPath
                         )}
-                        alt={iconCategory}
+                        alt={formatIconText(iconCategory)}
                         className={`freezeframe-compact-icon icon`}
                     />
                     {buildCategoryCounter(iconCategory)}
