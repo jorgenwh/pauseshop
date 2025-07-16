@@ -4,6 +4,7 @@ import { ProductStorage, SidebarContentState } from "../../types";
 import { AmazonScrapedProduct } from "../../../types/amazon";
 import ProductGroupCard from "./product-group-card";
 import "../../css/components/sidebar/expanded-content.css";
+import { safeTranslate } from "../../../utils/language";
 
 const cardContainerVariants: Variants = {
     hidden: { opacity: 0 },
@@ -72,7 +73,7 @@ const ExpandedContent = ({ contentState, productStorage, expandedIconCategory, o
     return (
         <div className={contentClasses} ref={contentRef}>
             {contentState === SidebarContentState.LOADING && (
-                <p className="text-white">Loading products...</p>
+                <p className="text-white">{safeTranslate('sidebar_content_loadingProducts', 'Loading products...')}</p>
             )}
             {contentState === SidebarContentState.PRODUCTS && (
                 <motion.div
@@ -111,10 +112,10 @@ const ExpandedContent = ({ contentState, productStorage, expandedIconCategory, o
                 </motion.div>
             )}
             {contentState === SidebarContentState.NO_PRODUCTS && (
-                <p className="text-white">No products found.</p>
+                <p className="text-white">{safeTranslate('sidebar_content_noProductsFound', 'No products found')}</p>
             )}
             {contentState === SidebarContentState.ERROR && (
-                <p className="text-red-500">An error occurred. Check console for details.</p>
+                <p className="text-red-500">{safeTranslate('sidebar_content_errorOccurred', 'An error occurred')}</p>
             )}
         </div>
     );

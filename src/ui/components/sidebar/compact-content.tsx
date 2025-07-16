@@ -3,7 +3,9 @@ import { motion } from "motion/react";
 import { PublicPath } from "wxt/browser";
 import LoadingAnimation from "./loading-animation";
 import { ProductStorage, SidebarContentState } from "../../types";
-import { getIconCounts, getUniqueIcons } from "../../utils";
+import { getIconCounts, getUniqueIcons, formatIconText } from "../../utils";
+import { browser } from "wxt/browser";
+import { safeTranslate } from "../../../utils/language";
 
 interface CompactContentProps {
     productStorage: ProductStorage;
@@ -84,7 +86,7 @@ const CompactContent = ({
                         src={browser.runtime.getURL(
                             `/icons/products/${iconCategory}.png` as PublicPath
                         )}
-                        alt={iconCategory}
+                        alt={formatIconText(iconCategory)}
                         className={`freezeframe-compact-icon icon`}
                     />
                     {buildCategoryCounter(iconCategory)}
@@ -121,7 +123,7 @@ const CompactContent = ({
             >
                 <img
                     src={browser.runtime.getURL("/icons/nothing-found.png")}
-                    alt="No products found"
+                    alt={safeTranslate('sidebar_content_noProductsFoundAlt', 'No products found')}
                     className="freezeframe-nothing-found-icon"
                 />
             </motion.div>
@@ -148,7 +150,7 @@ const CompactContent = ({
             >
                 <img
                     src={browser.runtime.getURL("/icons/error.png")}
-                    alt="An error occurred"
+                    alt={safeTranslate('sidebar_content_errorOccurredAlt', 'Error occurred')}
                     className="freezeframe-error-icon"
                 />
             </motion.div>

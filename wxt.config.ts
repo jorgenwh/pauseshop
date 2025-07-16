@@ -2,6 +2,7 @@ import { defineConfig } from 'wxt';
 
 // See https://wxt.dev/api/config.html
 export default defineConfig({
+    modules: ['@wxt-dev/i18n/module'],
     dev: {
         server: {
             port: 3001,
@@ -29,10 +30,11 @@ export default defineConfig({
         },
     }),
     manifest: {
-        name: "FreezeFrame - Identify Products from YouTube Videos",
+        name: "__MSG_extName__",
         version: "0.4.1",
         version_name: "0.4.1 Beta",
-        description: "Discover products from paused YouTube videos and find them on Amazon",
+        description: "__MSG_extDescription__",
+        default_locale: "en",
         content_security_policy: {
             extension_pages: "script-src 'self'; object-src 'self'; default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src * data:"
         },
@@ -71,7 +73,7 @@ export default defineConfig({
         ],
         action: {
             default_popup: "popup/index.html",
-            default_title: "FreezeFrame"
+            default_title: "__MSG_actionTitle__"
         },
         externally_connectable: {
             "matches": [

@@ -5,6 +5,7 @@
 
 import { Product } from "../types/common";
 import { getEndpointUrl } from "./server-config";
+import { browser } from "wxt/browser";
 
 interface AnalyzeRequest {
     image: string;
@@ -51,6 +52,7 @@ export const analyzeImageStreaming = async (
                 "Content-Type": "application/json",
                 Accept: "text/event-stream",
                 "Cache-Control": "no-cache",
+                "Accept-Language": browser.i18n.getUILanguage(),
             },
             body: JSON.stringify(request),
             signal: signal,
@@ -175,6 +177,9 @@ export const endSession = async (pauseId: string): Promise<void> => {
     try {
         const response = await fetch(url, {
             method: 'POST',
+            headers: {
+                "Accept-Language": browser.i18n.getUILanguage(),
+            },
         });
 
         if (!response.ok) {

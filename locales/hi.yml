@@ -1,0 +1,46 @@
+# Extension Manifest
+extName: "FreezeFrame - YouTube वीडियो से उत्पादों की पहचान करें"
+extDescription: "रुके हुए YouTube वीडियो से उत्पादों की खोज करें और उन्हें Amazon पर खोजें"
+actionTitle: "FreezeFrame"
+
+# Sidebar Header
+sidebar:
+  header:
+    freeze: "फ्रीज"
+    frame: "फ्रेम"
+    close: "FreezeFrame बंद करें"
+    expand: "विस्तार करें"
+    collapse: "संकुचित करें"
+  
+  # Sidebar Content
+  content:
+    analysisFailedDefault: "विश्लेषण असफल"
+    noProductsFound: "कोई उत्पाद नहीं मिला।\nफिर से कोशिश करने के लिए क्लिक करें।"
+    loadingProducts: "उत्पाद लोड हो रहे हैं..."
+    errorOccurred: "एक त्रुटि हुई। विवरण के लिए कंसोल देखें।"
+    noProductsFoundAlt: "कोई उत्पाद नहीं मिला"
+    errorOccurredAlt: "एक त्रुटि हुई"
+  
+  # Product Carousel
+  carousel:
+    previousProduct: "पिछला उत्पाद" 
+    nextProduct: "अगला उत्पाद"
+    noProducts: "कोई उत्पाद उपलब्ध नहीं"
+
+# Popup Settings
+popup:
+  title: "FreezeFrame सेटिंग्स"
+  sidebarPosition: "साइडबार स्थिति:"
+  positionLeft: "बाएं"
+  positionRight: "दाएं"
+  clearHistory: "इतिहास साफ़ करें"
+  language: "भाषा:"
+  languageAuto: "स्वचालित"
+
+# General Messages
+general:
+  loading: "लोड हो रहा है..."
+  error: "त्रुटि"
+  retry: "पुनः प्रयास"
+  cancel: "रद्द करें"
+  ok: "ठीक है"

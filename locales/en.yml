@@ -1,0 +1,46 @@
+# Extension Manifest
+extName: "FreezeFrame - Identify Products from YouTube Videos"
+extDescription: "Discover products from paused YouTube videos and find them on Amazon"
+actionTitle: "FreezeFrame"
+
+# Sidebar Header
+sidebar:
+  header:
+    freeze: "Freeze"
+    frame: "Frame"
+    close: "Close FreezeFrame"
+    expand: "Expand"
+    collapse: "Collapse"
+  
+  # Sidebar Content
+  content:
+    analysisFailedDefault: "Analysis failed"
+    noProductsFound: "No products found.\nClick to try again."
+    loadingProducts: "Loading products..."
+    errorOccurred: "An error occurred. Check console for details."
+    noProductsFoundAlt: "No products found"
+    errorOccurredAlt: "An error occurred"
+  
+  # Product Carousel
+  carousel:
+    previousProduct: "Previous product" 
+    nextProduct: "Next product"
+    noProducts: "No products available"
+
+# Popup Settings
+popup:
+  title: "FreezeFrame Settings"
+  sidebarPosition: "Sidebar Position:"
+  positionLeft: "Left"
+  positionRight: "Right"
+  clearHistory: "Clear History"
+  language: "Language:"
+  languageAuto: "Auto"
+
+# General Messages
+general:
+  loading: "Loading..."
+  error: "Error"
+  retry: "Retry"
+  cancel: "Cancel"
+  ok: "OK"

@@ -1,0 +1,46 @@
+# Extension Manifest
+extName: "FreezeFrame - YouTubeビデオから商品を特定"
+extDescription: "一時停止したYouTubeビデオから商品を発見し、Amazonで見つける"
+actionTitle: "FreezeFrame"
+
+# Sidebar Header
+sidebar:
+  header:
+    freeze: "Freeze"
+    frame: "Frame"
+    close: "FreezeFrameを閉じる"
+    expand: "展開"
+    collapse: "折りたたむ"
+  
+  # Sidebar Content
+  content:
+    analysisFailedDefault: "分析に失敗しました"
+    noProductsFound: "商品が見つかりませんでした。\nクリックして再試行してください。"
+    loadingProducts: "商品を読み込み中..."
+    errorOccurred: "エラーが発生しました。詳細についてはコンソールを確認してください。"
+    noProductsFoundAlt: "商品が見つかりません"
+    errorOccurredAlt: "エラーが発生しました"
+  
+  # Product Carousel
+  carousel:
+    previousProduct: "前の商品"
+    nextProduct: "次の商品"
+    noProducts: "利用可能な商品がありません"
+
+# Popup Settings
+popup:
+  title: "FreezeFrame設定"
+  sidebarPosition: "サイドバーの位置:"
+  positionLeft: "左"
+  positionRight: "右"
+  clearHistory: "履歴をクリア"
+  language: "言語:"
+  languageAuto: "自動"
+
+# General Messages
+general:
+  loading: "読み込み中..."
+  error: "エラー"
+  retry: "再試行"
+  cancel: "キャンセル"
+  ok: "OK"

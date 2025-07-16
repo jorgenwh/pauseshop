@@ -1,4 +1,5 @@
 import { ProductStorage } from "./types";
+import { getLocalizedIconCategory } from "../utils/icon-category-localization";
 
 export const getUniqueIcons = (productStorage: ProductStorage): Set<string> => {
     const uniqueIcons = new Set<string>();
@@ -11,12 +12,9 @@ export const getUniqueIcons = (productStorage: ProductStorage): Set<string> => {
     return uniqueIcons
 }
 
-// Helper function to format icon text: replace dashes with spaces and capitalize first letter
+// Helper function to format icon text using localized mappings
 export const formatIconText = (iconText: string): string => {
-    // Replace all dashes with spaces
-    const textWithSpaces = iconText.replace(/-/g, ' ');
-    // Capitalize the first letter
-    return textWithSpaces.charAt(0).toUpperCase() + textWithSpaces.slice(1);
+    return getLocalizedIconCategory(iconText);
 };
 
 

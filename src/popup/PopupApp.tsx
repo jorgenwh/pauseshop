@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { sidebarPosition, clickHistory } from "../storage";
 import { SidebarPosition } from "../ui/types";
 import { ToggleSidebarPositionMessage } from "../background/types";
+import { safeTranslate } from "../utils/language";
 import "../ui/css/base.css";
 
 const PopupApp = () => {
@@ -38,18 +39,21 @@ const PopupApp = () => {
             style={{ backgroundColor: "var(--freezeframe-bg)" }}
         >
             <h1 className="text-lg font-bold mb-2" style={{ color: "white" }}>
-                FreezeFrame Settings
+                {safeTranslate("popup_title", "FreezeFrame Settings")}
             </h1>
             <div className="flex items-center justify-center">
                 <span className="mr-2" style={{ color: "white" }}>
-                    Sidebar Position:
+                    {safeTranslate("popup_sidebarPosition", "Sidebar Position:")}
                 </span>
                 <button
                     onClick={handleToggleSidebarPosition}
                     className="px-4 py-2 text-white rounded-md w-20 transition-all duration-100 active:scale-95 active:opacity-80"
                     style={{ backgroundColor: "var(--freezeframe-theme-trim-color)" }}
                 >
-                    {position === "left" ? "Left" : "Right"}
+                    {position === "left" 
+                        ? safeTranslate("popup_positionLeft", "Left")
+                        : safeTranslate("popup_positionRight", "Right")
+                    }
                 </button>
             </div>
             <div className="flex items-center justify-center mt-4">
@@ -58,7 +62,7 @@ const PopupApp = () => {
                     className="px-4 py-2 text-white rounded-md transition-all duration-100 active:scale-95 active:opacity-80"
                     style={{ backgroundColor: "var(--freezeframe-theme-trim-color)" }}
                 >
-                    Clear History
+                    {safeTranslate("popup_clearHistory", "Clear History")}
                 </button>
             </div>
         </div>
