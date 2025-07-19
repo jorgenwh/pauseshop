@@ -235,7 +235,7 @@ const Header = ({
             }}
         >
             <img
-                src={browser.runtime.getURL("/icons/icon-128.png")}
+                src={browser.runtime.getURL("/icons/new_logo_128x128.png")}
                 alt="FreezeFrame Icon"
                 className={"freezeframe-sidebar-header-icon icon" + (compact ? " compact" : "")}
                 style={{
