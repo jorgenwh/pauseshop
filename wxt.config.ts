@@ -42,10 +42,10 @@ export default defineConfig({
             "storage"
         ],
         icons: {
-            "16": "icons/icon-128-trim-color.png",
-            "32": "icons/icon-128-trim-color.png",
-            "64": "icons/icon-128-trim-color.png",
-            "128": "icons/icon-128-trim-color.png"
+            "16": "icons/new_logo_128x128.png",
+            "32": "icons/new_logo_128x128.png",
+            "64": "icons/new_logo_128x128.png",
+            "128": "icons/new_logo_128x128.png"
         },
         host_permissions: [
             "https://*.amazon.com/*",

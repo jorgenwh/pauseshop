@@ -4,97 +4,27 @@
  */
 
 /**
- * Check browser support for modern image formats in extension context
+ * Check WebP support in extension context
  */
-const checkExtensionFormatSupport = (): { webp: boolean; avif: boolean } => {
+const checkWebPSupport = (): boolean => {
     const canvas = document.createElement('canvas');
     canvas.width = 1;
     canvas.height = 1;
-    
-    const webpSupport = canvas.toDataURL('image/webp').startsWith('data:image/webp');
-    const avifSupport = canvas.toDataURL('image/avif').startsWith('data:image/avif');
-    
-    return { webp: webpSupport, avif: avifSupport };
+    return canvas.toDataURL('image/webp').startsWith('data:image/webp');
 };
 
 /**
- * Smart format selection for video screenshots
+ * Simple format selection: WebP if supported, otherwise JPEG
+ * Optimized for video screenshots with good compression and universal compatibility
  */
-const selectOptimalScreenshotFormat = (canvas: HTMLCanvasElement): { format: string; quality: number } => {
-    const ctx = canvas.getContext('2d');
-    if (!ctx) {
-        return { format: 'image/jpeg', quality: 0.85 };
-    }
+const selectOptimalScreenshotFormat = (): { format: string; quality: number } => {
+    // Use WebP for better compression if supported, otherwise fall back to JPEG
+    const webpSupported = checkWebPSupport();
     
-    // Check browser support for modern formats
-    const { webp, avif } = checkExtensionFormatSupport();
-    
-    // Sample a small portion to analyze characteristics
-    const sampleSize = Math.min(100, canvas.width, canvas.height);
-    const sampleCanvas = document.createElement('canvas');
-    sampleCanvas.width = sampleSize;
-    sampleCanvas.height = sampleSize;
-    const sampleCtx = sampleCanvas.getContext('2d');
-    
-    if (!sampleCtx) {
-        return { format: 'image/jpeg', quality: 0.85 };
-    }
-    
-    // Draw sample from main canvas
-    sampleCtx.drawImage(canvas, 0, 0, sampleSize, sampleSize);
-    const imageData = sampleCtx.getImageData(0, 0, sampleSize, sampleSize);
-    const data = imageData.data;
-    
-    let hasTransparency = false;
-    let colorVariance = 0;
-    const totalPixels = sampleSize * sampleSize;
-    
-    // Analyze image characteristics
-    for (let i = 0; i < data.length; i += 4) {
-        // Check for transparency
-        if (data[i + 3] < 255) {
-            hasTransparency = true;
-        }
-        
-        // Calculate color variance
-        const r = data[i];
-        const g = data[i + 1];
-        const b = data[i + 2];
-        const gray = (r + g + b) / 3;
-        colorVariance += Math.abs(r - gray) + Math.abs(g - gray) + Math.abs(b - gray);
-    }
-    
-    colorVariance /= totalPixels;
-    
-    // Video screenshots are typically high color variance without transparency
-    // Select format based on characteristics and browser support
-    if (hasTransparency) {
-        // Rare for video screenshots, but handle it
-        if (avif) {
-            return { format: 'image/avif', quality: 0.8 };
-        } else if (webp) {
-            return { format: 'image/webp', quality: 0.8 };
-        } else {
-            return { format: 'image/png', quality: 1.0 };
-        }
-    } else if (colorVariance < 20) {
-        // Low variance (animations, solid colors) - modern formats handle well
-        if (avif) {
-            return { format: 'image/avif', quality: 0.7 };
-        } else if (webp) {
-            return { format: 'image/webp', quality: 0.75 };
-        } else {
-            return { format: 'image/jpeg', quality: 0.8 };
-        }
+    if (webpSupported) {
+        return { format: 'image/webp', quality: 0.8 };
     } else {
-        // High variance (typical video content) - modern formats excel
-        if (avif) {
-            return { format: 'image/avif', quality: 0.75 };
-        } else if (webp) {
-            return { format: 'image/webp', quality: 0.8 };
-        } else {
-            return { format: 'image/jpeg', quality: 0.85 };
-        }
+        return { format: 'image/jpeg', quality: 0.85 };
     }
 };
 
@@ -126,7 +56,7 @@ export const captureOptimizedScreenshot = (
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
     
     // Get optimal format and quality
-    const { format, quality } = selectOptimalScreenshotFormat(canvas);
+    const { format, quality } = selectOptimalScreenshotFormat();
     
     console.log(`[FreezeFrame:ScreenshotCapture] Using format: ${format}, quality: ${quality}`);
     
