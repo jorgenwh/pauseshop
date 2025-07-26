@@ -5,7 +5,7 @@
 
 import { handleScreenshotAnalysis } from "./analysis-workflow";
 import { cancellationRegistry } from "./cancellation-registry";
-import { endSession as apiEndSession } from "./api-client";
+import { endSession as apiEndSession, trackPause } from "./api-client";
 import type { BackgroundMessage, BackgroundMessageResponse } from "./types";
 import { initializeExternalMessaging } from './external-messaging';
 
@@ -77,6 +77,8 @@ browser.runtime.onMessage.addListener(
             }
             case "registerPause":
                 cancellationRegistry.registerPause(message.pauseId);
+                // Track pause event
+                trackPause();
                 safeSendResponse({ success: true });
                 break;
             case "cancelPause":

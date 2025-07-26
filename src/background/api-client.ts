@@ -169,6 +169,26 @@ export const analyzeImageStreaming = async (
 };
 
 /**
+ * Track pause event
+ */
+export const trackPause = async (): Promise<void> => {
+    const url = getEndpointUrl('/statistics/pause');
+    
+    try {
+        await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                "Accept-Language": browser.i18n.getUILanguage(),
+            },
+        });
+    } catch (error) {
+        // Silently fail - we don't want statistics tracking to break the extension
+        console.debug('[FreezeFrame:ApiClient] Failed to track pause:', error);
+    }
+};
+
+/**
  * Notifies the server to end a session.
  * @param pauseId The ID of the session to end.
  */
