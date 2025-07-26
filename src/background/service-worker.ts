@@ -78,7 +78,9 @@ browser.runtime.onMessage.addListener(
             case "registerPause":
                 cancellationRegistry.registerPause(message.pauseId);
                 // Track pause event
-                trackPause();
+                trackPause().catch((error) => {
+                    console.debug('[FreezeFrame:ServiceWorker] Failed to track pause:', error);
+                });
                 safeSendResponse({ success: true });
                 break;
             case "cancelPause":
